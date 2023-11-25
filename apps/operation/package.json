@@ -1,0 +1,25 @@
+{
+  "name": "operation",
+  "version": "1.0.0",
+  "description": "agent operation",
+  "main": "./index.ts",
+  "scripts": {
+    "sync-default-account-data": "tsx ./index.ts syncDefaultAccountData"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^9.4.1",
+    "compress-json": "^2.1.2",
+    "dotenv": "^16.0.3",
+    "flat": "^5.0.2",
+    "lodash-es": "^4.17.21",
+    "tsx": "^3.12.1",
+    "@agent/common": "workspace:*",
+    "@base-open/node-sdk": "https://lf3-static.bytednsdoc.com/obj/eden-cn/jjjpceh7nulojvhj/node-sdk-0.0.11.tgz"
+  },
+  "devDependencies": {
+    "octokit": "^2.0.10",
+    "p-queue": "^7.3.0"
+  }
+}

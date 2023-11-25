@@ -1,0 +1,46 @@
+edition: 1.0.0
+name: my-framework-app
+access: default
+services:
+  framework:
+    component: fc
+    props:
+      region: cn-hangzhou
+      service:
+        name: serverless-devs-application
+      function:
+        name: agent-web
+        description: Initialize
+        runtime: custom
+        environmentVariables:
+          PATH: >-
+            /opt/nodejs17/bin:/usr/local/bin/apache-maven/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ruby/bin:/opt/bin:/code:/code/bin
+          NODE_PATH: /opt/nodejs/node_modules
+          LD_LIBRARY_PATH: >-
+            /code:/code/lib:/usr/local/lib:/opt/lib:/opt/php8.1/lib:/opt/php8.0/lib:/opt/php7.2/lib
+        layers:
+          - acs:fc:cn-hangzhou:official:layers/Nodejs17/versions/2
+        memorySize: 256
+        cpu: 0.2
+        timeout: 60
+        codeUri: ./
+        diskSize: 512
+        caPort: 9000
+        customRuntimeConfig:
+          command:
+            - npm
+          args:
+            - run
+            - start
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+              - PATCH

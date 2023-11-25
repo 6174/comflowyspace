@@ -1,0 +1,15 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1,
+    "workspacePrefix": "/Users/chenxuejia/ws/agent/agent"
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_ADDING_TO_ROOT",
+    "err": {
+      "name": "pnpm",
+      "message": "Running this command will add the dependency to the workspace root, which might not be what you want - if you really meant it, make it explicit by running this command again with the -w flag (or --workspace-root). If you don't want to see this warning anymore, you may set the ignore-workspace-root-check setting to true.",
+      "code": "ERR_PNPM_ADDING_TO_ROOT",
+      "stack": "pnpm: Running this command will add the dependency to the workspace root, which might not be what you want - if you really meant it, make it explicit by running this command again with the -w flag (or --workspace-root). If you don't want to see this warning anymore, you may set the ignore-workspace-root-check setting to true.\n    at Object.handler [as add] (/Users/chenxuejia/.nvm/versions/node/v14.15.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.26.0/node_modules/pnpm/dist/pnpm.cjs:121535:15)\n    at /Users/chenxuejia/.nvm/versions/node/v14.15.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.26.0/node_modules/pnpm/dist/pnpm.cjs:180171:83\n    at async run (/Users/chenxuejia/.nvm/versions/node/v14.15.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.26.0/node_modules/pnpm/dist/pnpm.cjs:180147:34)\n    at async runPnpm (/Users/chenxuejia/.nvm/versions/node/v14.15.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.26.0/node_modules/pnpm/dist/pnpm.cjs:180358:5)\n    at async /Users/chenxuejia/.nvm/versions/node/v14.15.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.26.0/node_modules/pnpm/dist/pnpm.cjs:180350:7"
+    }
+  }
+}

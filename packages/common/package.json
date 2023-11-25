@@ -1,0 +1,15 @@
+{
+  "name": "@agent/common",
+  "version": "0.0.0",
+  "main": "./index.tsx",
+  "types": "./index.tsx",
+  "dependencies": {
+    "@types/crypto-js": "^4.1.2",
+    "crypto-js": "^4.1.1",
+    "uuid": "9.0.1"
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.3",
+    "encoding": "^0.1.13"
+  }
+}
