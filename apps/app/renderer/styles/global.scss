@@ -1,0 +1,73 @@
+html, body {
+    --backgroundColor: #2A2932;
+    --backgroundColorDark: #19191E;
+    --primaryColor: #765AFD;
+    --borderColor: #55545B;
+    -webkit-font-smoothing: antialiased;
+    --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.5715;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#root,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.text-overflow {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
