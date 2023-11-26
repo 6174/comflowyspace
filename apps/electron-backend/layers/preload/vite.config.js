@@ -33,7 +33,7 @@ const config = {
         ...builtinModules.flatMap(p => [p, `node:${p}`]),
       ],
       output: {
-        entryFileNames: "[name].cjs",
+        entryFileNames: "[name].js",
       },
     },
     emptyOutDir: true,

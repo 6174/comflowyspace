@@ -1,8 +1,7 @@
 import { BrowserView, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 
-import { isMacOS } from "./utils";
-import { uuid } from "@comflowy/common";
+import { isMacOS, uuid } from "./utils";
 import path from "path";
 import { format } from "url";
 
