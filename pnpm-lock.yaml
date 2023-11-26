@@ -35,7 +35,7 @@ importers:
         specifier: latest
         version: 1.10.16
 
-  apps/electron:
+  apps/electron-backend:
     dependencies:
       '@comflowy/common':
         specifier: workspace:*
@@ -89,79 +89,6 @@ importers:
       vite:
         specifier: 2.7.13
         version: 2.7.13
-
-  apps/electron-backend:
-    dependencies:
-      '@ant-design/cssinjs':
-        specifier: ^1.17.0
-        version: 1.17.0(react-dom@18.2.0)(react@18.2.0)
-      '@comflowy/common':
-        specifier: workspace:*
-        version: link:../../packages/common
-      antd:
-        specifier: 5.10.0
-        version: 5.10.0(react-dom@18.2.0)(react@18.2.0)
-      electron-is-dev:
-        specifier: ^1.1.0
-        version: 1.2.0
-      electron-log:
-        specifier: ^5.0.1
-        version: 5.0.1
-      electron-next:
-        specifier: ^3.1.5
-        version: 3.1.5
-      electron-updater:
-        specifier: ^6.1.7
-        version: 6.1.7
-      https-proxy-agent:
-        specifier: ^7.0.2
-        version: 7.0.2
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      reactflow:
-        specifier: ^11.10.1
-        version: 11.10.1(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
-      ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
-    devDependencies:
-      '@types/node':
-        specifier: ^17.0.12
-        version: 17.0.45
-      '@types/react':
-        specifier: 18.2.21
-        version: 18.2.21
-      '@types/react-dom':
-        specifier: 18.2.7
-        version: 18.2.7
-      electron:
-        specifier: ^27.1.2
-        version: 27.1.2
-      electron-builder:
-        specifier: ^23.0.3
-        version: 23.6.0
-      eslint-config-custom:
-        specifier: workspace:*
-        version: link:../../packages/eslint-config-custom
-      next:
-        specifier: latest
-        version: 14.0.3(@babel/core@7.23.3)(react-dom@18.2.0)(react@18.2.0)(sass@1.69.5)
-      rimraf:
-        specifier: ^3.0.0
-        version: 3.0.2
-      sass:
-        specifier: ^1.66.1
-        version: 1.69.5
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      typescript:
-        specifier: ^4.0.5
-        version: 4.9.5
 
   apps/electron-frontend:
     dependencies:
