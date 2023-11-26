@@ -9,7 +9,6 @@ export function startAutoUpdater() {
     if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
         app.quit();
     }
-
     if (!isDev) {
         const server = "https://refi-updater.vercel.app";
         const feed = `${server}/update/${process.platform}/${app.getVersion()}`

@@ -1,15 +1,14 @@
-// Native
+import url from "url";
+import "./pre-launch";
 import path from 'path'
-import { format } from 'url'
-
-// Packages
-import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
+import { BrowserWindow, app } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
 // Prepare the renderer once the app is ready
 const rendererPath = path.join(__dirname, "../renderer");
 console.log("started:", rendererPath);
+
 app.on('ready', async () => {
   await prepareNext(rendererPath)
 
@@ -23,22 +22,17 @@ app.on('ready', async () => {
     },
   })
 
-  const url = isDev
+  const window_url = isDev
     ? 'http://localhost:8000/'
-    : format({
+    : url.format({
         pathname: path.join(__dirname, '../renderer/out/index.html'),
         protocol: 'file:',
         slashes: true,
-      })
+      });
 
-  mainWindow.loadURL(url)
+  mainWindow.loadURL(window_url)
 })
 
 // Quit the app once all windows are closed
 app.on('window-all-closed', app.quit)
 
-// listen the channel `message` and resend the received message to the renderer process
-ipcMain.on('message', (event: IpcMainEvent, message: any) => {
-  console.log(message)
-  setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
-})
