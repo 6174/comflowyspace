@@ -4,6 +4,7 @@ import { app } from 'electron'
 import { createMainWindow, restoreOrCreateWindow } from "./windows-manager";
 import "./prelaunch";
 import { startAutoUpdater } from './auto-update';
+import { startIPC } from './ipc';
 
 // Prepare the renderer once the app is ready
 const rendererPath = path.join(__dirname, "../renderer");
@@ -20,6 +21,9 @@ app.on('ready', async () => {
 
   // start desktop window
   await createMainWindow();
+
+  // message hub
+  startIPC();
 
   // auto update listener
   startAutoUpdater()

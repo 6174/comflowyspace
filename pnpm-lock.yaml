@@ -49,6 +49,9 @@ importers:
       electron-log:
         specifier: ^5.0.1
         version: 5.0.1
+      electron-next:
+        specifier: ^3.1.5
+        version: 3.1.5
       electron-updater:
         specifier: ^6.1.7
         version: 6.1.7
