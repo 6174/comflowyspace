@@ -8,24 +8,56 @@ type Props = {
 }
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => (
-  <div>
+  <>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <header>
-      <nav>
-        <Link href="/">Home</Link> | <Link href="/about">About</Link> |{' '}
-        <Link href="/initial-props">With Initial Props</Link>
-      </nav>
-    </header>
-    {children}
-    <footer>
-      <hr />
-      <span>I'm here to stay (Footer)</span>
-    </footer>
-  </div>
+    <div id="app">
+      <WorkspaceNav/>
+      <div className="workspace-main">
+        {children}
+      </div>
+    </div>
+  </>
 )
+
+const WorkspaceNav = () => {
+  return (
+    <div className="workspace-nav">
+      <div className="workspace-nav-item">
+        <Link href="/">
+          Home
+        </Link>
+      </div>
+      <div className="workspace-nav-item">
+        <Link href="/my">
+          My workflows
+        </Link>
+      </div>
+      <div className="workspace-nav-item">
+        <Link href="/explore">
+          Explore Community
+        </Link>
+      </div>
+      <div className="workspace-nav-item">
+        <Link href="/turorials">
+          Tutorials
+        </Link>
+      </div>
+      <div className="workspace-nav-item">
+        <Link href="/models">
+          Models
+        </Link>
+      </div>
+      <div className="workspace-nav-item">
+        <Link href="/extensions">
+          Extensions
+        </Link>
+      </div>
+    </div>
+  )
+}
 
 export default Layout

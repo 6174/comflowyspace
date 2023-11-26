@@ -17,7 +17,14 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "esnext",
-    "outDir": "../main"
+    "outDir": "../main",
+    "paths": {
+      "@/*": ["./*"],
+      "~*": [
+        "./*"
+      ]
+    },
+    "baseUrl": "."
   },
   "exclude": ["node_modules"],
   "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
