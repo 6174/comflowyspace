@@ -1,7 +1,3 @@
-
-export type Flow = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK'
-
-
 export type PropertyKey = string
 
 export interface NumberProps<A> {
@@ -27,9 +23,11 @@ export interface InputType {
   STRING: [string, StringProps]
 }
 
-export type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
+export type FlowProps = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK'
 
-export type Input = Parameter<keyof InputType> | [string[]] | [Flow]
+type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
+
+export type Input = Parameter<keyof InputType> | [string[]] | [FlowProps]
 
 export const Input = {
   isBool(i: Input): i is Parameter<'BOOL'> {
