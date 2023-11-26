@@ -4,7 +4,7 @@ const path = require("path");
  */
 const nextConfig = {
   output: 'export',
-  transpilePackages: ["ui", "antd"],
+  transpilePackages: ["ui", "@comflowy/common", "antd"],
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],

@@ -19,7 +19,7 @@ export function startAutoUpdater() {
             autoUpdater.checkForUpdates()
         }, 60000);
     
-        autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+        autoUpdater.on('update-downloaded', (_, releaseNotes, releaseName) => {
             log.debug('Downloaded new update');
             const dialogOpts: MessageBoxOptions = {
             type: 'info',
