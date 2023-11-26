@@ -30,7 +30,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "../electron/layers/preload/exposedInMainWorld.d.ts"
   ],
   "exclude": [
     "node_modules"

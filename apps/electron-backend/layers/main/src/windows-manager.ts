@@ -20,7 +20,7 @@ export interface TabList {
 let listWindow: IWindowInstance[] = [];
 let mainWindow: BrowserWindow;
 const defaultWindowUrl = isDev
-  ? 'http://localhost:8000'
+  ? 'http://localhost:3000'
   : format({
     pathname: path.join(__dirname, '../renderer/out/index.html'),
     protocol: 'file:',
@@ -135,4 +135,22 @@ export function setTab(instance: BrowserView) {
 export async function newTab(){
   const window = await createWindow(mainWindow.getBrowserView()?.webContents.getURL()!);
   setTab(window);
+}
+
+/**
+ * Restore existing BrowserWindow or Create new BrowserWindow
+ */
+export async function restoreOrCreateWindow() {
+  let window = mainWindow;
+
+  if (window === undefined) {
+    await createMainWindow();
+    window = mainWindow;
+  }
+
+  if (window.isMinimized()) {
+    window.restore();
+  }
+
+  window.focus();
 }
