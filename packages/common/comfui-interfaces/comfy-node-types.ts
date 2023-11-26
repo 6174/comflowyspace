@@ -1,5 +1,5 @@
 import { Widget, WidgetKey } from "./comfy-widget-types"
-
+export const NODE_IDENTIFIER = 'sdNode';
 export type NodeId = string
 
 /**
