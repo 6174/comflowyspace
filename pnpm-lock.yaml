@@ -37,7 +37,7 @@ importers:
 
   apps/app:
     dependencies:
-      '@agent/common':
+      '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
       '@ant-design/cssinjs':
@@ -104,7 +104,7 @@ importers:
 
   apps/operation:
     dependencies:
-      '@agent/common':
+      '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
       '@base-open/node-sdk':
@@ -138,7 +138,7 @@ importers:
 
   apps/with-electron-typescript-app:
     dependencies:
-      '@agent/common':
+      '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
       '@ant-design/cssinjs':

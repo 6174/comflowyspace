@@ -13,7 +13,7 @@
     "type-check": "tsc -p ./renderer/tsconfig.json && tsc -p ./electron-src/tsconfig.json"
   },
   "dependencies": {
-    "@agent/common": "workspace:*",
+    "@comflowy/common": "workspace:*",
     "@ant-design/cssinjs": "^1.17.0",
     "antd": "5.10.0",
     "electron-is-dev": "^1.1.0",
