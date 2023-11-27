@@ -25,13 +25,27 @@ import { PersistedGraph, PersistedNode } from '../comfyui-bridge/persistence'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
+import Y from "yjs";
+
+export interface WorkflowDocument {
+  id: string;
+  title: string;
+  nodes: Node[];
+  edges: Edge[];
+}
+
 export interface AppState {
     counter: number
     clientId?: string
     widgets: Record<WidgetKey, Widget>
     graph: Record<NodeId, SDNode>
+    // workflow document store in yjs
+    doc: Y.Doc;
+    
+    // old storage structure
     nodes: Node[]
     edges: Edge[]
+
     nodeInProgress?: NodeInProgress
     promptError?: string
     queue: QueueItem[]

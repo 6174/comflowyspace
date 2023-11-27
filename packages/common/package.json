@@ -9,6 +9,8 @@
     "exifr": "^7.1.3",
     "reactflow": "^11.10.1",
     "uuid": "9.0.1",
+    "y-indexeddb": "^9.0.12",
+    "yjs": "^13.6.10",
     "zustand": "^4.4.6"
   },
   "devDependencies": {
