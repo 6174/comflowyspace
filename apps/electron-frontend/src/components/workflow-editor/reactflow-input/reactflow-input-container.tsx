@@ -18,7 +18,7 @@ export function InputContainer({ id, name, input }: InputContainerProps): JSX.El
         shallow
     )
     return (
-        <div className="node-input-container">
+        <div className="node-input-container nodrag nopan">
             <InputComponent value={value} name={name} input={input} onChange={(val) => onPropChange(id, name, val)} />
         </div>
     )

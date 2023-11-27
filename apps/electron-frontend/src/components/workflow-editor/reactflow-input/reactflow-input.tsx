@@ -14,13 +14,20 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
   if (Input.isList(input)) {
     return (
       <Labelled name={name}>
-        <Select value={value} onChange={(ev) => onChange(ev.target.value)}>
-          {input[0].map((k) => (
-            <Select.Option key={k} value={k}>
-              {k.length > MAX_SELECT_NAME ? `…${k.substring(k.length - MAX_SELECT_NAME + 1)}` : k}
-            </Select.Option>
-          ))}
-        </Select>
+        <Select
+          style={{
+            width: "100%",
+            textAlign: "right"
+          }}
+          value={value} 
+          onChange={(ev) => onChange(ev.target.value)}
+          options={input[0].map((k) => {
+            return {
+              value: k,
+              label: k.length > MAX_SELECT_NAME ? `…${k.substring(k.length - MAX_SELECT_NAME + 1)}` : k,
+            }
+          })}
+        />
       </Labelled>
     )
   }
@@ -37,24 +44,22 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
       </div>
     )
   }
+
   if (Input.isInt(input)) {
     return (
-      <Labelled name={name}>
-        <IntInput prefix={name} value={value} onChange={onChange} />
-      </Labelled>
+      <IntInput prefix={name} value={value} onChange={onChange} />
     )
   }
+
   if (Input.isFloat(input)) {
     return (
-      <Labelled name={name}>
-        <AntInput
-          prefix={name}
-          type="number"
-          className="px-1 grow nodrag"
-          value={value}
-          onChange={(ev) => onChange(ev.target.valueAsNumber)}
-        />
-      </Labelled>
+      <AntInput
+        prefix={name}
+        type="number"
+        className="px-1 grow nodrag"
+        value={value}
+        onChange={(ev) => onChange(ev.target.valueAsNumber)}
+      />
     )
   }
   if (Input.isString(input)) {
@@ -69,9 +74,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
       )
     }
     return (
-      <Labelled name={name}>
-        <AntInput prefix={name} type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
-      </Labelled>
+      <AntInput prefix={name} type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
     )
   }
   return <></>
@@ -116,6 +119,7 @@ function IntInput({
 function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
   return (
     <div className="node-input-label-box">
+      <div className="node-input-label-name">{name}</div>
       {children}
     </div>
   )

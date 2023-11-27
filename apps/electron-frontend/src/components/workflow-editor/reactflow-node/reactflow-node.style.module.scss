@@ -85,6 +85,22 @@
                     justify-content: end;
                 }
             }
+            textarea,
+            .node-input-label-name,
+            .ant-input-prefix,
+            .ant-select-selection-item {
+                font-family: JetBrains Mono, monospace;
+                font-size: 10px;
+            }
+            .node-input-label-box {
+                position: relative;
+                .node-input-label-name {
+                    position: absolute;
+                    z-index: 1;
+                    left: 8px;
+                    top: 8px;
+                }
+            }
         }
         .progress-bar {
             position: absolute;
