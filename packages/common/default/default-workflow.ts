@@ -33,15 +33,15 @@ export default {
       }
     },
     "connections": [
-      { "source": "1", "sourceHandle": "MODEL", "target": "4", "targetHandle": "model" },
-      { "source": "1", "sourceHandle": "CLIP", "target": "2", "targetHandle": "clip" },
-      { "source": "1", "sourceHandle": "CLIP", "target": "3", "targetHandle": "clip" },
-      { "source": "1", "sourceHandle": "VAE", "target": "5", "targetHandle": "vae" },
-      { "source": "4", "sourceHandle": "LATENT", "target": "5", "targetHandle": "samples" },
-      { "source": "7", "sourceHandle": "LATENT", "target": "4", "targetHandle": "latent_image" },
-      { "source": "2", "sourceHandle": "CONDITIONING", "target": "4", "targetHandle": "positive" },
-      { "source": "3", "sourceHandle": "CONDITIONING", "target": "4", "targetHandle": "negative" },
-      { "source": "5", "sourceHandle": "IMAGE", "target": "6", "targetHandle": "images" }
+      { "source": "1", "sourceHandle": "MODEL", "target": "4", "targetHandle": "MODEL" },
+      { "source": "1", "sourceHandle": "CLIP", "target": "2", "targetHandle": "CLIP" },
+      { "source": "1", "sourceHandle": "CLIP", "target": "3", "targetHandle": "CLIP" },
+      { "source": "1", "sourceHandle": "VAE", "target": "5", "targetHandle": "VAE" },
+      { "source": "4", "sourceHandle": "LATENT", "target": "5", "targetHandle": "SAMPLES" },
+      { "source": "7", "sourceHandle": "LATENT", "target": "4", "targetHandle": "LATENT_IMAGE" },
+      { "source": "2", "sourceHandle": "CONDITIONING", "target": "4", "targetHandle": "POSITIVE" },
+      { "source": "3", "sourceHandle": "CONDITIONING", "target": "4", "targetHandle": "NEGATIVE" },
+      { "source": "5", "sourceHandle": "IMAGE", "target": "6", "targetHandle": "IMAGES" }
     ]
   }
   

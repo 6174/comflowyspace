@@ -6,6 +6,7 @@ import ReactFlow, { Background, BackgroundVariant, Controls, Panel } from 'react
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
+import { Input } from '@comflowy/common/comfui-interfaces';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -20,13 +21,23 @@ export default function WorkflowEditor() {
     }),
     shallow
   )
-
+  
+  const styledEdges = edges.map(edges => {
+    return {
+      ...edges,
+      style: {
+        strokeWidth: 2.8,
+        opacity: .6,
+        stroke: Input.getInputColor(edges.sourceHandle as any),
+      },
+    }
+  })
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={styledEdges}
         fitView
         nodeTypes={nodeTypes}
         deleteKeyCode={['Delete']}
