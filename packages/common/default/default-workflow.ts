@@ -1,4 +1,4 @@
-{
+export default {
     "data": {
       "1": {
         "value": { "widget": "CheckpointLoaderSimple", "fields": { "ckpt_name": "sd-v1-4.ckpt" } },

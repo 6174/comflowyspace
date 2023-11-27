@@ -1,5 +1,5 @@
 import { type Connection, type NodeId, type SDNode } from '../comfui-interfaces'
-import defaultWorkflow from '../default/default-workflow.json';
+import defaultWorkflow from '../default/default-workflow';
 
 export interface PersistedNode {
   value: SDNode
