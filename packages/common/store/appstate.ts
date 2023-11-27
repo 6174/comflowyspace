@@ -41,7 +41,7 @@ export interface AppState {
     graph: Record<NodeId, SDNode>
     // workflow document store in yjs
     doc: Y.Doc;
-    
+
     // old storage structure
     nodes: Node[]
     edges: Edge[]
