@@ -38,7 +38,7 @@ export default function WorkflowEditor() {
           void onInit()
         }}
       >
-        <Background variant={BackgroundVariant.Cross} />
+        <Background variant={BackgroundVariant.Dots} />
         <Controls />
         <Panel position="bottom-center">
           {/* <ControlPanelContainer />
