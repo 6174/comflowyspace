@@ -1,6 +1,6 @@
 import { Input } from '@comflowy/common/comfui-interfaces'
 import { memo, useState, useEffect } from 'react'
-
+import {Input as AntInput, Select} from "antd";
 const MAX_SELECT_NAME = 36
 
 interface InputProps {
@@ -14,20 +14,21 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
   if (Input.isList(input)) {
     return (
       <Labelled name={name}>
-        <select className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)}>
+        <Select value={value} onChange={(ev) => onChange(ev.target.value)}>
           {input[0].map((k) => (
-            <option key={k} value={k}>
+            <Select.Option key={k} value={k}>
               {k.length > MAX_SELECT_NAME ? `…${k.substring(k.length - MAX_SELECT_NAME + 1)}` : k}
-            </option>
+            </Select.Option>
           ))}
-        </select>
+        </Select>
       </Labelled>
     )
   }
   if (Input.isBool(input)) {
     return (
       <Labelled name={name}>
-        <input
+        <AntInput
+          prefix={name}
           type="checkbox"
           className="px-1 grow nodrag"
           value={value}
@@ -39,14 +40,15 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
   if (Input.isInt(input)) {
     return (
       <Labelled name={name}>
-        <IntInput value={value} onChange={onChange} />
+        <IntInput prefix={name} value={value} onChange={onChange} />
       </Labelled>
     )
   }
   if (Input.isFloat(input)) {
     return (
       <Labelled name={name}>
-        <input
+        <AntInput
+          prefix={name}
           type="number"
           className="px-1 grow nodrag"
           value={value}
@@ -59,9 +61,8 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
     const args = input[1]
     if (args.multiline === true) {
       return (
-        <textarea
+        <AntInput.TextArea
           style={{ height: 128, width: 260 }}
-          className="px-1 grow nodrag text-xs"
           value={value}
           onChange={(ev) => onChange(ev.target.value)}
         />
@@ -69,7 +70,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
     }
     return (
       <Labelled name={name}>
-        <input type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
+        <AntInput prefix={name} type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
       </Labelled>
     )
   }
@@ -78,7 +79,12 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
 
 export default memo(InputComponent)
 
-function IntInput({ value, onChange }: { value: number; onChange: (num: number) => void }): JSX.Element {
+function IntInput({ 
+  value, 
+  onChange,
+  prefix
+}: { value: number; onChange: (num: number) => void; prefix?: any }
+): JSX.Element {
   const [{ text, failed }, setState] = useState({ text: value.toString(), failed: false })
 
   // update state on new props
@@ -90,8 +96,9 @@ function IntInput({ value, onChange }: { value: number; onChange: (num: number) 
   const borderClasses = failed ? ['border', 'border-1', 'border-rose-500'] : []
 
   return (
-    <input
+    <AntInput
       type="text"
+      prefix={prefix}
       className={defaultClasses.concat(borderClasses).join(' ')}
       value={text}
       onChange={(ev) => {
@@ -108,8 +115,7 @@ function IntInput({ value, onChange }: { value: number; onChange: (num: number) 
 
 function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
   return (
-    <div className="node-input-container">
-      <span className="node-input-name">{name}</span>
+    <div className="node-input-label-box">
       {children}
     </div>
   )

@@ -17,5 +17,9 @@ export function InputContainer({ id, name, input }: InputContainerProps): JSX.El
         }),
         shallow
     )
-    return <InputComponent value={value} name={name} input={input} onChange={(val) => onPropChange(id, name, val)} />
+    return (
+        <div className="node-input-container">
+            <InputComponent value={value} name={name} input={input} onChange={(val) => onPropChange(id, name, val)} />
+        </div>
+    )
 }

@@ -49,9 +49,6 @@ function NodeComponent({
         {isInProgress ? <div className="progress-bar bg-teal-800" style={{ width: `${progressBar * 100}%` }} /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">
-            <Space>
-              selected
-            </Space>
             {/* <DocumentDuplicateIcon
               className="h-5 w-5 text-zinc-200 cursor-pointer"
               onClick={() => onDuplicateNode(node.id)}

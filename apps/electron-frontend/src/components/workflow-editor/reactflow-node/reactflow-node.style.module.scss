@@ -61,8 +61,20 @@
                 }
             }
         }
-        .node-inputs {
+        .node-input-container {
             position: relative;
+            padding: 4px 10px;
+            input {
+                text-align: right;
+                font-family: JetBrains Mono, monospace;
+                font-size: 10px;
+                line-height: 24px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                color: #666;
+                padding: 0;
+            }
         }
         .progress-bar {
             position: absolute;
