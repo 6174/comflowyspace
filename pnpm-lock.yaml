@@ -144,6 +144,9 @@ importers:
       '@types/react-dom':
         specifier: 18.2.7
         version: 18.2.7
+      '@types/sass':
+        specifier: ^1.45.0
+        version: 1.45.0
       electron:
         specifier: ^27.1.2
         version: 27.1.2
@@ -2423,6 +2426,13 @@ packages:
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
     dependencies:
       '@types/node': 17.0.45
+    dev: true
+
+  /@types/sass@1.45.0:
+    resolution: {integrity: sha512-jn7qwGFmJHwUSphV8zZneO3GmtlgLsmhs/LQyVvQbIIa+fzGMUiHI4HXJZL3FT8MJmgXWbLGiVVY7ElvHq6vDA==}
+    deprecated: This is a stub types definition. sass provides its own type definitions, so you do not need this installed.
+    dependencies:
+      sass: 1.69.5
     dev: true
 
   /@types/scheduler@0.16.8:

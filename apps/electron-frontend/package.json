@@ -25,6 +25,7 @@
     "@types/node": "^14.14.6",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.9",
+    "@types/sass": "^1.45.0",
     "electron": "^27.1.2",
     "electron-builder": "^23.0.3",
     "eslint-config-custom": "workspace:*",
