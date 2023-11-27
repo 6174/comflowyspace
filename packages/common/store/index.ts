@@ -23,7 +23,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   edges: [],
   queue: [],
   gallery: [],
-
+  /**
+   * AppStore Initialization Entry 
+   */
+  onInit: async () => {
+    setInterval(() => get().onPersistLocal(), 5000)
+    const widgets = await getWidgets()
+    set({ widgets })
+    get().onLoadWorkflow(retrieveLocalWorkflow() ?? { data: {}, connections: [] })
+  },
   // actions
   onNodesChange: (changes) => {
     set((st) => ({ nodes: applyNodeChanges(changes, st.nodes) }))
@@ -78,13 +86,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   onDeleteFromQueue: async (id) => {
     await deleteFromQueue(id)
     await get().onQueueUpdate()
-  },
-  onInit: async () => {
-    setInterval(() => get().onPersistLocal(), 5000)
-
-    const widgets = await getWidgets()
-    set({ widgets })
-    get().onLoadWorkflow(retrieveLocalWorkflow() ?? { data: {}, connections: [] })
   },
   onLoadWorkflow: (workflow) => {
     set((st) => {

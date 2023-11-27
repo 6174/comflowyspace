@@ -1,8 +1,8 @@
-const defaultConfig = {
-  host: window.location.host,
-  protocol: window.location.protocol,
-}
-  
+
+// const defaultConfig = {
+//   host: window.location.host,
+//   protocol: window.location.protocol,
+// }
 const hotReloadConfig = {
   host: 'localhost:8188',
   protocol: 'http:',

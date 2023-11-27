@@ -36,7 +36,15 @@ interface HistoryItem {
 }
 
 export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
-  return await fetch(getBackendUrl('/object_info')).then(async (r) => await r.json())
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/object_info'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
 }
 
 export async function getQueue(): Promise<Queue> {
