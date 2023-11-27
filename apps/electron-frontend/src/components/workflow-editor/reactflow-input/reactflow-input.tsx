@@ -108,8 +108,8 @@ function IntInput({ value, onChange }: { value: number; onChange: (num: number) 
 
 function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
   return (
-    <div className="flex w-full justify-between">
-      <span className="pr-2">{name}</span>
+    <div className="node-input-container">
+      <span className="node-input-name">{name}</span>
       {children}
     </div>
   )

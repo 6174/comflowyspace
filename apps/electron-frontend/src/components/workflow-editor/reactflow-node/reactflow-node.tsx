@@ -65,19 +65,21 @@ function NodeComponent({
       </div>
 
       <div className="node-main">
-        <div className="node-inputs">
-          {inputs.map((k) => (
-            <Slot key={k} id={k} label={k} type="target" position={Position.Left} />
-          ))}
+        <div className="node-slots">
+          <div className="node-inputs">
+            {inputs.map((k) => (
+              <Slot key={k} id={k} label={k} type="target" position={Position.Left} />
+            ))}
+          </div>
+          <div className="node-outputs">
+            {node.data.output.map((k) => (
+              <Slot key={k} id={k} label={k} type="source" position={Position.Right} />
+            ))}
+          </div>
         </div>
         <div className="node-params">
           {params.map(({ property, input }) => (
             <InputContainer key={property} name={property} id={node.id} input={input} />
-          ))}
-        </div>
-        <div className="node-outputs">
-          {node.data.output.map((k) => (
-            <Slot key={k} id={k} label={k} type="source" position={Position.Right} />
           ))}
         </div>
         <div className="node-images-preview">
@@ -109,11 +111,11 @@ interface SlotProps {
 
 function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   return (
-    <div className={position === Position.Right ? 'flex flex-row-reverse' : 'flex'}>
-      <Handle id={id} type={type} position={position} className="w-3 h-3 !bg-teal-500 relative" />
-      <h5 className="font-semibold text-xs" style={{ marginBottom: 2 }}>
+    <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
+      <Handle id={id} type={type} position={position} className="node-slot-handle" />
+      <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {label.toUpperCase()}
-      </h5>
+      </div>
     </div>
   )
 }
