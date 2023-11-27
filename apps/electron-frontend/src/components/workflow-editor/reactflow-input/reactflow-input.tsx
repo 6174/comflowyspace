@@ -1,6 +1,6 @@
 import { Input } from '@comflowy/common/comfui-interfaces'
 import { memo, useState, useEffect } from 'react'
-import {Input as AntInput, Select} from "antd";
+import {Input as AntInput, Select, Switch} from "antd";
 const MAX_SELECT_NAME = 36
 
 interface InputProps {
@@ -26,15 +26,15 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
   }
   if (Input.isBool(input)) {
     return (
-      <Labelled name={name}>
-        <AntInput
-          prefix={name}
-          type="checkbox"
-          className="px-1 grow nodrag"
-          value={value}
-          onChange={(ev) => onChange(ev.target.checked)}
-        />
-      </Labelled>
+      <div className='switch-wrapper'>
+        <div className='switch-label'>{name}</div>
+        <div className='switch-input'>
+          <Switch
+            checked={value}
+            onChange={(ev) => onChange(ev)}
+          />
+        </div>
+      </div>
     )
   }
   if (Input.isInt(input)) {

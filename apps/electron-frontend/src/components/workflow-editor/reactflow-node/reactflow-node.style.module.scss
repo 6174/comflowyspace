@@ -75,6 +75,16 @@
                 color: #666;
                 padding: 0;
             }
+            .switch-wrapper {
+                display: flex;
+                .switch-label {
+                    flex: 1;
+                }
+                .switch-input {
+                    display: flex;
+                    justify-content: end;
+                }
+            }
         }
         .progress-bar {
             position: absolute;
