@@ -1,0 +1,21 @@
+.reactFlowNode {
+    :global {
+        .progress-bar {
+            position: absolute;
+            height: 100%;
+            opacity: 0.3;
+            transition: width 1s ease-out;
+        }
+
+        .graph-node {
+            min-width: 180px;
+        }
+
+        .error-popup {
+            position: absolute;
+            top: -3em;
+            left: 0.5em;
+        }
+
+    }
+}

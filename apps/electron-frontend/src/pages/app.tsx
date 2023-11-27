@@ -1,10 +1,10 @@
+import WorkflowEditor from '@/components/workflow-editor/workspace-editor'
 import * as React from 'react'
 
-const Editor = () => (
-  <div>
-    <h1>Editor</h1>
-    <p></p>
-  </div>
-)
-
-export default Editor
+export default function WorkflowEditorEntry() {
+  return (
+    <div className="workflow-entry">
+      <WorkflowEditor />
+    </div>
+  )
+}
