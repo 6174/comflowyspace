@@ -1,5 +1,5 @@
 export * from "./comfy-connection-types";
-export * from "./comfy-flow-types";
+export * from "./comfy-flow-props-types";
 export * from "./comfy-node-types";
 export * from "./comfy-widget-types";
 
