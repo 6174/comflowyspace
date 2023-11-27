@@ -27,37 +27,39 @@ export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => 
 
 import Y from "yjs";
 
-export interface WorkflowDocument {
-  id: string;
-  title: string;
-  nodes: Node[];
-  edges: Edge[];
-}
-
 export interface AppState {
     counter: number
     clientId?: string
-    widgets: Record<WidgetKey, Widget>
-    graph: Record<NodeId, SDNode>
+    
     // workflow document store in yjs
     doc: Y.Doc;
-
+    
     // old storage structure
     nodes: Node[]
     edges: Edge[]
-
-    nodeInProgress?: NodeInProgress
-    promptError?: string
-    queue: QueueItem[]
-    gallery: GalleryItem[]
-    previewedImageIndex?: number
+    graph: Record<NodeId, SDNode>
+    widgets: Record<WidgetKey, Widget>
+    
+    // document mutation handler
+    onYjsDocUpdate: () => void;
     onNodesChange: OnNodesChange
     onEdgesChange: OnEdgesChange
-    onConnect: OnConnect
     onPropChange: OnPropChange
     onAddNode: (widget: Widget, node?: SDNode, pos?: XYPosition, key?: number) => void
     onDeleteNode: (id: NodeId) => void
     onDuplicateNode: (id: NodeId) => void
+
+    // job queue
+    queue: QueueItem[]
+
+    // gallery
+    gallery: GalleryItem[]
+
+    nodeInProgress?: NodeInProgress
+    promptError?: string
+    previewedImageIndex?: number
+    onConnect: OnConnect
+    
     onSubmit: () => Promise<void>
     onDeleteFromQueue: (id: number) => Promise<void>
     onInit: () => Promise<void>
@@ -84,7 +86,6 @@ export interface AppState {
     },
     addNode(state: AppState, widget: Widget, node?: SDNode, position?: XYPosition, key?: number): AppState {
       const nextKey = key !== undefined ? Math.max(key, state.counter + 1) : state.counter + 1
-  
       const id = nextKey.toString()
       const maxZ = state.nodes
         .map((n) => n.zIndex ?? 0)

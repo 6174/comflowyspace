@@ -13,8 +13,12 @@ import { getBackendUrl } from '../config'
 import exifr from 'exifr'
 
 import {AppState} from "./appstate";
+import Y from "yjs";
 import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import { WorkflowDocument } from './workflow-doc';
+
 export const useAppStore = create<AppState>((set, get) => ({
+  doc: new Y.Doc(),
   // properties
   counter: 0,
   widgets: {},
@@ -91,6 +95,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       let state: AppState = { ...st, nodes: [], edges: [], counter: 0, graph: {} }
       for (const [key, node] of Object.entries(workflow.data)) {
+        const widget = state.widgets[node.value.widget]
+        if (widget !== undefined) {
+          state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
+        } else {
+          console.warn(`Unknown widget ${node.value.widget}`)
+        }
+      }
+      for (const connection of workflow.connections) {
+        state = AppState.addConnection(state, connection)
+      }
+      return state
+    }, true)
+  },
+  /**
+   * Everytime update yjs doc, recalculate nodes and edges
+   */
+  onYjsDocUpdate: () => {
+    set((st) => {
+      const workflowMap = st.doc.getMap("workflow");
+      const workflow = workflowMap.toJSON() as WorkflowDocument;
+      let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
+      for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
           state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
