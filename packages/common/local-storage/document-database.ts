@@ -26,6 +26,7 @@ export type PersistedFullWorkflow = {
   id: string;
   thumbnail: string;
   last_edit_time: number;
+  create_time: number;
   snapshot: string; // json format
 }
 
