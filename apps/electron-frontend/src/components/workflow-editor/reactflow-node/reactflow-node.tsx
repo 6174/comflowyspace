@@ -114,7 +114,7 @@ function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   const color = Input.getInputColor(label.toUpperCase() as any);
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
-      <Handle id={id} type={type} position={position} className="node-slot-handle" style={{
+      <Handle id={id.toUpperCase()} type={type} position={position} className="node-slot-handle" style={{
         backgroundColor: color,
       }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
