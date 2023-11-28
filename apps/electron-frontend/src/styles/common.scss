@@ -1,0 +1,19 @@
+.action {
+    border-radius: 4px;
+    user-select: none;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover {
+        background-color: var(--hover-background-color);
+    }
+}
+
+.spliter {
+    width: 1px;
+    background: #1C1C1E;
+    opacity: 0.2;
+    margin: 0 6px;
+    height: 20px;
+}

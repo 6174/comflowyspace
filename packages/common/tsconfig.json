@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": ["."],
+  "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx"],
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"],
