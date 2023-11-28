@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
 import {
+  SDNode,
   type QueueItem,
+  Widget,
 } from '../comfui-interfaces'
 import {
   retrieveLocalWorkflow,
@@ -14,8 +16,9 @@ import exifr from 'exifr'
 
 import {AppState} from "./appstate";
 import Y from "yjs";
-import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
-import { WorkflowDocument } from './workflow-doc';
+import { Connection, applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import { WorkflowDocument, WorkflowDocumentUtils } from './workflow-doc';
+import { uuid } from '../utils';
 
 export const useAppStore = create<AppState>((set, get) => ({
   doc: new Y.Doc(),
@@ -36,50 +39,101 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ widgets })
     get().onLoadWorkflow(retrieveLocalWorkflow() ?? { data: {}, connections: [] })
   },
-  // actions
+  /**
+   * Everytime update yjs doc, recalculate nodes and edges
+   */
+  onYjsDocUpdate: () => {
+    set((st) => {
+      const workflowMap = st.doc.getMap("workflow");
+      const workflow = workflowMap.toJSON() as WorkflowDocument;
+      let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
+      const graph:any = {};
+      for (const [key, node] of Object.entries(workflow.nodes)) {
+        const widget = state.widgets[node.value.widget]
+        if (widget !== undefined) {
+          state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
+          graph[key] = node.value
+        } else {
+          console.warn(`Unknown widget ${node.value.widget}`)
+        }
+      }
+      for (const connection of workflow.connections) {
+        state = AppState.addConnection(state, connection)
+      }
+
+      return {
+        ...state,
+        graph
+      }
+    }, true)
+  },
+  /**
+   * Mutation actions
+   * @param changes 
+   */
   onNodesChange: (changes) => {
-    set((st) => ({ nodes: applyNodeChanges(changes, st.nodes) }))
+    const {doc, onYjsDocUpdate} = useAppStore();
+    WorkflowDocumentUtils.onNodesChange(doc, changes);
+    onYjsDocUpdate();
   },
   onEdgesChange: (changes) => {
-    set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
+    // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
+    const {doc, onYjsDocUpdate} = useAppStore();
+    WorkflowDocumentUtils.onEdgesChange(doc, changes);
+    onYjsDocUpdate();
   },
-  onConnect: (connection) => {
-    set((st) => AppState.addConnection(st, connection))
+  onConnect: (connection: Connection) => {
+    const {doc, onYjsDocUpdate} = useAppStore();
+    WorkflowDocumentUtils.addConnection(doc, connection);
+    onYjsDocUpdate();
+    // set((st) => AppState.addConnection(st, connection))
   },
-  onPropChange: (id, key, val) => {
-    set((state) => ({
-      graph: {
-        ...state.graph,
-        [id]: {
-          ...state.graph[id],
-          fields: {
-            ...state.graph[id]?.fields,
-            [key]: val,
-          },
-        },
-      },
-    }))
+  onDeleteNode: (id) => {
+    const {doc, onYjsDocUpdate} = useAppStore();
+    WorkflowDocumentUtils.onEdgesChange(doc, [{
+      type: 'remove', id
+    }]);
+    onYjsDocUpdate();
+    // set(({ graph: { [id]: toDelete, ...graph }, nodes }) => ({
+    //   // graph, // should work but currently buggy
+    //   nodes: applyNodeChanges([{ type: 'remove', id }], nodes),
+    // }))
+  },
+  onPropChange: (id, key, value) => {
+    const {doc, onYjsDocUpdate} = useAppStore();
+    WorkflowDocumentUtils.onPropChange(doc, {
+      id,
+      key,
+      value
+    });
+    onYjsDocUpdate();
+  },
+  onAddNode: (widget: Widget, node: SDNode, position) => {
+    const {doc, onYjsDocUpdate} = get();
+    WorkflowDocumentUtils.onNodesAdd(doc, [{
+      id: "node-" + uuid(),
+      position,
+      value: node
+    }]);
+    onYjsDocUpdate();
+
+  },
+  onDuplicateNode: (id) => {
+    const st = get();
+    const item = st.graph[id]
+    const node = st.nodes.find((n) => n.id === id)
+    const position = node?.position
+    const moved = position !== undefined ? { ...position, y: position.y + 100 } : {x: 0, y: 0}
+    const doc = st.doc;
+    WorkflowDocumentUtils.onNodesAdd(doc, [{
+      id: "node-" + uuid(),
+      position: moved,
+      value: item
+    }])
+    st.onYjsDocUpdate();
   },
   onPersistLocal: () => {
     saveLocalWorkflow(AppState.toPersisted(get()))
-  },
-  onAddNode: (widget, node, position, key) => {
-    set((st) => AppState.addNode(st, widget, node, position, key))
-  },
-  onDeleteNode: (id) => {
-    set(({ graph: { [id]: toDelete, ...graph }, nodes }) => ({
-      // graph, // should work but currently buggy
-      nodes: applyNodeChanges([{ type: 'remove', id }], nodes),
-    }))
-  },
-  onDuplicateNode: (id) => {
-    set((st) => {
-      const item = st.graph[id]
-      const node = st.nodes.find((n) => n.id === id)
-      const position = node?.position
-      const moved = position !== undefined ? { ...position, y: position.y + 100 } : undefined
-      return AppState.addNode(st, st.widgets[item.widget], item, moved)
-    })
   },
   onSubmit: async () => {
     const state = get()
@@ -95,28 +149,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       let state: AppState = { ...st, nodes: [], edges: [], counter: 0, graph: {} }
       for (const [key, node] of Object.entries(workflow.data)) {
-        const widget = state.widgets[node.value.widget]
-        if (widget !== undefined) {
-          state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
-        } else {
-          console.warn(`Unknown widget ${node.value.widget}`)
-        }
-      }
-      for (const connection of workflow.connections) {
-        state = AppState.addConnection(state, connection)
-      }
-      return state
-    }, true)
-  },
-  /**
-   * Everytime update yjs doc, recalculate nodes and edges
-   */
-  onYjsDocUpdate: () => {
-    set((st) => {
-      const workflowMap = st.doc.getMap("workflow");
-      const workflow = workflowMap.toJSON() as WorkflowDocument;
-      let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
-      for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
           state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))

@@ -45,7 +45,7 @@ export interface AppState {
     onNodesChange: OnNodesChange
     onEdgesChange: OnEdgesChange
     onPropChange: OnPropChange
-    onAddNode: (widget: Widget, node?: SDNode, pos?: XYPosition, key?: number) => void
+    onAddNode: (widget: Widget, node: SDNode, pos: XYPosition) => void
     onDeleteNode: (id: NodeId) => void
     onDuplicateNode: (id: NodeId) => void
 

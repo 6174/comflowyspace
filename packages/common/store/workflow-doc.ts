@@ -2,22 +2,18 @@
  * workflow document
  */
 import { SDNode } from "@/comfui-interfaces";
-import { uuid } from "@/utils";
-import {NodeChange, EdgeChange, type Connection as FlowConnecton} from "reactflow";
+import { uuid } from "../utils";
+import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition} from "reactflow";
 import Y from "yjs";
-import { AppState } from "./appstate";
 
 type WorkflowNode = {
     id: string;
     value: SDNode;
-    dimension: {
+    dimension?: {
         width: number,
         height: number
     },
-    position: {
-        x: number,
-        y: number
-    }
+    position: XYPosition
 }
 type WorkflowConnection = ({id: string} & FlowConnecton)
 
@@ -49,8 +45,19 @@ const WorkflowDocumentUtils = {
             connectionsArray.push(conn);  
         });
         workflowMap.set("connections", connectionsArray);
-
         return doc;
+    },
+    toJson(doc: Y.Doc): WorkflowDocument {
+        const workflowMap = doc.getMap("workflow");
+        return workflowMap.toJSON() as WorkflowDocument;
+    },
+    addConnection: (doc: Y.Doc, connection: Connection) => {
+        const workflowMap = doc.getMap("workflow");
+        const connectionsArray = (workflowMap.get("connections") as Y.Array<WorkflowConnection>);
+        connectionsArray.push([{
+            ...connection,
+            id: "conn_" + uuid(),
+        }])
     },
     // https://reactflow.dev/api-reference/types/node-change
     // export type NodeChange =
@@ -67,9 +74,6 @@ const WorkflowDocumentUtils = {
             changes.forEach(change => {
                 switch (change.type) {
                     // add change is triggered by another method
-                    // case "add":
-                    //     workflowMap.get("nodes").set(change.id, change.node);
-                    //     break;
                     case "dimensions":
                     case "position":
                         const key = change.type;
@@ -85,8 +89,31 @@ const WorkflowDocumentUtils = {
                         break;
                 }
             })
+        });  
+    },
+    onNodesDelete: (doc: Y.Doc, ids: string[]) => {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            const nodesMap = (workflowMap.get("nodes") as Y.Map<WorkflowNode>)
+            ids.forEach(id => {
+                nodesMap.delete(id);
+                const connections = workflowMap.get("connections") as Y.Array<WorkflowConnection>;
+                connections.forEach((conn, index) => {
+                    if (conn.source === id || conn.target === id) {
+                        connections.delete(index);
+                    }
+                })
+            })
         });
-        
+    },
+    onNodesAdd: (doc: Y.Doc, nodes: WorkflowNode[]) => {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            const nodesMap = (workflowMap.get("nodes") as Y.Map<WorkflowNode>)
+            nodes.forEach(node => {
+                nodesMap.set(node.id, node);
+            })
+        });
     },
     //export type EdgeChange =
     //   | EdgeAddChange
@@ -119,9 +146,13 @@ const WorkflowDocumentUtils = {
         const workflowMap = doc.getMap("workflow");
         const nodesMap = (workflowMap.get("nodes") as Y.Map<WorkflowNode>)
         doc.transact(() => {
+            const node = nodesMap.get(change.id)!
             nodesMap.set(change.id, {
-                ...nodesMap.get(change.id)!,
-                [change.key]: change.value,
+                ...node,
+                value: {
+                    ...node.value,
+                    [change.key]: change.value,
+                }
             })
         });
     }
