@@ -8,7 +8,10 @@ export default function ReactflowTopLeftPanel() {
                     <Space>
                         <span>File</span>
                         <span className="icon">
-                            <IconDown/>
+                            <IconDown style={{
+                                transform: "scale(.8)",
+                                opacity: .9
+                            }}/>
                         </span>
                     </Space>
                 </div>

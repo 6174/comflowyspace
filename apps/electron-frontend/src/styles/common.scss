@@ -1,12 +1,17 @@
 .action {
     border-radius: 4px;
     user-select: none;
-    padding: 2px;
+    padding: 2px 4px;
     display: flex;
     justify-content: center;
     align-items: center;
     &:hover {
         background-color: var(--hover-background-color);
+    }
+    .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 
