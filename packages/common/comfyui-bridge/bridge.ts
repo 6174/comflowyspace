@@ -1,6 +1,6 @@
 import { getBackendUrl } from '../config'
-import { type PersistedNode, type PersistedGraph } from './persistence'
 import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
+import { PersistedWorkflowDocument, PersistedWorkflowNode } from '@/local-storage'
 
 interface PromptRequest {
   client_id?: string
@@ -71,11 +71,11 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
   return { error }
 }
 
-export function createPrompt(graph: PersistedGraph, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
+export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
   const prompt: Record<NodeId, Node> = {}
-  const data: Record<NodeId, PersistedNode> = {}
+  const data: Record<NodeId, PersistedWorkflowNode> = {}
 
-  for (const [id, node] of Object.entries(graph.data)) {
+  for (const [id, node] of Object.entries(workflow.nodes)) {
     const fields = { ...node.value.fields }
     for (const [property, value] of Object.entries(fields)) {
       const input = widgets[node.value.widget].input.required[property]
@@ -85,6 +85,7 @@ export function createPrompt(graph: PersistedGraph, widgets: Record<string, Widg
     }
 
     data[id] = {
+      id,
       position: node.position,
       value: { ...node.value, fields },
     }
@@ -94,20 +95,20 @@ export function createPrompt(graph: PersistedGraph, widgets: Record<string, Widg
     }
   }
 
-  for (const edge of graph.connections) {
-    const source = graph.data[edge.source]
+  for (const edge of workflow.connections) {
+    const source = workflow.nodes.get(edge.source!)
     if (source === undefined) {
       continue
     }
     const outputIndex = widgets[source.value.widget].output.findIndex((f) => f === edge.sourceHandle)
-    if (prompt[edge.target] !== undefined) {
-      prompt[edge.target].inputs[edge.targetHandle] = [edge.source, outputIndex]
+    if (prompt[edge.target!] !== undefined) {
+      prompt[edge.target!].inputs[edge.targetHandle!] = [edge.source, outputIndex]
     }
   }
 
   return {
     prompt,
     client_id: clientId,
-    extra_data: { extra_pnginfo: { workflow: { connections: graph.connections, data } } },
+    extra_data: { extra_pnginfo: { workflow: { connections: workflow.connections, data } } },
   }
 }

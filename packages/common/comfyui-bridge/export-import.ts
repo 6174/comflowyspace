@@ -1,18 +1,4 @@
-import { PersistedWorkflowDocument } from '@/store/workflow-doc';
-import { type Connection, type NodeId, type SDNode } from '../comfui-interfaces'
-import defaultWorkflow from '../default/default-workflow';
-
-const GRAPH_KEY = 'graph'
-
-export function retrieveLocalWorkflow(): PersistedWorkflowDocument {
-  return defaultWorkflow as any;
-  // const item = localStorage.getItem(GRAPH_KEY)
-  // return item === null ? defaultWorkflow : JSON.parse(item)
-}
-
-export function saveLocalWorkflow(graph: PersistedWorkflowDocument): void {
-  localStorage.setItem(GRAPH_KEY, JSON.stringify(graph))
-}
+import { PersistedWorkflowDocument } from '@/local-storage';
 
 export function readWorkflowFromFile(
   ev: React.ChangeEvent<HTMLInputElement>,

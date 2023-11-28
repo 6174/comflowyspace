@@ -5,24 +5,7 @@ import { SDNode } from "@/comfui-interfaces";
 import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition} from "reactflow";
 import * as Y from "yjs";
-
-export type PersistedWorkflowNode = {
-    id: string;
-    value: SDNode;
-    dimension?: {
-        width: number,
-        height: number
-    },
-    position: XYPosition
-}
-export type PersistedWorkflowConnection = ({id: string} & FlowConnecton)
-
-export type PersistedWorkflowDocument = {
-    id: string;
-    title: string;
-    nodes: Map<string, PersistedWorkflowNode>;
-    connections: PersistedWorkflowConnection[];
-}
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "@/local-storage";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;

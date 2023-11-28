@@ -30,7 +30,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "components/workflow-editor/workspace-editor.style.module.scss"  ],
+, "components/workflow-editor/workspace-editor.style.module.scss", "components/workflow-editor/reactflow-topleft-panel/reactflow-topleft-panel.style.module.scss"  ],
   "exclude": [
     "node_modules"
   ]

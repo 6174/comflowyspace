@@ -1,1 +1,1 @@
-export {useAppStore} from "./appstate";
+export {useAppStore} from "./app-state";

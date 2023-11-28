@@ -1,9 +1,6 @@
-export default function ReactflowTopLeftPanel() {
-    return (
-        <div className="top-left-panel">
-            <div className="top-left-panel__title">
-                <h1>top left</h1>
-            </div>
-        </div>
-    )
+.topLeftPanel {
+    position: relative;
+    :global {
+        
+    }
 }

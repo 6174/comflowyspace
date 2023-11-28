@@ -25,7 +25,19 @@ import {
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
 import * as Y from "yjs";
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, WorkflowDocumentUtils } from './workflow-doc';
+import { WorkflowDocumentUtils } from './workflow-doc';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow} from "../local-storage";
+
+import { create } from 'zustand'
+import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
+import {
+  writeWorkflowToFile,
+} from '../comfyui-bridge/export-import';
+
+import { getBackendUrl } from '../config'
+import exifr from 'exifr'
+
+import { uuid } from '../utils';
 
 export interface AppState {
   counter: number
@@ -117,19 +129,6 @@ export const AppState = {
     return WorkflowDocumentUtils.toJson(doc);
   },
 }
-
-import { create } from 'zustand'
-import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
-import {
-  retrieveLocalWorkflow,
-  saveLocalWorkflow,
-  writeWorkflowToFile,
-} from '../comfyui-bridge/persistence';
-
-import { getBackendUrl } from '../config'
-import exifr from 'exifr'
-
-import { uuid } from '../utils';
 
 export const useAppStore = create<AppState>((set, get) => ({
   doc: new Y.Doc(),
@@ -269,8 +268,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onSubmit: async () => {
     const state = get()
-    const graph = AppState.toPersisted(state)
-    const res = await sendPrompt(createPrompt(graph, state.widgets, state.clientId))
+    const docJson = WorkflowDocumentUtils.toJson(state.doc);
+    const res = await sendPrompt(createPrompt(docJson, state.widgets, state.clientId))
     set({ promptError: res.error })
   },
   onDeleteFromQueue: async (id) => {

@@ -226,6 +226,12 @@ importers:
       crypto-js:
         specifier: ^4.1.1
         version: 4.2.0
+      dexie:
+        specifier: ^3.2.4
+        version: 3.2.4
+      dexie-react-hooks:
+        specifier: ^1.1.7
+        version: 1.1.7(@types/react@18.2.21)(dexie@3.2.4)(react@18.2.0)
       exifr:
         specifier: ^7.1.3
         version: 7.1.3
@@ -4201,6 +4207,23 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /dexie-react-hooks@1.1.7(@types/react@18.2.21)(dexie@3.2.4)(react@18.2.0):
+    resolution: {integrity: sha512-Lwv5W0Hk+uOW3kGnsU9GZoR1er1B7WQ5DSdonoNG+focTNeJbHW6vi6nBoX534VKI3/uwHebYzSw1fwY6a7mTw==}
+    peerDependencies:
+      '@types/react': 18.2.21
+      dexie: ^3.2 || ^4.0.1-alpha
+      react: '>=16'
+    dependencies:
+      '@types/react': 18.2.21
+      dexie: 3.2.4
+      react: 18.2.0
+    dev: false
+
+  /dexie@3.2.4:
+    resolution: {integrity: sha512-VKoTQRSv7+RnffpOJ3Dh6ozknBqzWw/F3iqMdsZg958R0AS8AnY9x9d1lbwENr0gzeGJHXKcGhAMRaqys6SxqA==}
+    engines: {node: '>=6.0'}
+    dev: false
 
   /diff-sequences@29.6.3:
     resolution: {integrity: sha512-EjePK1srD3P08o2j4f0ExnylqRs5B9tJjcp9t1krH2qRi8CCdsYfwe9JgSLurFBWwq4uOlipzfk5fHNvwFKr8Q==}
