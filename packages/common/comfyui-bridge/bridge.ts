@@ -96,7 +96,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   }
 
   for (const edge of workflow.connections) {
-    const source = workflow.nodes.get(edge.source!)
+    const source = workflow.nodes[edge.source!]
     if (source === undefined) {
       continue
     }

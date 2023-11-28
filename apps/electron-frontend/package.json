@@ -11,6 +11,7 @@
     "@ant-design/cssinjs": "^1.17.0",
     "@comflowy/common": "workspace:*",
     "antd": "5.10.0",
+    "dexie-react-hooks": "^1.1.7",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^5.0.1",
     "electron-next": "^3.1.5",

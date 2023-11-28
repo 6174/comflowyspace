@@ -17,7 +17,7 @@ export type PersistedWorkflowConnection = ({id: string} & Connection)
 export type PersistedWorkflowDocument = {
   id: string;
   title: string;
-  nodes: Map<string, PersistedWorkflowNode>;
+  nodes: Record<string, PersistedWorkflowNode>;
   connections: PersistedWorkflowConnection[];
 }
 
@@ -25,7 +25,7 @@ export type PersistedFullWorkflow = {
   title: string;
   id: string;
   thumbnail: string;
-  last_edit_date: number;
+  last_edit_time: number;
   snapshot: string; // json format
 }
 
@@ -35,12 +35,13 @@ export class DocumentDatabase extends Dexie {
     super("DocumentDB");
 
     this.version(1).stores({
-      documents: "id, title, last_edit_date",
+      documents: "id, title, last_edit_time",
     });
   }
 
   async getDoclistFromLocal() {
-    return this.documents.toArray();
+    return this.documents
+      .toArray();
   }
 
   async getDocFromLocal(id: string) {
@@ -57,6 +58,10 @@ export class DocumentDatabase extends Dexie {
 
   async removeDocToLocal(docId: string) {
     return this.documents.delete(docId);
+  }
+
+  async createDocFromTemplate() {
+
   }
 }
 

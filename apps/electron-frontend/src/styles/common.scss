@@ -22,3 +22,17 @@
     margin: 0 6px;
     height: 20px;
 }
+
+.icon-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    svg {
+        margin-right: 10px;
+    }
+    &.ant-btn-primary {
+        path {
+            fill: white;
+        }
+    } 
+}
