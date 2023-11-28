@@ -1,33 +1,33 @@
 export default {
     "nodes": {
-      "1": {
+      "1asweeqw": {
         "value": { "widget": "CheckpointLoaderSimple", "fields": { "ckpt_name": "sd-v1-4.ckpt" } },
         "position": { "x": -138.65352317628003, "y": -191.36843297347312 }
       },
-      "2": {
+      "2qwegreqe": {
         "value": { "widget": "CLIPTextEncode", "fields": { "text": "beautiful mountain scenery" } },
         "position": { "x": -138.7341322824018, "y": -73.6641410349036 }
       },
-      "3": {
+      "3wety6y46": {
         "value": { "widget": "CLIPTextEncode", "fields": { "text": "" } },
         "position": { "x": -136.55891054401303, "y": 119.89772257951374 }
       },
-      "4": {
+      "4q4t34t3": {
         "value": {
           "widget": "KSampler",
           "fields": { "seed": -1, "steps": 20, "cfg": 7, "sampler_name": "euler", "scheduler": "normal", "denoise": 1 }
         },
         "position": { "x": 316.0075115157922, "y": -195.5841212096412 }
       },
-      "5": {
+      "5wt3t3": {
         "value": { "widget": "VAEDecode", "fields": {} },
         "position": { "x": 769.6594250929854, "y": -195.09752371886228 }
       },
-      "6": {
+      "6t34yy46": {
         "value": { "widget": "SaveImage", "fields": { "filename_prefix": "output" } },
         "position": { "x": 772.0821842803763, "y": -90.8381271274001 }
       },
-      "7": {
+      "723htr": {
         "value": { "widget": "EmptyLatentImage", "fields": { "width": 512, "height": 512, "batch_size": 1 } },
         "position": { "x": 316.0075115157922, "y": 11.391056441942904 }
       }

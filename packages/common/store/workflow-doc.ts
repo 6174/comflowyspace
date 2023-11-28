@@ -84,11 +84,16 @@ const WorkflowDocumentUtils = {
                 switch (change.type) {
                     // add change is triggered by another method
                     case "dimensions":
+                        nodesMap.set(change.id, {
+                            ...nodesMap.get(change.id)!,
+                            "dimensions": change.dimensions,
+                        });
+                        break;
                     case "position":
                         const key = change.type;
                         nodesMap.set(change.id, {
                             ...nodesMap.get(change.id)!,
-                            [key]: (change as any)[key],
+                            "position": change.position || nodesMap.get(change.id)!.position,
                         });
                         break;
                     case "remove":

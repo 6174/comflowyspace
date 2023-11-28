@@ -85,6 +85,9 @@ export interface AppState {
       )
     },
     addNode(state: AppState, widget: Widget, node: PersistedWorkflowNode): AppState {
+      if (node.id === "6t34yy46") {
+        console.log("adding node 6t34yy46", node.position);
+      }
       const maxZ = state.nodes
         .map((n) => n.zIndex ?? 0)
         .concat([0])

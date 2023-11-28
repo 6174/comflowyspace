@@ -46,7 +46,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-      console.log(workflow);
       let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
@@ -69,23 +68,27 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
+    console.log("nodes change", changes);
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onNodesChange(doc, changes);
     onYjsDocUpdate();
   },
   onEdgesChange: (changes) => {
+    console.log("edges change", changes);
     // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
     onYjsDocUpdate();
   },
   onConnect: (connection: Connection) => {
+    console.log("on connet");
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.addConnection(doc, connection);
     onYjsDocUpdate();
     // set((st) => AppState.addConnection(st, connection))
   },
   onDeleteNode: (id) => {
+    console.log("delete node")
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onEdgesChange(doc, [{
       type: 'remove', id
@@ -97,6 +100,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // }))
   },
   onPropChange: (id, key, value) => {
+    console.log("change prop")
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onPropChange(doc, {
       id,
@@ -106,6 +110,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     onYjsDocUpdate();
   },
   onAddNode: (widget: Widget, node: SDNode, position) => {
+    console.log("add node")
     const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onNodesAdd(doc, [{
       id: "node-" + uuid(),
@@ -116,6 +121,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   },
   onDuplicateNode: (id) => {
+    console.log("duplicated node")
     const st = get();
     const item = st.graph[id]
     const node = st.nodes.find((n) => n.id === id)
