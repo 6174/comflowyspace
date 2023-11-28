@@ -4,9 +4,11 @@ html, body {
   --hover-background-color: rgba(28, 28, 30, 0.05);
   --primaryColor: #765AFD;
   --borderColor: #55545B;
+  --fontColor: #121212;
   -webkit-font-smoothing: antialiased;
   --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
   background-color: white;
+  color: var(--fontColor);
 }
 
 @import '~styles/common';

@@ -1,10 +1,30 @@
 import * as React from 'react'
+import styles from "./my-workflows.style.module.scss";
 
-const MyWorkflow = () => (
-  <div>
-    <h1>MyWorkflow</h1>
-    <p></p>
-  </div>
-)
+function MyWorkflowsPage() {
+  return (
+    <div className={styles.myWorkflows}>
+      <h1>My Workflows</h1>
+      <WorkflowCreateBox/>
+      <WorkflowList/>
+    </div>
+  )
+}
 
-export default MyWorkflow;
+function WorkflowCreateBox() {
+  return (
+    <div className="workflow-create-box">
+      Workflow List
+    </div>
+  )
+}
+
+function WorkflowList() {
+  return (
+    <div className="workflow-list">
+      Workflow List
+    </div>
+  )
+}
+
+export default MyWorkflowsPage;

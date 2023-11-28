@@ -1,0 +1,43 @@
+.app {
+    display: flex;
+    :global {
+        .workspace-nav {
+            width: 240px;
+            padding: 20px;
+            .nav-header {
+                padding: 0 20px 24px;
+                font-weight: bold;
+                font-size: 16px;
+            }
+            .nav-list {
+                margin-top: 30px;
+                // border: solid 1px;
+                padding: 20px;
+                border-radius: 10px;
+            }
+            .workspace-nav-item {
+                padding: 4px 10px;
+                margin-bottom: 6px;
+                border-radius: 4px;
+                box-sizing: border-box;
+                a {
+                    text-decoration: none;
+                    color: var(--fontColor);
+                }
+
+                &:hover {
+                    background-color: var(--hover-background-color);
+                    a {
+                        // font-weight: bold;
+                    }
+                }
+                &.active {
+                    background-color: var(--hover-background-color);
+                }
+            }
+        }
+        .workspace-main {
+            flex: 1;
+        }
+    }
+}

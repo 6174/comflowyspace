@@ -6,7 +6,8 @@ type Props = {
   children: ReactNode
   title?: string
 }
-
+import styles from "./layout.style.module.scss";
+import { useRouter } from 'next/router'
 const Layout = ({ children, title = 'This is the default title' }: Props) => (
   <>
     <Head>
@@ -14,7 +15,7 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => (
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <div id="app">
+    <div id="app" className={styles.app}>
       <WorkspaceNav/>
       <div className="workspace-main">
         {children}
@@ -24,37 +25,42 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => (
 )
 
 const WorkspaceNav = () => {
+  const route = useRouter();
+  const path = route.pathname;
+  console.log("pathname", path);
   return (
     <div className="workspace-nav">
-      <div className="workspace-nav-item">
-        <Link href="/">
-          Home
-        </Link>
-      </div>
-      <div className="workspace-nav-item">
-        <Link href="/my">
-          My workflows
-        </Link>
-      </div>
-      <div className="workspace-nav-item">
-        <Link href="/explore">
-          Explore Community
-        </Link>
-      </div>
-      <div className="workspace-nav-item">
-        <Link href="/turorials">
-          Tutorials
-        </Link>
-      </div>
-      <div className="workspace-nav-item">
-        <Link href="/models">
-          Models
-        </Link>
-      </div>
-      <div className="workspace-nav-item">
-        <Link href="/extensions">
-          Extensions
-        </Link>
+      <div className="nav-list">
+        <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`}>
+          <Link href="/">
+            My workflows
+          </Link>
+        </div>
+        <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`}>
+          <Link href="/templates">
+            Templates
+          </Link>
+        </div>
+        <div className={`workspace-nav-item ${path === "" ? "active" : ""}`}>
+          <Link href="/turorials">
+            Tutorials
+          </Link>
+        </div>
+        <div className={`workspace-nav-item ${path === "" ? "active" : ""}`}>
+          <Link href="/expore">
+            Expore
+          </Link>
+        </div>
+        <div className={`workspace-nav-item ${path === "" ? "active" : ""}`}>
+          <Link href="/models">
+            Models
+          </Link>
+        </div>
+        <div className={`workspace-nav-item ${path === "" ? "active" : ""}`}>
+          <Link href="/extensions">
+            Extensions
+          </Link>
+        </div>
       </div>
     </div>
   )
