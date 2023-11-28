@@ -1,30 +1,22 @@
+import { PersistedWorkflowDocument } from '@/store/workflow-doc';
 import { type Connection, type NodeId, type SDNode } from '../comfui-interfaces'
 import defaultWorkflow from '../default/default-workflow';
 
-export interface PersistedNode {
-  value: SDNode
-  position: { x: number; y: number }
-}
-
-export interface PersistedGraph {
-  data: Record<NodeId, PersistedNode>
-  connections: Connection[]
-}
-
 const GRAPH_KEY = 'graph'
 
-export function retrieveLocalWorkflow(): PersistedGraph | null {
-  const item = localStorage.getItem(GRAPH_KEY)
-  return item === null ? defaultWorkflow : JSON.parse(item)
+export function retrieveLocalWorkflow(): PersistedWorkflowDocument {
+  return defaultWorkflow as any;
+  // const item = localStorage.getItem(GRAPH_KEY)
+  // return item === null ? defaultWorkflow : JSON.parse(item)
 }
 
-export function saveLocalWorkflow(graph: PersistedGraph): void {
+export function saveLocalWorkflow(graph: PersistedWorkflowDocument): void {
   localStorage.setItem(GRAPH_KEY, JSON.stringify(graph))
 }
 
 export function readWorkflowFromFile(
   ev: React.ChangeEvent<HTMLInputElement>,
-  cb: (workflow: PersistedGraph) => void
+  cb: (workflow: PersistedWorkflowDocument) => void
 ): void {
   const reader = new FileReader()
   if (ev.target.files !== null) {
@@ -37,7 +29,7 @@ export function readWorkflowFromFile(
   }
 }
 
-export function writeWorkflowToFile(workflow: PersistedGraph): void {
+export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
   const a = document.createElement('a')
   a.download = 'workflow.json'
   a.href = URL.createObjectURL(new Blob([JSON.stringify(workflow)], { type: 'application/json' }))

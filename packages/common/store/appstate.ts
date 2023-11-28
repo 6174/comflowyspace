@@ -21,11 +21,11 @@ import {
     NODE_IDENTIFIER,
     Connection
   } from '../comfui-interfaces'
-import { PersistedGraph, PersistedNode } from '../comfyui-bridge/persistence'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
-import Y from "yjs";
+import * as Y from "yjs";
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, WorkflowDocumentUtils } from './workflow-doc';
 
 export interface AppState {
     counter: number
@@ -63,7 +63,7 @@ export interface AppState {
     onSubmit: () => Promise<void>
     onDeleteFromQueue: (id: number) => Promise<void>
     onInit: () => Promise<void>
-    onLoadWorkflow: (persisted: PersistedGraph) => void
+    onLoadWorkflow: (persisted: PersistedWorkflowDocument) => void
     onSaveWorkflow: () => void
     onPersistLocal: () => void
     onNewClientId: (id: string) => void
@@ -84,42 +84,33 @@ export interface AppState {
           : []
       )
     },
-    addNode(state: AppState, widget: Widget, node?: SDNode, position?: XYPosition, key?: number): AppState {
-      const nextKey = key !== undefined ? Math.max(key, state.counter + 1) : state.counter + 1
-      const id = nextKey.toString()
+    addNode(state: AppState, widget: Widget, node: PersistedWorkflowNode): AppState {
       const maxZ = state.nodes
         .map((n) => n.zIndex ?? 0)
         .concat([0])
         .reduce((a, b) => Math.max(a, b))
+
       const item = {
-        id,
-        data: widget,
-        position: position ?? { x: 0, y: 0 },
+        id: node.id,
+        data: {
+          widget,
+          value: node.value
+        },
+        position: node.position ?? { x: 0, y: 0 },
         type: NODE_IDENTIFIER,
         zIndex: maxZ + 1,
       }
       return {
         ...state,
         nodes: applyNodeChanges([{ type: 'add', item }], state.nodes),
-        graph: { ...state.graph, [id]: node ?? SDNode.fromWidget(widget) },
-        counter: nextKey,
+        graph: { ...state.graph, [node.id]: node.value}
       }
     },
-    addConnection(state: AppState, connection: FlowConnecton): AppState {
+    addConnection(state: AppState, connection: PersistedWorkflowConnection): AppState {
       return { ...state, edges: addEdge(connection, state.edges) }
     },
-    toPersisted(state: AppState): PersistedGraph {
-      const data: Record<NodeId, PersistedNode> = {}
-      for (const node of state.nodes) {
-        const value = state.graph[node.id]
-        if (value !== undefined) {
-          data[node.id] = { value, position: node.position }
-        }
-      }
-  
-      return {
-        data,
-        connections: AppState.getValidConnections(state),
-      }
+    toPersisted(state: AppState): PersistedWorkflowDocument {
+      const {doc} = state;
+      return WorkflowDocumentUtils.toJson(doc);
     },
   }

@@ -1,10 +1,13 @@
-import { Widget } from "@comflowy/common/comfui-interfaces"
+import { SDNode, Widget } from "@comflowy/common/comfui-interfaces"
 import { useAppStore } from "@comflowy/common/store"
 import { NodeProps } from "reactflow";
 import {shallow} from "zustand/shallow";
 import NodeComponent from "./reactflow-node";
 
-export function NodeContainer(props: NodeProps<Widget>): JSX.Element {
+export function NodeContainer(props: NodeProps<{
+  widget: Widget;
+  value: SDNode;
+}>): JSX.Element {
     const { progressBar, imagePreviews, onPreviewImage, onDuplicateNode, onDeleteNode } = useAppStore(
       (st) => ({
         progressBar: st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined,

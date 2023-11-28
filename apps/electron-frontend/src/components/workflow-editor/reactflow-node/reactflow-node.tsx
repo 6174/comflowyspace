@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { type NodeProps, Position, type HandleType, Handle } from 'reactflow'
-import { type Widget, Input, type NodeId } from '@comflowy/common/comfui-interfaces';
+import { type Widget, Input, type NodeId, SDNode } from '@comflowy/common/comfui-interfaces';
 
 import { getBackendUrl } from '@comflowy/common/config'
 import { Button, Space } from 'antd';
@@ -14,7 +14,10 @@ interface ImagePreview {
 }
 
 interface Props {
-  node: NodeProps<Widget>
+  node: NodeProps<{
+    widget: Widget;
+    value: SDNode;
+  }>
   progressBar?: number
   imagePreviews?: ImagePreview[]
   onPreviewImage: (idx: number) => void
@@ -32,7 +35,8 @@ function NodeComponent({
 }: Props): JSX.Element {
   const params = []
   const inputs = []
-  for (const [property, input] of Object.entries(node.data.input.required)) {
+  const widget = node.data.widget;
+  for (const [property, input] of Object.entries(widget.input.required)) {
     if (Input.isParameterOrList(input)) {
       params.push({ property, input })
     } else {
@@ -45,7 +49,7 @@ function NodeComponent({
   return (
     <div className={nodeStyles.reactFlowNode}>
       <div className="node-header">
-        <h2 className="node-title">{node.data.name}</h2>
+        <h2 className="node-title">{widget.name}</h2>
         {isInProgress ? <div className="progress-bar bg-teal-800" style={{ width: `${progressBar * 100}%` }} /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">
@@ -69,7 +73,7 @@ function NodeComponent({
             ))}
           </div>
           <div className="node-outputs">
-            {node.data.output.map((k) => (
+            {widget.output.map((k) => (
               <Slot key={k} id={k} label={k} type="source" position={Position.Right} />
             ))}
           </div>

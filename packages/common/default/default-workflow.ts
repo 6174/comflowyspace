@@ -1,5 +1,5 @@
 export default {
-    "data": {
+    "nodes": {
       "1": {
         "value": { "widget": "CheckpointLoaderSimple", "fields": { "ckpt_name": "sd-v1-4.ckpt" } },
         "position": { "x": -138.65352317628003, "y": -191.36843297347312 }

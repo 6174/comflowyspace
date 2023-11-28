@@ -15,19 +15,19 @@ import { getBackendUrl } from '../config'
 import exifr from 'exifr'
 
 import {AppState} from "./appstate";
-import Y from "yjs";
+import * as Y from "yjs";
 import { Connection, applyEdgeChanges, applyNodeChanges } from 'reactflow';
-import { WorkflowDocument, WorkflowDocumentUtils } from './workflow-doc';
+import { PersistedWorkflowDocument, WorkflowDocumentUtils } from './workflow-doc';
 import { uuid } from '../utils';
 
 export const useAppStore = create<AppState>((set, get) => ({
   doc: new Y.Doc(),
-  // properties
-  counter: 0,
-  widgets: {},
   graph: {},
   nodes: [],
   edges: [],
+  // properties
+  counter: 0,
+  widgets: {},
   queue: [],
   gallery: [],
   /**
@@ -37,7 +37,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     setInterval(() => get().onPersistLocal(), 5000)
     const widgets = await getWidgets()
     set({ widgets })
-    get().onLoadWorkflow(retrieveLocalWorkflow() ?? { data: {}, connections: [] })
+    get().onLoadWorkflow(retrieveLocalWorkflow() ?? { id:"__empty", title: "untitiled", nodes: {} as any, connections: [] })
   },
   /**
    * Everytime update yjs doc, recalculate nodes and edges
@@ -45,14 +45,13 @@ export const useAppStore = create<AppState>((set, get) => ({
   onYjsDocUpdate: () => {
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
-      const workflow = workflowMap.toJSON() as WorkflowDocument;
+      const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+      console.log(workflow);
       let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
-      const graph:any = {};
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
-          state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
-          graph[key] = node.value
+          state = AppState.addNode(state, widget, node);
         } else {
           console.warn(`Unknown widget ${node.value.widget}`)
         }
@@ -60,10 +59,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
       }
-
       return {
         ...state,
-        graph
       }
     }, true)
   },
@@ -72,24 +69,24 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
-    const {doc, onYjsDocUpdate} = useAppStore();
+    const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onNodesChange(doc, changes);
     onYjsDocUpdate();
   },
   onEdgesChange: (changes) => {
     // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    const {doc, onYjsDocUpdate} = useAppStore();
+    const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
     onYjsDocUpdate();
   },
   onConnect: (connection: Connection) => {
-    const {doc, onYjsDocUpdate} = useAppStore();
+    const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.addConnection(doc, connection);
     onYjsDocUpdate();
     // set((st) => AppState.addConnection(st, connection))
   },
   onDeleteNode: (id) => {
-    const {doc, onYjsDocUpdate} = useAppStore();
+    const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onEdgesChange(doc, [{
       type: 'remove', id
     }]);
@@ -100,7 +97,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // }))
   },
   onPropChange: (id, key, value) => {
-    const {doc, onYjsDocUpdate} = useAppStore();
+    const {doc, onYjsDocUpdate} = get();
     WorkflowDocumentUtils.onPropChange(doc, {
       id,
       key,
@@ -132,6 +129,24 @@ export const useAppStore = create<AppState>((set, get) => ({
     }])
     st.onYjsDocUpdate();
   },
+  /**
+   * Workflow load & persisted
+   * @param workflow 
+   */
+  onLoadWorkflow: (workflow) => {
+    const st = get();
+    const doc = WorkflowDocumentUtils.fromJson(workflow as any);
+    set(st => {
+      return {
+        ...st,
+        doc,      
+      }
+    });
+    st.onYjsDocUpdate();
+  },
+  onSaveWorkflow: () => {
+    writeWorkflowToFile(AppState.toPersisted(get()))
+  },
   onPersistLocal: () => {
     saveLocalWorkflow(AppState.toPersisted(get()))
   },
@@ -144,26 +159,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   onDeleteFromQueue: async (id) => {
     await deleteFromQueue(id)
     await get().onQueueUpdate()
-  },
-  onLoadWorkflow: (workflow) => {
-    set((st) => {
-      let state: AppState = { ...st, nodes: [], edges: [], counter: 0, graph: {} }
-      for (const [key, node] of Object.entries(workflow.data)) {
-        const widget = state.widgets[node.value.widget]
-        if (widget !== undefined) {
-          state = AppState.addNode(state, widget, node.value, node.position, parseInt(key))
-        } else {
-          console.warn(`Unknown widget ${node.value.widget}`)
-        }
-      }
-      for (const connection of workflow.connections) {
-        state = AppState.addConnection(state, connection)
-      }
-      return state
-    }, true)
-  },
-  onSaveWorkflow: () => {
-    writeWorkflowToFile(AppState.toPersisted(get()))
   },
   onNewClientId: (id) => {
     set({ clientId: id })
