@@ -1,6 +1,7 @@
 import { Space } from "antd";
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
+import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 
 export default function ReactflowBottomCenterPanel() {
     return (
@@ -10,12 +11,14 @@ export default function ReactflowBottomCenterPanel() {
                     Select
                 </div>
                 <div className="action action-node-picker">
-                    <Space>
-                        <span>Nodes</span>
-                        <span className="icon">
-                            <IconDown/>
-                        </span>
-                    </Space>
+                    <WidgetPopover>
+                        <Space>
+                            <span>Nodes</span>
+                            <span className="icon">
+                                <IconDown/>
+                            </span>
+                        </Space>
+                    </WidgetPopover>
                 </div>
                 <div className="action action-add-text">
                     Text

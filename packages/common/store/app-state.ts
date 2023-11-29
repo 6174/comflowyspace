@@ -57,6 +57,7 @@ export interface AppState {
   edges: Edge[]
   graph: Record<NodeId, SDNode>
   widgets: Record<WidgetKey, Widget>
+  widgetCategory: any;
 
   // document mutation handler
   onYjsDocUpdate: () => void;
@@ -149,6 +150,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   // properties
   counter: 0,
   widgets: {},
+  widgetCategory: {},
   queue: [],
   gallery: [],
   /**
@@ -156,8 +158,9 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onInit: async () => {
     const widgets = await getWidgets()
+    const widgetCategory = generateWidgetCategories(widgets);
     console.log("widgets", widgets);
-    set({ widgets })
+    set({ widgets, widgetCategory })
   },
   /**
    * Everytime update yjs doc, recalculate nodes and edges
@@ -392,3 +395,28 @@ async function getQueueItems(clientId?: string): Promise<QueueItem[]> {
     })
   return queue
 }
+
+function generateWidgetCategories(widgets: Record<string, Widget>) {
+  const categories = {};
+
+  Object.keys(widgets).forEach((key) => {
+      const widget = widgets[key];
+      const categoryPath = widget.category.split('/');
+
+      let currentCategory:any = categories;
+
+      categoryPath.forEach((category, index) => {
+          if (!currentCategory[category]) {
+              currentCategory[category] = {};
+          }
+
+          if (index === categoryPath.length - 1) {
+              currentCategory[category][key] = widget;
+          }
+
+          currentCategory = currentCategory[category];
+      });
+  });
+
+  return categories;
+};
