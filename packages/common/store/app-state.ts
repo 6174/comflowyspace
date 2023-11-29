@@ -48,6 +48,7 @@ export interface AppState {
   doc: Y.Doc;
   nodeSelection: string[]; 
   edgeSelection: string[];
+  undoManager?: Y.UndoManager;
 
   // old storage structure
   nodes: Node[]
@@ -314,6 +315,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       return {
         ...st,
         workflow,
+        undoManager: new Y.UndoManager(doc.getMap("workflow")),
         doc,
       }
     });

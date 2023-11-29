@@ -1,3 +1,4 @@
+import { useAppStore } from "@comflowy/common/store";
 import { Space } from "antd"
 import IconDown from "ui/icons/icon-down";
 export default function ReactflowTopLeftPanel() {
@@ -26,13 +27,17 @@ export default function ReactflowTopLeftPanel() {
 }
 
 export function UndoRedo() {
+    const {undoManager, onYjsDocUpdate} = useAppStore();
     const inActiveColor = '#1c1c1e54';
     const activeColor = '#1C1C1E';
-    const canUndo = true;
-    const canRedo = false;
+    const canUndo = undoManager? undoManager.canUndo() : false;
+    const canRedo = undoManager? undoManager.canRedo() : false;
     return (
         <Space>
-            <div className="action action-undo">
+            <div className="action action-undo" onClick={() => {
+               undoManager.undo(); 
+               onYjsDocUpdate();
+            }}>
                 <svg
                     width="24"
                     height="24"
@@ -46,7 +51,10 @@ export function UndoRedo() {
                     />
                 </svg>
             </div>
-            <div className="action action-redo">
+            <div className="action action-redo" onClick={() => {
+               undoManager.redo(); 
+               onYjsDocUpdate();           
+             }}>
                 <svg
                 width="24"
                 height="24"
