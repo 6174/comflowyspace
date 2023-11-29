@@ -6,9 +6,11 @@ export type WidgetKey = string
  */
 export interface Widget {
     name: WidgetKey
+    display_name?: string
+    description?: string
+    category: string
     input: { required: Record<PropertyKey, Input> }
     output: FlowProps[]
-    category: string
   }
   
   export const Widget = {

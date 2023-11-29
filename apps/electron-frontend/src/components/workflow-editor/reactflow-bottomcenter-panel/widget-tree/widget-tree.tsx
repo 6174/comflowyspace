@@ -5,11 +5,13 @@ import { useAppStore } from '@comflowy/common/store';
 const { TreeNode } = Tree;
 const { Search } = Input;
 import styles from "./widget-tree.style.module.scss";
+import { Widget } from '@comflowy/common/comfui-interfaces';
 export const WidgetTree = () => {
     const { widgets, widgetCategory } = useAppStore()
     const [expandedKeys, setExpandedKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [autoExpandParent, setAutoExpandParent] = useState(true);
+    const [searchResult, setSearchResult] = useState([]);
 
     const generateTreeNodes = (data, parentKey = '') => {
         return Object.keys(data).map((key) => {
@@ -25,14 +27,38 @@ export const WidgetTree = () => {
             }
             return <TreeNode key={nodeKey} title={key} />;
         });
-    };
+    };;
 
     const handleSearch = (value) => {
-        const expandedKeys = Object.keys(widgets).filter(
-            (key) => widgets[key].name.toLowerCase().includes(value.toLowerCase())
-        );
-        setExpandedKeys(expandedKeys);
         setSearchValue(value);
+        const findedWidgets = Object.keys(widgets).filter(
+            (key) => {
+                const widget = widgets[key];
+                const search_string = `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`
+                return search_string.toLowerCase().includes(value.toLowerCase());
+            }
+        );
+        setSearchResult(findedWidgets.map(key => widgets[key]));
+        // const categories = findedWidgets.map((key) => widgets[key].category);
+        // const expandedKeys = [];
+        // categories.forEach((category) => {
+        //     const categoryKey = generatePaths(category);
+        //     expandedKeys.push(...categoryKey);
+        // });
+
+        // setExpandedKeys(expandedKeys);
+        // setSearchValue(value);
+        // function generatePaths(input) {
+        //     const segments = input.split('/');
+        //     const result = [];
+
+        //     for (let i = 0; i < segments.length; i++) {
+        //         const path = segments.slice(0, i + 1).join('-');
+        //         result.push(path);
+        //     }
+
+        //     return result;
+        // }
     };
 
     const onExpand = (expandedKeys) => {
@@ -47,13 +73,35 @@ export const WidgetTree = () => {
                 onChange={(e) => handleSearch(e.target.value)}
                 value={searchValue}
             />
-            <Tree
-                onExpand={onExpand}
-                expandedKeys={expandedKeys}
-                autoExpandParent={autoExpandParent}
-            >
-                {generateTreeNodes(widgetCategory)}
-            </Tree>
+            {
+                searchValue == "" ? (
+                    <Tree
+                        showLine
+                        onExpand={onExpand}
+                        expandedKeys={expandedKeys}
+                        autoExpandParent={autoExpandParent}
+                    >
+                        {generateTreeNodes(widgetCategory)}
+                    </Tree>
+                ) : (
+                    <SearchList items={searchResult} />
+                )
+            }
+
         </div>
     );
 };
+
+function SearchList({ items }: { items: Widget[] }) {
+    return (
+        <div className='search-result'>
+            {items.map((item, index) => {
+                return (
+                    <div className='search-result-item' key={item.name + index}>
+                        {item.name}
+                    </div>
+                )
+            })}
+        </div>
+    )
+}

@@ -1,3 +1,10 @@
 .widgetTree {
     height: 340px;
+    :global {
+        .ant-tree-list, .search-result {
+            margin-top: 10px;
+            height: 290px;
+            overflow-y: auto;
+        }
+    }
 }
