@@ -1,7 +1,9 @@
 import { SDNode } from '@/comfui-interfaces';
-import defaultWorkflow from '../default/default-workflow';
+import defaultWorkflow from '../templates/default-workflow';
 import Dexie, { Table } from 'dexie';
 import { XYPosition, Connection } from 'reactflow';
+import { getWorkflowTemplate } from '../templates/templates';
+import { uuid } from '../utils';
 
 export type PersistedWorkflowNode = {
   id: string;
@@ -24,8 +26,8 @@ export type PersistedWorkflowDocument = {
 export type PersistedFullWorkflow = {
   title: string;
   id: string;
-  thumbnail: string;
-  last_edit_time: number;
+  thumbnail?: string;
+  last_edit_time?: number;
   create_time: number;
   snapshot: string; // json format
 }
@@ -61,8 +63,16 @@ export class DocumentDatabase extends Dexie {
     return this.documents.delete(docId);
   }
 
-  async createDocFromTemplate() {
-
+  async createDocFromTemplate(key: string = "default"): Promise<PersistedFullWorkflow> {
+    const template = getWorkflowTemplate(key);
+    const doc: PersistedFullWorkflow = {
+      id: uuid(),
+      title: "untitled",
+      create_time: +(new Date()),
+      snapshot: JSON.stringify(template)
+    }
+    await this.documents.add(doc);
+    return doc;
   }
 }
 

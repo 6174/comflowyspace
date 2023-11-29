@@ -1,3 +1,4 @@
+import { getWorkflowTemplate } from '@/templates/templates';
 import Dexie, { Table } from 'dexie';
 
 export type ExecutionHistory = {
@@ -36,10 +37,6 @@ export class ExecutionHistoryDatabase extends Dexie {
 
   async removeDocToLocal(docId: string) {
     return this.documents.delete(docId);
-  }
-
-  async createDocFromTemplate() {
-
   }
 }
 
