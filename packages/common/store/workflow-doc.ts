@@ -40,7 +40,9 @@ const WorkflowDocumentUtils = {
     },
     toJson(doc: Y.Doc): PersistedWorkflowDocument {
         const workflowMap = doc.getMap("workflow");
-        return workflowMap.toJSON() as PersistedWorkflowDocument;
+        const json = workflowMap.toJSON();
+        delete json.selectedNode;
+        return json as PersistedWorkflowDocument;
     },
     addConnection: (doc: Y.Doc, connection: Connection) => {
         const workflowMap = doc.getMap("workflow");
@@ -85,7 +87,7 @@ const WorkflowDocumentUtils = {
                         break;
                 }
             })
-        });  
+        }); 
     },
     onNodesDelete: (doc: Y.Doc, ids: string[]) => {
         const workflowMap = doc.getMap("workflow");
@@ -120,13 +122,19 @@ const WorkflowDocumentUtils = {
         const connectionsArray = (doc.getMap("workflow").get("connections") as Y.Array<PersistedWorkflowConnection>);
         doc.transact(() => {
             changes.forEach((change: EdgeChange)=> {
+                let index: number;
                 switch (change.type) {
                     // case "add":
                     //     connectionsArray.push(change.connection);
                     //     break;
                     case "remove":
-                        const index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
+                        index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
                         connectionsArray.delete(index);
+                        break;
+                    case "select":
+                        index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
+                        const connection = connectionsArray.get(index)!;
+                        connection.selected = change.selected;
                         break;
                     default:
                         break;

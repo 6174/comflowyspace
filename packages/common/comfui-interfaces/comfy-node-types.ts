@@ -8,7 +8,7 @@ export type NodeId = string
 export interface SDNode {
   widget: WidgetKey
   fields: Record<PropertyKey, any>
-  images?: string[]
+  images?: string[],
 }
 
 export const SDNode = {

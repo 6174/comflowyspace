@@ -46,6 +46,8 @@ export interface AppState {
   // workflow document store in yjs
   workflow: PersistedFullWorkflow | null;
   doc: Y.Doc;
+  nodeSelection: string[]; 
+  edgeSelection: string[];
 
   // old storage structure
   nodes: Node[]
@@ -111,6 +113,7 @@ export const AppState = {
         widget,
         value: node.value
       },
+      selected: !!node.selected,
       position: node.position ?? { x: 0, y: 0 },
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
@@ -136,6 +139,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   graph: {},
   nodes: [],
   edges: [],
+  nodeSelection: [],
+  edgeSelection: [],
+
   // properties
   counter: 0,
   widgets: {},
@@ -173,6 +179,17 @@ export const useAppStore = create<AppState>((set, get) => ({
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
       }
+      const {nodeSelection, edgeSelection} = st;
+      state.nodes.forEach(node => {
+        if (nodeSelection.includes(node.id)) {
+          node.selected = true;
+        }
+      });
+      state.edges.forEach(edge => {
+        if (edgeSelection.includes(edge.id)) {
+          edge.selected = true;
+        }
+      });
       return {
         ...state,
       }
@@ -184,15 +201,47 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onNodesChange: (changes) => {
     // console.log("nodes change", changes);
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onYjsDocUpdate, nodeSelection } = get();
     WorkflowDocumentUtils.onNodesChange(doc, changes);
+    set((st) => {
+      let newNodeSelection = [...nodeSelection];
+      changes.forEach(change => {
+        if (change.type === 'select') {
+          if (change.selected) {
+            newNodeSelection = [...newNodeSelection, change.id];
+          } else {
+            newNodeSelection = newNodeSelection.filter(id => id !== change.id);
+          }
+        }
+      })
+      return {
+        ...st,
+        nodeSelection: newNodeSelection
+      }
+    });
     onYjsDocUpdate();
   },
   onEdgesChange: (changes) => {
     // console.log("edges change", changes);
     // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onYjsDocUpdate, edgeSelection } = get();
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
+    set((st) => {
+      let newEdgeSelection = [...edgeSelection];
+      changes.forEach(change => {
+        if (change.type === 'select') {
+          if (change.selected) {
+            newEdgeSelection = [...newEdgeSelection, change.id];
+          } else {
+            newEdgeSelection = newEdgeSelection.filter(id => id !== change.id);
+          }
+        }
+      })
+      return {
+        ...st,
+        edgeSelectionSelection: newEdgeSelection
+      }
+    });
     onYjsDocUpdate();
   },
   onConnect: (connection: FlowConnecton) => {

@@ -1,7 +1,6 @@
 import * as React from 'react'
 import styles from "./workspace-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import { shallow } from 'zustand/shallow';
 import ReactFlow, { Background, BackgroundVariant, Controls, Panel } from 'reactflow';
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
@@ -18,19 +17,27 @@ export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
   const { nodes, edges, onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
   
-  const styledEdges = edges.map(edges => {
+  const styledEdges = edges.map(edge => {
     return {
-      ...edges,
+      ...edge,
       style: {
         strokeWidth: 2.8,
-        opacity: .6,
-        stroke: Input.getInputColor(edges.sourceHandle as any),
+        opacity: edge.selected ? 1 : .6,
+        stroke: Input.getInputColor(edge.sourceHandle as any),
       },
     }
   });
 
   const router = useRouter();
   const {id} = router.query;
+
+  React.useEffect(() => {
+    if (id && inited) {
+      documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
+        onLoadWorkflow(doc);
+      })
+    }
+  }, [id, inited])
 
   return (
     <div className={styles.workflowEditor}>
@@ -47,9 +54,6 @@ export default function WorkflowEditor() {
         onConnect={onConnect}
         onInit={async () => {
           await onInit();
-          documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
-            onLoadWorkflow(doc);
-          })
           setInited(true);
         }}
       >

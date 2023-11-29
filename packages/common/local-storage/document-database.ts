@@ -9,13 +9,14 @@ import { throttle } from 'lodash';
 export type PersistedWorkflowNode = {
   id: string;
   value: SDNode;
+  selected?: boolean;
   dimension?: {
       width: number,
       height: number
   },
   position: XYPosition
 }
-export type PersistedWorkflowConnection = ({id: string} & Connection)
+export type PersistedWorkflowConnection = ({id: string, selected?: boolean} & Connection)
 
 export type PersistedWorkflowDocument = {
   id: string;

@@ -47,7 +47,7 @@ function NodeComponent({
   const isInProgress = progressBar !== undefined
 
   return (
-    <div className={nodeStyles.reactFlowNode}>
+    <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
       <div className="node-header">
         <h2 className="node-title">{widget.name}</h2>
         {isInProgress ? <div className="progress-bar bg-teal-800" style={{ width: `${progressBar * 100}%` }} /> : <></>}

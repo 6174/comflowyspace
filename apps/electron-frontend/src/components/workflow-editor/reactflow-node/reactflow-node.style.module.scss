@@ -1,3 +1,6 @@
+.reactFlowSelected {
+    border: solid 2px var(--primaryColor) !important;
+}
 .reactFlowNode {
     display: flex;
     flex-direction: column;
