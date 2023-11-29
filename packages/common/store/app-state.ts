@@ -156,6 +156,7 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onInit: async () => {
     const widgets = await getWidgets()
+    console.log("widgets", widgets);
     set({ widgets })
   },
   /**
@@ -249,7 +250,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     onYjsDocUpdate();
   },
   onNodesDelete: (changes: Node[]) => {
-    console.log("delete nodes", changes);
     const { doc, onYjsDocUpdate, } = get();
     WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));
     onYjsDocUpdate();

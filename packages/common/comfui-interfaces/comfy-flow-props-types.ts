@@ -23,7 +23,25 @@ export interface InputType {
   STRING: [string, StringProps]
 }
 
-export type FlowProps = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK' | 'VAE'
+export const FlowPropsArray = [ 
+  "MODEL", 
+  "CONDITIONING", 
+  "LATENT", 
+  "CLIP", 
+  "VAE", 
+  "IMAGE", 
+  "MASK", 
+  "CLIP_VISION", 
+  "STYLE_MODEL", 
+  "CLIP_VISION_OUTPUT", 
+  "CONTROL_NET", 
+  "GLIGEN", 
+  "UPSCALE_MODEL", 
+  "SAMPLER", 
+  "SIGMAS" 
+] as const;
+export type FlowProps = typeof FlowPropsArray[number];
+// export type FlowProps = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK' | 'VAE'
 
 type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
