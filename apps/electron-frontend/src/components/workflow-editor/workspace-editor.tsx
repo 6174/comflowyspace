@@ -15,7 +15,7 @@ import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, edges, onNodesDelete, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
+  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
   
   const styledEdges = edges.map(edge => {
     return {
@@ -39,6 +39,40 @@ export default function WorkflowEditor() {
     }
   }, [id, inited])
 
+  const onDragOver = React.useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+  const onDrop = React.useCallback(
+    async (event) => {
+      event.preventDefault();
+
+      const widgetType = event.dataTransfer.getData('application/reactflow');
+
+      if (typeof widgetType === 'undefined' || !widgetType) {
+        return;
+      }
+
+      // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+      // and you don't need to subtract the reactFlowBounds.left/top anymore
+      // details: https://reactflow.dev/whats-new/2023-11-10
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const widget = widgets[widgetType];
+      if (widget) {
+        await onAddNode(widget, position);
+      } else {
+        console.log('widget not found', widgetType);
+      }
+    },
+    [reactFlowInstance],
+  );
+
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -54,7 +88,10 @@ export default function WorkflowEditor() {
         onNodesDelete={onNodesDelete}
         onEdgesDelete={onEdgesDelete}
         onConnect={onConnect}
-        onInit={async () => {
+        onDrop={onDrop}
+        onDragOver={onDragOver}
+        onInit={async (instance) => {
+          setReactFlowInstance(instance);
           await onInit();
           setInited(true);
         }}

@@ -27,7 +27,7 @@ import {
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
 import * as Y from "yjs";
-import { WorkflowDocumentUtils } from './workflow-doc';
+import { WorkflowDocumentUtils, createNodeId } from './workflow-doc';
 import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
 
 import { create } from 'zustand'
@@ -66,7 +66,7 @@ export interface AppState {
   onNodesDelete: OnNodesDelete
   onEdgesDelete: OnEdgesDelete
   onPropChange: OnPropChange
-  onAddNode: (widget: Widget, node: SDNode, pos: XYPosition) => void
+  onAddNode: (widget: Widget, pos: XYPosition) => void
   onDuplicateNode: (id: NodeId) => void
 
   // job queue
@@ -279,11 +279,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
     onYjsDocUpdate();
   },
-  onAddNode: (widget: Widget, node: SDNode, position) => {
+  onAddNode: (widget: Widget, position: XYPosition) => {
+    const node = SDNode.fromWidget(widget);
     console.log("add node")
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.onNodesAdd(doc, [{
-      id: "node-" + uuid(),
+      id: createNodeId(),
       position,
       value: node
     }]);

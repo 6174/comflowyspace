@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Tree, Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 
@@ -18,14 +18,14 @@ export const WidgetTree = () => {
             const nodeKey = parentKey ? `${parentKey}-${key}` : key;
             const node = data[key];
 
-            if (node && typeof node === 'object' && !node.input) {
+            if (node && !node.input) {
                 return (
                     <TreeNode key={nodeKey} title={key}>
                         {generateTreeNodes(node, nodeKey)}
                     </TreeNode>
                 );
             }
-            return <TreeNode key={nodeKey} title={key} />;
+            return <TreeNode key={nodeKey} title={<WidgetTreeNodeTitle widget={node}/>} />;
         });
     };;
 
@@ -92,13 +92,28 @@ export const WidgetTree = () => {
     );
 };
 
+/**
+ *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
+ **/ 
+function WidgetTreeNodeTitle({widget}: {widget: Widget}) {
+    const onDragStart = useCallback((event) => {
+        event.dataTransfer.setData('application/reactflow', widget.name);
+        event.dataTransfer.effectAllowed = 'move';
+    }, [widget]);
+    return (
+        <div className='widget-title dndnode' draggable onDragStart={onDragStart} title={widget.name}>
+            {widget.display_name || widget.name}
+        </div>
+    )
+}
+
 function SearchList({ items }: { items: Widget[] }) {
     return (
         <div className='search-result'>
             {items.map((item, index) => {
                 return (
                     <div className='search-result-item' key={item.name + index}>
-                        {item.name}
+                        <WidgetTreeNodeTitle widget={item}/>
                     </div>
                 )
             })}
