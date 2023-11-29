@@ -8,6 +8,8 @@ import {
   applyNodeChanges,
   type XYPosition,
   type Connection as FlowConnecton,
+  OnNodesDelete,
+  OnEdgesDelete,
 } from 'reactflow';
 import {
   type GalleryItem,
@@ -60,9 +62,10 @@ export interface AppState {
   onYjsDocUpdate: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
+  onNodesDelete: OnNodesDelete
+  onEdgesDelete: OnEdgesDelete
   onPropChange: OnPropChange
   onAddNode: (widget: Widget, node: SDNode, pos: XYPosition) => void
-  onDeleteNode: (id: NodeId) => void
   onDuplicateNode: (id: NodeId) => void
 
   // job queue
@@ -245,24 +248,23 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
     onYjsDocUpdate();
   },
+  onNodesDelete: (changes: Node[]) => {
+    console.log("delete nodes", changes);
+    const { doc, onYjsDocUpdate, } = get();
+    WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));
+    onYjsDocUpdate();
+  },
+  onEdgesDelete: (changes: Edge[]) => {
+    const { doc, onYjsDocUpdate } = get();
+    WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
+    onYjsDocUpdate();
+  },
   onConnect: (connection: FlowConnecton) => {
     // console.log("on connet");
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.addConnection(doc, connection);
     onYjsDocUpdate();
     // set((st) => AppState.addConnection(st, connection))
-  },
-  onDeleteNode: (id) => {
-    // console.log("delete node")
-    const { doc, onYjsDocUpdate } = get();
-    WorkflowDocumentUtils.onEdgesChange(doc, [{
-      type: 'remove', id
-    }]);
-    onYjsDocUpdate();
-    // set(({ graph: { [id]: toDelete, ...graph }, nodes }) => ({
-    //   // graph, // should work but currently buggy
-    //   nodes: applyNodeChanges([{ type: 'remove', id }], nodes),
-    // }))
   },
   onPropChange: (id, key, value) => {
     console.log("change prop", id, key, value);

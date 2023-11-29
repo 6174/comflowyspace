@@ -15,7 +15,7 @@ import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, edges, onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
+  const { nodes, edges, onNodesDelete, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
   
   const styledEdges = edges.map(edge => {
     return {
@@ -47,10 +47,12 @@ export default function WorkflowEditor() {
         edges={styledEdges}
         fitView
         nodeTypes={nodeTypes}
-        deleteKeyCode={['Delete']}
+        deleteKeyCode={['Delete', 'Backspace']}
         disableKeyboardA11y={true}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodesDelete={onNodesDelete}
+        onEdgesDelete={onEdgesDelete}
         onConnect={onConnect}
         onInit={async () => {
           await onInit();

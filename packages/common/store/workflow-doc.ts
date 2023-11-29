@@ -44,14 +44,6 @@ const WorkflowDocumentUtils = {
         delete json.selectedNode;
         return json as PersistedWorkflowDocument;
     },
-    addConnection: (doc: Y.Doc, connection: Connection) => {
-        const workflowMap = doc.getMap("workflow");
-        const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
-        connectionsArray.push([{
-            ...connection,
-            id: "conn_" + uuid(),
-        }])
-    },
     // https://reactflow.dev/api-reference/types/node-change
     // export type NodeChange =
     //   | NodeDimensionChange
@@ -80,9 +72,6 @@ const WorkflowDocumentUtils = {
                             "position": change.position || nodesMap.get(change.id)!.position,
                         });
                         break;
-                    case "remove":
-                        nodesMap.delete(change.id);
-                        break;
                     default:
                         break;
                 }
@@ -96,11 +85,17 @@ const WorkflowDocumentUtils = {
             ids.forEach(id => {
                 nodesMap.delete(id);
                 const connections = workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>;
+                const connectionsToDelete: number[] = []
                 connections.forEach((conn, index) => {
                     if (conn.source === id || conn.target === id) {
-                        connections.delete(index);
+                        connectionsToDelete.push(index);
                     }
-                })
+                });
+                console.log("connections count", connectionsToDelete);
+                connectionsToDelete.sort((a, b) => b - a);
+                connectionsToDelete.forEach(index => {
+                    connections.delete(index);
+                });
             })
         });
     },
@@ -124,13 +119,6 @@ const WorkflowDocumentUtils = {
             changes.forEach((change: EdgeChange)=> {
                 let index: number;
                 switch (change.type) {
-                    // case "add":
-                    //     connectionsArray.push(change.connection);
-                    //     break;
-                    case "remove":
-                        index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
-                        connectionsArray.delete(index);
-                        break;
                     case "select":
                         index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
                         const connection = connectionsArray.get(index)!;
@@ -141,6 +129,26 @@ const WorkflowDocumentUtils = {
                 }
             })
         });
+    },
+    onEdgesDelete: (doc: Y.Doc, ids: string[]) => {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
+            const rawArray = connectionsArray.toArray().map(conn => conn.id);
+            const connectionsToDelete = ids.map(id => rawArray.indexOf(id));
+            connectionsToDelete.sort((a, b) => b - a);
+            connectionsToDelete.forEach(index => {
+                connectionsArray.delete(index);
+            });
+        });
+    },
+    addConnection: (doc: Y.Doc, connection: Connection) => {
+        const workflowMap = doc.getMap("workflow");
+        const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
+        connectionsArray.push([{
+            ...connection,
+            id: "conn_" + uuid(),
+        }])
     },
     onPropChange: (doc: Y.Doc, change: {
         id: string,
