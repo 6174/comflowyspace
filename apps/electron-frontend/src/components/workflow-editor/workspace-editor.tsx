@@ -32,15 +32,6 @@ export default function WorkflowEditor() {
   const router = useRouter();
   const {id} = router.query;
 
-  React.useEffect(() => {
-    if (id && inited) {
-      console.log("id", id);
-      documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
-        onLoadWorkflow(doc);
-      })
-    }
-  }, [id, inited]);
-
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -56,6 +47,9 @@ export default function WorkflowEditor() {
         onConnect={onConnect}
         onInit={async () => {
           await onInit();
+          documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
+            onLoadWorkflow(doc);
+          })
           setInited(true);
         }}
       >

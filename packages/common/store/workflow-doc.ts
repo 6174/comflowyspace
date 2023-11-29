@@ -1,7 +1,6 @@
 /**
  * workflow document
  */
-import { SDNode } from "@/comfui-interfaces";
 import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition} from "reactflow";
 import * as Y from "yjs";
@@ -144,11 +143,16 @@ const WorkflowDocumentUtils = {
         const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>)
         doc.transact(() => {
             const node = nodesMap.get(change.id)!
+            const value = node.value || {};
+            const fields = value.fields || {};
             nodesMap.set(change.id, {
                 ...node,
                 value: {
-                    ...node.value,
-                    [change.key]: change.value,
+                    ...value,
+                    fields: {
+                        ...fields,
+                        [change.key]: change.value,
+                    }
                 }
             })
         });

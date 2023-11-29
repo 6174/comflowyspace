@@ -4,6 +4,7 @@ import Dexie, { Table } from 'dexie';
 import { XYPosition, Connection } from 'reactflow';
 import { getWorkflowTemplate } from '../templates/templates';
 import { uuid } from '../utils';
+import { throttle } from 'lodash';
 
 export type PersistedWorkflowNode = {
   id: string;
@@ -56,6 +57,7 @@ export class DocumentDatabase extends Dexie {
   }
 
   async updateDocToLocal(docMeta: PersistedFullWorkflow) {
+    // console.log("save to local", docMeta);
     return this.documents.put(docMeta);
   }
 
@@ -76,7 +78,12 @@ export class DocumentDatabase extends Dexie {
   }
 }
 
+
 export const documentDatabaseInstance = new DocumentDatabase();
+
+export const throttledUpdateDocument = throttle(async (doc: PersistedFullWorkflow)=> {
+  await documentDatabaseInstance.updateDocToLocal(doc);
+}, 1000);
 
 export function retrieveLocalWorkflow(): PersistedWorkflowDocument {
   return defaultWorkflow as any;

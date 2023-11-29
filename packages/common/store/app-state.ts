@@ -26,7 +26,7 @@ export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => 
 
 import * as Y from "yjs";
 import { WorkflowDocumentUtils } from './workflow-doc';
-import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow} from "../local-storage";
+import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
 
 import { create } from 'zustand'
 import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
@@ -155,6 +155,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+
+      throttledUpdateDocument({
+        ...st.workflow!,
+        snapshot: workflow
+      });
+
       let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
@@ -177,27 +183,27 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
-    console.log("nodes change", changes);
+    // console.log("nodes change", changes);
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.onNodesChange(doc, changes);
     onYjsDocUpdate();
   },
   onEdgesChange: (changes) => {
-    console.log("edges change", changes);
+    // console.log("edges change", changes);
     // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
     onYjsDocUpdate();
   },
   onConnect: (connection: FlowConnecton) => {
-    console.log("on connet");
+    // console.log("on connet");
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.addConnection(doc, connection);
     onYjsDocUpdate();
     // set((st) => AppState.addConnection(st, connection))
   },
   onDeleteNode: (id) => {
-    console.log("delete node")
+    // console.log("delete node")
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.onEdgesChange(doc, [{
       type: 'remove', id
@@ -209,7 +215,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     // }))
   },
   onPropChange: (id, key, value) => {
-    console.log("change prop")
+    console.log("change prop", id, key, value);
     const { doc, onYjsDocUpdate } = get();
     WorkflowDocumentUtils.onPropChange(doc, {
       id,
