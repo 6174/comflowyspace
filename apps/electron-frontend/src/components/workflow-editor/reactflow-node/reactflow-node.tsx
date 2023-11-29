@@ -110,6 +110,11 @@ interface SlotProps {
   position: Position
 }
 
+/**
+ * https://reactflow.dev/examples/nodes/connection-limit
+ * @param param0 
+ * @returns 
+ */
 function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   const color = Input.getInputColor(label.toUpperCase() as any);
   const transform  = useStore((st => {

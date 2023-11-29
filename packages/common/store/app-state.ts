@@ -208,7 +208,21 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
-    // console.log("nodes change", changes);
+    // cache temporal changes
+    const draggingChanges = changes.filter(change => change.type === "position" && change.dragging);
+    if (draggingChanges.length > 0) {
+      set((st) => ({ nodes: applyNodeChanges(changes, st.nodes) }))
+      return;
+    }
+    const st = get();
+    // get position from temporal state
+    changes.forEach(change => {
+      if (change.type === "position" && change.dragging === false) {
+        change.position = st.nodes.find(node => node.id === change.id)!.position;
+      }
+    })
+
+    // make update to Yjs Doc 
     const { doc, onYjsDocUpdate, nodeSelection } = get();
     WorkflowDocumentUtils.onNodesChange(doc, changes);
     set((st) => {
