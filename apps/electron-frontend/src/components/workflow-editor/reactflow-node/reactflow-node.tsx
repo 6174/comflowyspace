@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { type NodeProps, Position, type HandleType, Handle } from 'reactflow'
+import { type NodeProps, Position, type HandleType, Handle, Node, useStore } from 'reactflow'
 import { type Widget, Input, type NodeId, SDNode } from '@comflowy/common/comfui-interfaces';
 
 import { getBackendUrl } from '@comflowy/common/config'
@@ -22,7 +22,7 @@ interface Props {
   imagePreviews?: ImagePreview[]
   onPreviewImage: (idx: number) => void
   onDuplicateNode: (id: NodeId) => void
-  onDeleteNode: (id: NodeId) => void
+  onNodesDelete: (nodes: Node[]) => void
 }
 
 function NodeComponent({
@@ -31,7 +31,7 @@ function NodeComponent({
   imagePreviews,
   onPreviewImage,
   onDuplicateNode,
-  onDeleteNode,
+  onNodesDelete,
 }: Props): JSX.Element {
   const params = []
   const inputs = []
@@ -112,10 +112,14 @@ interface SlotProps {
 
 function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   const color = Input.getInputColor(label.toUpperCase() as any);
+  const transform  = useStore((st => {
+    return st.transform[2]
+  }));
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle id={id.toUpperCase()} type={type} position={position} className="node-slot-handle" style={{
         backgroundColor: color,
+        transform: `scale(${Math.max(1, 1/transform)})`
       }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {label.toUpperCase()}

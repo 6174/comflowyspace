@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Tree, Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 
@@ -96,12 +96,18 @@ export const WidgetTree = () => {
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
  **/ 
 function WidgetTreeNodeTitle({widget}: {widget: Widget}) {
-    const onDragStart = useCallback((event) => {
+    const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         event.dataTransfer.setData('application/reactflow', widget.name);
         event.dataTransfer.effectAllowed = 'move';
     }, [widget]);
+    const ref = useRef<HTMLDivElement>();
+
     return (
-        <div className='widget-title dndnode' draggable onDragStart={onDragStart} title={widget.name}>
+        <div className='widget-title dndnode' 
+            draggable 
+            ref={ref}
+            onDragStart={onDragStart} 
+            title={widget.name}>
             {widget.display_name || widget.name}
         </div>
     )
