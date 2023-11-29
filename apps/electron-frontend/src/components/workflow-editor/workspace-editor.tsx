@@ -10,20 +10,13 @@ import { Input } from '@comflowy/common/comfui-interfaces';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
+import { useRouter } from 'next/router';
+import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
-  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onInit } = useAppStore(
-    (st) => ({
-      nodes: st.nodes,
-      edges: st.edges,
-      onNodesChange: st.onNodesChange,
-      onEdgesChange: st.onEdgesChange,
-      onConnect: st.onConnect,
-      onInit: st.onInit,
-    }),
-    shallow
-  )
+  const [inited, setInited] = React.useState(false);
+  const { nodes, edges, onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
   
   const styledEdges = edges.map(edges => {
     return {
@@ -34,7 +27,20 @@ export default function WorkflowEditor() {
         stroke: Input.getInputColor(edges.sourceHandle as any),
       },
     }
-  })
+  });
+
+  const router = useRouter();
+  const {id} = router.query;
+
+  React.useEffect(() => {
+    if (id && inited) {
+      console.log("id", id);
+      documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
+        onLoadWorkflow(doc);
+      })
+    }
+  }, [id, inited]);
+
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -48,8 +54,9 @@ export default function WorkflowEditor() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        onInit={() => {
-          void onInit()
+        onInit={async () => {
+          await onInit();
+          setInited(true);
         }}
       >
         <Background variant={BackgroundVariant.Dots} />

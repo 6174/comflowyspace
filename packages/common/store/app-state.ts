@@ -26,7 +26,7 @@ export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => 
 
 import * as Y from "yjs";
 import { WorkflowDocumentUtils } from './workflow-doc';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow} from "../local-storage";
+import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow} from "../local-storage";
 
 import { create } from 'zustand'
 import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
@@ -44,6 +44,7 @@ export interface AppState {
   clientId?: string
 
   // workflow document store in yjs
+  workflow: PersistedFullWorkflow | null;
   doc: Y.Doc;
 
   // old storage structure
@@ -75,9 +76,8 @@ export interface AppState {
   onSubmit: () => Promise<void>
   onDeleteFromQueue: (id: number) => Promise<void>
   onInit: () => Promise<void>
-  onLoadWorkflow: (persisted: PersistedWorkflowDocument) => void
-  onSaveWorkflow: () => void
-  onPersistLocal: () => void
+  onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
+  onExportWorkflow: () => void
   onNewClientId: (id: string) => void
   onQueueUpdate: () => Promise<void>
   onNodeInProgress: (id: NodeId, progress: number) => void
@@ -131,6 +131,7 @@ export const AppState = {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
+  workflow: null,
   doc: new Y.Doc(),
   graph: {},
   nodes: [],
@@ -144,10 +145,8 @@ export const useAppStore = create<AppState>((set, get) => ({
    * AppStore Initialization Entry 
    */
   onInit: async () => {
-    setInterval(() => get().onPersistLocal(), 5000)
     const widgets = await getWidgets()
     set({ widgets })
-    get().onLoadWorkflow(retrieveLocalWorkflow() ?? { id: "__empty", title: "untitiled", nodes: {} as any, connections: [] })
   },
   /**
    * Everytime update yjs doc, recalculate nodes and edges
@@ -228,7 +227,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       value: node
     }]);
     onYjsDocUpdate();
-
   },
   onDuplicateNode: (id) => {
     console.log("duplicated node")
@@ -251,20 +249,23 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onLoadWorkflow: (workflow) => {
     const st = get();
-    const doc = WorkflowDocumentUtils.fromJson(workflow as any);
+    const doc = WorkflowDocumentUtils.fromJson({
+      id: workflow.id,
+      title:workflow.title,
+      nodes: workflow.snapshot.nodes,
+      connections: workflow.snapshot.connections
+    });
     set(st => {
       return {
         ...st,
+        workflow,
         doc,
       }
     });
     st.onYjsDocUpdate();
   },
-  onSaveWorkflow: () => {
+  onExportWorkflow: () => {
     writeWorkflowToFile(AppState.toPersisted(get()))
-  },
-  onPersistLocal: () => {
-    saveLocalWorkflow(AppState.toPersisted(get()))
   },
   onSubmit: async () => {
     const state = get()

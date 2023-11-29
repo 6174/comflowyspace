@@ -29,7 +29,7 @@ export type PersistedFullWorkflow = {
   thumbnail?: string;
   last_edit_time?: number;
   create_time: number;
-  snapshot: string; // json format
+  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
 }
 
 export class DocumentDatabase extends Dexie {
@@ -69,7 +69,7 @@ export class DocumentDatabase extends Dexie {
       id: uuid(),
       title: "untitled",
       create_time: +(new Date()),
-      snapshot: JSON.stringify(template)
+      snapshot: template
     }
     await this.documents.add(doc);
     return doc;
