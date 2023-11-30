@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.17.0",
+    "@ant-design/icons": "^5.2.6",
     "@comflowy/common": "workspace:*",
     "antd": "5.10.0",
     "dexie-react-hooks": "^1.1.7",

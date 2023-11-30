@@ -77,6 +77,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
       <AntInput prefix={name} type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
     )
   }
+
   return <></>
 }
 

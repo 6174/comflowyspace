@@ -36,6 +36,9 @@ function NodeComponent({
   const params = []
   const inputs = []
   const widget = node.data.widget;
+  if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
+    widget.input.required.upload = ["IMAGEUPLOAD"];
+  }
   for (const [property, input] of Object.entries(widget.input.required)) {
     if (Input.isParameterOrList(input)) {
       params.push({ property, input })
@@ -53,12 +56,6 @@ function NodeComponent({
         {isInProgress ? <div className="progress-bar bg-teal-800" style={{ width: `${progressBar * 100}%` }} /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">
-            {/* <DocumentDuplicateIcon
-              className="h-5 w-5 text-zinc-200 cursor-pointer"
-              onClick={() => onDuplicateNode(node.id)}
-            />
-            <TrashIcon className="h-5 w-5 text-red-500 cursor-pointer" onClick={() => onDeleteNode(node.id)} />
-            <ArrowsPointingInIcon className="h-5 w-5 text-blue-500 cursor-pointer" /> */}
           </div>
         ) : (
           <></>
@@ -79,7 +76,7 @@ function NodeComponent({
         </div>
         <div className="node-params">
           {params.map(({ property, input }) => (
-            <InputContainer key={property} name={property} id={node.id} input={input} />
+            <InputContainer key={property} name={property} id={node.id} input={input} widget={widget}/>
           ))}
         </div>
         <div className="node-images-preview">

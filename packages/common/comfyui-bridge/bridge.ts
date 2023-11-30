@@ -51,6 +51,21 @@ export async function getQueue(): Promise<Queue> {
   return await fetch(getBackendUrl('/queue')).then(async (r) => await r.json())
 }
 
+export function getUploadImageUrl(): string {
+  return getBackendUrl('/upload/image')
+}
+
+export function getImagePreviewUrl(name: string): string {
+  // api.apiURL(`/view?filename=${encodeURIComponent(name)}&type=input&subfolder=${subfolder}${app.getPreviewFormatParam()}
+  let folder_separator = name.lastIndexOf("/");
+    let subfolder = "";
+    if (folder_separator > -1) {
+      subfolder = name.substring(0, folder_separator);
+      name = name.substring(folder_separator + 1);
+    }
+  return getBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=input&subfolder=${subfolder}`)
+}
+
 export async function deleteFromQueue(id: number): Promise<void> {
   await fetch(getBackendUrl('/queue'), {
     method: 'POST',
