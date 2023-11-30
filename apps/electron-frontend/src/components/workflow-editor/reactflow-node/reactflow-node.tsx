@@ -78,7 +78,12 @@ function NodeComponent({
             imagePreviews && imagePreviews.map(image => {
               const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
               return (
-                <div className="node-image-preview-container" key={image.filename}>
+                <div className="node-image-preview-container" key={image.filename} style={{
+                  display: "flex",
+                  marginTop: 10,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}>
                   <Image
                     className="node-preview-image"
                     src={imageSrc}
