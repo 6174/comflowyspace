@@ -64,7 +64,6 @@ function NodeComponent({
           <></>
         )}
       </div>
-
       <div className="node-main">
         <div className="node-slots">
           <div className="node-inputs">

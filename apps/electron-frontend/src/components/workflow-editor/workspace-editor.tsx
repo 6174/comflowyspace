@@ -26,7 +26,7 @@ export default function WorkflowEditor() {
       style: {
         strokeWidth: 2.8 / transform,
         opacity: edge.selected ? 1 : .6,
-        stroke: Input.getInputColor(edge.sourceHandle as any),
+        stroke: Input.getInputColor([edge.sourceHandle] as any),
       },
     }
   });

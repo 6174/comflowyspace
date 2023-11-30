@@ -1,4 +1,4 @@
-import { FlowProps, Input } from "./comfy-flow-props-types"
+import { FlowPropsKey, Input } from "./comfy-flow-props-types"
 
 export type WidgetKey = string
 /**
@@ -10,7 +10,7 @@ export interface Widget {
     description?: string
     category: string
     input: { required: Record<PropertyKey, Input> }
-    output: FlowProps[]
+    output: FlowPropsKey[]
   }
   
   export const Widget = {

@@ -38,14 +38,16 @@ export const FlowPropsArray = [
   "GLIGEN", 
   "UPSCALE_MODEL", 
   "SAMPLER", 
-  "SIGMAS" 
+  "SIGMAS",
+  "IMAGEUPLOAD"
 ] as const;
-export type FlowProps = typeof FlowPropsArray[number];
+export type FlowPropsKey = typeof FlowPropsArray[number]
+export type FlowProps = [FlowPropsKey];
 // export type FlowProps = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK' | 'VAE'
 
 type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
-export type Input = Parameter<keyof InputType> | [string[]] | FlowProps
+export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload: boolean}] | FlowProps
 
 export const Input = {
   isBool(i: Input): i is Parameter<'BOOL'> {
@@ -69,39 +71,43 @@ export const Input = {
   },
 
   isModel(i: Input): i is FlowProps {
-    return i === 'MODEL'
+    return i[0] === 'MODEL'
   },
 
   isControlNet(i: Input): i is FlowProps {
-    return i === 'CONTROL_NET'
+    return i[0] === 'CONTROL_NET'
   },
 
   isClip(i: Input): i is FlowProps {
-    return i === 'CLIP'
+    return i[0] === 'CLIP'
   },
   
   isImage(i: Input): i is FlowProps {
-    return i === 'IMAGE'
+    return i[0] === 'IMAGE'
   },
 
   isLatent(i: Input): i is FlowProps {
-    return i === 'LATENT'
+    return i[0] === 'LATENT'
   },
 
   isMask(i: Input): i is FlowProps {
-    return i === 'MASK'
+    return i[0] === 'MASK'
   },
 
   isVae(i: Input): i is FlowProps {
-    return i === 'VAE'
+    return i[0] === 'VAE'
+  },
+
+  isImageUpload(i: Input): i is FlowProps {
+    return i[0] === 'IMAGEUPLOAD'
   },
 
   isConditioning(i: Input): i is FlowProps {
-    return i === 'CONDITIONING'
+    return i[0] === 'CONDITIONING'
   },
 
   isParameterOrList(i: Input): boolean {
-    return Input.isBool(i) || Input.isInt(i) || Input.isFloat(i) || Input.isString(i) || Input.isList(i)
+    return Input.isBool(i) || Input.isInt(i) || Input.isFloat(i) || Input.isString(i) || Input.isList(i) || Input.isImageUpload(i)
   },
   getInputColor(i: Input): string {
     // GREEN
