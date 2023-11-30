@@ -5,6 +5,7 @@ import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition} from "reactflow";
 import * as Y from "yjs";
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "@/local-storage";
+import { PreviewImage } from "@/comfui-interfaces";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;
@@ -99,6 +100,16 @@ const WorkflowDocumentUtils = {
                         break;
                 }
             })
+        }); 
+    },
+    onImageSave: (doc: Y.Doc, id: string, images: PreviewImage[]) => {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>)
+            nodesMap.set(id, {
+                ...nodesMap.get(id)!,
+                "images": images,
+            });
         }); 
     },
     onNodesDelete: (doc: Y.Doc, ids: string[]) => {

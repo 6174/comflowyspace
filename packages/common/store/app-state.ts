@@ -21,13 +21,14 @@ import {
   type Widget,
   type WidgetKey,
   NODE_IDENTIFIER,
-  Connection
+  Connection,
+  PreviewImage
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
 import * as Y from "yjs";
-import { WorkflowDocumentUtils, createNodeId } from './workflow-doc';
+import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
 import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
 
 import { create } from 'zustand'
@@ -91,10 +92,7 @@ export interface AppState {
   onNewClientId: (id: string) => void
   onQueueUpdate: () => Promise<void>
   onNodeInProgress: (id: NodeId, progress: number) => void
-  onImageSave: (id: NodeId, images: string[]) => void
-  onPreviewImage: (id: number) => void
-  onPreviewImageNavigate: (next: boolean) => void
-  onHideImagePreview: () => void
+  onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onLoadImageWorkflow: (image: string) => void
 }
 
@@ -129,7 +127,13 @@ export const AppState = {
     return {
       ...state,
       nodes: applyNodeChanges([{ type: 'add', item }], state.nodes),
-      graph: { ...state.graph, [node.id]: node.value }
+      graph: { 
+        ...state.graph, 
+        [node.id]: {
+          ...node.value,
+          images: state.graph[node.id]?.images || node.images || [],
+        }
+      }
     }
   },
   addConnection(state: AppState, connection: PersistedWorkflowConnection): AppState {
@@ -179,7 +183,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         snapshot: workflow
       });
 
-      let state: AppState = { ...st, nodes: [], edges: [], graph: {} }
+      let state: AppState = { ...st, nodes: [], edges: [], graph: st.graph }
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
@@ -358,9 +362,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     writeWorkflowToFile(AppState.toPersisted(get()))
   },
   onSubmit: async () => {
-    const state = get()
+    const state = get();
     const docJson = WorkflowDocumentUtils.toJson(state.doc);
-    const res = await sendPrompt(createPrompt(docJson, state.widgets, state.clientId))
+    const prompt = createPrompt(docJson, state.widgets, state.clientId);
+    const res = await sendPrompt(prompt);
+    console.log("prompt response:", res);
     set({ promptError: res.error })
   },
   onDeleteFromQueue: async (id) => {
@@ -377,28 +383,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ nodeInProgress: { id, progress } })
   },
   onImageSave: (id, images) => {
+    WorkflowDocumentUtils.onImageSave(get().doc, id, images);
     set((st) => ({
-      gallery: st.gallery.concat(images.map((image) => ({ image }))),
+      ...st,
       graph: {
         ...st.graph,
         [id]: { ...st.graph[id], images },
       },
     }))
-  },
-  onPreviewImage: (index) => {
-    set({ previewedImageIndex: index })
-  },
-  onPreviewImageNavigate: (next) => {
-    set((st) => {
-      if (st.previewedImageIndex === undefined) {
-        return {}
-      }
-      const idx = next ? st.previewedImageIndex - 1 : st.previewedImageIndex + 1
-      return idx < 0 || idx === st.gallery.length ? {} : { previewedImageIndex: idx }
-    })
-  },
-  onHideImagePreview: () => {
-    set({ previewedImageIndex: undefined })
+    get().onYjsDocUpdate();
   },
   onLoadImageWorkflow: (image) => {
     void exifr.parse(getBackendUrl(`/view/${image}`)).then((res) => {

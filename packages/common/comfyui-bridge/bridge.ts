@@ -55,18 +55,8 @@ export function getUploadImageUrl(): string {
   return getBackendUrl('/upload/image')
 }
 
-export function getImagePreviewUrl(name: string): string {
-  if (!name) {
-    return ''
-  }
-  // api.apiURL(`/view?filename=${encodeURIComponent(name)}&type=input&subfolder=${subfolder}${app.getPreviewFormatParam()}
-  let folder_separator = name.lastIndexOf("/");
-    let subfolder = "";
-    if (folder_separator > -1) {
-      subfolder = name.substring(0, folder_separator);
-      name = name.substring(folder_separator + 1);
-    }
-  return getBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=input&subfolder=${subfolder}`)
+export function getImagePreviewUrl(name: string, type = "input", subfolder = ""): string {
+  return getBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=${type}&subfolder=${subfolder}`)
 }
 
 export async function deleteFromQueue(id: number): Promise<void> {
@@ -97,8 +87,8 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     const fields = { ...node.value.fields }
     for (const [property, value] of Object.entries(fields)) {
       const input = widgets[node.value.widget].input.required[property]
-      if (Input.isInt(input) && input[1].randomizable === true && value === -1) {
-        fields[property] = Math.trunc(Math.random() * Number.MAX_SAFE_INTEGER)
+      if (Input.isInt(input) && value === -1) {
+        fields[property] = Math.trunc(Math.random() * input[1].max!)
       }
     }
 
@@ -120,7 +110,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     }
     const outputIndex = widgets[source.value.widget].output.findIndex((f) => f === edge.sourceHandle)
     if (prompt[edge.target!] !== undefined) {
-      prompt[edge.target!].inputs[edge.targetHandle!] = [edge.source, outputIndex]
+      prompt[edge.target!].inputs[edge.targetHandle!.toLocaleLowerCase()] = [edge.source, outputIndex]
     }
   }
 

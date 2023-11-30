@@ -1,17 +1,13 @@
 import { memo } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, Node, useStore } from 'reactflow'
-import { type Widget, Input, type NodeId, SDNode } from '@comflowy/common/comfui-interfaces';
+import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
 
 import { getBackendUrl } from '@comflowy/common/config'
-import { Button, Space } from 'antd';
+import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
+import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 export const NODE_IDENTIFIER = 'sdNode'
-
-interface ImagePreview {
-  image: string
-  index: number
-}
 
 interface Props {
   node: NodeProps<{
@@ -19,8 +15,7 @@ interface Props {
     value: SDNode;
   }>
   progressBar?: number
-  imagePreviews?: ImagePreview[]
-  onPreviewImage: (idx: number) => void
+  imagePreviews?: PreviewImage[]
   onDuplicateNode: (id: NodeId) => void
   onNodesDelete: (nodes: Node[]) => void
 }
@@ -29,7 +24,6 @@ function NodeComponent({
   node,
   progressBar,
   imagePreviews,
-  onPreviewImage,
   onDuplicateNode,
   onNodesDelete,
 }: Props): JSX.Element {
@@ -53,7 +47,7 @@ function NodeComponent({
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
       <div className="node-header">
         <h2 className="node-title">{widget.name}</h2>
-        {isInProgress ? <div className="progress-bar bg-teal-800" style={{ width: `${progressBar * 100}%` }} /> : <></>}
+        {isInProgress ? <Progress percent={progressBar * 100} size="small" /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">
           </div>
@@ -80,17 +74,26 @@ function NodeComponent({
           ))}
         </div>
         <div className="node-images-preview">
-          {imagePreviews
-            ?.map(({ image, index }) => (
-              <div className="node-image-preview-container" key={image}>
-                <img
-                  className="node-preview-image"
-                  src={getBackendUrl(`/view/${image}`)}
-                  onClick={() => onPreviewImage(index)}
-                />
-              </div>
-            ))
-            .reverse()}
+          {
+            imagePreviews && imagePreviews.map(image => {
+              const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+              return (
+                <div className="node-image-preview-container" key={image.filename}>
+                  <Image
+                    className="node-preview-image"
+                    src={imageSrc}
+                    style={{
+                      maxWidth: 200,
+                      maxHeight: 200
+                    }}
+                    onClick={ev => {
+                      console.log("preview");
+                    }}
+                  />
+                </div>
+              )
+            })
+          }
         </div>
       </div>
     </div>

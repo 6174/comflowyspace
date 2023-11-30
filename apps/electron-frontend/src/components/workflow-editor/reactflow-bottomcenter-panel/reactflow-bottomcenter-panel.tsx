@@ -1,9 +1,12 @@
-import { Space } from "antd";
+import { Space, message } from "antd";
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
+import { useAppStore } from "@comflowy/common/store";
 
 export default function ReactflowBottomCenterPanel() {
+    const {onSubmit} = useAppStore();
+
     return (
         <div className={styles.bottomCenterPanel}>
              <Space>
@@ -27,7 +30,10 @@ export default function ReactflowBottomCenterPanel() {
                     Group
                 </div>
                 <div className="spliter"></div>
-                <div className="action action-Run">
+                <div className="action action-Run" onClick={ev => {
+                    onSubmit();
+                    message.info("Add task to queue");
+                }}>
                     Run
                 </div>
             </Space>

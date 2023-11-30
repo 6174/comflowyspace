@@ -8,7 +8,13 @@ export type NodeId = string
 export interface SDNode {
   widget: WidgetKey
   fields: Record<PropertyKey, any>
-  images?: string[],
+  images?: PreviewImage[],
+}
+
+export interface PreviewImage {
+  filename: string;
+  subfolder? : string;
+  type?: 'output'
 }
 
 export const SDNode = {

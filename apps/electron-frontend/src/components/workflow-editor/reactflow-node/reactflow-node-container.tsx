@@ -8,26 +8,26 @@ export function NodeContainer(props: NodeProps<{
   widget: Widget;
   value: SDNode;
 }>): JSX.Element {
-    const { progressBar, imagePreviews, onPreviewImage, onDuplicateNode } = useAppStore(
+    const { progressBar, imagePreviews, onDuplicateNode, onNodesDelete } = useAppStore(
       (st) => ({
         progressBar: st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined,
-        imagePreviews: st.graph[props.id]?.images?.flatMap((image) => {
-          const index = st.gallery.findIndex((i) => i.image === image)
-          return index !== -1 ? { image, index } : []
-        }),
-        onPreviewImage: st.onPreviewImage,
+        imagePreviews: st.graph[props.id]?.images || [],
         onPropChange: st.onPropChange,
         onDuplicateNode: st.onDuplicateNode,
+        onNodesDelete: st.onNodesDelete,
       }),
       shallow
     )
+    if (imagePreviews.length > 0) {
+      console.log("imagePreviews", imagePreviews, props)
+    }
     return (
       <NodeComponent
         node={props}
         progressBar={progressBar}
         imagePreviews={imagePreviews}
-        onPreviewImage={onPreviewImage}
         onDuplicateNode={onDuplicateNode}
+        onNodesDelete={onNodesDelete}
       />
     )
   }

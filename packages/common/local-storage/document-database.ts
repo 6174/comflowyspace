@@ -1,4 +1,4 @@
-import { SDNode } from '@/comfui-interfaces';
+import { PreviewImage, SDNode } from '@/comfui-interfaces';
 import defaultWorkflow from '../templates/default-workflow';
 import Dexie, { Table } from 'dexie';
 import { XYPosition, Connection } from 'reactflow';
@@ -14,6 +14,7 @@ export type PersistedWorkflowNode = {
       width: number,
       height: number
   },
+  images?: PreviewImage[],
   position: XYPosition
 }
 export type PersistedWorkflowConnection = ({id: string, selected?: boolean} & Connection)

@@ -4,17 +4,8 @@ import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 export function WsController(): JSX.Element {
-    const { clientId, nodeIdInProgress, onNewClientId, onQueueUpdate, onNodeInProgress, onImageSave } = useAppStore(
-      (st) => ({
-        clientId: st.clientId,
-        nodeIdInProgress: st.nodeInProgress?.id,
-        onNewClientId: st.onNewClientId,
-        onQueueUpdate: st.onQueueUpdate,
-        onNodeInProgress: st.onNodeInProgress,
-        onImageSave: st.onImageSave,
-      }),
-      shallow
-    )
+    const { clientId, nodeInProgress, onNewClientId, onQueueUpdate, onNodeInProgress, onImageSave } = useAppStore()
+    const nodeIdInProgress = nodeInProgress?.id;
   
     useWebSocket(`ws://${config.host}/ws`, {
       onMessage: (ev) => {
