@@ -6,7 +6,7 @@ import { Widget } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
-
+import ImgCrop from 'antd-img-crop';
 const { Dragger } = Upload;
 
 
@@ -72,13 +72,15 @@ export function InputUploadImage({widget, id}: {
     };
     return (
         <div className='upload-image-wrapper'>
-            <Upload {...props}>
-                <Button style={{
-                    fontSize: 10,
-                    width: "100%",
-                    display: "block"
-                }} icon={<UploadOutlined />}>Click to Upload</Button>
-            </Upload>
+            <ImgCrop rotationSlider>
+                <Upload {...props}>
+                    <Button style={{
+                        fontSize: 10,
+                        width: "100%",
+                        display: "block"
+                    }} icon={<UploadOutlined />}>Click to Upload</Button>
+                </Upload>
+            </ImgCrop>
             <div className="image-preview" style={{
                 display: "flex",
                 alignItems: "center",

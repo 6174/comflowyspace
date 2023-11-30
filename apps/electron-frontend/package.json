@@ -12,6 +12,7 @@
     "@ant-design/icons": "^5.2.6",
     "@comflowy/common": "workspace:*",
     "antd": "5.10.0",
+    "antd-img-crop": "^4.18.0",
     "dexie-react-hooks": "^1.1.7",
     "electron-is-dev": "^1.1.0",
     "electron-log": "^5.0.1",

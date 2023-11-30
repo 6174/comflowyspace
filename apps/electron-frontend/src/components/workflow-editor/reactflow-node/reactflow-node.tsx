@@ -112,7 +112,7 @@ interface SlotProps {
  * @returns 
  */
 function Slot({ id, label, type, position }: SlotProps): JSX.Element {
-  const color = Input.getInputColor(label.toUpperCase() as any);
+  const color = Input.getInputColor([label.toUpperCase()] as any);
   const transform  = useStore((st => {
     return st.transform[2]
   }));
