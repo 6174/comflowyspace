@@ -56,6 +56,9 @@ export function getUploadImageUrl(): string {
 }
 
 export function getImagePreviewUrl(name: string): string {
+  if (!name) {
+    return ''
+  }
   // api.apiURL(`/view?filename=${encodeURIComponent(name)}&type=input&subfolder=${subfolder}${app.getPreviewFormatParam()}
   let folder_separator = name.lastIndexOf("/");
     let subfolder = "";

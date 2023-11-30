@@ -28,7 +28,7 @@ export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => 
 
 import * as Y from "yjs";
 import { WorkflowDocumentUtils, createNodeId } from './workflow-doc';
-import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
+import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
 
 import { create } from 'zustand'
 import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
@@ -45,16 +45,18 @@ export interface AppState {
   counter: number
   clientId?: string
 
-  // workflow document store in yjs
-  workflow: PersistedFullWorkflow | null;
-  doc: Y.Doc;
-  nodeSelection: string[]; 
-  edgeSelection: string[];
-  undoManager?: Y.UndoManager;
+  // full workflow meta in storage
+  persistedWorkflow: PersistedFullWorkflow | null;
 
-  // old storage structure
+  // workflow document store in yjs for undo redp
+  doc: Y.Doc;
+  undoManager?: Y.UndoManager;
+  
+  // editor state for rendering, update from Y.Doc
   nodes: Node[]
   edges: Edge[]
+  nodeSelection: string[]; 
+  edgeSelection: string[];
   graph: Record<NodeId, SDNode>
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
@@ -81,6 +83,7 @@ export interface AppState {
   onConnect: OnConnect
 
   onSubmit: () => Promise<void>
+  onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
   onDeleteFromQueue: (id: number) => Promise<void>
   onInit: () => Promise<void>
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
@@ -139,7 +142,7 @@ export const AppState = {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  workflow: null,
+  persistedWorkflow: null,
   doc: new Y.Doc(),
   graph: {},
   nodes: [],
@@ -171,7 +174,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
 
       throttledUpdateDocument({
-        ...st.workflow!,
+        ...st.persistedWorkflow!,
+        last_edit_time: +new Date(),
         snapshot: workflow
       });
 
@@ -327,18 +331,27 @@ export const useAppStore = create<AppState>((set, get) => ({
     const st = get();
     const doc = WorkflowDocumentUtils.fromJson({
       id: workflow.id,
-      title:workflow.title,
+      title: workflow.title,
       nodes: workflow.snapshot.nodes,
       connections: workflow.snapshot.connections
     });
     set(st => {
       return {
         ...st,
-        workflow,
+        persistedWorkflow: workflow,
         undoManager: new Y.UndoManager(doc.getMap("workflow")),
         doc,
       }
     });
+    st.onYjsDocUpdate();
+  },
+  /**
+   * reset workflow from another document
+   * @param workflow 
+   */
+  onResetFromPersistedWorkflow: async (workflow: PersistedWorkflowDocument): Promise<void> => {
+    const st = get();
+    WorkflowDocumentUtils.updateByJson(st.doc, workflow)
     st.onYjsDocUpdate();
   },
   onExportWorkflow: () => {

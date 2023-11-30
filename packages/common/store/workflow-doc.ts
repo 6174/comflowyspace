@@ -38,6 +38,29 @@ const WorkflowDocumentUtils = {
         workflowMap.set("connections", connectionsArray);
         return doc;
     },
+    updateByJson(doc: Y.Doc, json: PersistedWorkflowDocument) {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            // create nodes array
+            const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>);
+            nodesMap.clear();
+            Object.entries(json.nodes || {}).forEach(([key, node]) => {
+                nodesMap.set(key, {
+                    ...node,
+                    id: key
+                } as PersistedWorkflowNode);
+            });
+            // create connections array
+            const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
+            connectionsArray.delete(0, connectionsArray.length);
+            (json.connections || []).forEach((conn: PersistedWorkflowConnection) => {
+                connectionsArray.push([{
+                    ...conn,
+                    id: conn.id || createConnectionId(),
+                }]);  
+            });
+        });
+    },
     toJson(doc: Y.Doc): PersistedWorkflowDocument {
         const workflowMap = doc.getMap("workflow");
         const json = workflowMap.toJSON();

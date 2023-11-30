@@ -79,7 +79,6 @@ export class DocumentDatabase extends Dexie {
   }
 }
 
-
 export const documentDatabaseInstance = new DocumentDatabase();
 
 export const throttledUpdateDocument = throttle(async (doc: PersistedFullWorkflow)=> {
