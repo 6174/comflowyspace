@@ -78,6 +78,10 @@
                 color: #666;
                 padding: 0;
             }
+            .ant-upload-wrapper, .ant-upload {
+                width: 100%;
+                display: block;
+            }
             .switch-wrapper {
                 display: flex;
                 .switch-label {

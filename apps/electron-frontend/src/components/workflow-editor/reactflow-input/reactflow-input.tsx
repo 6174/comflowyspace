@@ -20,7 +20,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
             textAlign: "right"
           }}
           value={value} 
-          onChange={(ev) => onChange(ev.target.value)}
+          onChange={(value) => onChange(value)}
           options={input[0].map((k) => {
             return {
               value: k,
