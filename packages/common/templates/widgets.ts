@@ -1,5 +1,4 @@
 
-
 const widgets = {
     "KSampler": {
         "input": {
