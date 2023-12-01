@@ -10,8 +10,6 @@ import {
   type Connection as FlowConnecton,
   OnNodesDelete,
   OnEdgesDelete,
-  Dimensions,
-  NodeChange,
   applyEdgeChanges,
 } from 'reactflow';
 import {
