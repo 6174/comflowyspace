@@ -26,7 +26,7 @@ export async function downloadUrl(url: string, targetPath: string): Promise<void
   }
 }
 
-async function downloadUrlWithMd5Check(url: string, targetPath: string, md5: string): Promise<void> {
+export async function downloadUrlWithMd5Check(url: string, targetPath: string, md5: string): Promise<void> {
   const filename: string = path.basename(url);
   const tmpFilePath: string = path.join(targetPath, `${filename}.tmp`);
   const filePath: string = path.join(targetPath, filename);
