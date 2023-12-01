@@ -13,6 +13,7 @@
     "exifr": "^7.1.3",
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
+    "node-fetch": "^3.3.2",
     "simple-git": "^3.21.0",
     "unzipper": "^0.10.14",
     "uuid": "9.0.1"

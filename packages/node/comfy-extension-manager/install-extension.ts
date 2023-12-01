@@ -5,7 +5,9 @@ import * as crypto from "crypto";
 import * as unzipper from "unzipper";
 import * as os from 'os';
 import simpleGit, { SimpleGit } from "simple-git";
-import { runScript } from "../utils";
+import { runScript } from "../utils/utils";
+import {downloadUrl} from "../utils/download-url";
+import { isValidGitUrl } from "@/utils/is-valid-git-url";
 
 /**
  * Install extension
@@ -22,16 +24,19 @@ export async function installExtension(extension: Extension) {
     if (extension.files.length === 0) {
         throw new Error("Extension has no files to install")
     }
-
+    
+    // from civizai zip file
     if (install_type === 'unzip') {
         res = await unzipInstall(extension.files);
     }
 
+    // from some.py file in github
     if (install_type === 'copy') {
         const js_path_name: string = extension.js_path || '.';
         res = await copyInstall(extension.files, js_path_name);
     }
 
+    // a full git repo
     if (install_type === 'git-clone') {
         res = await gitCloneInstall(extension.files);
     }
@@ -39,7 +44,7 @@ export async function installExtension(extension: Extension) {
     if (extension.pip) {
         for (const pname of extension.pip) {
             const installCmd: string[] = [process.execPath, '-m', 'pip', 'install', pname];
-            tryInstallScript(extension.files[0], '.', installCmd);
+            await tryInstallScript(extension.files[0], '.', installCmd);
         }
     }
 
@@ -49,6 +54,8 @@ export async function installExtension(extension: Extension) {
 
     return res;
 }
+
+
 
 async function copyInstall(files: string[], jsPathName: string | null = null): Promise<boolean> {
     for (const url of files) {
@@ -75,51 +82,6 @@ async function copyInstall(files: string[], jsPathName: string | null = null): P
 
     console.log('Installation was successful.');
     return true;
-}
-
-async function downloadUrl(url: string, targetPath: string, md5?: string): Promise<void> {
-    const filename: string = path.basename(url);
-    const filePath: string = path.join(targetPath, filename);
-
-    if (fs.existsSync(filePath)) {
-        console.log(`File ${filename} already exists. Skipping download.`);
-        if (md5) {
-            await verifyFileMd5(filePath, md5);
-        }
-        return;
-    }
-
-    try {
-        const response: Response = await fetch(url);
-
-        if (!response.ok) {
-            throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
-        }
-
-        const buffer: Buffer = Buffer.from(await response.arrayBuffer());
-
-        fs.writeFileSync(filePath, buffer);
-
-        console.log(`Downloaded ${filename} to ${targetPath}`);
-
-        if (md5) {
-            await verifyFileMd5(filePath, md5);
-        }
-    } catch (error) {
-        console.error(`Error downloading from ${url}: ${error}`);
-        throw error;
-    }
-}
-
-async function verifyFileMd5(filePath: string, expectedMd5: string): Promise<void> {
-    const fileBuffer: Buffer = fs.readFileSync(filePath);
-    const fileMd5: string = crypto.createHash('md5').update(fileBuffer).digest('hex');
-
-    if (fileMd5 !== expectedMd5) {
-        throw new Error(`MD5 verification failed for ${path.basename(filePath)}`);
-    }
-
-    console.log(`MD5 verification successful for ${path.basename(filePath)}`);
 }
 
 
@@ -204,12 +166,6 @@ async function gitCloneInstall(files: string[]): Promise<boolean> {
     return true;
 }
 
-function isValidGitUrl(url: string): boolean {
-    // Git URL pattern: https://git-scm.com/docs/git-clone#_git_urls
-    const gitUrlPattern: RegExp = /^(https?|git):\/\/[^\s]+\.git$/;
-
-    return gitUrlPattern.test(url);
-}
 
 async function executeInstallScript(url: string, repoPath: string, lazyMode: boolean = false): Promise<boolean> {
     const installScriptPath: string = path.join(repoPath, 'install.py');
