@@ -10,6 +10,7 @@
     background-color: #fff;
     position: relative;
     min-width: 190px;
+    width: 100%;
     :global {
         .node-header {
             flex-direction: row;
@@ -33,9 +34,6 @@
             }
         }
         .node-main {
-            flex-direction: column;
-            display: flex;
-            flex: 1 1 0%;
             background-color: #fff;
             position: relative;
             padding-bottom: 8px;

@@ -2,13 +2,18 @@
  * workflow document
  */
 import { uuid } from "../utils";
-import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition} from "reactflow";
+import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions} from "reactflow";
 import * as Y from "yjs";
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "@/local-storage";
-import { PreviewImage } from "@/comfui-interfaces";
+import { NodeId, PreviewImage } from "@/comfui-interfaces";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;
+
+export type TemporaryNodeState =  Record<NodeId, {
+    position?: XYPosition,
+    dimensions?: Dimensions
+}>;
 
 const WorkflowDocumentUtils = {
     fromJson(json: PersistedWorkflowDocument): Y.Doc {
@@ -68,6 +73,27 @@ const WorkflowDocumentUtils = {
         delete json.selectedNode;
         return json as PersistedWorkflowDocument;
     },
+    onSyncupTemporaryState(doc: Y.Doc, temporaryNodeStates: TemporaryNodeState) {
+        doc.transact(() => {
+            const workflowMap = doc.getMap("workflow");
+            const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>)
+            Object.entries(temporaryNodeStates || {}).forEach(([key, node]) => {
+                const {position, dimensions} = node;
+                if (position) {
+                    nodesMap.set(key, {
+                        ...nodesMap.get(key)!,
+                        position,
+                    });
+                }
+                if (dimensions) {
+                    nodesMap.set(key, {
+                        ...nodesMap.get(key)!,
+                        dimensions,
+                    });
+                }
+            });
+        })
+    },
     // https://reactflow.dev/api-reference/types/node-change
     // export type NodeChange =
     //   | NodeDimensionChange
@@ -84,17 +110,20 @@ const WorkflowDocumentUtils = {
                 switch (change.type) {
                     // add change is triggered by another method
                     case "dimensions":
-                        nodesMap.set(change.id, {
-                            ...nodesMap.get(change.id)!,
-                            "dimensions": change.dimensions,
-                        });
+                        if (change.dimensions) {
+                            nodesMap.set(change.id, {
+                                ...nodesMap.get(change.id)!,
+                                "dimensions": change.dimensions,
+                            });
+                        }
                         break;
                     case "position":
-                        const key = change.type;
-                        nodesMap.set(change.id, {
-                            ...nodesMap.get(change.id)!,
-                            "position": change.position || nodesMap.get(change.id)!.position,
-                        });
+                        if (change.position) {
+                            nodesMap.set(change.id, {
+                                ...nodesMap.get(change.id)!,
+                                "position": change.position,
+                            });
+                        }
                         break;
                     default:
                         break;

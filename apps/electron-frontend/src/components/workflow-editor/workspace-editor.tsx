@@ -15,7 +15,7 @@ import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit } = useAppStore()
+  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore()
   const transform  = useStore((st => {
     return st.transform[2]
   }));
@@ -93,6 +93,14 @@ export default function WorkflowEditor() {
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeDragStart={ev => {
+          console.log("drag start");
+          onChangeDragingAndResizingState(true);
+        }}
+        onNodeDragStop={ev => {
+          console.log("drag end");
+          onChangeDragingAndResizingState(false);
+        }}
         onInit={async (instance) => {
           setReactFlowInstance(instance);
           await onInit();

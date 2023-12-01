@@ -1,5 +1,5 @@
-import { memo } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, Node, useStore } from 'reactflow'
+import { memo, useEffect, useRef, useState } from 'react'
+import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer} from 'reactflow'
 import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
 
 import { getBackendUrl } from '@comflowy/common/config'
@@ -7,6 +7,8 @@ import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
+import { useAppStore } from '@comflowy/common/store';
+
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -42,9 +44,32 @@ function NodeComponent({
   }
 
   const isInProgress = progressBar !== undefined
+  const [minHeight, setMinHeight] = useState(100);
+  const [minWidth, setMinWidth] = useState(180);
+  const mainRef = useRef<HTMLDivElement>()
+  useEffect(() => {
+    if (mainRef.current) {
+      setMinHeight(mainRef.current.clientHeight + 25)
+    }
+  }, [mainRef])
 
+  const {onChangeDragingAndResizingState} = useAppStore();
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
+      <NodeResizer 
+        isVisible={node.selected} 
+        minWidth={minWidth} 
+        minHeight={minHeight} 
+        onResizeStart={(ev) => {
+          console.log("resize start");
+          onChangeDragingAndResizingState(true);
+        }}
+        onResizeEnd={(ev) => {
+          console.log("resize end");
+          onChangeDragingAndResizingState(false);
+        }}
+      />
+
       <div className="node-header">
         <h2 className="node-title">{widget.name}</h2>
         {isInProgress ? <Progress percent={progressBar * 100} size="small" /> : <></>}
@@ -55,7 +80,7 @@ function NodeComponent({
           <></>
         )}
       </div>
-      <div className="node-main">
+      <div className="node-main" ref={mainRef}>
         <div className="node-slots">
           <div className="node-inputs">
             {inputs.map((k) => (
@@ -73,33 +98,33 @@ function NodeComponent({
             <InputContainer key={property} name={property} id={node.id} input={input} widget={widget}/>
           ))}
         </div>
-        <div className="node-images-preview">
-          {
-            imagePreviews && imagePreviews.map(image => {
-              const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-              return (
-                <div className="node-image-preview-container" key={image.filename} style={{
-                  display: "flex",
-                  marginTop: 10,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}>
-                  <Image
-                    className="node-preview-image"
-                    src={imageSrc}
-                    style={{
-                      maxWidth: 200,
-                      maxHeight: 200
-                    }}
-                    onClick={ev => {
-                      console.log("preview");
-                    }}
-                  />
-                </div>
-              )
-            })
-          }
-        </div>
+      </div>
+      <div className="node-images-preview">
+        {
+          imagePreviews && imagePreviews.map(image => {
+            const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+            return (
+              <div className="node-image-preview-container" key={image.filename} style={{
+                display: "flex",
+                marginTop: 10,
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+                <Image
+                  className="node-preview-image"
+                  src={imageSrc}
+                  style={{
+                    maxWidth: 200,
+                    maxHeight: 200
+                  }}
+                  onClick={ev => {
+                    console.log("preview");
+                  }}
+                />
+              </div>
+            )
+          })
+        }
       </div>
     </div>
   )

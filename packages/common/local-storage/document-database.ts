@@ -10,7 +10,7 @@ export type PersistedWorkflowNode = {
   id: string;
   value: SDNode;
   selected?: boolean;
-  dimension?: {
+  dimensions?: {
       width: number,
       height: number
   },

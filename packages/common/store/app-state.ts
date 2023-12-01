@@ -10,6 +10,9 @@ import {
   type Connection as FlowConnecton,
   OnNodesDelete,
   OnEdgesDelete,
+  Dimensions,
+  NodeChange,
+  applyEdgeChanges,
 } from 'reactflow';
 import {
   type GalleryItem,
@@ -28,8 +31,8 @@ import {
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
 import * as Y from "yjs";
-import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument} from "../local-storage";
+import { TemporaryNodeState, WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
+import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument } from "../local-storage";
 
 import { create } from 'zustand'
 import { createPrompt, deleteFromQueue, getQueue, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
@@ -52,18 +55,17 @@ export interface AppState {
   // workflow document store in yjs for undo redp
   doc: Y.Doc;
   undoManager?: Y.UndoManager;
-  
+
   // editor state for rendering, update from Y.Doc
   nodes: Node[]
   edges: Edge[]
-  nodeSelection: string[]; 
-  edgeSelection: string[];
   graph: Record<NodeId, SDNode>
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
+  draggingAndResizing: boolean;
 
   // document mutation handler
-  onYjsDocUpdate: () => void;
+  onSyncFromYjsDoc: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onNodesDelete: OnNodesDelete
@@ -94,6 +96,7 @@ export interface AppState {
   onNodeInProgress: (id: NodeId, progress: number) => void
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onLoadImageWorkflow: (image: string) => void
+  onChangeDragingAndResizingState: (val: boolean) => void;
 }
 
 export const AppState = {
@@ -105,30 +108,32 @@ export const AppState = {
     )
   },
   addNode(state: AppState, widget: Widget, node: PersistedWorkflowNode): AppState {
-    if (node.id === "6t34yy46") {
-      console.log("adding node 6t34yy46", node.position);
-    }
     const maxZ = state.nodes
       .map((n) => n.zIndex ?? 0)
       .concat([0])
       .reduce((a, b) => Math.max(a, b))
 
-    const item = {
+    const stateNode = state.nodes.find(sn => sn.id == node.id);
+    const item: Node = {
       id: node.id,
       data: {
         widget,
         value: node.value
       },
-      selected: !!node.selected,
+      selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
+      style: {
+        width: node.dimensions?.width,
+        height: node.dimensions?.height,
+      },
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
     }
     return {
       ...state,
       nodes: applyNodeChanges([{ type: 'add', item }], state.nodes),
-      graph: { 
-        ...state.graph, 
+      graph: {
+        ...state.graph,
         [node.id]: {
           ...node.value,
           images: state.graph[node.id]?.images || node.images || [],
@@ -142,7 +147,7 @@ export const AppState = {
   toPersisted(state: AppState): PersistedWorkflowDocument {
     const { doc } = state;
     return WorkflowDocumentUtils.toJson(doc);
-  },
+  }
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -151,8 +156,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   graph: {},
   nodes: [],
   edges: [],
+
+  // temporary state
   nodeSelection: [],
   edgeSelection: [],
+  draggingAndResizing: false,
 
   // properties
   counter: 0,
@@ -172,10 +180,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   /**
    * Everytime update yjs doc, recalculate nodes and edges
    */
-  onYjsDocUpdate: () => {
+  onSyncFromYjsDoc: () => {
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+      console.log("nodes", workflow.nodes["2"]);
 
       throttledUpdateDocument({
         ...st.persistedWorkflow!,
@@ -183,7 +192,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         snapshot: workflow
       });
 
-      let state: AppState = { ...st, nodes: [], edges: [], graph: st.graph }
+      let state: AppState = { ...st, nodes: [], edges: [] }
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
@@ -195,17 +204,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
       }
-      const {nodeSelection, edgeSelection} = st;
-      state.nodes.forEach(node => {
-        if (nodeSelection.includes(node.id)) {
-          node.selected = true;
-        }
-      });
-      state.edges.forEach(edge => {
-        if (edgeSelection.includes(edge.id)) {
-          edge.selected = true;
-        }
-      });
       return {
         ...state,
       }
@@ -216,101 +214,70 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
-    // cache temporal changes
-    const draggingChanges = changes.filter(change => change.type === "position" && change.dragging);
-    if (draggingChanges.length > 0) {
-      set((st) => ({ nodes: applyNodeChanges(changes, st.nodes) }))
-      return;
-    }
     const st = get();
-    // get position from temporal state
-    changes.forEach(change => {
-      if (change.type === "position" && change.dragging === false) {
-        change.position = st.nodes.find(node => node.id === change.id)!.position;
+    set((st) => {
+      return {
+        nodes: applyNodeChanges(changes, st.nodes)
       }
     })
 
-    // make update to Yjs Doc 
-    const { doc, onYjsDocUpdate, nodeSelection } = get();
-    WorkflowDocumentUtils.onNodesChange(doc, changes);
-    set((st) => {
-      let newNodeSelection = [...nodeSelection];
-      changes.forEach(change => {
-        if (change.type === 'select') {
-          if (change.selected) {
-            newNodeSelection = [...newNodeSelection, change.id];
-          } else {
-            newNodeSelection = newNodeSelection.filter(id => id !== change.id);
-          }
-        }
-      })
-      return {
-        ...st,
-        nodeSelection: newNodeSelection
-      }
-    });
-    onYjsDocUpdate();
+    // if (!st.draggingAndResizing) {
+      const { doc} = get();
+      WorkflowDocumentUtils.onNodesChange(doc, changes);
+      const workflowMap = doc.getMap("workflow");
+      const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+      throttledUpdateDocument({
+        ...st.persistedWorkflow!,
+        last_edit_time: +new Date(),
+        snapshot: workflow
+      });
+    // }
+  },
+  onChangeDragingAndResizingState: (value: boolean) => {
+    set({ draggingAndResizing: value })
   },
   onEdgesChange: (changes) => {
-    // console.log("edges change", changes);
-    // set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    const { doc, onYjsDocUpdate, edgeSelection } = get();
+    set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
+    const { doc } = get();
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
-    set((st) => {
-      let newEdgeSelection = [...edgeSelection];
-      changes.forEach(change => {
-        if (change.type === 'select') {
-          if (change.selected) {
-            newEdgeSelection = [...newEdgeSelection, change.id];
-          } else {
-            newEdgeSelection = newEdgeSelection.filter(id => id !== change.id);
-          }
-        }
-      })
-      return {
-        ...st,
-        edgeSelectionSelection: newEdgeSelection
-      }
-    });
-    onYjsDocUpdate();
   },
   onNodesDelete: (changes: Node[]) => {
-    const { doc, onYjsDocUpdate, } = get();
+    const { doc, onSyncFromYjsDoc, } = get();
     WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));
-    onYjsDocUpdate();
+    onSyncFromYjsDoc();
   },
   onEdgesDelete: (changes: Edge[]) => {
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
-    onYjsDocUpdate();
+    onSyncFromYjsDoc();
   },
   onConnect: (connection: FlowConnecton) => {
     // console.log("on connet");
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.addConnection(doc, connection);
-    onYjsDocUpdate();
+    onSyncFromYjsDoc();
     // set((st) => AppState.addConnection(st, connection))
   },
   onPropChange: (id, key, value) => {
     console.log("change prop", id, key, value);
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onPropChange(doc, {
       id,
       key,
       value
     });
-    onYjsDocUpdate();
+    onSyncFromYjsDoc();
   },
   onAddNode: (widget: Widget, position: XYPosition) => {
     const node = SDNode.fromWidget(widget);
     console.log("add node")
-    const { doc, onYjsDocUpdate } = get();
+    const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onNodesAdd(doc, [{
       id: createNodeId(),
       position,
       value: node
     }]);
-    onYjsDocUpdate();
+    onSyncFromYjsDoc();
   },
   onDuplicateNode: (id) => {
     console.log("duplicated node")
@@ -325,7 +292,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       position: moved,
       value: item
     }])
-    st.onYjsDocUpdate();
+    st.onSyncFromYjsDoc();
   },
   /**
    * Workflow load & persisted
@@ -347,7 +314,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         doc,
       }
     });
-    st.onYjsDocUpdate();
+    st.onSyncFromYjsDoc();
   },
   /**
    * reset workflow from another document
@@ -356,7 +323,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   onResetFromPersistedWorkflow: async (workflow: PersistedWorkflowDocument): Promise<void> => {
     const st = get();
     WorkflowDocumentUtils.updateByJson(st.doc, workflow)
-    st.onYjsDocUpdate();
+    st.onSyncFromYjsDoc();
   },
   onExportWorkflow: () => {
     writeWorkflowToFile(AppState.toPersisted(get()))
@@ -391,7 +358,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         [id]: { ...st.graph[id], images },
       },
     }))
-    get().onYjsDocUpdate();
+    get().onSyncFromYjsDoc();
   },
   onLoadImageWorkflow: (image) => {
     void exifr.parse(getBackendUrl(`/view/${image}`)).then((res) => {
@@ -421,22 +388,22 @@ function generateWidgetCategories(widgets: Record<string, Widget>) {
   const categories = {};
 
   Object.keys(widgets).forEach((key) => {
-      const widget = widgets[key];
-      const categoryPath = widget.category.split('/');
+    const widget = widgets[key];
+    const categoryPath = widget.category.split('/');
 
-      let currentCategory:any = categories;
+    let currentCategory: any = categories;
 
-      categoryPath.forEach((category, index) => {
-          if (!currentCategory[category]) {
-              currentCategory[category] = {};
-          }
+    categoryPath.forEach((category, index) => {
+      if (!currentCategory[category]) {
+        currentCategory[category] = {};
+      }
 
-          if (index === categoryPath.length - 1) {
-              currentCategory[category][key] = widget;
-          }
+      if (index === categoryPath.length - 1) {
+        currentCategory[category][key] = widget;
+      }
 
-          currentCategory = currentCategory[category];
-      });
+      currentCategory = currentCategory[category];
+    });
   });
 
   return categories;

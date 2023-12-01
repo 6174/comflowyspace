@@ -27,7 +27,7 @@ export default function ReactflowTopLeftPanel() {
 }
 
 export function UndoRedo() {
-    const {undoManager, onYjsDocUpdate} = useAppStore();
+    const {undoManager, onSyncFromYjsDoc} = useAppStore();
     const inActiveColor = '#1c1c1e54';
     const activeColor = '#1C1C1E';
     const canUndo = undoManager? undoManager.canUndo() : false;
@@ -36,7 +36,7 @@ export function UndoRedo() {
         <Space>
             <div className="action action-undo" onClick={() => {
                undoManager.undo(); 
-               onYjsDocUpdate();
+               onSyncFromYjsDoc();
             }}>
                 <svg
                     width="24"
@@ -53,7 +53,7 @@ export function UndoRedo() {
             </div>
             <div className="action action-redo" onClick={() => {
                undoManager.redo(); 
-               onYjsDocUpdate();           
+               onSyncFromYjsDoc();           
              }}>
                 <svg
                 width="24"
