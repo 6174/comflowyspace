@@ -14,11 +14,14 @@
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
     "simple-git": "^3.21.0",
+    "unzipper": "^0.10.14",
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@types/execa": "^2.0.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^17.0.12",
+    "@types/unzipper": "^0.10.9",
     "@types/uuid": "^9.0.3",
     "encoding": "^0.1.13"
   }
