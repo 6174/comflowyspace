@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { appConfigManager } from '..';
 import * as fsExtra from 'fs-extra';
+import extensionList from './extension-list';
+import extensionNodeMapping from './extension-node-mapping';
 
 export interface Extension {
   title: string;
@@ -13,6 +15,11 @@ export interface Extension {
   pip: string[];
   install_type: "git_clone" | "copy" | "unzip";
   description: string;
+  [_:string]: any
+}
+
+export type ExtensionNodeMap = {
+  [key: string]: string[]
 }
 
 export function getExtensionDir(name: string = ""): string {
@@ -83,6 +90,27 @@ class ComfyExtensionManager {
       console.error(`Error removing plugin '${pluginName}': ${error}`);
     }
   }
+
+  async getAllExtensions(): Promise<Extension[]> {
+    const ret = extensionList.extensions;
+    return ret as unknown as Extension[];
+  }
+
+  async getExtensionNodeMap(): Promise<ExtensionNodeMap> {
+    const mapping = extensionNodeMapping as any as {
+      [key: string]: [string[], { title_aux: string }]
+    };
+    const ret: ExtensionNodeMap = {};
+    for (const key in mapping) {
+      const it = mapping[key];
+      ret[it[1].title_aux] = it[0];
+    }
+    return ret;
+  }
+
+  // async getExtensionNodes(): Promise<Widget[]> {
+
+  // }
 }
 
 const comfyExtensionManager = new ComfyExtensionManager();

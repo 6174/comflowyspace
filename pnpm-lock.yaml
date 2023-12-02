@@ -40,6 +40,9 @@ importers:
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@comflowy/node':
+        specifier: workspace:*
+        version: link:../node
       configstore:
         specifier: ^6.0.0
         version: 6.0.0
@@ -116,6 +119,9 @@ importers:
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@comflowy/node':
+        specifier: workspace:*
+        version: link:../node
       antd:
         specifier: 5.10.0
         version: 5.10.0(react-dom@18.2.0)(react@18.2.0)
@@ -201,6 +207,70 @@ importers:
       typescript:
         specifier: ^4.0.5
         version: 4.9.5
+
+  apps/node:
+    dependencies:
+      '@comflowy/common':
+        specifier: workspace:*
+        version: link:../../packages/common
+      '@types/configstore':
+        specifier: ^6.0.2
+        version: 6.0.2
+      '@types/crypto-js':
+        specifier: ^4.1.2
+        version: 4.2.1
+      '@types/lodash':
+        specifier: ^4.14.202
+        version: 4.14.202
+      configstore:
+        specifier: ^6.0.0
+        version: 6.0.0
+      crypto-js:
+        specifier: ^4.1.1
+        version: 4.2.0
+      execa:
+        specifier: ^8.0.1
+        version: 8.0.1
+      exifr:
+        specifier: ^7.1.3
+        version: 7.1.3
+      fs-extra:
+        specifier: ^11.2.0
+        version: 11.2.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
+      simple-git:
+        specifier: ^3.21.0
+        version: 3.21.0
+      unzipper:
+        specifier: ^0.10.14
+        version: 0.10.14
+      uuid:
+        specifier: 9.0.1
+        version: 9.0.1
+    devDependencies:
+      '@types/execa':
+        specifier: ^2.0.0
+        version: 2.0.0
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
+      '@types/node':
+        specifier: ^17.0.12
+        version: 17.0.45
+      '@types/unzipper':
+        specifier: ^0.10.9
+        version: 0.10.9
+      '@types/uuid':
+        specifier: ^9.0.3
+        version: 9.0.7
+      encoding:
+        specifier: ^0.1.13
+        version: 0.1.13
 
   apps/operation:
     dependencies:
@@ -290,67 +360,6 @@ importers:
       eslint-config-turbo:
         specifier: ^1.10.12
         version: 1.10.16(eslint@8.54.0)
-
-  packages/node:
-    dependencies:
-      '@types/configstore':
-        specifier: ^6.0.2
-        version: 6.0.2
-      '@types/crypto-js':
-        specifier: ^4.1.2
-        version: 4.2.1
-      '@types/lodash':
-        specifier: ^4.14.202
-        version: 4.14.202
-      configstore:
-        specifier: ^6.0.0
-        version: 6.0.0
-      crypto-js:
-        specifier: ^4.1.1
-        version: 4.2.0
-      execa:
-        specifier: ^8.0.1
-        version: 8.0.1
-      exifr:
-        specifier: ^7.1.3
-        version: 7.1.3
-      fs-extra:
-        specifier: ^11.2.0
-        version: 11.2.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      node-fetch:
-        specifier: ^3.3.2
-        version: 3.3.2
-      simple-git:
-        specifier: ^3.21.0
-        version: 3.21.0
-      unzipper:
-        specifier: ^0.10.14
-        version: 0.10.14
-      uuid:
-        specifier: 9.0.1
-        version: 9.0.1
-    devDependencies:
-      '@types/execa':
-        specifier: ^2.0.0
-        version: 2.0.0
-      '@types/fs-extra':
-        specifier: ^11.0.4
-        version: 11.0.4
-      '@types/node':
-        specifier: ^17.0.12
-        version: 17.0.45
-      '@types/unzipper':
-        specifier: ^0.10.9
-        version: 0.10.9
-      '@types/uuid':
-        specifier: ^9.0.3
-        version: 9.0.7
-      encoding:
-        specifier: ^0.1.13
-        version: 0.1.13
 
   packages/tsconfig: {}
 

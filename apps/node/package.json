@@ -4,6 +4,7 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "dependencies": {
+    "@comflowy/common": "workspace:*",
     "@types/configstore": "^6.0.2",
     "@types/crypto-js": "^4.1.2",
     "@types/lodash": "^4.14.202",

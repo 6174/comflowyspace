@@ -24,6 +24,7 @@
     "react-use-websocket": "^4.5.0",
     "reactflow": "^11.10.1",
     "ui": "workspace:*",
+    "@comflowy/node": "workspace:*",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.10",
     "zustand": "^4.4.6"
