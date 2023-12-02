@@ -8,12 +8,14 @@
     "strict": true,
     "isolatedModules": true,
     "types" : ["node"],
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
+    "rootDir": "./src"
   },
   "include": [
     "**/*.ts",

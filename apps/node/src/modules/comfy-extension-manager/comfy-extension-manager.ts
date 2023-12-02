@@ -1,7 +1,7 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 import * as path from 'path';
 import * as fs from 'fs';
-import { appConfigManager } from '..';
+import { appConfigManager } from '../..';
 import * as fsExtra from 'fs-extra';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';

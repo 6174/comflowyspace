@@ -1,13 +1,12 @@
 import { EXTENTION_FOLDER, Extension, WEB_EXTENTION_FOLDER } from "./comfy-extension-manager";
 import * as fs from "fs";
 import * as path from "path"
-import * as crypto from "crypto";
 import * as unzipper from "unzipper";
 import * as os from 'os';
 import simpleGit, { SimpleGit } from "simple-git";
 import { runScript } from "../utils/utils";
 import {downloadUrl} from "../utils/download-url";
-import { isValidGitUrl } from "@/utils/is-valid-git-url";
+import { isValidGitUrl } from "@/modules/utils/is-valid-git-url";
 
 /**
  * Install extension
