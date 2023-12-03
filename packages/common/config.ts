@@ -4,7 +4,7 @@
 //   protocol: window.location.protocol,
 // }
 const hotReloadConfig = {
-  host: 'localhost:8188',
+  host: 'localhost:3333/comfyui',
   protocol: 'http:',
 }
 
