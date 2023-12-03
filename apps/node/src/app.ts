@@ -10,18 +10,17 @@ export async function startAppServer() {
   app.use(express.json());
 
   app.use(cors({
-    origin: '*',  // 允许来自 http://localhost 的请求
+    origin: '*',  
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,  // 允许发送身份验证凭据（例如 cookies）
+    credentials: true,  
   }));
 
-  // 配置代理中间件
   const proxyMiddleware = createProxyMiddleware('/comfyui', {
     target: 'http://127.0.0.1:8188',
     changeOrigin: true,
-    ws: true,  // 支持 WebSocket
+    ws: true,  
     pathRewrite: {
-      '^/comfyui': '',  // 重写路径，去掉 /comfui 前缀
+      '^/comfyui': '',  
     },
   });
   

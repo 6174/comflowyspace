@@ -3,11 +3,19 @@ import { shallow } from 'zustand/shallow';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
+import { useEffect, useState } from 'react';
 export function WsController(): JSX.Element {
     const { clientId, nodeInProgress, onNewClientId, onQueueUpdate, onNodeInProgress, onImageSave } = useAppStore()
     const nodeIdInProgress = nodeInProgress?.id;
-  
-    useWebSocket(`ws://${config.host}/ws`, {
+
+    const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/ws`);
+    useEffect(() => {
+      if (clientId) {
+        setSocketUrl(`ws://${config.host}/ws?clientId=${clientId}`);
+      }
+    }, [clientId]);
+
+    useWebSocket(socketUrl, {
       onMessage: (ev) => {
         const msg = JSON.parse(ev.data)
         if (Message.isStatus(msg)) {

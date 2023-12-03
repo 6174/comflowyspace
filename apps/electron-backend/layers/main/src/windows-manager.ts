@@ -80,7 +80,7 @@ export async function createMainWindow() {
   // window.maximize();
   window.show();
 
-  const windowView = await createWindow(defaultWindowUrl+"/app");
+  const windowView = await createWindow(defaultWindowUrl+"/");
   setTab(windowView);
 }
 
