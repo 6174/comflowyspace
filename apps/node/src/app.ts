@@ -2,12 +2,12 @@ import express, { Request, Response } from 'express';
 
 export function startApp() {
   const app = express();
-  const port = 3000;
+  const port = 3333;
   
   app.use(express.json());
   
   app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, Express + TypeScript!');
+    res.send('Hello, Express + TypeScript! asdf');
   });
   
   app.post('/api/data', (req: Request, res: Response) => {

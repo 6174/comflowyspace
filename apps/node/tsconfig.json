@@ -10,6 +10,7 @@
     "types" : ["node"],
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "outDir": "./dist",
     "paths": {
       "@/*": [
         "./src/*"
