@@ -1,6 +1,6 @@
-import { startApp } from "./app";
+import { startAppServer } from "./app";
 
 export * from "./modules/config-manager";
-startApp()
+// startAppServer()
 
 console.log("startasdwtf");

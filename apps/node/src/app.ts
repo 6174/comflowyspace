@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 
-export function startApp() {
+export async function startAppServer() {
+  console.log("start server sd");
   const app = express();
   const port = 3333;
   

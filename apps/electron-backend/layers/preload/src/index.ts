@@ -2,8 +2,6 @@
  * @module preload
  */
 import { contextBridge } from "electron";
-import { sha256sum } from "/@/sha256sum";
-import * as fs from "fs";
 
 // Expose version number to renderer
 contextBridge.exposeInMainWorld("yerba", { version: 0.1 });
@@ -29,4 +27,3 @@ contextBridge.exposeInMainWorld("yerba", { version: 0.1 });
  * @example
  * window.nodeCrypto('data')
  */
-contextBridge.exposeInMainWorld("nodeCrypto", { sha256sum });

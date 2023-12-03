@@ -26,6 +26,7 @@ const defaultWindowUrl = isDev
     slashes: true,
   });
 
+const preload_js_path = path.resolve(__dirname, "../../preload/dist/", "index.js");
 /**
  * create main window to manager tab windows
  * https://www.electronjs.org/docs/latest/api/browser-view
@@ -45,9 +46,9 @@ export async function createMainWindow() {
     webPreferences: {
       devTools: isDev,
       // enableRemoteModule: false,
-      contextIsolation: false,
+      contextIsolation: true,
       nodeIntegration: false,
-      preload: __dirname + "/preload.js",
+      preload: preload_js_path,
       disableDialogs: false,
       safeDialogs: true,
       enableWebSQL: false,
@@ -88,9 +89,9 @@ export async function createWindow(href: string) {
   const window = new BrowserView({
     webPreferences: {
       devTools: isDev,
-      contextIsolation: false,
+      contextIsolation: true,
       nodeIntegration: false,
-      preload: __dirname + "/preload.js",
+      preload: preload_js_path,
       disableDialogs: false,
       safeDialogs: true,
       enableWebSQL: false,

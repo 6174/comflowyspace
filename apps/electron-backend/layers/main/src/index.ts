@@ -10,6 +10,8 @@ import { startIPC } from './ipc';
 const rendererPath = path.join(__dirname, "../renderer");
 console.log("started:", rendererPath);
 
+import { startAppServer } from '@comflowy/node/src/app';
+
 /**
  * Disable Hardware Acceleration for more power-save
  */
@@ -18,6 +20,7 @@ app.disableHardwareAcceleration();
 app.on('ready', async () => {
   // run next frontend service
   // await prepareNext(rendererPath)
+  await startAppServer();
 
   // start desktop window
   await createMainWindow();
