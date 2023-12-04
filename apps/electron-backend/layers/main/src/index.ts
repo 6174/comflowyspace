@@ -1,7 +1,7 @@
 import path from 'path'
 import { app } from 'electron'
 // import prepareNext from 'electron-next'
-import { createMainWindow, restoreOrCreateWindow } from "./windows-manager";
+import { windowManger } from "./windows-manager";
 import "./prelaunch";
 import { startAutoUpdater } from './auto-update';
 import { startIPC } from './ipc';
@@ -23,7 +23,7 @@ app.on('ready', async () => {
   await startAppServer();
 
   // start desktop window
-  await createMainWindow();
+  await windowManger.createMainWindow();
 
   // message hub
   startIPC();
@@ -35,5 +35,5 @@ app.on('ready', async () => {
 // Quit the app once all windows are closed
 app.on('window-all-closed', app.quit)
 
-app.on("activate", restoreOrCreateWindow);
+app.on("activate", windowManger.restoreOrCreateWindow);
 

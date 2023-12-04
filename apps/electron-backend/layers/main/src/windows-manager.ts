@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow, app } from "electron";
+import { BrowserView, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 
 import { isMacOS, uuid } from "./utils";
@@ -11,172 +11,180 @@ export interface IWindowInstance {
   window: BrowserView;
   name: string;
 }
-export interface TabList {
-  tabs: string[];
-  active: string;
-}
 
-// golbal data
-let listWindow: IWindowInstance[] = [];
-let mainWindow: BrowserWindow;
-const defaultWindowUrl = isDev
+export const DEFAULT_WINDOW_URL = isDev
   ? 'http://localhost:3000'
   : format({
     pathname: path.join(__dirname, '../renderer/out/index.html'),
     protocol: 'file:',
     slashes: true,
   });
+const PRELOAD_JS_PATH = path.resolve(__dirname, "../../preload/dist/", "index.js");
 
-const preload_js_path = path.resolve(__dirname, "../../preload/dist/", "index.js");
 /**
- * create main window to manager tab windows
- * https://www.electronjs.org/docs/latest/api/browser-view
- * @returns 
+ * Manager All Windows
  */
-export async function createMainWindow() {
-  if (mainWindow) {
-    return mainWindow;
-  }
-  const window = new BrowserWindow({
-    show: false,
-    width: 800,
-    height: 600,
-    backgroundColor: isMacOS ? "#D1D5DB" : "#6B7280",
-    titleBarStyle: isMacOS ? 'hiddenInset' : 'default',
-    frame: isMacOS,
-    webPreferences: {
-      devTools: isDev,
-      // enableRemoteModule: false,
-      contextIsolation: true,
-      nodeIntegration: false,
-      preload: preload_js_path,
-      disableDialogs: false,
-      safeDialogs: true,
-      enableWebSQL: false,
-    },
-  });
+class WindowManager {
+  // golbal data
+  listWindow: IWindowInstance[] = [];
+  mainWindow!: BrowserWindow;
+  mainWebView!: BrowserView;
 
-  mainWindow = window;
-
-  if (isDev) {
-    mainWindow.webContents.openDevTools({ mode: 'detach' })
+  constructor() {
+    this.initEventListener();
   }
 
-  window.on('closed', () => {
-    // @ts-ignore
-    mainWindow = null;
-    listWindow.forEach(instance => {
-      (instance.window.webContents as any)?.destroy() // TODO: electron haven't make document for it. Ref: https://github.com/electron/electron/issues/26929
+  /**
+   * create main window to manager tab windows
+   * https://www.electronjs.org/docs/latest/api/browser-view
+   * @returns 
+   */
+  createMainWindow = async () => {
+    if (this.mainWindow) {
+      return this.mainWindow;
+    }
+    const window = new BrowserWindow({
+      show: false,
+      width: 800,
+      height: 600,
+      backgroundColor: isMacOS ? "#D1D5DB" : "#6B7280",
+      titleBarStyle: isMacOS ? 'hiddenInset' : 'default',
+      frame: isMacOS,
+      webPreferences: {
+        devTools: isDev,
+        contextIsolation: true,
+        nodeIntegration: false,
+        preload: PRELOAD_JS_PATH,
+        disableDialogs: false,
+        safeDialogs: true,
+        enableWebSQL: false,
+      },
     });
-    listWindow = [];
-  })
 
-  if (isDev) {
-    window.loadURL(`${defaultWindowUrl}/tabs`);
-  } else {
-    // TODO: What if I need to load the tabs.html file
-    window.loadURL("app://-/tabs");
+    this.mainWindow = window;
+
+    if (isDev) {
+      this.mainWindow.webContents.openDevTools({ mode: 'detach' })
+    }
+
+    window.on('closed', () => {
+      // @ts-ignore
+      this.mainWindow = null;
+      this.listWindow.forEach(instance => {
+        (instance.window.webContents as any)?.destroy() 
+      });
+      this.listWindow = [];
+    })
+
+    window.loadURL(`${DEFAULT_WINDOW_URL}/tabs`);
+    window.show();
+
+    const windowView = this.mainWebView = await this.createWindow(DEFAULT_WINDOW_URL + "/");
+    this.setActiveTab(windowView);
   }
 
-  // window.maximize();
-  window.show();
+  createWindow = async (href: string) => {
+    // Create the browser view.
+    const window = new BrowserView({
+      webPreferences: {
+        devTools: isDev,
+        contextIsolation: true,
+        nodeIntegration: false,
+      
+        preload: PRELOAD_JS_PATH,
+        disableDialogs: false,
+        safeDialogs: true,
+        enableWebSQL: false,
+      },
+    });
+    contextMenu({ window });
+    window.webContents.loadURL(href);
+    if (isDev) {
+      window.webContents.openDevTools({ mode: 'detach' })
+    }
+    window.webContents.on("did-finish-load", () => {
+      // window.webContents.send("set-socket", {});
+    });
+    this.listWindow.push({
+      window,
+      name: `Tab-${uuid()}`
+    });
+    return window;
+  };
 
-  const windowView = await createWindow(defaultWindowUrl+"/");
-  setTab(windowView);
-}
-
-import { download } from 'electron-dl';
-export async function createWindow(href: string) {
-  // Create the browser view.
-  const window = new BrowserView({
-    webPreferences: {
-      devTools: isDev,
-      contextIsolation: true,
-      nodeIntegration: false,
-      preload: preload_js_path,
-      disableDialogs: false,
-      safeDialogs: true,
-      enableWebSQL: false,
-    },
-  });
-
-  contextMenu({
-    window,
-    // prepend: (defaultActions: any, params, window: any) => [
-    //   ...defaultActions,
-    //   {
-    //     label: 'Download Image',
-    //     visible: params.mediaType === 'image',
-    //     click: async () => {
-    //       // 下载图片的逻辑
-    //       const options = {
-    //         directory: app.getPath('downloads'), // 下载到系统的下载目录
-    //         filename: `image_${Date.now()}.png`, // 可以根据需要修改文件名
-    //       };
-    //       try {
-    //         await download(window, params.srcURL, options);
-    //         console.log('Image downloaded successfully!');
-    //       } catch (error) {
-    //         console.error('Error downloading image:', error);
-    //       }
-    //     },
-    //   }
-    // ],
-  });
-
-  window.webContents.loadURL(href);
-
-  if (isDev) {
-    window.webContents.openDevTools({ mode: 'detach' })
+  getTabData = (): {
+    tabs: number[];
+    active: number;
+  } => {
+    return {
+      tabs: this.listWindow.map((instance) => instance.window.webContents.id),
+      active: this.mainWindow!.getBrowserView()?.webContents?.id!
+    }
   }
 
-  window.webContents.on("did-finish-load", () => {
-    // window.webContents.send("set-socket", {});
-  });
+  setActiveTab = (instance: BrowserView) => {
+    this.mainWindow!.setBrowserView(instance);
+    instance.setBounds({ x: 0, y: 36, width: this.mainWindow!.getBounds().width, height: this.mainWindow!.getBounds().height - 36 })
+    instance.setAutoResize({ width: true, height: true, horizontal: false, vertical: false });
+    this.dispatchChangeEvent();
+  }
 
-  listWindow.push({
-    window,
-    name: `Tab-${uuid()}`
-  });
+  dispatchChangeEvent = () => {
+    ipcMain.emit("window-tabs-change", this.getTabData());
+  }
 
-  mainWindow!.webContents.send('tabChange', getTabData());
-  return window;
-};
+  newTab = async (url: string) => {
+    const window = await this.createWindow(url);
+    this.setActiveTab(window);
+    return window
+  }
 
-export function getTabData(): TabList{
-  return {
-    tabs: listWindow.map((instance) => instance.name),
-    active: listWindow.find((instance) => instance.window.webContents.id === mainWindow!.getBrowserView()?.webContents?.id)?.name || ''
+  initEventListener() {
+    ipcMain.on("open-new-tab", async (_event, url: string) => {
+      const window = await this.newTab(url)
+      this.dispatchChangeEvent();
+      return window.webContents.id;
+    });
+    
+    ipcMain.on("close-tab", (_event, id: number) => {
+      this.listWindow.forEach(win => {
+        if (win.window.webContents.id === id) {
+          (win.window.webContents as any).destroy();
+          this.listWindow = this.listWindow.filter(instance => instance.window.webContents.id !== id);
+        }
+      });
+      this.setActiveTab(this.mainWebView);
+      this.dispatchChangeEvent();
+    });
+    
+    ipcMain.on("switch-tab", (_event, id: number) => {
+      const tab = this.listWindow.find(instance => instance.window.webContents.id === id);
+      if (tab) {
+        this.setActiveTab(tab.window)
+      }
+      this.dispatchChangeEvent();
+    });
+
+    ipcMain.on("get-tabs-data", (_event) => {
+      return this.getTabData();
+    });
+  }
+
+  restoreOrCreateWindow = async () => {
+    let window = this.mainWindow;
+  
+    if (window === undefined) {
+      await this.createMainWindow();
+      window = this.mainWindow;
+    }
+  
+    if (window.isMinimized()) {
+      window.restore();
+    }
+  
+    window.focus();
   }
 }
 
-// Set active tab
-export function setTab(instance: BrowserView) {
-  mainWindow!.setBrowserView(instance);
-  instance.setBounds({ x: 0, y: 36, width: mainWindow!.getBounds().width, height: mainWindow!.getBounds().height - 36 })
-  instance.setAutoResize({ width: true, height: true, horizontal: false, vertical: false });
-  mainWindow!.webContents.send('tabChange', getTabData());
-}
 
-export async function newTab(){
-  const window = await createWindow(mainWindow.getBrowserView()?.webContents.getURL()!);
-  setTab(window);
-}
-
-/**
- * Restore existing BrowserWindow or Create new BrowserWindow
- */
-export async function restoreOrCreateWindow() {
-  let window = mainWindow;
-
-  if (window === undefined) {
-    await createMainWindow();
-    window = mainWindow;
-  }
-
-  if (window.isMinimized()) {
-    window.restore();
-  }
-
-  window.focus();
-}
+export const windowManger = new WindowManager();

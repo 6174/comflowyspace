@@ -1,4 +1,4 @@
-import { Button, Tabs } from 'antd';
+import { Button, Space, Tabs } from 'antd';
 import { useRef, useState } from 'react';
 import styles from  "@/styles/tab-manager.module.scss";
 const defaultPanes = new Array(2).fill(null).map((_, index) => {
@@ -43,14 +43,19 @@ export default function WindowTabManager() {
 
   return (
     <div className={styles.tabManager}>
-      <Tabs
-        hideAdd
-        onChange={onChange}
-        activeKey={activeKey}
-        type="editable-card"
-        onEdit={onEdit}
-        items={items}
-      />
+      <Space>
+        <div className='fixed-tab'>
+          Home
+        </div>
+        <Tabs
+          hideAdd
+          onChange={onChange}
+          activeKey={activeKey}
+          type="editable-card"
+          onEdit={onEdit}
+          items={items}
+        />
+      </Space>
     </div>
   );
 }
