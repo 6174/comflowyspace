@@ -6,10 +6,16 @@ import path from "path";
 import { format } from "url";
 import contextMenu from 'electron-context-menu';
 
+type WindowTab = {
+  url: string, 
+  name: string, 
+  type: "MANAGEMENT" | "DOC", 
+  id: number
+}
 // type define
 export interface IWindowInstance {
   window: BrowserView;
-  name: string;
+  tabData: WindowTab;
 }
 
 export const DEFAULT_WINDOW_URL = isDev
@@ -21,11 +27,11 @@ export const DEFAULT_WINDOW_URL = isDev
   });
 const PRELOAD_JS_PATH = path.resolve(__dirname, "../../preload/dist/", "index.js");
 
+
 /**
  * Manager All Windows
  */
 class WindowManager {
-  // golbal data
   listWindow: IWindowInstance[] = [];
   mainWindow!: BrowserWindow;
   mainWebView!: BrowserView;
@@ -79,11 +85,16 @@ class WindowManager {
     window.loadURL(`${DEFAULT_WINDOW_URL}/tabs`);
     window.show();
 
-    const windowView = this.mainWebView = await this.createWindow(DEFAULT_WINDOW_URL + "/");
-    this.setActiveTab(windowView);
+    const windowView = this.mainWebView = await this.#createWindow({
+      url:  DEFAULT_WINDOW_URL + "/",
+      name: "Home",
+      type: "MANAGEMENT",
+      id: 0
+    });
+    this.#setActiveTab(windowView);
   }
 
-  createWindow = async (href: string) => {
+  #createWindow = async (tabData: WindowTab) => {
     // Create the browser view.
     const window = new BrowserView({
       webPreferences: {
@@ -98,7 +109,7 @@ class WindowManager {
       },
     });
     contextMenu({ window });
-    window.webContents.loadURL(href);
+    window.webContents.loadURL(tabData.url);
     if (isDev) {
       window.webContents.openDevTools({ mode: 'detach' })
     }
@@ -107,22 +118,25 @@ class WindowManager {
     });
     this.listWindow.push({
       window,
-      name: `Tab-${uuid()}`
+      tabData: {
+        ...tabData,
+        id: window.webContents.id
+      }
     });
     return window;
   };
 
   getTabData = (): {
-    tabs: number[];
+    tabs: WindowTab[];
     active: number;
   } => {
     return {
-      tabs: this.listWindow.map((instance) => instance.window.webContents.id),
+      tabs: this.listWindow.map((instance) => instance.tabData),
       active: this.mainWindow!.getBrowserView()?.webContents?.id!
     }
   }
 
-  setActiveTab = (instance: BrowserView) => {
+  #setActiveTab = (instance: BrowserView) => {
     this.mainWindow!.setBrowserView(instance);
     instance.setBounds({ x: 0, y: 36, width: this.mainWindow!.getBounds().width, height: this.mainWindow!.getBounds().height - 36 })
     instance.setAutoResize({ width: true, height: true, horizontal: false, vertical: false });
@@ -133,15 +147,23 @@ class WindowManager {
     ipcMain.emit("window-tabs-change", this.getTabData());
   }
 
-  newTab = async (url: string) => {
-    const window = await this.createWindow(url);
-    this.setActiveTab(window);
+  newTab = async (tabData: WindowTab) => {
+    const window = await this.#createWindow(tabData);
+    this.#setActiveTab(window);
     return window
   }
 
+  replaceTab = async (id: number, newTabData: WindowTab) => {
+    const window = this.listWindow.find(instance => instance.window.webContents.id === id);
+    if (window) {
+      window.tabData = newTabData;
+      window.window.webContents.loadURL(newTabData.url);
+    }
+  }
+
   initEventListener() {
-    ipcMain.on("open-new-tab", async (_event, url: string) => {
-      const window = await this.newTab(url)
+    ipcMain.on("open-new-tab", async (_event, tabData: WindowTab) => {
+      const window = await this.newTab(tabData)
       this.dispatchChangeEvent();
       return window.webContents.id;
     });
@@ -153,20 +175,29 @@ class WindowManager {
           this.listWindow = this.listWindow.filter(instance => instance.window.webContents.id !== id);
         }
       });
-      this.setActiveTab(this.mainWebView);
+      this.#setActiveTab(this.mainWebView);
       this.dispatchChangeEvent();
     });
     
     ipcMain.on("switch-tab", (_event, id: number) => {
       const tab = this.listWindow.find(instance => instance.window.webContents.id === id);
       if (tab) {
-        this.setActiveTab(tab.window)
+        this.#setActiveTab(tab.window)
       }
       this.dispatchChangeEvent();
     });
 
     ipcMain.on("get-tabs-data", (_event) => {
       return this.getTabData();
+    });
+
+    ipcMain.on('replace-tab', (_event, data: {
+      id: number,
+      newTab: WindowTab
+    }) => {
+      this.replaceTab(data.id, data.newTab);
+      this.dispatchChangeEvent();
+      return this.getTabData(); 
     });
   }
 
