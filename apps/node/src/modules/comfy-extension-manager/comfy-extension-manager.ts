@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { appConfigManager } from '../..';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
+import { checkExtensionsInstalled } from './check-extension-status';
 
 export interface Extension {
   title: string;
@@ -12,8 +13,11 @@ export interface Extension {
   files: string[];
   js_path: string;
   pip: string[];
-  install_type: "git_clone" | "copy" | "unzip";
+  install_type: "git-clone" | "copy" | "unzip";
   description: string;
+  installed?: boolean;
+  need_update?: boolean;
+  disabled?: boolean;
   [_:string]: any
 }
 
@@ -62,8 +66,9 @@ class ComfyExtensionManager {
   }
 
   async getAllExtensions(): Promise<Extension[]> {
-    const ret = extensionList.extensions;
-    return ret as unknown as Extension[];
+    const ret = extensionList.extensions as unknown as Extension[];
+    checkExtensionsInstalled(ret);
+    return ret ;
   }
 
   async getExtensionNodeMap(): Promise<ExtensionNodeMap> {

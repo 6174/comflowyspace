@@ -6,7 +6,7 @@ import * as os from 'os';
 import simpleGit, { SimpleGit } from "simple-git";
 import { runScript } from "../utils/utils";
 import {downloadUrl} from "../utils/download-url";
-import { isValidGitUrl } from "@/modules/utils/is-valid-git-url";
+import { isValidGitUrl } from "../utils/is-valid-git-url";
 
 /**
  * Install extension

@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
-import { Button, Space } from "antd";
+import { Button, Col, Input, Row, Space } from "antd";
 
 function ExtensionManager() {
   return (
@@ -16,12 +16,62 @@ function ExtensionList() {
   const {onInit, extensions, extensionNodeMap} = useExtensionsState();
   useEffect(() => {
     onInit();
+  }, []);
+  const [displayedExtensions, setDisplayedExtensions] = useState(extensions);
+  const [searchText, setSearchText] = useState('');
+  const [filterType, setFilterType] = useState('all');
+
+  const doFilter = useCallback(() => {
+    let filteredExtensions = extensions.filter(
+      ext =>
+        ext.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        ext.description.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    if (filterType === 'installed') {
+      filteredExtensions = filteredExtensions.filter(ext => ext.installed);
+    } else if (filterType === 'uninstalled') {
+      filteredExtensions = filteredExtensions.filter(ext => !ext.installed);
+    }
+
+    setDisplayedExtensions(filteredExtensions);
+  }, [extensions, searchText, filterType]);
+
+  const switchType = useCallback((type: string) => {
+    setFilterType(type);
   }, [])
+
+  useEffect(() => {
+    doFilter();
+  }, [extensions, filterType])
+
   return (
     <div className='extension-list'>
-      {extensions.map(ext => {
-        return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
-      })}
+      <Row>
+        <Col span={12} style={{ marginBottom: 16 }}>
+          <Space>
+            <Button onClick={() => switchType('all')}>All</Button>
+            <Button onClick={() => switchType('installed')}>Installed</Button>
+            <Button onClick={() => switchType('uninstalled')}>Uninstalled</Button>
+          </Space>
+        </Col>
+        <Col span={12} style={{ marginBottom: 16 }}>
+          <Input
+            placeholder="Search Extensions"
+            value={searchText}
+            onChange={e => setSearchText(e.target.value)}
+            onPressEnter={doFilter}
+          />
+        </Col>
+      </Row>
+      <div className="result">
+        <div className="meta">
+          Total extensions: {displayedExtensions.length}
+        </div>
+        {displayedExtensions.map(ext => {
+          return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
+        })}
+      </div>
     </div>
   )
 }
