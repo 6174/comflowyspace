@@ -45,7 +45,10 @@ export default function WindowTabManager() {
   console.log("tabs", tabs, active);
   useEffect(()=> {
     if (tabs) {
-      setItems(tabs.map(tab => ({key: tab.id + "", label: tab.name})));
+      setItems(tabs.map(tab => ({
+        key: tab.id + "", 
+        label: tab.name
+      })));
     }
   }, [tabs])
 
@@ -73,7 +76,7 @@ export default function WindowTabManager() {
   return (
     <div className={styles.tabManager}>
       <div className="drag-area"></div>
-      <Space>
+      <Space className="tab-manager-inner">
         <div className='fixed-tab' onClick={ev => {
           if (active ! == 0) {
             onChangeTab(0);

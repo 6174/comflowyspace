@@ -1,4 +1,4 @@
-import { getBackendUrl } from '../config'
+import { getBackendUrl, getComfyUIBackendUrl } from '../config'
 import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
 import { PersistedWorkflowDocument, PersistedWorkflowNode } from '@/local-storage'
 
@@ -35,10 +35,22 @@ interface HistoryItem {
   outputs: Record<NodeId, Record<PropertyKey, any>>
 }
 
+export async function getExtensionInfos(): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('api/extension_infos'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
 export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   let ret;
   try {
-    const rest = await fetch(getBackendUrl('/object_info'));
+    const rest = await fetch(getComfyUIBackendUrl('/object_info'));
     ret = await rest.json();
   } catch (err) {
     console.log(err);
@@ -48,30 +60,30 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
 }
 
 export async function getQueue(): Promise<Queue> {
-  return await fetch(getBackendUrl('/queue')).then(async (r) => await r.json())
+  return await fetch(getComfyUIBackendUrl('/queue')).then(async (r) => await r.json())
 }
 
 export function getUploadImageUrl(): string {
-  return getBackendUrl('/upload/image')
+  return getComfyUIBackendUrl('/upload/image')
 }
 
 export function getImagePreviewUrl(name: string, type = "input", subfolder = ""): string {
-  return getBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=${type}&subfolder=${subfolder}`)
+  return getComfyUIBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=${type}&subfolder=${subfolder}`)
 }
 
 export async function deleteFromQueue(id: number): Promise<void> {
-  await fetch(getBackendUrl('/queue'), {
+  await fetch(getComfyUIBackendUrl('/queue'), {
     method: 'POST',
     body: JSON.stringify({ delete: [id] }),
   })
 }
 
 export async function getHistory(): Promise<History> {
-  return await fetch(getBackendUrl('/history')).then(async (r) => await r.json())
+  return await fetch(getComfyUIBackendUrl('/history')).then(async (r) => await r.json())
 }
 
 export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse> {
-  const resp = await fetch(getBackendUrl('/prompt'), {
+  const resp = await fetch(getComfyUIBackendUrl('/prompt'), {
     method: 'POST',
     body: JSON.stringify(prompt),
   })

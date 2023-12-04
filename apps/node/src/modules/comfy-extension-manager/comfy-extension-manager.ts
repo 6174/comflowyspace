@@ -2,7 +2,6 @@ import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 import * as path from 'path';
 import * as fs from 'fs';
 import { appConfigManager } from '../..';
-import * as fsExtra from 'fs-extra';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 
@@ -34,7 +33,6 @@ export const EXTENTION_FOLDER = getExtensionDir()
 export const WEB_EXTENTION_FOLDER = getWebExtensionDir()
 
 class ComfyExtensionManager {
-  private git: SimpleGit;
 
   constructor() {
     const gitOptions: SimpleGitOptions = {
@@ -44,51 +42,23 @@ class ComfyExtensionManager {
         config: [],
         trimmed: false
     };
-    this.git = simpleGit(gitOptions);
+    // this.git = simpleGit(gitOptions);
   }
 
   async downloadPlugin(plugin: Extension): Promise<void> {
-    const pluginDir = getExtensionDir(plugin.title)
-
-    // 如果插件目录已存在，删除它
-    if (fsExtra.existsSync(pluginDir)) {
-        await fsExtra.remove(pluginDir);
-    }
-
-    // 克隆插件
-    await this.git.clone(plugin.files[0]);
   }
 
   async updatePlugin(pluginName: string): Promise<void> {
-    // 切换到插件目录
-    await this.git.cwd(getExtensionDir(pluginName));
-
-    // 拉取最新代码
-    await this.git.pull('origin', 'master');
   }
 
   async updateAllPlugins(): Promise<void> {
-    const pluginDirs = fs.readdirSync(getExtensionDir());
-
-    for (const pluginName of pluginDirs) {
-      await this.updatePlugin(pluginName);
-    }
   }
 
   async listPlugins(): Promise<string[]> {
-    const pluginDirs = fs.readdirSync(getExtensionDir());
-    return pluginDirs;
+    throw new Error("not implemented");
   }
 
   async removePlugin(pluginName: string): Promise<void> {
-    const pluginDir = getExtensionDir(pluginName);
-
-    try {
-      await fsExtra.remove(pluginDir);
-      console.log(`Plugin '${pluginName}' removed successfully.`);
-    } catch (error) {
-      console.error(`Error removing plugin '${pluginName}': ${error}`);
-    }
   }
 
   async getAllExtensions(): Promise<Extension[]> {
@@ -108,9 +78,12 @@ class ComfyExtensionManager {
     return ret;
   }
 
-  // async getExtensionNodes(): Promise<Widget[]> {
-
-  // }
+  async getExtensionNodes(): Promise<Record<string, any>> {
+    const ret = (await fetch(
+      'http://127.0.0.1:8188/object_info'
+    )).json();
+    return ret;
+  }
 }
 
 const comfyExtensionManager = new ComfyExtensionManager();

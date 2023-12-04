@@ -1,0 +1,16 @@
+.extensionManager {
+  :global {
+    .extension-list {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+    .extension-list-item {
+      border: solid 1px;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  }
+}
