@@ -58,7 +58,7 @@ class WindowManager {
       frame: isMacOS,
       webPreferences: {
         devTools: isDev,
-        contextIsolation: false,
+        contextIsolation: true,
         nodeIntegration: false,
         preload: PRELOAD_JS_PATH,
         disableDialogs: false,
@@ -99,7 +99,7 @@ class WindowManager {
     const window = new BrowserView({
       webPreferences: {
         devTools: isDev,
-        contextIsolation: false,
+        contextIsolation: true,
         nodeIntegration: false,
       
         preload: PRELOAD_JS_PATH,
@@ -153,7 +153,7 @@ class WindowManager {
 
   dispatchChangeEvent = () => {
     console.log("dispatch tabs change event");
-    ipcMain.emit("window-tabs-change", this.getTabData());
+    this.mainWindow.webContents.send("window-tabs-change", this.getTabData());
   }
 
   newTab = async (tabData: WindowTab) => {

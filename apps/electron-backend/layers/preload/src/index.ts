@@ -10,7 +10,7 @@ type WindowTab = {
     id: number
 }
 
-(window as any).comfyElectronApi = { 
+contextBridge.exposeInMainWorld("comfyElectronApi", { 
     name: "comfyElectronApi",
     version: 0.1,
     receiveFromMain: (channel: string, func: any) => {
@@ -45,8 +45,4 @@ type WindowTab = {
             return ret;
         }
     }
-};
-
-(window as any).comfyElectronApi.receiveFromMain("some-event", (mssg: string) => {
-    console.log("mssg", mssg);
-})
+});
