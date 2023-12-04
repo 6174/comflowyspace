@@ -9,34 +9,44 @@ type WindowTab = {
     type: string, 
     id: number
 }
-  
-contextBridge.exposeInMainWorld("comfyElectronApi", { 
+
+(window as any).comfyElectronApi = { 
     name: "comfyElectronApi",
     version: 0.1,
+    receiveFromMain: (channel: string, func: any) => {
+        ipcRenderer.on(channel, (event, ...args) => func(...args));
+    },
     windowTabManager: {
         onWindowTabsChange: (callback: (tabsData: {
             tabs: WindowTab[];
             active: number;
         }) => void) => {
-            ipcRenderer.on('window-tabs-change', (_, tabsData) => callback(tabsData));
+            ipcRenderer.on('window-tabs-change', (_, tabsData) => {
+                console.log("callback(tabsData)", tabsData);
+                callback(tabsData)
+            });
             return () => ipcRenderer.removeListener('window-tabs-change', callback);
         },
         openNewTab: async (config: Partial<WindowTab>) => {
-            const ret = await ipcRenderer.sendSync('open-new-tab', config);
+            const ret = await ipcRenderer.invoke('open-new-tab', config);
             return ret;
         },
         closeTab: async (id: number) => {
-            await ipcRenderer.sendSync('close-tab', id);
+            await ipcRenderer.invoke('close-tab', id);
         },
         swtichTab: async (id: number) => {
-            await ipcRenderer.sendSync('switch-tab', id);
+            await ipcRenderer.invoke('switch-tab', id);
         },
         replaceTab: async (id: number, newTab: WindowTab) => {
-            await ipcRenderer.sendSync('replace-tab', {id, newTab});
+            await ipcRenderer.invoke('replace-tab', {id, newTab});
         },
         getTabsData: async () => {
-            const ret = await ipcRenderer.sendSync('get-tabs-data');
+            const ret = await ipcRenderer.invoke('get-tabs-data');
             return ret;
         }
     }
-});
+};
+
+(window as any).comfyElectronApi.receiveFromMain("some-event", (mssg: string) => {
+    console.log("mssg", mssg);
+})

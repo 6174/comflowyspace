@@ -1,7 +1,7 @@
 import { BrowserView, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 
-import { isMacOS, uuid } from "./utils";
+import { isMacOS } from "./utils";
 import path from "path";
 import { format } from "url";
 import contextMenu from 'electron-context-menu';
@@ -58,7 +58,7 @@ class WindowManager {
       frame: isMacOS,
       webPreferences: {
         devTools: isDev,
-        contextIsolation: true,
+        contextIsolation: false,
         nodeIntegration: false,
         preload: PRELOAD_JS_PATH,
         disableDialogs: false,
@@ -99,7 +99,7 @@ class WindowManager {
     const window = new BrowserView({
       webPreferences: {
         devTools: isDev,
-        contextIsolation: true,
+        contextIsolation: false,
         nodeIntegration: false,
       
         preload: PRELOAD_JS_PATH,
@@ -109,7 +109,8 @@ class WindowManager {
       },
     });
     contextMenu({ window });
-    window.webContents.loadURL(tabData.url);
+    const url = this.#getRealUrl(tabData.url);
+    window.webContents.loadURL(url);
     if (isDev) {
       window.webContents.openDevTools({ mode: 'detach' })
     }
@@ -126,13 +127,20 @@ class WindowManager {
     return window;
   };
 
+  #getRealUrl(url: string): string {
+    const urlRegex = /^(https?|file):\/\/\S+$/;
+    const ret = urlRegex.test(url) ? url : DEFAULT_WINDOW_URL + url;
+    return ret;
+  }
+
   getTabData = (): {
     tabs: WindowTab[];
     active: number;
   } => {
     return {
       tabs: this.listWindow.map((instance) => instance.tabData),
-      active: this.mainWindow!.getBrowserView()?.webContents?.id!
+      active: 0
+      // active: this.mainWindow!.getBrowserView()?.webContents?.id!
     }
   }
 
@@ -144,6 +152,7 @@ class WindowManager {
   }
 
   dispatchChangeEvent = () => {
+    console.log("dispatch tabs change event");
     ipcMain.emit("window-tabs-change", this.getTabData());
   }
 
@@ -157,18 +166,19 @@ class WindowManager {
     const window = this.listWindow.find(instance => instance.window.webContents.id === id);
     if (window) {
       window.tabData = newTabData;
-      window.window.webContents.loadURL(newTabData.url);
+      const url = this.#getRealUrl(newTabData.url);
+      window.window.webContents.loadURL(url);
     }
   }
 
   initEventListener() {
-    ipcMain.on("open-new-tab", async (_event, tabData: WindowTab) => {
+    ipcMain.handle("open-new-tab", async (_event, tabData: WindowTab) => {
       const window = await this.newTab(tabData)
       this.dispatchChangeEvent();
       return window.webContents.id;
     });
     
-    ipcMain.on("close-tab", (_event, id: number) => {
+    ipcMain.handle("close-tab", async (_event, id: number) => {
       this.listWindow.forEach(win => {
         if (win.window.webContents.id === id) {
           (win.window.webContents as any).destroy();
@@ -179,7 +189,7 @@ class WindowManager {
       this.dispatchChangeEvent();
     });
     
-    ipcMain.on("switch-tab", (_event, id: number) => {
+    ipcMain.handle("switch-tab", async (_event, id: number) => {
       const tab = this.listWindow.find(instance => instance.window.webContents.id === id);
       if (tab) {
         this.#setActiveTab(tab.window)
@@ -187,11 +197,13 @@ class WindowManager {
       this.dispatchChangeEvent();
     });
 
-    ipcMain.on("get-tabs-data", (_event) => {
-      return this.getTabData();
+    ipcMain.handle("get-tabs-data", async (_event) => {
+      console.log("call get-tabs-data");
+      const ret = this.getTabData();
+      return ret;
     });
 
-    ipcMain.on('replace-tab', (_event, data: {
+    ipcMain.handle('replace-tab', async (_event, data: {
       id: number,
       newTab: WindowTab
     }) => {

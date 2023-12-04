@@ -1,5 +1,5 @@
 import path from 'path'
-import { app } from 'electron'
+import { app, ipcMain } from 'electron'
 // import prepareNext from 'electron-next'
 import { windowManger } from "./windows-manager";
 import "./prelaunch";
@@ -30,6 +30,7 @@ app.on('ready', async () => {
 
   // auto update listener
   startAutoUpdater()
+  ipcMain.emit('some-event', 'Hello from main process!');
 })
 
 // Quit the app once all windows are closed

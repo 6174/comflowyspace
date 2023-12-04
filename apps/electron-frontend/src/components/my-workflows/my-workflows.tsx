@@ -5,6 +5,7 @@ import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { Button, Space, message } from 'antd';
 import {PlusIcon} from "ui/icons";
 import { useRouter } from 'next/router';
+import { openTabPage } from '@/lib/electron-bridge';
 
 function MyWorkflowsPage() {
 
@@ -50,7 +51,13 @@ function WorkflowList() {
             </div>
             <div className='actions'>
               <Button onClick={ev => {
-                router.push(`/app/${doc.id}`)
+                // router.push(`/app/${doc.id}`)
+                openTabPage({
+                  name: doc.title,
+                  url: `/app/${doc.id}`,
+                  id: 0,
+                  type: "DOC"
+                });
               }}>Edit</Button>
             </div>
           </div>
