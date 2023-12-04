@@ -1,9 +1,10 @@
-import { BrowserView, BrowserWindow } from "electron";
+import { BrowserView, BrowserWindow, app } from "electron";
 import isDev from "electron-is-dev";
 
 import { isMacOS, uuid } from "./utils";
 import path from "path";
 import { format } from "url";
+import contextMenu from 'electron-context-menu';
 
 // type define
 export interface IWindowInstance {
@@ -84,6 +85,7 @@ export async function createMainWindow() {
   setTab(windowView);
 }
 
+import { download } from 'electron-dl';
 export async function createWindow(href: string) {
   // Create the browser view.
   const window = new BrowserView({
@@ -96,6 +98,30 @@ export async function createWindow(href: string) {
       safeDialogs: true,
       enableWebSQL: false,
     },
+  });
+
+  contextMenu({
+    window,
+    // prepend: (defaultActions: any, params, window: any) => [
+    //   ...defaultActions,
+    //   {
+    //     label: 'Download Image',
+    //     visible: params.mediaType === 'image',
+    //     click: async () => {
+    //       // 下载图片的逻辑
+    //       const options = {
+    //         directory: app.getPath('downloads'), // 下载到系统的下载目录
+    //         filename: `image_${Date.now()}.png`, // 可以根据需要修改文件名
+    //       };
+    //       try {
+    //         await download(window, params.srcURL, options);
+    //         console.log('Image downloaded successfully!');
+    //       } catch (error) {
+    //         console.error('Error downloading image:', error);
+    //       }
+    //     },
+    //   }
+    // ],
   });
 
   window.webContents.loadURL(href);
