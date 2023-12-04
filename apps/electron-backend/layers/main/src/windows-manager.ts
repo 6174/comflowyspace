@@ -101,7 +101,6 @@ class WindowManager {
         devTools: isDev,
         contextIsolation: true,
         nodeIntegration: false,
-      
         preload: PRELOAD_JS_PATH,
         disableDialogs: false,
         safeDialogs: true,
@@ -139,8 +138,7 @@ class WindowManager {
   } => {
     return {
       tabs: this.listWindow.map((instance) => instance.tabData),
-      active: 0
-      // active: this.mainWindow!.getBrowserView()?.webContents?.id!
+      active: this.mainWindow!.getBrowserView()?.webContents?.id!
     }
   }
 
@@ -191,10 +189,11 @@ class WindowManager {
     
     ipcMain.handle("switch-tab", async (_event, id: number) => {
       const tab = this.listWindow.find(instance => instance.window.webContents.id === id);
+      console.log("switch tab", id, tab);
       if (tab) {
         this.#setActiveTab(tab.window)
+        this.dispatchChangeEvent();
       }
-      this.dispatchChangeEvent();
     });
 
     ipcMain.handle("get-tabs-data", async (_event) => {

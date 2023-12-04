@@ -1,4 +1,9 @@
 .tabManager {
     margin-left: 80px;
-    -webkit-app-region: drag;  /* 指定拖动区域 */
+    :global {
+        .drag-area {
+            -webkit-app-region: drag;  /* 指定拖动区域 */
+            height: 10px;
+        }
+    }
 }
