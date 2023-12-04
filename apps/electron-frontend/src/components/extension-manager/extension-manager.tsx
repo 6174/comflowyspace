@@ -86,9 +86,10 @@ function ExtensionListItem({extension}: {
       <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
       <div className="actions">
         <Space>
-          <Button>Install</Button>
-          <Button>Uninstall</Button>
-          <Button>Update</Button>
+          {extension.installed  === false && <Button>Install</Button>}
+          {extension.installed && <Button>UnInstall</Button>}
+          {extension.installed && extension.need_update && <Button>Update</Button>}
+          {extension.installed && !!extension.disabled ? <Button>UnDisabled</Button> : <Button>Disable</Button>}
         </Space>
       </div>
     </div>

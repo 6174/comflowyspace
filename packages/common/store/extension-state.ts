@@ -5,6 +5,9 @@ export type Extension = {
     title: string;
     author: string;
     description: string;
+    installed: boolean;
+    disabled: boolean;
+    need_update: boolean;
     [_:string]: any
 }
 

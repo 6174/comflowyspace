@@ -1,27 +1,16 @@
 import Configstore from 'configstore';
 import * as path from 'path';
-import * as os from 'os';
-import * as fs from 'fs';
+import { getAppDataDir } from './utils/get-appdata-dir';
 
 class MyConfigManager {
   private config: Configstore;
 
   constructor(configName: string) {
     // 设置配置文件的路径，存储在用户目录的 .comflowy 目录下
-    const configDir = this.getConfigDir();
+    const configDir = getAppDataDir();
     const configPath = path.join(configDir, `${configName}.json`);
-
-    // 创建目录
-    if (!fs.existsSync(configDir)) {
-      fs.mkdirSync(configDir);
-    }
-
     // 初始化 Configstore 实例
     this.config = new Configstore(configName, {}, { configPath });
-  }
-
-  getConfigDir() {
-    return path.join(os.homedir(), '.comflowy');
   }
 
   // 获取配置项
@@ -42,6 +31,11 @@ class MyConfigManager {
 
 // 示例用法
 const appConfigManager = new MyConfigManager('_config');
+
+export enum CONFIG_KEYS {
+
+}
+
 
 export {appConfigManager}
 

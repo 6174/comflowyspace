@@ -31,6 +31,7 @@ const config = {
       external: [
         "electron",
         "express",
+        "fs-extra",
         "electron-devtools-installer",
         ...builtinModules.flatMap((p) => [p, `node:${p}`]),
       ],

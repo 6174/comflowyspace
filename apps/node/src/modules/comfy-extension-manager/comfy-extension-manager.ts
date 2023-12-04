@@ -5,6 +5,7 @@ import { appConfigManager } from '../..';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 import { checkExtensionsInstalled } from './check-extension-status';
+import { getAppDataDir } from '../utils/get-appdata-dir';
 
 export interface Extension {
   title: string;
@@ -26,11 +27,11 @@ export type ExtensionNodeMap = {
 }
 
 export function getExtensionDir(name: string = ""): string {
-  return path.join(appConfigManager.getConfigDir(), 'comfyUI', 'custom_nodes', name)
+  return path.join(getAppDataDir(), 'ComfyUI', 'custom_nodes', name)
 }
 
 export function getWebExtensionDir(name: string = ""): string {
-  return path.join(appConfigManager.getConfigDir(), 'comfyUI', 'web', "extensions", name)
+  return path.join(getAppDataDir(), 'ComfyUI', 'web', "extensions", name)
 }
 
 export const EXTENTION_FOLDER = getExtensionDir()
@@ -67,7 +68,7 @@ class ComfyExtensionManager {
 
   async getAllExtensions(): Promise<Extension[]> {
     const ret = extensionList.extensions as unknown as Extension[];
-    checkExtensionsInstalled(ret);
+    await checkExtensionsInstalled(ret);
     return ret ;
   }
 
