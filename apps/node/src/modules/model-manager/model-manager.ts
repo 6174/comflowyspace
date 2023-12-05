@@ -6,20 +6,29 @@ import models from './models';
 /**
  * Manage models
  */
-type AllModels = { [key: string]: string[] }
+type AllModels = { [key: string]: {
+    name: string,
+    size: number
+}[]}
 class ModelManager {
     getAllInstalledModels = (): AllModels => {
         const models: AllModels = {};
         Object.entries(FOLDER_NAMES_AND_PATHS).forEach(([folderName, [paths, extensions]]) => {
             if (Array.isArray(extensions)) {
                 const supportedExtensions: string[] = extensions.map(ext => ext.slice(1)); // Remove dot from extensions
-                const files: string[] = [];
+                const files: {
+                    name: string,
+                    size: number
+                }[] = [];
                 paths.forEach((dir: string) => {
                     try {
                         const dirContents = fs.readdirSync(dir);
                         dirContents.forEach(file => {
                             if (supportedExtensions.includes(path.extname(file))) {
-                                files.push(file);
+                                files.push({
+                                    name: file,
+                                    size: 1
+                                });
                             }
                         });
                     } catch (error) {
