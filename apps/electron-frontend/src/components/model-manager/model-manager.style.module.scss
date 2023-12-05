@@ -1,0 +1,15 @@
+
+.modelManagement {
+  padding-right: 20px;
+  :global{
+    .model-list {
+      margin: 20px 0;
+    }
+    .model-list-item {
+      border: solid 1px;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+  }
+}
