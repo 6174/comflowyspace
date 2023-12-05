@@ -1,10 +1,9 @@
 import Layout from "@/components/layout/layout";
+import ModelManager from "@/components/model-manager/model-manager";
 export default function WorkspaceModels() {
   return (
     <Layout title="Comflowy - Manage Models">
-      <div className="workspace-homepage">
-        Models
-      </div>
+      <ModelManager/>
     </Layout>
   );
 }

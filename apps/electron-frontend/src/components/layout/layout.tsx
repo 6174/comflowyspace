@@ -56,7 +56,7 @@ const WorkspaceNav = () => {
             Models
           </Link>
         </div>
-        <div className={`workspace-nav-item ${path === "" ? "active" : ""}`}>
+        <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`}>
           <Link href="/extensions">
             Extensions
           </Link>
