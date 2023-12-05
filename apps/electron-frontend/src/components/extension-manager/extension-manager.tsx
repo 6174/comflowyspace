@@ -13,7 +13,7 @@ function ExtensionManager() {
 }
 
 function ExtensionList() {
-  const {onInit, extensions, extensionNodeMap} = useExtensionsState();
+  const {onInit, extensions, extensionNodeMap, loading} = useExtensionsState();
   useEffect(() => {
     onInit();
   }, []);
@@ -65,9 +65,13 @@ function ExtensionList() {
         </Col>
       </Row>
       <div className="result">
-        <div className="meta">
-          Total extensions: {displayedExtensions.length}
-        </div>
+        {loading ? (
+          <div> Loading....</div>
+        ) : (
+          <div className="meta">
+            Total extensions: {displayedExtensions.length}
+          </div>
+        )}
         {displayedExtensions.map(ext => {
           return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
         })}
