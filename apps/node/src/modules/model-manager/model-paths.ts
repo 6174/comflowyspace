@@ -25,7 +25,7 @@ interface FolderPaths {
   controlnet: [string[], ExtensionType[]];
   gligen: [string[], ExtensionType[]];
   upscale_models: [string[], ExtensionType[]];
-  custom_nodes: [string[], any[]]; // Adjust 'any' based on the actual value type
+  // custom_nodes: [string[], any[]]; // Adjust 'any' based on the actual value type
   hypernetworks: [string[], ExtensionType[]];
   classifiers: [string[], { '': any }]; // Adjust 'any' based on the actual value type
   'T2I-Adapter': [string[], ExtensionType[]];
@@ -57,7 +57,7 @@ export const FOLDER_NAMES_AND_PATHS: FolderPaths = {
   ],
   gligen: [[`${MODELS_DIR}/gligen`], supported_pt_extensions],
   upscale_models: [[`${MODELS_DIR}/upscale_models`], supported_pt_extensions],
-  custom_nodes: [[`${BASE_PATH}/custom_nodes`], []], // Adjust 'any' based on the actual value type
+  // custom_nodes: [[`${BASE_PATH}/custom_nodes`], []], // Adjust 'any' based on the actual value type
   hypernetworks: [[`${MODELS_DIR}/hypernetworks`], supported_pt_extensions],
   classifiers: [[`${MODELS_DIR}/classifiers`], { '': null }], // Adjust 'null' based on the actual value type
 };

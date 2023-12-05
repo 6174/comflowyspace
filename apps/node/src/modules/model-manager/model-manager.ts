@@ -15,7 +15,7 @@ class ModelManager {
         const models: AllModels = {};
         Object.entries(FOLDER_NAMES_AND_PATHS).forEach(([folderName, [paths, extensions]]) => {
             if (Array.isArray(extensions)) {
-                const supportedExtensions: string[] = extensions.map(ext => ext.slice(1)); // Remove dot from extensions
+                const supportedExtensions: string[] = extensions; // Remove dot from extensions
                 const files: {
                     name: string,
                     size: number

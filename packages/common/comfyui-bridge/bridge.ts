@@ -47,6 +47,19 @@ export async function getExtensionInfos(): Promise<any> {
   return ret;
 }
 
+export async function getModelInfos(): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('api/model_infos'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+
 export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   let ret;
   try {

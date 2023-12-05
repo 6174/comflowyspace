@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import cors from 'cors';
 import { ApiRouteGetExtensions } from './routes/api/get-extensions';
+import { ApiRouteGetModels } from './routes/api/get-models';
 
 export async function startAppServer() {
   console.log("start server sd");
@@ -37,6 +38,7 @@ export async function startAppServer() {
   });
 
   app.get('/api/extension_infos', ApiRouteGetExtensions)
+  app.get('/api/model_infos', ApiRouteGetModels);
 
   app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);

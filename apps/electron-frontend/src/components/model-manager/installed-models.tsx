@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { Button, Card, Space } from 'antd';
 
 // Your model data
-const allModels = {
-    type1: [
-        { name: 'Model A', size: 1 },
-        { name: 'Model B', size: 2 },
-    ],
-    type2: [
-        { name: 'Model C', size: 1.5 },
-        { name: 'Model D', size: 3 },
-    ],
-    // Add more types and models as needed
-};
+// const installedModels = {
+//     type1: [
+//         { name: 'Model A', size: 1 },
+//         { name: 'Model B', size: 2 },
+//     ],
+//     type2: [
+//         { name: 'Model C', size: 1.5 },
+//         { name: 'Model D', size: 3 },
+//     ],
+//     // Add more types and models as needed
+// };
+
+import { useModelState } from '@comflowy/common/store/model-state';
 
 const InstalledModels = () => {
-    const [selectedType, setSelectedType] = useState('type1'); // State to keep track of the selected model type
+    const {installedModels} = useModelState();
+    const [selectedType, setSelectedType] = useState('checkpoints'); // State to keep track of the selected model type
 
     // Function to handle type filter change
     const handleTypeFilterChange = (type) => {
@@ -24,18 +27,18 @@ const InstalledModels = () => {
 
     // Function to get all unique model types
     const getModelTypes = () => {
-        const types = Object.keys(allModels);
+        const types = Object.keys(installedModels);
         return types;
     };
 
     // Function to get the number of models for a given type
     const getModelCount = (type) => {
-        return allModels[type].length;
+        return installedModels[type].length;
     };
 
     // Function to get models for the selected type
     const getModelsForType = () => {
-        return selectedType ? allModels[selectedType] : [];
+        return selectedType ? installedModels[selectedType] || [] : [];
     };
 
     return (
