@@ -1,25 +1,31 @@
 import Queue from "bull";
 import {SlotEvent} from "@comflowy/common/utils/slot-event";
+import { type } from "os";
+
+export type TaskEventDispatcher = (event: Pick<TaskEvent, "message" | "data" | "progress">) => void;
+export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<any>
 export type TaskProps = {
     taskId: string,
     name: string,
     params?: any,
-    executor: (dispatcher: (event: TaskEvent) => void) => Promise<any>,
+    executor: TaskExecutor,
+    [key: string]: any
 }
 
 export type TaskProgressEvent = {
     type: "PROGRESS",
-    taskId: string,
-    name: string,
-    progress: number,
-    message: string
+    task: TaskProps,
+    progress?: number,
+    message?: string,
+    data?: any
 }
 
 export type TaskResultEvent = {
     type: "RESULT",
-    taskId: string,
-    name: string,
-    result: any
+    task: TaskProps,
+    progress?: number,
+    message?: string,
+    data?: any
 }
 
 export type TaskEvent = TaskProgressEvent | TaskResultEvent;
@@ -49,15 +55,25 @@ class TaskQueue {
     }
 
     private async processJob(job: Queue.Job<TaskProps>) {
-        const { executor, taskId, name } = job.data;
+        const { executor, params } = job.data;
         try {
-          const result = await executor(this.#dispatchTaskProgressEvent);
+          const result = await executor((event) => {
+            if (event.progress) {
+                job.progress(event.progress);
+            }
+            this.#dispatchTaskProgressEvent({
+                type: "PROGRESS",
+                task: job.data,
+                data: event.data,
+                progress: event.progress,
+                message: event.message
+            });
+          }, params);
           job.progress(100);
           this.#dispatchTaskProgressEvent({
             type: "RESULT",
-            taskId,
-            name,
-            result
+            task: job.data,
+            data: result,
           });
           return result;
         } catch (error) {

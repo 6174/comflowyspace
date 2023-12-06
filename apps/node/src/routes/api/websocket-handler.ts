@@ -28,7 +28,7 @@ export function setupWebsocketHandler(app: Express) {
   });
 
   taskQueue.progressEvent.on((event: TaskEvent) => {
-    const ws = clientMap.get(event.taskId);
+    const ws = clientMap.get(event.task.taskId);
     if (ws) {
         console.log("send progress event", event);
         ws.send(JSON.stringify(event));

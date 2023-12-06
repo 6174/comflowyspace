@@ -10,7 +10,7 @@ export async function ApiRouteAddTask(req: Request, res: Response) {
     try {
         const {data} = req.body;
         const taskProps = data as TaskProps;
-        taskQueue.addTask
+        taskQueue.addTask(taskProps)
         res.send({
             success: true,
             message: "Successful add task to queue"
