@@ -260,3 +260,13 @@ export async function stopComfyUI() {
         console.error('Error stopping Python program:', error);
     }
 }
+
+export async function isComfyUIAlive() {
+    try {
+        // 检查 Python 进程是否存在
+        return comfyuiProcess?.exitCode === null;
+    } catch (error) {
+        console.error('Error checking process:', error);
+        return false;
+    }
+}
