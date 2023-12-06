@@ -3,6 +3,7 @@ import {SlotEvent} from "@comflowy/common/utils/slot-event";
 export type TaskProps = {
     taskId: string,
     name: string,
+    params?: any,
     executor: (dispatcher: (event: TaskEvent) => void) => Promise<any>,
 }
 
