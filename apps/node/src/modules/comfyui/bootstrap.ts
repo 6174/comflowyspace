@@ -32,14 +32,13 @@ export async function checkBasicRequirements() {
 // 检查一个程序是否已经安装
 async function checkIfInstalled(name: string): Promise<boolean> {
     try {
-        if (name === "conda") {
-            await execa(name);
-        }
         if (name === "python") {
             const ret = await runCommand(`conda activate ${CONDA_ENV_NAME} && python --version`);
             if (ret.exitCode !== 0) {
                 return false;
             }
+        } else {
+            await execa(name);
         }
         return true;
     } catch {
