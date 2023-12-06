@@ -1,7 +1,5 @@
 import Queue from "bull";
 import {SlotEvent} from "@comflowy/common/utils/slot-event";
-import { type } from "os";
-
 export type TaskEventDispatcher = (event: Pick<TaskEvent, "message" | "data" | "progress">) => void;
 export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<any>
 export type TaskProps = {
@@ -37,6 +35,24 @@ class TaskQueue {
     taskQueue: Queue.Queue<TaskProps>;
     progressEvent = new SlotEvent<TaskEvent>();
     constructor() {
+        // polyfill
+
+        // @ts-ignore
+        const crypto = require("crypto"); 
+        // @ts-ignore
+        global.crypto1 = crypto;
+        // @ts-ignore
+        console.log(crypto1.getRandomValues);
+
+        // // @ts-ignore
+        // if (typeof crypto.getRandomValues !== 'function') {
+        //     // @ts-ignore
+        //     crypto.getRandomValues = () => {
+        //         // @ts-ignore
+        //         return crypto.randomBytes(16).toString('hex')
+        //     }
+        // }
+
         this.taskQueue = new Queue<TaskProps>("TaskQueue", {
             limiter: {
                 max: 5,

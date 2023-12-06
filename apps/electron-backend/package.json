@@ -19,6 +19,7 @@
   "dependencies": {
     "@comflowy/common": "workspace:*",
     "@comflowy/node": "workspace:*",
+    "bull": "^4.11.5",
     "configstore": "^6.0.0",
     "cross-env": "7.0.3",
     "electron-context-menu": "^3.6.1",
@@ -30,7 +31,8 @@
     "electron-updater": "^6.1.7",
     "express": "^4.18.2",
     "fs-extra": "^11.2.0",
-    "simple-git": "^3.21.0"
+    "simple-git": "^3.21.0",
+    "uuid": "9.0.1"
   },
   "devDependencies": {
     "@types/configstore": "^6.0.2",

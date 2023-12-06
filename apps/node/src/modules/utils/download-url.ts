@@ -3,6 +3,7 @@ import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
 import { pipeline } from 'stream/promises';
 import { verifyFileMd5 } from './verifymd5';
+import * as progress from "progress";
 
 export async function downloadUrl(url: string, targetPath: string): Promise<void> {
   const filename: string = path.basename(url);
@@ -14,11 +15,21 @@ export async function downloadUrl(url: string, targetPath: string): Promise<void
       throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
     }
 
+    const totalSize = Number(response.headers.get('content-length'));
+    const progressBar = new progress('[:bar] :percent :etas', {
+      complete: '=',
+      incomplete: ' ',
+      width: 40,
+      total: totalSize,
+    });
+
     const bufferStream = new (require('stream').PassThrough)();
+    response.body!.on('data', (chunk) => {
+      progressBar.tick(chunk.length);
+    });
     response.body!.pipe(bufferStream);
-
     await pipeline(bufferStream, fs.createWriteStream(filePath));
-
+    
     console.log(`Downloaded ${filename} to ${targetPath}`);
   } catch (error) {
     console.error(`Error downloading from ${url}: ${error}`);

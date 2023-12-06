@@ -2,14 +2,14 @@ import express, { Request, Response, response } from 'express';
 import cors from 'cors';
 import { ApiRouteGetExtensions } from './routes/api/get-extensions';
 import { ApiRouteGetModels } from './routes/api/get-models';
-import { ApiRouteAddTask } from './routes/api/add-task';
 import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
+import { ApiRouteAddTask } from './routes/api/add-task';
 export async function startAppServer() {
   console.log("start server sd");
   const app = express();
   const port = 3333;
-
+  
   app.use(express.json());
 
   app.use(cors({
@@ -18,12 +18,13 @@ export async function startAppServer() {
     credentials: true,  
   }));
 
-  setupComfyUIProxy(app);
-  setupWebsocketHandler(app);
+  // setupComfyUIProxy(app);
+  // setupWebsocketHandler(app);
 
   app.get('/', (req: Request, res: Response) => {
     res.send('Hello, Express + TypeScript! asdf');
   });
+  
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;

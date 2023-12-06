@@ -2,7 +2,7 @@ import {Express} from "express";
 import {WebSocketServer, WebSocket} from "ws";
 import * as http from "http";
 import * as url from "url";
-import { TaskEvent, taskQueue } from "@/modules/task-queue/task-queue";
+import { TaskEvent, taskQueue } from "../../modules/task-queue/task-queue";
 
 // websocket handler
 export function setupWebsocketHandler(app: Express) {
