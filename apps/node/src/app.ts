@@ -19,7 +19,7 @@ export async function startAppServer() {
   }));
 
   setupComfyUIProxy(app);
-  // setupWebsocketHandler(app);
+  setupWebsocketHandler(app);
 
   app.get('/', (req: Request, res: Response) => {
     res.send('Hello, Express + TypeScript! asdf');

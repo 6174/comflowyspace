@@ -2,6 +2,7 @@ import Configstore from 'configstore';
 import * as path from 'path';
 import { getAppDataDir } from './utils/get-appdata-dir';
 
+export const CONDA_ENV_NAME = "comflowy";
 class MyConfigManager {
   private config: Configstore;
 
