@@ -43,6 +43,9 @@ importers:
       '@comflowy/node':
         specifier: workspace:*
         version: link:../node
+      '@types/ws':
+        specifier: ^8.5.10
+        version: 8.5.10
       bull:
         specifier: ^4.11.5
         version: 4.11.5
@@ -85,6 +88,9 @@ importers:
       uuid:
         specifier: 9.0.1
         version: 9.0.1
+      ws:
+        specifier: ^8.14.2
+        version: 8.14.2
     devDependencies:
       '@types/configstore':
         specifier: ^6.0.2

@@ -7,3 +7,9 @@ export function getAppDataDir() {
     fsExtra.ensureDirSync(configDir)
     return configDir;
 }
+
+export function getAppTmpDir() {
+    const tmpDir = path.join(getAppDataDir(), 'tmp');
+    fsExtra.ensureDirSync(tmpDir)
+    return tmpDir;
+}

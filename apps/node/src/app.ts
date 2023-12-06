@@ -9,7 +9,7 @@ export async function startAppServer() {
   console.log("start server sd");
   const app = express();
   const port = 3333;
-  
+
   app.use(express.json());
 
   app.use(cors({
@@ -18,7 +18,7 @@ export async function startAppServer() {
     credentials: true,  
   }));
 
-  // setupComfyUIProxy(app);
+  setupComfyUIProxy(app);
   // setupWebsocketHandler(app);
 
   app.get('/', (req: Request, res: Response) => {

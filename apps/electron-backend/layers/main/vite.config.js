@@ -35,6 +35,7 @@ const config = {
         "bull",
         "crypto",
         "uuid",
+        "ws",
         "electron-devtools-installer",
         ...builtinModules.flatMap((p) => [p, `node:${p}`]),
       ],
