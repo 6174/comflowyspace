@@ -1,7 +1,5 @@
-import { uuid } from '@comflowy/common';
-import { Extension } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Request, Response } from 'express';
-import { TaskProps, taskQueue } from 'src/modules/task-queue/task-queue';
+import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 
 /**
@@ -12,27 +10,37 @@ import { installExtension } from '../../modules/comfy-extension-manager/install-
 export async function ApiRouteInstallExtension(req: Request, res: Response) {
     try {
         const {data} = req.body;
-        const extension = data as Extension;
+        console.log("start install extension");
+        const taskParams = data as TaskProps; 
         const task: TaskProps = {
-            taskId: uuid(),
-            name: `download-extension-${extension.title}`,
-            params: extension,
+            taskId: taskParams.taskId,
+            name: taskParams.name,
+            params: taskParams.params,
             executor: async (dispatcher) => {
-               await installExtension(dispatcher, extension);
+                dispatcher({
+                    message: "wow"
+                });
+                return "success";
+            //    await installExtension(dispatcher, extension);
             }
         };
-        taskQueue.addTask(task);
+        // taskQueue.progressEvent.emit({
+        //     type: "PROGRESS",
+        //     task,
+        //     message: "test message"
+        // })
         res.send({
             success: true,
             data: {
-                taskId: task.taskId,
-                taskName: task.name,
+                taskId: task.taskId
             }
         });
-    } catch (err) {
+        taskQueue.addTask(task);
+    } catch (err: any) {
+        console.log("error", err);
         res.send({
             success: false,
-            error: err
+            error: err.message
         })
     }
     

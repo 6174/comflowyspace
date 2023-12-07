@@ -8,25 +8,23 @@ import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension } from './routes/api/install-extension';
 import { ApiRouteInstallModel } from './routes/api/install-model';
 export async function startAppServer() {
-  console.log("start server sd");
   const app = express();
   const port = 3333;
 
   app.use(express.json());
 
   app.use(cors({
-    origin: '*',  
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,  
+    credentials: true,
   }));
 
   setupComfyUIProxy(app);
-  setupWebsocketHandler(app);
-
+  
   app.get('/', (req: Request, res: Response) => {
     res.send('Hello, Express + TypeScript! asdf');
   });
-  
+
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;
@@ -36,7 +34,9 @@ export async function startAppServer() {
   app.post('/api/install_model', ApiRouteInstallModel)
   app.get('/api/extension_infos', ApiRouteGetExtensions)
   app.get('/api/model_infos', ApiRouteGetModels);
-  app.listen(port, () => {
+
+  const server = setupWebsocketHandler(app);
+  server.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
   });
 }

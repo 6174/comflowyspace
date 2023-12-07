@@ -2,7 +2,6 @@ import { memo, useEffect, useRef, useState } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer} from 'reactflow'
 import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
 
-import { getBackendUrl } from '@comflowy/common/config'
 import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";

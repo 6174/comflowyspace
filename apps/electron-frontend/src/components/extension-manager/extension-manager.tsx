@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
 import { Button, Col, Input, Row, Space } from "antd";
+import { InstallExtensionButton } from "./install-extension-button";
 
 function ExtensionManager() {
   return (
@@ -90,7 +91,7 @@ function ExtensionListItem({extension}: {
       <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
       <div className="actions">
         <Space>
-          {extension.installed  === false && <Button>Install</Button>}
+          {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
           {extension.installed && <Button>UnInstall</Button>}
           {extension.installed && extension.need_update && <Button>Update</Button>}
           {extension.installed && !!extension.disabled ? <Button>UnDisabled</Button> : <Button>Disable</Button>}

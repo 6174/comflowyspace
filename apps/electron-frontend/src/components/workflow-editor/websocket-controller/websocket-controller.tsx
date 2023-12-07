@@ -1,5 +1,4 @@
 import config from '@comflowy/common/config';
-import { shallow } from 'zustand/shallow';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';

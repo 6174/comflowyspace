@@ -9,7 +9,7 @@ const comfyuiApiConfig = {
 }
 
 const config = {
-  host: 'localhost:3333/',
+  host: 'localhost:3333',
   protocol: 'http:',
 }
 
