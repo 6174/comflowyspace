@@ -2,9 +2,6 @@ import { EXTENTION_FOLDER, Extension, WEB_EXTENTION_FOLDER } from "./comfy-exten
 import * as fs from "fs";
 import * as path from "path"
 import * as unzipper from "unzipper";
-import * as os from 'os';
-import simpleGit, { SimpleGit } from "simple-git";
-import { runScript } from "../utils/utils";
 import {downloadUrl} from "../utils/download-url";
 import { isValidGitUrl } from "../utils/is-valid-git-url";
 import { TaskEventDispatcher } from "../task-queue/task-queue";

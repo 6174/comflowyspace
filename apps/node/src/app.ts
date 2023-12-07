@@ -5,6 +5,8 @@ import { ApiRouteGetModels } from './routes/api/get-models';
 import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
+import { ApiRouteInstallExtension } from './routes/api/install-extension';
+import { ApiRouteInstallModel } from './routes/api/install-model';
 export async function startAppServer() {
   console.log("start server sd");
   const app = express();
@@ -30,6 +32,8 @@ export async function startAppServer() {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });
   });
+  app.post('/api/install_extension', ApiRouteInstallExtension)
+  app.post('/api/install_model', ApiRouteInstallModel)
   app.get('/api/extension_infos', ApiRouteGetExtensions)
   app.get('/api/model_infos', ApiRouteGetModels);
   app.listen(port, () => {

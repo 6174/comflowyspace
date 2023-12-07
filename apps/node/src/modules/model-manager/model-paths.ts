@@ -1,12 +1,13 @@
 import * as path from 'path';
 import { getAppDataDir } from "../utils/get-appdata-dir";
+import { MarketModel } from './model-manager';
 
 type ExtensionType = '.ckpt' | '.pt' | '.bin' | '.pth' | '.safetensors';
-export type ModelType = 
-    'checkpoints' | 'unclip' | 'T2I-Adapter' | 'T2I-Style' |
-    'lora' | 'VAE' | 'clip' | 'unet' | 'clip_vision' | 
-    'style_models' | 'embeddings' | 'diffusers' | 
-    'vae_approx' | 'controlnet' | 'gligen' | 'upscale';
+export type ModelType =
+  'checkpoints' | 'unclip' | 'T2I-Adapter' | 'T2I-Style' |
+  'lora' | 'VAE' | 'clip' | 'unet' | 'clip_vision' |
+  'style_models' | 'embeddings' | 'diffusers' |
+  'vae_approx' | 'controlnet' | 'gligen' | 'upscale';
 
 export type SDModelBase = 'SDXL' | 'SD1.5' | 'SD2' | 'SD2.1' | 'SD2.2' | 'SD2.3' | 'SD2.4' | 'SD2.5' | 'SD2.6';
 
@@ -67,41 +68,46 @@ export const TEMP_DIRECTORY = `${BASE_PATH}/temp`;
 export const INPUT_DIRECTORY = `${BASE_PATH}/input`;
 
 export function getModelDir(type: ModelType, save_path: string = "default"): string {
-    if (save_path !== 'default') {
-      if (save_path.includes('..') || save_path.startsWith('/')) {
-        console.warn(`[WARN] '${save_path}' is not allowed path. So it will be saved into 'models/etc'.`);
-        return 'etc';
-      } else {
-        if (save_path.startsWith('custom_nodes')) {
-          return `${BASE_PATH}/${save_path}`;
-        } else {
-          return `${MODELS_DIR}/${save_path}`;
-        }
-      }
+  if (save_path !== 'default') {
+    if (save_path.includes('..') || save_path.startsWith('/')) {
+      console.warn(`[WARN] '${save_path}' is not allowed path. So it will be saved into 'models/etc'.`);
+      return 'etc';
     } else {
-      const model_type = type;
-      switch (model_type) {
-        case 'checkpoints':
-        case 'unclip':
-          return FOLDER_NAMES_AND_PATHS.checkpoints[0][0];
-        case 'VAE':
-          return FOLDER_NAMES_AND_PATHS.vae[0][0];
-        case 'lora':
-          return FOLDER_NAMES_AND_PATHS.loras[0][0];
-        case 'T2I-Adapter':
-        case 'T2I-Style':
-        case 'controlnet':
-          return FOLDER_NAMES_AND_PATHS.controlnet[0][0];
-        case 'clip_vision':
-          return FOLDER_NAMES_AND_PATHS.clip_vision[0][0];
-        case 'gligen':
-          return FOLDER_NAMES_AND_PATHS.gligen[0][0];
-        case 'upscale':
-          return FOLDER_NAMES_AND_PATHS.upscale_models[0][0];
-        case 'embeddings':
-          return FOLDER_NAMES_AND_PATHS.embeddings[0][0];
-        default:
-          return 'etc';
+      if (save_path.startsWith('custom_nodes')) {
+        return `${BASE_PATH}/${save_path}`;
+      } else {
+        return `${MODELS_DIR}/${save_path}`;
       }
     }
+  } else {
+    const model_type = type;
+    switch (model_type) {
+      case 'checkpoints':
+      case 'unclip':
+        return FOLDER_NAMES_AND_PATHS.checkpoints[0][0];
+      case 'VAE':
+        return FOLDER_NAMES_AND_PATHS.vae[0][0];
+      case 'lora':
+        return FOLDER_NAMES_AND_PATHS.loras[0][0];
+      case 'T2I-Adapter':
+      case 'T2I-Style':
+      case 'controlnet':
+        return FOLDER_NAMES_AND_PATHS.controlnet[0][0];
+      case 'clip_vision':
+        return FOLDER_NAMES_AND_PATHS.clip_vision[0][0];
+      case 'gligen':
+        return FOLDER_NAMES_AND_PATHS.gligen[0][0];
+      case 'upscale':
+        return FOLDER_NAMES_AND_PATHS.upscale_models[0][0];
+      case 'embeddings':
+        return FOLDER_NAMES_AND_PATHS.embeddings[0][0];
+      default:
+        return 'etc';
+    }
   }
+}
+
+export function getModelPath(data: MarketModel): string {
+  const modelDir = getModelDir(data.type, data.save_path);
+  return path.join(modelDir, data.filename); // Add the appropriate value for getModelPath
+}
