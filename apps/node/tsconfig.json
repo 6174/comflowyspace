@@ -11,11 +11,6 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "outDir": "./dist",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
     "rootDir": "./src"
   },
   "include": [

@@ -1,11 +1,10 @@
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 import * as path from 'path';
-import * as fs from 'fs';
-import { appConfigManager } from '../..';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 import { checkExtensionsInstalled } from './check-extension-status';
 import { getAppDataDir } from '../utils/get-appdata-dir';
+import { TaskEventDispatcher } from '../task-queue/task-queue';
 
 export interface Extension {
   title: string;
@@ -39,28 +38,10 @@ export const WEB_EXTENTION_FOLDER = getWebExtensionDir()
 
 class ComfyExtensionManager {
 
-  constructor() {
-    const gitOptions: SimpleGitOptions = {
-        baseDir: getExtensionDir(),
-        binary: 'git',
-        maxConcurrentProcesses: 6,
-        config: [],
-        trimmed: false
-    };
-    // this.git = simpleGit(gitOptions);
-  }
-
-  async downloadPlugin(plugin: Extension): Promise<void> {
-  }
-
   async updatePlugin(pluginName: string): Promise<void> {
   }
 
   async updateAllPlugins(): Promise<void> {
-  }
-
-  async listPlugins(): Promise<string[]> {
-    throw new Error("not implemented");
   }
 
   async removePlugin(pluginName: string): Promise<void> {

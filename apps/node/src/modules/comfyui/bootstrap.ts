@@ -30,7 +30,7 @@ export async function checkBasicRequirements() {
 }
 
 // 检查一个程序是否已经安装
-async function checkIfInstalled(name: string): Promise<boolean> {
+export async function checkIfInstalled(name: string): Promise<boolean> {
     try {
         if (name === "python") {
             const ret = await runCommand(`conda activate ${CONDA_ENV_NAME} && python --version`);
@@ -75,7 +75,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher) {
         installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
         installCommand = ['bash', [installerPath, '-b']];
     }
-    await downloadUrl(installerUrl!, installerPath!)
+    await downloadUrl(dispatcher,installerUrl!, installerPath!)
     const ret = await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
     dispatcher({
         message: `Install conda end`
@@ -127,7 +127,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
     return ret;
 }
 
-const condaActivate = 'conda activate ${CONDA_ENV_NAME} && ';
+export const condaActivate = 'conda activate ${CONDA_ENV_NAME} && ';
 /**
  * Install Pytorch
  * @param dispatcher 
@@ -148,7 +148,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 
             const installerPath = path.resolve(appTmpDir, 'MinicondaInstaller.sh');
 
-            await downloadUrl(scriptUrl, installerPath);
+            await downloadUrl(dispatcher, scriptUrl, installerPath);
 
             const ret = await runCommand(`sh ${installerPath}`, dispatcher);
             return ret;
@@ -267,5 +267,16 @@ export async function isComfyUIAlive() {
     } catch (error) {
         console.error('Error checking process:', error);
         return false;
+    }
+}
+
+export async function restartComfyUI(dispatcher: TaskEventDispatcher) {
+    try {
+        await stopComfyUI(); // 停止当前运行的 ComfyUI
+        await startComfyUI(dispatcher); // 启动新的 ComfyUI
+    } catch (err) {
+        dispatcher({
+            message: `Restart ComfyUI error: ${err}`
+        });
     }
 }

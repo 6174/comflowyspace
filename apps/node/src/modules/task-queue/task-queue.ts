@@ -1,6 +1,6 @@
 import Queue from "bull";
-import {SlotEvent} from "@comflowy/common/utils/slot-event";
-export type TaskEventDispatcher = (event: Pick<TaskEvent, "message" | "data" | "progress">) => void;
+import { SlotEvent } from "@comflowy/common/utils/slot-event";
+export type TaskEventDispatcher = (event: Pick<TaskEvent, "message" | "data" | "progress" | "error">) => void;
 export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<any>
 export type TaskProps = {
     taskId: string,
@@ -10,23 +10,14 @@ export type TaskProps = {
     [key: string]: any
 }
 
-export type TaskProgressEvent = {
-    type: "PROGRESS",
+export type TaskEvent = {
+    type: "RESULT" | "PROGRESS",
     task: TaskProps,
     progress?: number,
     message?: string,
-    data?: any
+    data?: any,
+    error?: any
 }
-
-export type TaskResultEvent = {
-    type: "RESULT",
-    task: TaskProps,
-    progress?: number,
-    message?: string,
-    data?: any
-}
-
-export type TaskEvent = TaskProgressEvent | TaskResultEvent;
 
 /**
  * TaskQueue
@@ -38,7 +29,7 @@ class TaskQueue {
         // polyfill
 
         // @ts-ignore
-        const crypto = require("crypto"); 
+        const crypto = require("crypto");
         // @ts-ignore
         global.crypto1 = crypto;
         // @ts-ignore
@@ -70,31 +61,33 @@ class TaskQueue {
         this.progressEvent.emit(event);
     }
 
-    private async processJob(job: Queue.Job<TaskProps>) {
+    private async processJob(job: Queue.Job<TaskProps>, done: () => void) {
         const { executor, params } = job.data;
         try {
-          const result = await executor((event) => {
-            if (event.progress) {
-                job.progress(event.progress);
-            }
+            const result = await executor((event) => {
+                if (event.progress) {
+                    job.progress(event.progress);
+                }
+                this.#dispatchTaskProgressEvent({
+                    type: "PROGRESS",
+                    task: job.data,
+                    data: event.data,
+                    progress: event.progress,
+                    error: event.error,
+                    message: event.message
+                });
+            }, params);
+            job.progress(100);
             this.#dispatchTaskProgressEvent({
-                type: "PROGRESS",
+                type: "RESULT",
                 task: job.data,
-                data: event.data,
-                progress: event.progress,
-                message: event.message
+                data: result
             });
-          }, params);
-          job.progress(100);
-          this.#dispatchTaskProgressEvent({
-            type: "RESULT",
-            task: job.data,
-            data: result,
-          });
-          return result;
+            done();
+            return result;
         } catch (error) {
-          console.error(`Job failed: ${error}`);
-          throw error;
+            console.error(`Job failed: ${error}`);
+            throw error;
         }
     }
 
