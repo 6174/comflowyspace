@@ -91,16 +91,16 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher) {
 export async function installPythonTask(dispatcher: TaskEventDispatcher) {
     if (await checkIfInstalled("python")) {
         dispatcher({
-            message: `Already Find Python=3.11.6`
+            message: `Already Find Python=3.10.8`
         });
         return true;
     }
     dispatcher({
-        message: `Start installing Python=3.11.6`
+        message: `Start installing Python=3.10.8`
     });
-    const ret = await runCommand(`conda create -n ${CONDA_ENV_NAME} python=3.11.6`, dispatcher);
+    const ret = await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
     dispatcher({
-        message: `Install Python=3.11.6 end`
+        message: `Install Python=3.10.8 end`
     });
     return ret;
 }

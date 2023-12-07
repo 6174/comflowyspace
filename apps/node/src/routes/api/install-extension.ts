@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
+import { installPythonTask } from '../../modules/comfyui/bootstrap';
 
 /**
  * fetch all extensions
@@ -17,18 +18,10 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
             name: taskParams.name,
             params: taskParams.params,
             executor: async (dispatcher) => {
-                dispatcher({
-                    message: "wow"
-                });
-                return "success";
-            //    await installExtension(dispatcher, extension);
+                // return  await installExtension(dispatcher, taskParams.params);
+                return await installPythonTask(dispatcher);
             }
         };
-        // taskQueue.progressEvent.emit({
-        //     type: "PROGRESS",
-        //     task,
-        //     message: "test message"
-        // })
         res.send({
             success: true,
             data: {
