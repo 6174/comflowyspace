@@ -1,4 +1,4 @@
-import { ExecaChildProcess, execa, execaCommand } from "execa";
+import { ExecaChildProcess, execaCommand } from "execa";
 import * as os from "os";
 import * as path from "path";
 
@@ -6,7 +6,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { SHELL_ENV_PATH, runCommand } from "../utils/run-command";
+import { runCommand } from "../utils/run-command";
 import { CONDA_ENV_NAME } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -49,36 +49,40 @@ export async function checkIfInstalled(name: string): Promise<boolean> {
  * @param dispatcher 
  * @returns 
  */
-export async function installCondaTask(dispatcher: TaskEventDispatcher) {
+export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise<boolean> {
     if (await checkIfInstalled("conda")) {
         dispatcher({
             message: `Already Find Conda`
         });
-        return;
+        return true;
     }
     dispatcher({
         message: `Start install conda`
     });
-    let installerUrl, installerPath, installCommand: any[] = [];
-    if (systemType.toUpperCase().includes("WINDOWS")) {
-        installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe';
-        installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
-        installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
-    } else if (systemType.toUpperCase().includes("DARWIN")) {
-        installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
-        installerPath = path.resolve(appTmpDir, './Miniconda3-latest-MacOSX-x86_64.sh');
-        installCommand = ['bash', [installerPath, '-b']];
-    } else if (systemType.toUpperCase().includes("LINUX")) {
-        installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh';
-        installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
-        installCommand = ['bash', [installerPath, '-b']];
+    try {
+        let installerUrl, installerPath, installCommand: any[] = [];
+        if (systemType.toUpperCase().includes("WINDOWS")) {
+            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe';
+            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
+            installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
+        } else if (systemType.toUpperCase().includes("DARWIN")) {
+            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
+            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-MacOSX-x86_64.sh');
+            installCommand = ['bash', [installerPath, '-b']];
+        } else if (systemType.toUpperCase().includes("LINUX")) {
+            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh';
+            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
+            installCommand = ['bash', [installerPath, '-b']];
+        }
+        await downloadUrl(dispatcher,installerUrl!, installerPath!)
+        await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
+        dispatcher({
+            message: `Install conda end`
+        });
+    } catch (e: any) {
+        throw new Error(`Install conda error: ${e.message}`)
     }
-    await downloadUrl(dispatcher,installerUrl!, installerPath!)
-    const ret = await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
-    dispatcher({
-        message: `Install conda end`
-    });
-    return ret;
+    return true;
 }
 
 /**
@@ -86,21 +90,25 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher) {
  * @param dispatcher 
  * @returns 
  */
-export async function installPythonTask(dispatcher: TaskEventDispatcher) {
+export async function installPythonTask(dispatcher: TaskEventDispatcher): Promise<boolean> {
     if (await checkIfInstalled("python")) {
         dispatcher({
             message: `Already Find Python=3.10.8`
         });
         return true;
     }
-    dispatcher({
-        message: `Start installing Python=3.10.8`
-    });
-    const ret = await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
-    dispatcher({
-        message: `Install Python=3.10.8 end`
-    });
-    return ret;
+    try {
+        dispatcher({
+            message: `Start installing Python=3.10.8`
+        });
+        await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+        dispatcher({
+            message: `Install Python=3.10.8 finished`
+        });
+    } catch (e: any) {
+        throw new Error(`Install python error: ${e.message}`)
+    }
+    return true;
 }
 
 /**
@@ -111,18 +119,22 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher) {
  */
 export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, params: {
     packageRequirment: string
-}) {
-    dispatcher({
-        message: `Start installing ${params.packageRequirment}...`
-    });
-    if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
-        return true;
+}): Promise<boolean> {
+    try {
+        dispatcher({
+            message: `Start installing ${params.packageRequirment}...`
+        });
+        if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
+            return true;
+        }
+        await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
+        dispatcher({
+            message: `Install ${params.packageRequirment} end`
+        });
+    } catch(e: any) {
+        throw new Error(`Install conda packages error: ${e.message}`)
     }
-    const ret = await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
-    dispatcher({
-        message: `Install ${params.packageRequirment} end`
-    });
-    return ret;
+    return true;
 }
 
 export const condaActivate = `conda env activate ${CONDA_ENV_NAME} && `;
@@ -132,28 +144,24 @@ export const condaActivate = `conda env activate ${CONDA_ENV_NAME} && `;
  * @param nightly 
  * @returns 
  */
-export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false) {
+export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
     dispatcher({
         message: "Start installing PyTorch..."
     });
     if (systemType.toUpperCase().includes("DARWIN")) {
         try {
             const architecture = await getMacArchitecture();
-            const scriptUrl =
-                architecture === 'arm64'
-                    ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
-                    : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
+            const scriptUrl = architecture === 'arm64'
+                ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
+                : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
 
             const installerPath = path.resolve(appTmpDir, 'MinicondaInstaller.sh');
 
             await downloadUrl(dispatcher, scriptUrl, installerPath);
+            await runCommand(`sh ${installerPath}`, dispatcher);
 
-            const ret = await runCommand(`sh ${installerPath}`, dispatcher);
-            return ret;
-        } catch (error) {
-            dispatcher({
-                message: `PyTorch installation failed: ${error}`
-            });
+        } catch (error: any) {
+            throw new Error(`PyTorch installation failed: ${error.message}`)
         }
     } else {
         try {
@@ -177,20 +185,20 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                     message: `UNKNOWN GPU Type`
                 });
             }
-        } catch (error) {
-            dispatcher({
-                message: `PyTorch installation failed: ${error}`
-            });
+        } catch (error: any) {
+            throw new Error(`PyTorch installation failed: ${error.message}`)
         }
     }
 
     dispatcher({
         message: "Installing PyTorch Finish"
     });
+
+    return true;
 }
 
 const appDir = getAppDataDir();
-export async function cloneComfyUI(dispatch: TaskEventDispatcher) {
+export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     try {
         dispatch({
             message: 'Start cloning ComfyUI...'
@@ -209,15 +217,14 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher) {
         dispatch({
             message: "clone comfyui success"
         });
-    } catch (error) {
-        dispatch({
-            message: 'Clone ComfyUI error: ${error}'
-        });
+    } catch (error: any) {
+        throw new Error(`clone comfyui error: ${error.message}`);
     }
+    return true;
 }
 
 let comfyuiProcess: ExecaChildProcess<string>;
-export async function startComfyUI(dispatcher: TaskEventDispatcher) {
+export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
         const repoPath = path.resolve(appDir, 'ComfyUI');
         const process = execaCommand(`${condaActivate} python main.py --enable-cors-header`, {
@@ -237,28 +244,26 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher) {
         });
 
         comfyuiProcess = process;
-    } catch (err) {
-        dispatcher({
-            message: `start comfyui error: ${err}`
-        })
+    } catch (err: any) {
+        throw new Error(`Start ComfyUI error: ${err.message}`);
     }
+    return true;
 }
 
-export async function stopComfyUI() {
+export async function stopComfyUI(): Promise<boolean> {
     try {
         // 暂停 Python 程序
         if (comfyuiProcess) {
-            comfyuiProcess.kill(); // 可以根据需要使用不同的信号
-            console.log('Python program stopped successfully.');
-        } else {
-            console.log('Python program is not running.');
+            const ret = comfyuiProcess.kill(); // 可以根据需要使用不同的信号
+            return ret;
         }
     } catch (error) {
-        console.error('Error stopping Python program:', error);
+        throw new Error(`Error stopping comfyui`);
     }
+    return true;
 }
 
-export async function isComfyUIAlive() {
+export async function isComfyUIAlive(): Promise<boolean> {
     try {
         // 检查 Python 进程是否存在
         return comfyuiProcess?.exitCode === null;
@@ -268,13 +273,12 @@ export async function isComfyUIAlive() {
     }
 }
 
-export async function restartComfyUI(dispatcher: TaskEventDispatcher) {
+export async function restartComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean>  {
     try {
         await stopComfyUI(); // 停止当前运行的 ComfyUI
         await startComfyUI(dispatcher); // 启动新的 ComfyUI
-    } catch (err) {
-        dispatcher({
-            message: `Restart ComfyUI error: ${err}`
-        });
+    } catch (err: any) {
+        throw new Error(`Error restarting comfyui: ${err.message}`);
     }
+    return true;
 }

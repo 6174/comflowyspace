@@ -13,7 +13,7 @@ export type TaskProps = {
 }
 
 export type TaskEvent = {
-    type: "RESULT" | "PROGRESS",
+    type: "RESULT" | "PROGRESS" | "FAILED",
     task: TaskProps,
     progress?: number,
     message?: string,
@@ -61,7 +61,7 @@ class TaskQueue {
         } catch (error: any) {
             console.error(`Job failed: ${error}`);
             this.#dispatchTaskProgressEvent({
-                type: "RESULT",
+                type: "FAILED",
                 task: job,
                 error: error.message
             });

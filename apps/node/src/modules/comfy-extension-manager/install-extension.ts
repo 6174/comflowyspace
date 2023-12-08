@@ -86,12 +86,8 @@ async function unzipInstall(dispatcher: TaskEventDispatcher, files: string[]): P
             dispatcher({
                 message: `Install ${url} success to ${EXTENTION_FOLDER}`
             });
-        } catch (e) {
-            dispatcher({
-                message: `Install(unzip) error: ${cleanUrl} / ${e}`,
-                error: e
-            });
-            return false;
+        } catch (e: any) {
+            throw new Error(`Install(unzip) error: ${cleanUrl} / ${e.message}`)
         }
     }
     return true;
@@ -117,12 +113,8 @@ async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsP
                 }
                 await downloadUrl(dispatcher, url, targetPath);
             }
-        } catch (e) {
-            dispatcher({
-                message: `Install(copy) error: ${url} / ${e}`,
-                error: e
-            });
-            return false;
+        } catch (e: any) {
+            throw new Error(`Install(copy) error: ${cleanUrl} / ${e.message}`)
         }
     }
     return true;
@@ -133,22 +125,15 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
     console.log(`git clone: ${files}`);
     const isGitInstall = await checkIfInstalled("git --version");
     if (!isGitInstall) {
-        dispatcher({
-            message: `Git is not installed, please install it.`
-        });
-        return false;
+        throw new Error(`Git is not installed, please install it.`)
     }
-
     for (const url of files) {
         dispatcher({
             message: `Start git clone ${url} to install`
         });
 
         if (!isValidGitUrl(url)) {
-            dispatcher({
-                message: `Invalid git url: '${url}'`
-            });
-            return false;
+            throw new Error(`Invalid git url: '${url}'`)
         }
 
         let cleanUrl: string = url;
@@ -159,32 +144,18 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
         try {
             const repoName: string = path.basename(cleanUrl, path.extname(cleanUrl));
             const repoPath: string = path.join(EXTENTION_FOLDER, repoName);
-
             if (fs.existsSync(repoPath)) {
                 fsExtra.removeSync(repoPath);
             }
-
-            const res = await runCommand(`git clone ${cleanUrl}`, dispatcher, {
+            await runCommand(`git clone ${cleanUrl}`, dispatcher, {
                 cwd: EXTENTION_FOLDER,
             });
-            if (res.exitCode !== 0) {
-                dispatcher({
-                    message: `Git clone url: '${url}' failed`,
-                    error: res.stderr,
-                });
-            }
-            if (!await executeInstallScript(dispatcher, cleanUrl, repoPath)) {
-                return false;
-            }
+            await executeInstallScript(dispatcher, cleanUrl, repoPath);
             dispatcher({
                 message: `Git clone url: '${url}' success`
             });
         } catch (error) {
-            dispatcher({
-                message: `Install(git-clone) error: ${cleanUrl} / ${error}`,
-                error
-            });
-            return false;
+            throw new Error(`Install(git-clone) error: ${cleanUrl} / ${error}`)
         }
     }
 
@@ -207,16 +178,9 @@ async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string
 
     if (fs.existsSync(installScriptPath)) {
         console.log('Install: install script');
-        const res = await runCommand(`${condaActivate} python install.py`, dispatcher, {
+        await runCommand(`${condaActivate} python install.py`, dispatcher, {
             cwd: repoPath
         });
-        if (res.exitCode !== 0) {
-            dispatcher({
-                message: `Run install.py error: ${url} / ${res.stderr}`,
-                error: res.stderr,
-            });
-            return false;
-        }
     }
     return true;
 }
