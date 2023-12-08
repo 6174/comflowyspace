@@ -10,7 +10,7 @@ export type TaskProps = {
 }
 
 export type TaskEvent = {
-    type: "RESULT" | "PROGRESS",
+    type: "SUCCESS" | "PROGRESS",
     task: TaskProps,
     progress?: number,
     message?: string,
@@ -67,7 +67,7 @@ export function useRemoteTask(props: {
     const onMessage = useCallback((ev) => {
         const msg = JSON.parse(ev.data) as TaskEvent;
         props.onMessage && props.onMessage(msg);
-        if (msg.type === "RESULT") {
+        if (msg.type === "SUCCESS") {
             setSuccess(true);
             setResult(msg.data);
             if (msg.error) {

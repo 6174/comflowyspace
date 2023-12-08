@@ -13,7 +13,7 @@ export type TaskProps = {
 }
 
 export type TaskEvent = {
-    type: "RESULT" | "PROGRESS" | "FAILED",
+    type: "SUCCESS" | "PROGRESS" | "FAILED",
     task: TaskProps,
     progress?: number,
     message?: string,
@@ -53,7 +53,7 @@ class TaskQueue {
                 });
             }, params);
             this.#dispatchTaskProgressEvent({
-                type: "RESULT",
+                type: "SUCCESS",
                 task: job,
                 data: result
             });

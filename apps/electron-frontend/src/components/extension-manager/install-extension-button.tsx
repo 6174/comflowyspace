@@ -10,7 +10,7 @@ export function InstallExtensionButton(props: {extension: Extension}) {
         api: getBackendUrl(`/api/install_extension`),
         onMessage: (msg) => {
             console.log(msg);
-            if (msg.type === "RESULT") {
+            if (msg.type === "SUCCESS") {
                 message.success("Extension installed successfully");
             }
         }
