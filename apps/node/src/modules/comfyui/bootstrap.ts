@@ -6,7 +6,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { runCommand } from "../utils/run-command";
+import { SHELL_ENV_PATH, runCommand } from "../utils/run-command";
 import { CONDA_ENV_NAME } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -33,15 +33,13 @@ export async function checkBasicRequirements() {
 export async function checkIfInstalled(name: string): Promise<boolean> {
     try {
         if (name === "python") {
-            const ret = await runCommand(`conda activate ${CONDA_ENV_NAME} && python --version`);
-            if (ret.exitCode !== 0) {
-                return false;
-            }
+            await runCommand(`conda activate ${CONDA_ENV_NAME} && python --version`);
         } else {
-            await execa(name);
+            await runCommand(name);
         }
         return true;
-    } catch {
+    } catch(err) {
+        console.log("check install error", err);
         return false;
     }
 }
@@ -127,7 +125,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
     return ret;
 }
 
-export const condaActivate = 'conda activate ${CONDA_ENV_NAME} && ';
+export const condaActivate = `conda env activate ${CONDA_ENV_NAME} && `;
 /**
  * Install Pytorch
  * @param dispatcher 

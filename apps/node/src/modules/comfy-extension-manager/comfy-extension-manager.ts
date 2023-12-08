@@ -1,10 +1,8 @@
-import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git';
 import * as path from 'path';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 import { checkExtensionsInstalled } from './check-extension-status';
 import { getAppDataDir } from '../utils/get-appdata-dir';
-import { TaskEventDispatcher } from '../task-queue/task-queue';
 
 export interface Extension {
   title: string;

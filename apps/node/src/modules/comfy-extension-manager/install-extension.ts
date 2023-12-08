@@ -8,7 +8,7 @@ import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import { checkIfInstalled, condaActivate } from "../comfyui/bootstrap";
-
+import * as fsExtra from "fs-extra"
 const appTmpDir = getAppTmpDir();
 
 /**
@@ -130,8 +130,9 @@ async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsP
 
 
 async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[]): Promise<boolean> {
-    console.log(`install: ${files}`);
-    if (!await checkIfInstalled("git --version")) {
+    console.log(`git clone: ${files}`);
+    const isGitInstall = await checkIfInstalled("git --version");
+    if (!isGitInstall) {
         dispatcher({
             message: `Git is not installed, please install it.`
         });
@@ -158,6 +159,10 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
         try {
             const repoName: string = path.basename(cleanUrl, path.extname(cleanUrl));
             const repoPath: string = path.join(EXTENTION_FOLDER, repoName);
+
+            if (fs.existsSync(repoPath)) {
+                fsExtra.removeSync(repoPath);
+            }
 
             const res = await runCommand(`git clone ${cleanUrl}`, dispatcher, {
                 cwd: EXTENTION_FOLDER,
@@ -195,22 +200,13 @@ async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string
         dispatcher({
             message: 'Install: pip packages'
         });
-        const res = await runCommand(`${condaActivate} pip install -r requirements.txt`, dispatcher, {
+        await runCommand(`${condaActivate} pip install -r requirements.txt`, dispatcher, {
             cwd: repoPath,
         });
-        if (res.exitCode !== 0) {
-            dispatcher({
-                message: `Install(pip) error: ${url} / ${res.stderr}`,
-                error: res.stderr,
-            });
-            return false;
-        }
     }
 
     if (fs.existsSync(installScriptPath)) {
         console.log('Install: install script');
-        const installCmd: string[] = [process.execPath, 'install.py'];
-
         const res = await runCommand(`${condaActivate} python install.py`, dispatcher, {
             cwd: repoPath
         });

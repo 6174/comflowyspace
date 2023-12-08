@@ -11,24 +11,22 @@ import { installPythonTask } from '../../modules/comfyui/bootstrap';
 export async function ApiRouteInstallExtension(req: Request, res: Response) {
     try {
         const {data} = req.body;
-        console.log("start install extension");
         const taskParams = data as TaskProps; 
         const task: TaskProps = {
             taskId: taskParams.taskId,
             name: taskParams.name,
             params: taskParams.params,
             executor: async (dispatcher) => {
-                // return  await installExtension(dispatcher, taskParams.params);
-                return await installPythonTask(dispatcher);
+                return  await installExtension(dispatcher, taskParams.params);
             }
         };
+        taskQueue.addTask(task);
         res.send({
             success: true,
             data: {
                 taskId: task.taskId
             }
         });
-        taskQueue.addTask(task);
     } catch (err: any) {
         console.log("error", err);
         res.send({
