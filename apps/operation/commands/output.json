@@ -1,4 +1,4 @@
-export const models = [
+[
   {
     "name": "TAESDXL Decoder",
     "type": "TAESD",

@@ -343,6 +343,9 @@ importers:
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@comflowy/node':
+        specifier: workspace:*
+        version: link:../node
       commander:
         specifier: ^9.4.1
         version: 9.5.0
@@ -355,9 +358,15 @@ importers:
       flat:
         specifier: ^5.0.2
         version: 5.0.2
+      https-proxy-agent:
+        specifier: ^7.0.2
+        version: 7.0.2
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
+      node-fetch:
+        specifier: ^3.3.2
+        version: 3.3.2
       tsx:
         specifier: ^3.12.1
         version: 3.14.0

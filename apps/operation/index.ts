@@ -7,15 +7,16 @@ dotenv.config({
 });
 
 import { Command } from 'commander';
+import { fetchModelSize } from './commands/fetch-model-sizes';
 
 const program = new Command();
 
 program
-  .command('XXX')
-  .description('XXX')
+  .command('fetchModelSize')
+  .description('batch get model sizes')
   .action(async (options) => {
     try {
-      // XXX
+      await fetchModelSize();
     } catch (e) {
       console.log('Error: ', e);
     }

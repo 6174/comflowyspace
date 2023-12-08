@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { FOLDER_NAMES_AND_PATHS, ModelType, getModelDir } from './model-paths';
 import * as fs from 'fs';
-import models from './models';
+import {models} from './models';
 
 export type MarketModel = {
     name: string;
@@ -55,7 +55,7 @@ class ModelManager {
     }
 
     getAllUninstalledModels = () => {
-        return models.models as MarketModel[];
+        return models as MarketModel[];
     }
 
     getModelDir = (type: ModelType, save_path: string = "default") => {
