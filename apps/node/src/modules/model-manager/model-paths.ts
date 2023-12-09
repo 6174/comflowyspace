@@ -1,39 +1,10 @@
 import * as path from 'path';
 import { getAppDataDir } from "../utils/get-appdata-dir";
-import { MarketModel } from './model-manager';
+import { FolderPaths, MarketModel, ModelExt, ModelType } from './types';
 
-type ExtensionType = '.ckpt' | '.pt' | '.bin' | '.pth' | '.safetensors';
-export type ModelType =
-  'checkpoints' | 'unclip' | 'T2I-Adapter' | 'T2I-Style' |
-  'lora' | 'VAE' | 'clip' | 'unet' | 'clip_vision' |
-  'style_models' | 'embeddings' | 'diffusers' |
-  'vae_approx' | 'controlnet' | 'gligen' | 'upscale';
 
-export type SDModelBase = 'SDXL' | 'SD1.5' | 'SD2' | 'SD2.1' | 'SD2.2' | 'SD2.3' | 'SD2.4' | 'SD2.5' | 'SD2.6';
 
-interface FolderPaths {
-  checkpoints: [string[], ExtensionType[]];
-  configs: [string[], string[]];
-  loras: [string[], ExtensionType[]];
-  vae: [string[], ExtensionType[]];
-  clip: [string[], ExtensionType[]];
-  unet: [string[], ExtensionType[]];
-  clip_vision: [string[], ExtensionType[]];
-  style_models: [string[], ExtensionType[]];
-  embeddings: [string[], ExtensionType[]];
-  diffusers: [string[], string[]];
-  vae_approx: [string[], ExtensionType[]];
-  controlnet: [string[], ExtensionType[]];
-  gligen: [string[], ExtensionType[]];
-  upscale_models: [string[], ExtensionType[]];
-  // custom_nodes: [string[], any[]]; // Adjust 'any' based on the actual value type
-  hypernetworks: [string[], ExtensionType[]];
-  classifiers: [string[], { '': any }]; // Adjust 'any' based on the actual value type
-  'T2I-Adapter': [string[], ExtensionType[]];
-  'T2I-Style': [string[], ExtensionType[]];
-}
-
-export const supported_pt_extensions: ExtensionType[] = ['.ckpt', '.pt', '.bin', '.pth', '.safetensors'];
+export const supported_pt_extensions: ModelExt[] = ['.ckpt', '.pt', '.bin', '.pth', '.safetensors'];
 
 export const BASE_PATH = path.resolve(getAppDataDir(), "ComfyUI"); // Add the appropriate value for BASE_PATH
 export const MODELS_DIR = `${BASE_PATH}/models`;

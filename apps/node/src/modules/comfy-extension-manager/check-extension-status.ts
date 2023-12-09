@@ -1,8 +1,7 @@
-import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import simpleGit from 'simple-git';
-import { Extension, getExtensionDir } from './comfy-extension-manager';
+import { Extension, getExtensionDir } from './types';
 
 const custom_nodes_path = getExtensionDir();
 const js_path = '/path/to/js'; // Change this to your JS path

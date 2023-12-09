@@ -1,26 +1,8 @@
 import * as path from 'path';
-import { FOLDER_NAMES_AND_PATHS, ModelType, getModelDir } from './model-paths';
+import { FOLDER_NAMES_AND_PATHS, getModelDir } from './model-paths';
 import * as fs from 'fs';
 import {models} from './models';
-
-export type MarketModel = {
-    name: string;
-    type: ModelType;
-    base: string;
-    save_path: string;
-    description: string;
-    reference: string;
-    filename: string;
-    url: string;
-}
-  
-/**
- * Manage models
- */
-export type AllModels = { [key: string]: {
-    name: string,
-    size: number
-}[]}
+import { AllModels, MarketModel, ModelType } from './types';
 
 class ModelManager {
     getAllInstalledModels = (): AllModels => {
