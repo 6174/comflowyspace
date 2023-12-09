@@ -1,6 +1,5 @@
 import { BrowserWindow, app, dialog} from 'electron'
 import { windowManger } from "./windows-manager";
-import { startAutoUpdater } from './auto-update';
 import log from 'electron-log/main';
 import "./prelaunch";
 
@@ -9,27 +8,30 @@ import { startAppServer } from '@comflowy/node/src/app';
 import { isDev } from './utils';
 import path from 'path';
 import { APP_SERVER_PORT } from './config';
+import { showLoadingScreen } from './loading';
+import { setTimeout } from 'timers/promises';
 
 app.disableHardwareAcceleration();
 
 app.on('ready', async () => {
   try {
-    log.info('Start Server');
-    
+    log.info('Start Server');  
+    showLoadingScreen();
     // run next frontend service
     await startAppServer({
       port: APP_SERVER_PORT,
       staticFolder: isDev ? null : path.resolve(__dirname, "../../renderer/out")
     });
-  
+
     log.info('create main window');
-    
+    await setTimeout(1000);
     // start desktop window
     await windowManger.createMainWindow();
     // createWindow();
     // auto update listener
     log.info('start auto update');
     // startAutoUpdater()
+
   } catch(err: any) {
     log.error(err);
     dialog.showErrorBox('Error', err.message);

@@ -4,6 +4,7 @@ import { isMacOS } from "./utils";
 import path from "path";
 import contextMenu from 'electron-context-menu';
 import { APP_SERVER_PORT } from "./config";
+import { closeLoadingScreen } from "./loading";
 
 const BASE_URL = isDev ? 'http://localhost:3000' : `http://localhost:${APP_SERVER_PORT}`
 export function resolveWindowUrl(pageName: string): string {
@@ -76,6 +77,10 @@ class WindowManager {
       this.mainWindow.webContents.openDevTools({ mode: 'detach' })
     // }
 
+    window.on('ready-to-show', () => {
+      closeLoadingScreen();
+    });
+    
     window.on('closed', () => {
       // @ts-ignore
       this.mainWindow = null;
