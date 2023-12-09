@@ -9,7 +9,6 @@ import { isDev } from './utils';
 import path from 'path';
 import { APP_SERVER_PORT } from './config';
 import { showLoadingScreen } from './loading';
-import { setTimeout } from 'timers/promises';
 
 app.disableHardwareAcceleration();
 
@@ -24,7 +23,6 @@ app.on('ready', async () => {
     });
 
     log.info('create main window');
-    await setTimeout(1000);
     // start desktop window
     await windowManger.createMainWindow();
     // createWindow();

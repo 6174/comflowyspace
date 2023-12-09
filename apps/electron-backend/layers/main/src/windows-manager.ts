@@ -5,7 +5,7 @@ import path from "path";
 import contextMenu from 'electron-context-menu';
 import { APP_SERVER_PORT } from "./config";
 import { closeLoadingScreen } from "./loading";
-
+import { setTimeout } from 'timers/promises';
 const BASE_URL = isDev ? 'http://localhost:3000' : `http://localhost:${APP_SERVER_PORT}`
 export function resolveWindowUrl(pageName: string): string {
   let realPageName = pageName
@@ -77,10 +77,6 @@ class WindowManager {
       this.mainWindow.webContents.openDevTools({ mode: 'detach' })
     // }
 
-    window.on('ready-to-show', () => {
-      closeLoadingScreen();
-    });
-    
     window.on('closed', () => {
       // @ts-ignore
       this.mainWindow = null;
@@ -91,6 +87,8 @@ class WindowManager {
     })
 
     window.loadURL(resolveWindowUrl("tabs"));
+    await setTimeout(1000);
+    closeLoadingScreen();
     window.show();
 
     const windowView = this.mainWebView = await this.#createWindow({
