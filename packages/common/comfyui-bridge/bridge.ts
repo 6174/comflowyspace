@@ -35,6 +35,18 @@ interface HistoryItem {
   outputs: Record<NodeId, Record<PropertyKey, any>>
 }
 
+export async function getComfyUIEnvRequirements(): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/api/env_check'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
 export async function getExtensionInfos(): Promise<any> {
   let ret;
   try {

@@ -6,26 +6,41 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { runCommand } from "../utils/run-command";
+import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-command";
 import { CONDA_ENV_NAME } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
+import * as fsExtra from "fs-extra"
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
+const appDir = getAppDataDir();
+const comfyUIPath = path.resolve(appDir, 'ComfyUI');
 
 export async function checkBasicRequirements() {
     const isCondaInstalled = await checkIfInstalled("conda");
     const isPythonInstalled = await checkIfInstalled("python");
-    const isGitInstalled = await checkIfInstalled("git");
+    const isGitInstalled = await checkIfInstalled("git --version");
+    const isComfyUIInstalled = await checkIfInstalledComfyUI();
     let isTorchInstalled = false;
     if (isCondaInstalled && isPythonInstalled) {
         isTorchInstalled = await verifyIsTorchInstalled()
     }
+
     return {
         isCondaInstalled,
         isPythonInstalled,
         isGitInstalled,
-        isTorchInstalled
+        isTorchInstalled,
+        isComfyUIInstalled
+    }
+}
+
+export async function checkIfInstalledComfyUI(): Promise<boolean> {
+    try {
+        const isExist = fsExtra.exists(path.resolve(comfyUIPath, ".git"));
+        return isExist;
+    } catch(err) {
+        return false;
     }
 }
 
@@ -33,7 +48,7 @@ export async function checkBasicRequirements() {
 export async function checkIfInstalled(name: string): Promise<boolean> {
     try {
         if (name === "python") {
-            await runCommand(`conda activate ${CONDA_ENV_NAME} && python --version`);
+            await runCommand(`${PYTHON_PATH} --version`);
         } else {
             await runCommand(name);
         }
@@ -137,7 +152,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
     return true;
 }
 
-export const condaActivate = `conda env activate ${CONDA_ENV_NAME} && `;
+
 /**
  * Install Pytorch
  * @param dispatcher 
@@ -170,14 +185,14 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
             if (gpuType === 'amd') {
                 const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
                 const installCommand = nightly
-                    ? `pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
-                    : ` pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
+                    ? `${PIP_PATH} install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
+                    : ` ${PIP_PATH} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
 
-                await runCommand(condaActivate + installCommand, dispatcher);
+                await runCommand(installCommand, dispatcher);
             }
             // NVIDIA GPU
             else if (gpuType === 'nvidia') {
-                const installCommand = `pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+                const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
 
                 await runCommand(condaActivate + installCommand, dispatcher);
             } else {
@@ -197,7 +212,6 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     return true;
 }
 
-const appDir = getAppDataDir();
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     try {
         dispatch({
@@ -210,7 +224,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 
         const repoPath = path.resolve(appDir, 'ComfyUI');
 
-        await runCommand(`${condaActivate} pip install -r requirements.txt`, dispatch, {
+        await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
             cwd: repoPath
         });
 
@@ -227,7 +241,7 @@ let comfyuiProcess: ExecaChildProcess<string>;
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
         const repoPath = path.resolve(appDir, 'ComfyUI');
-        const process = execaCommand(`${condaActivate} python main.py --enable-cors-header`, {
+        const process = execaCommand(`${PYTHON_PATH} main.py --enable-cors-header`, {
             shell: true,
             cwd: repoPath
         });

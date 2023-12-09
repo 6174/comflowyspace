@@ -1,6 +1,7 @@
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
+import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 
 type Props = {
   children: ReactNode
@@ -8,8 +9,19 @@ type Props = {
 }
 import styles from "./layout.style.module.scss";
 import { useRouter } from 'next/router'
-const Layout = ({ children, title = 'This is the default title' }: Props) => (
-  <>
+const Layout = ({ children, title = 'This is the default title' }: Props) => {
+  const {onInit, env, loading} = useDashboardState();
+  console.log("pathname", env);
+  useEffect(()=> {
+    onInit();
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  return (
+    <>
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
@@ -22,12 +34,12 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => (
       </div>
     </div>
   </>
-)
+  )
+}
 
 const WorkspaceNav = () => {
   const route = useRouter();
   const path = route.pathname;
-  console.log("pathname", path);
   return (
     <div className="workspace-nav">
       <div className="nav-list">

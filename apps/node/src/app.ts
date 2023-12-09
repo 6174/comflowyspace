@@ -7,6 +7,7 @@ import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension } from './routes/api/install-extension';
 import { ApiRouteInstallModel } from './routes/api/install-model';
+import { ApiEnvCheck } from './routes/api/env-check';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -35,6 +36,7 @@ export async function startAppServer(params: {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });
   });
+  app.get('/api/env_check', ApiEnvCheck);
   app.post('/api/install_extension', ApiRouteInstallExtension)
   app.post('/api/install_model', ApiRouteInstallModel)
   app.get('/api/extension_infos', ApiRouteGetExtensions)

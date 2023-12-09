@@ -5,9 +5,9 @@ import * as unzipper from "unzipper";
 import {downloadUrl} from "../utils/download-url";
 import { isValidGitUrl } from "../utils/is-valid-git-url";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
-import { runCommand } from "../utils/run-command";
+import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
-import { checkIfInstalled, condaActivate } from "../comfyui/bootstrap";
+import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
 const appTmpDir = getAppTmpDir();
 
@@ -52,7 +52,7 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         dispatcher({
             message: `Start installing pip packages ${extension.title}`
         });
-        await runCommand(`${condaActivate} pip install ${extension.pip.join(" ")}`)
+        await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
     }
 
     if (res) {
@@ -171,14 +171,14 @@ async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string
         dispatcher({
             message: 'Install: pip packages'
         });
-        await runCommand(`${condaActivate} pip install -r requirements.txt`, dispatcher, {
+        await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatcher, {
             cwd: repoPath,
         });
     }
 
     if (fs.existsSync(installScriptPath)) {
         console.log('Install: install script');
-        await runCommand(`${condaActivate} python install.py`, dispatcher, {
+        await runCommand(`${PYTHON_PATH} install.py`, dispatcher, {
             cwd: repoPath
         });
     }

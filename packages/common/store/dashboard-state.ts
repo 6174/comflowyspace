@@ -1,8 +1,18 @@
+import { getComfyUIEnvRequirements } from "../comfyui-bridge/bridge";
 import {create} from "zustand";
 
+export type EnvRequirements = {
+    isCondaInstalled: boolean;
+    isPythonInstalled: boolean;
+    isGitInstalled: boolean;
+    isTorchInstalled: boolean;
+    isComfyUIInstalled: boolean;
+}
 
 type DashboardState = {
-    docs: any[]
+    loading: boolean;
+    docs: any[];
+    env?: EnvRequirements;
 }
 
 type DashboardAction = {
@@ -11,28 +21,16 @@ type DashboardAction = {
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
     docs: [],
+    loading: true,
     onInit: async () => {
-
+        const ret = await getComfyUIEnvRequirements();
+        if (ret.data) {
+            set({
+                env: ret.data,
+                loading: false
+            });
+        }
     }
 }));
-
-/**
- * Load docs from localstorage
- */
-async function getDoclistFromLocal() {
-
-}
-
-async function createDocToLocal() {
-
-}
-
-async function updateDocToLocal() {
-
-}
-
-async function removeDocToLocal() {
-
-}
 
 export {useDashboardState}
