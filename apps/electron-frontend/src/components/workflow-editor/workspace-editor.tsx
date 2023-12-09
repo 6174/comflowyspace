@@ -33,7 +33,6 @@ export default function WorkflowEditor() {
 
   const router = useRouter();
   const {id} = router.query;
-  console.log("query", router.query);
 
   React.useEffect(() => {
     if (id && inited) {

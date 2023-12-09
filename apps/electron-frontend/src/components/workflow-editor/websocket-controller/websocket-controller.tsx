@@ -7,16 +7,18 @@ export function WsController(): JSX.Element {
     const { clientId, nodeInProgress, onNewClientId, onQueueUpdate, onNodeInProgress, onImageSave } = useAppStore()
     const nodeIdInProgress = nodeInProgress?.id;
 
-    const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/ws`);
-    useEffect(() => {
-      if (clientId) {
-        setSocketUrl(`ws://${config.host}/ws?clientId=${clientId}`);
-      }
-    }, [clientId]);
+    const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
+    // useEffect(() => {
+    //   if (clientId) {
+    //     setSocketUrl(`ws://${config.host}/ws?clientId=${clientId}`);
+    //   }
+    // }, [clientId]);
 
     useWebSocket(socketUrl, {
+      queryParams: clientId ?{ clientId } : {},
       onMessage: (ev) => {
         const msg = JSON.parse(ev.data)
+        console.log("msg", msg)
         if (Message.isStatus(msg)) {
           if (msg.data.sid !== undefined && msg.data.sid !== clientId) {
             onNewClientId(msg.data.sid)
@@ -39,7 +41,8 @@ export function WsController(): JSX.Element {
           }
         }
       },
-    })
+    });
+
     return <></>
   }
   

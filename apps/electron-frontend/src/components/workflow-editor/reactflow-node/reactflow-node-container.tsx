@@ -18,9 +18,6 @@ export function NodeContainer(props: NodeProps<{
       }),
       shallow
     )
-    if (imagePreviews.length > 0) {
-      console.log("imagePreviews", imagePreviews, props)
-    }
     return (
       <NodeComponent
         node={props}
