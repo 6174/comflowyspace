@@ -4,6 +4,7 @@ const { createServer, build, createLogger } = require("vite");
 const electronPath = require("electron");
 const { spawn } = require("child_process");
 const { generateAsync } = require("dts-for-context-bridge");
+const path = require("path");
 
 /** @type 'production' | 'development'' */
 const mode = (process.env.MODE = process.env.MODE || "development");
@@ -71,6 +72,7 @@ const setupMainPackageWatcher = ({ config: { server } }) => {
       }
 
       spawnProcess = spawn(String(electronPath), ["."]);
+      console.log("working dir:", String(electronPath) ,path.resolve("."));
 
       spawnProcess.stdout.on(
         "data",

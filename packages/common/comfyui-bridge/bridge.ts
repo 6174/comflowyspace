@@ -1,6 +1,6 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
 import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
-import { PersistedWorkflowDocument, PersistedWorkflowNode } from '@/local-storage'
+import { PersistedWorkflowDocument, PersistedWorkflowNode } from '../local-storage'
 
 interface PromptRequest {
   client_id?: string

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "start": "next start",
-    "build-renderer": "next build"
+    "build": "next build"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.17.0",

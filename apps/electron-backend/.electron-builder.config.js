@@ -1,10 +1,5 @@
-if (process.env.VITE_APP_VERSION === undefined) {
-  const now = new Date();
-  process.env.VITE_APP_VERSION = `${now.getUTCFullYear() - 2000}.${
-    now.getUTCMonth() + 1
-  }.${now.getUTCDate()}-${now.getUTCHours() * 60 + now.getUTCMinutes()}`;
-}
-
+const path = require("path");
+const packagInfo = require("./package.json");
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -14,9 +9,9 @@ const config = {
     output: "dist",
     buildResources: "buildResources",
   },
-  files: ["layers/**/dist/**"],
+  files: ["layers/**/dist/**", path.resolve(__dirname, "../electron-frontend", "out")],
   extraMetadata: {
-    version: process.env.VITE_APP_VERSION,
+    version: packagInfo.version,
   },
 };
 

@@ -18,7 +18,6 @@ app.disableHardwareAcceleration();
 
 app.on('ready', async () => {
   // run next frontend service
-  // await prepareNext(rendererPath)
   await startAppServer();
 
   // start desktop window

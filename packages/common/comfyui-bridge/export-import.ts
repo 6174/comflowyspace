@@ -1,4 +1,4 @@
-import { PersistedWorkflowDocument } from '@/local-storage';
+import { PersistedWorkflowDocument } from '../local-storage';
 
 export function readWorkflowFromFile(
   ev: React.ChangeEvent<HTMLInputElement>,

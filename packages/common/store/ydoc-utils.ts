@@ -4,8 +4,8 @@
 import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions} from "reactflow";
 import * as Y from "yjs";
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "@/local-storage";
-import { NodeId, PreviewImage } from "@/comfui-interfaces";
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../local-storage";
+import { NodeId, PreviewImage } from "../comfui-interfaces";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;
@@ -222,7 +222,7 @@ const WorkflowDocumentUtils = {
         const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>)
         doc.transact(() => {
             const node = nodesMap.get(change.id)!
-            const value = node.value || {};
+            const value = node.value || {} as any;
             const fields = value.fields || {};
             nodesMap.set(change.id, {
                 ...node,

@@ -1,4 +1,3 @@
-import { getWorkflowTemplate } from '@/templates/templates';
 import Dexie, { Table } from 'dexie';
 
 export type ExecutionHistory = {
