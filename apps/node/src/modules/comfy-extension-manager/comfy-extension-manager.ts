@@ -1,8 +1,6 @@
-import * as path from 'path';
 import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 import { checkExtensionsInstalled } from './check-extension-status';
-import { getAppDataDir } from '../utils/get-appdata-dir';
 import { Extension, ExtensionNodeMap } from './types';
 
 class ComfyExtensionManager {

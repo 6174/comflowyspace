@@ -1,4 +1,4 @@
-import { EXTENTION_FOLDER, Extension, WEB_EXTENTION_FOLDER } from "./comfy-extension-manager";
+import { EXTENTION_FOLDER, Extension, WEB_EXTENTION_FOLDER } from "./types";
 import * as fs from "fs";
 import * as path from "path"
 import * as unzipper from "unzipper";

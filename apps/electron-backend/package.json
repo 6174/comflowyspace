@@ -5,13 +5,12 @@
   "main": "layers/main/dist/index.js",
   "scripts": {
     "start": "electron .",
-    "dev": "node scripts/watch.js",
+    "dev": "node scripts/esbuild.js",
     "build": "npm run build:main && npm run build:preload",
     "build:main": "cd ./layers/main && vite build",
     "build:preload": "cd ./layers/preload && vite build",
     "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
     "compile": "cross-env MODE=production npm run build",
-    "watch": "node scripts/watch.js",
     "lint": "eslint . --ext js,ts",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p layers/preload/tsconfig.json",
@@ -39,7 +38,6 @@
     "@typescript-eslint/eslint-plugin": "5.10.2",
     "cli-truncate": "^4.0.0",
     "cross-env": "7.0.3",
-    "dts-for-context-bridge": "0.7.1",
     "electron": "^27.1.2",
     "electron-context-menu": "^3.6.1",
     "electron-devtools-installer": "3.2.0",
@@ -51,7 +49,6 @@
     "eslint-config-custom": "workspace:*",
     "eslint-plugin-vue": "8.4.0",
     "tsconfig": "workspace:*",
-    "typescript": "4.5.5",
-    "vite": "2.7.13"
+    "typescript": "4.5.5"
   }
 }
