@@ -14,7 +14,7 @@ coverage
 out/
 build
 apps/app/main
-apps/electron-backend/package/layers/**/*
+apps/electron-package/layers/**/*
 
 # misc
 .DS_Store

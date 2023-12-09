@@ -4,5 +4,4 @@ electron-builder does not include nested node_modules, eg express depend on body
 
 # install
 
-1. use `npm install` 
-2. 
+`ELECTRON_MIRROR=http://npm.taobao.org/mirrors/electron/ npm install electron` 
