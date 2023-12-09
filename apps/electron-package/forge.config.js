@@ -1,11 +1,12 @@
-const packagInfo = require("../package.json");
+const packagInfo = require("./package.json");
 const { utils: { fromBuildIdentifier } } = require('@electron-forge/core');
-const {cleanAndCopy} = require('../scripts/pre-package');
+const {cleanAndCopy} = require('./scripts/pre-package');
 
 module.exports = {
   "buildIdentifier": process.env.IS_BETA ? 'beta' : 'prod',
   "packagerConfig": {
     "asar": false,
+    "dir": "./",
     "icon": './assets/icon',
     "appBundleId": fromBuildIdentifier({ beta: 'com.beta.app', prod: 'com.app' })
   },
@@ -37,7 +38,7 @@ module.exports = {
   ],
   hooks: {
     packageAfterCopy: async () => {
-      cleanAndCopy();
+      await cleanAndCopy();
     }
   }
 }

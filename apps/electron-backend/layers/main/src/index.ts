@@ -1,32 +1,32 @@
 import { BrowserWindow, app, dialog} from 'electron'
-// import { windowManger } from "./windows-manager";
-// import { startAutoUpdater } from './auto-update';
+import { windowManger } from "./windows-manager";
+import { startAutoUpdater } from './auto-update';
 import log from 'electron-log/main';
-// import "./prelaunch";
+import "./prelaunch";
 
 // Prepare the renderer once the app is ready
-// import { startAppServer } from '@comflowy/node/src/app';
-// import { isDev } from './utils';
+import { startAppServer } from '@comflowy/node/src/app';
+import { isDev } from './utils';
 import path from 'path';
-// import { APP_SERVER_PORT } from './config';
+import { APP_SERVER_PORT } from './config';
 
 app.disableHardwareAcceleration();
 
 app.on('ready', async () => {
   try {
     log.info('Start Server');
-    createWindow();
     
     // run next frontend service
-    // await startAppServer({
-    //   port: APP_SERVER_PORT,
-    //   staticFolder: isDev ? null : path.resolve(__dirname, "../../renderer/out")
-    // });
+    await startAppServer({
+      port: APP_SERVER_PORT,
+      staticFolder: isDev ? null : path.resolve(__dirname, "../../renderer/out")
+    });
   
     log.info('create main window');
+    
     // start desktop window
-    // await windowManger.createMainWindow();
-  
+    await windowManger.createMainWindow();
+    // createWindow();
     // auto update listener
     log.info('start auto update');
     // startAutoUpdater()

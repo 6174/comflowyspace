@@ -10,7 +10,7 @@
     "build:main": "cd ./layers/main && vite build",
     "build:preload": "cd ./layers/preload && vite build",
     "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
-    "compile": "cross-env MODE=production npm run build && cd ./package && npm run package",
+    "compile": "cross-env MODE=production npm run build",
     "watch": "node scripts/watch.js",
     "lint": "eslint . --ext js,ts",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
