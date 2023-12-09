@@ -8,21 +8,6 @@
     "compile": "cd ../electron-backend && npm run compile && cd ../electron-package && npm run package",
     "package": "electron-forge package"
   },
-  "dependencies": {
-    "configstore": "^6.0.0",
-    "electron-context-menu": "^3.6.1",
-    "electron-dl": "^3.5.1",
-    "electron-is-dev": "^1.1.0",
-    "electron-log": "^5.0.1",
-    "electron-squirrel-startup": "^1.0.0",
-    "electron-updater": "^6.1.7",
-    "express": "^4.18.2",
-    "fastq": "^1.15.0",
-    "fs-extra": "^11.2.0",
-    "simple-git": "^3.21.0",
-    "uuid": "9.0.1",
-    "ws": "^8.14.2"
-  },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
     "cli-truncate": "^4.0.0",

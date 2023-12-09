@@ -5,13 +5,11 @@
   "main": "layers/main/dist/index.js",
   "scripts": {
     "start": "electron .",
-    "dev": "node scripts/esbuild.js",
+    "dev": "node scripts/esbuild.watch.js",
     "build": "npm run build:main && npm run build:preload",
-    "build:main": "cd ./layers/main && vite build",
-    "build:preload": "cd ./layers/preload && vite build",
-    "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
-    "compile": "cross-env MODE=production npm run build",
+    "compile": "cross-env MODE=production node scripts/esbuild.js",
     "lint": "eslint . --ext js,ts",
+    "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p layers/preload/tsconfig.json",
     "typecheck": "npm run typecheck:main && npm run typecheck:preload"
