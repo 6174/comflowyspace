@@ -54,7 +54,8 @@ function WorkflowList() {
                 // router.push(`/app/${doc.id}`)
                 openTabPage({
                   name: doc.title,
-                  url: `/app/${doc.id}`,
+                  pageName: "app",
+                  query: `id=${doc.id}`,
                   id: 0,
                   type: "DOC"
                 });

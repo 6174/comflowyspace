@@ -21,7 +21,8 @@ export interface ComfyElectronApi {
 }
 
 export interface WindowTab {
-  url: string, 
+  pageName: string, 
+  query?: string,
   name: string, 
   type: "DOC" | "MANGEMENT" | "THIRD_PARTY", 
   id: number
@@ -40,6 +41,6 @@ export function openTabPage(tab: WindowTab) {
   if (comfyElectronApi) {
     comfyElectronApi.windowTabManager.openNewTab(tab);
   } else {
-    window.open(tab.url, '_blank');
+    window.open(tab.pageName + "?" + tab.query, '_blank');
   }
 }

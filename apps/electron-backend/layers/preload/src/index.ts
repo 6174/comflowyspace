@@ -4,7 +4,8 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 type WindowTab = {
-    url: string, 
+    pageName: string, 
+    query?: string,
     name: string, 
     type: string, 
     id: number
