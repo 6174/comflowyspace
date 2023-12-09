@@ -7,10 +7,15 @@ import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension } from './routes/api/install-extension';
 import { ApiRouteInstallModel } from './routes/api/install-model';
-export async function startAppServer() {
+export async function startAppServer(params: {
+  port:number,
+  staticFolder?: string | null
+}) {
+  const {port = 3333, staticFolder} = params;
   const app = express();
-  const port = 3333;
 
+  console.log("static folder", staticFolder);
+  app.use(express.static(staticFolder ? staticFolder : 'public'));
   app.use(express.json());
 
   app.use(cors({

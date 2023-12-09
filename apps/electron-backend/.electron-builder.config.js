@@ -9,7 +9,23 @@ const config = {
     output: "dist",
     buildResources: "buildResources",
   },
-  files: ["layers/**/dist/**", path.resolve(__dirname, "../electron-frontend", "out")],
+  files: [
+    "layers/**/dist/**", 
+    "layers/renderer/*.html",
+    {
+      from: path.resolve(__dirname, "../electron-frontend/out"),
+      to: "layers/renderer/out"
+    }
+  ],
+  extraFiles: [
+    {
+      "from": path.resolve(__dirname, "./packages/node_modules"),
+      "to": "Resources/app/node_modules",
+      "filter": [
+        "**/*"
+      ]
+    }
+  ],
   extraMetadata: {
     version: packagInfo.version,
   },

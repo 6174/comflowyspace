@@ -1,0 +1,24 @@
+{
+  "name": "comflowy",
+  "version": "0.0.0",
+  "description": "comflowy",
+  "main": "./layers/main/dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.1.7",
+    "express": "^4.18.2",
+    "fastq": "^1.15.0",
+    "fs-extra": "^11.2.0",
+    "simple-git": "^3.21.0",
+    "uuid": "9.0.1",
+    "ws": "^8.14.2"
+  },
+  "author": "",
+  "license": "ISC"
+}

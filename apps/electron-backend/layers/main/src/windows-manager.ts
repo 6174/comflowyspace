@@ -1,13 +1,24 @@
 import { BrowserView, BrowserWindow, ipcMain } from "electron";
 import isDev from "electron-is-dev";
-
 import { isMacOS } from "./utils";
 import path from "path";
-import { format } from "url";
 import contextMenu from 'electron-context-menu';
+import { APP_SERVER_PORT } from "./config";
+
+const BASE_URL = isDev ? 'http://localhost:3000' : `http://localhost:${APP_SERVER_PORT}`
+export function resolveWindowUrl(pageName: string): string {
+  let realPageName = pageName
+  if (pageName === "index" && isDev) {
+    realPageName = ""
+  }
+  return isDev ? `${BASE_URL}/${realPageName}` : `${BASE_URL}/${realPageName}.html`
+}
+
+export const DEFAULT_WINDOW_URL = resolveWindowUrl("index");
 
 type WindowTab = {
-  url: string, 
+  pageName: string, 
+  query?: string,
   name: string, 
   type: "MANAGEMENT" | "DOC", 
   id: number
@@ -18,15 +29,7 @@ export interface IWindowInstance {
   tabData: WindowTab;
 }
 
-export const DEFAULT_WINDOW_URL = isDev
-  ? 'http://localhost:3000'
-  : format({
-    pathname: path.join(__dirname, '../renderer/out/index.html'),
-    protocol: 'file:',
-    slashes: true,
-  });
 const PRELOAD_JS_PATH = path.resolve(__dirname, "../../preload/dist/", "index.js");
-
 
 /**
  * Manager All Windows
@@ -69,9 +72,9 @@ class WindowManager {
 
     this.mainWindow = window;
 
-    if (isDev) {
+    // if (isDev) {
       this.mainWindow.webContents.openDevTools({ mode: 'detach' })
-    }
+    // }
 
     window.on('closed', () => {
       // @ts-ignore
@@ -82,11 +85,11 @@ class WindowManager {
       this.listWindow = [];
     })
 
-    window.loadURL(`${DEFAULT_WINDOW_URL}/tabs`);
+    window.loadURL(resolveWindowUrl("tabs"));
     window.show();
 
     const windowView = this.mainWebView = await this.#createWindow({
-      url:  DEFAULT_WINDOW_URL + "/",
+      pageName: "index",
       name: "Home",
       type: "MANAGEMENT",
       id: 0
@@ -108,11 +111,11 @@ class WindowManager {
       },
     });
     contextMenu({ window });
-    const url = this.#getRealUrl(tabData.url);
+    const url = this.#getRealUrl(tabData);
     window.webContents.loadURL(url);
-    if (isDev) {
+    // if (isDev) {
       window.webContents.openDevTools({ mode: 'detach' })
-    }
+    // }
     window.webContents.on("did-finish-load", () => {
       // window.webContents.send("set-socket", {});
     });
@@ -126,10 +129,15 @@ class WindowManager {
     return window;
   };
 
-  #getRealUrl(url: string): string {
-    const urlRegex = /^(https?|file):\/\/\S+$/;
-    const ret = urlRegex.test(url) ? url : DEFAULT_WINDOW_URL + url;
-    return ret;
+  #getRealUrl(tabData: WindowTab): string {
+    const { pageName, query } = tabData;
+    const url = resolveWindowUrl(pageName);
+    if (!query) {
+      return url;
+    }
+    const urlParams = new URLSearchParams(query);
+    const urlWithQuery = url + "?" + urlParams.toString();
+    return urlWithQuery;
   }
 
   getTabData = (): {
@@ -164,7 +172,7 @@ class WindowManager {
     const window = this.listWindow.find(instance => instance.window.webContents.id === id);
     if (window) {
       window.tabData = newTabData;
-      const url = this.#getRealUrl(newTabData.url);
+      const url = this.#getRealUrl(newTabData);
       window.window.webContents.loadURL(url);
     }
   }

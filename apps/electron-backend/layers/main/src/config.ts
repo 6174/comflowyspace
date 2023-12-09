@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs';
 
+export const APP_SERVER_PORT = 3333
+
 class MyConfigManager {
   private config: Configstore;
 
