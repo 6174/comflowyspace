@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
-import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 
 type Props = {
   children: ReactNode
@@ -10,16 +9,6 @@ type Props = {
 import styles from "./layout.style.module.scss";
 import { useRouter } from 'next/router'
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
-  const {onInit, env, loading} = useDashboardState();
-  console.log("pathname", env);
-  useEffect(()=> {
-    onInit();
-  }, [])
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
   return (
     <>
     <Head>

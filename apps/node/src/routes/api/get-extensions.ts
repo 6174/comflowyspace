@@ -8,6 +8,7 @@ import { Request, Response } from 'express';
  */
 export async function ApiRouteGetExtensions(req: Request, res: Response) {
     try {
+        console.log("start route get extensions info");
         const extensions = await comfyExtensionManager.getAllExtensions();
         const extensionNodeMap = await comfyExtensionManager.getExtensionNodeMap();
         const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
@@ -20,7 +21,7 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
             }
         });
     } catch (err) {
-        res.send({
+        res.send({ 
             success: false,
             error: err
         })
