@@ -3,7 +3,7 @@ import type { queue as Queue, done as Done} from "fastq";
 
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 export type TaskEventDispatcher = (event: Pick<TaskEvent, "message" | "data" | "progress" | "error">) => void;
-export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<any>
+export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<boolean>
 export type TaskProps = {
     taskId: string,
     name: string,
@@ -57,7 +57,7 @@ class TaskQueue {
                 task: job,
                 data: result
             });
-            done(result);
+            done(null, result);
         } catch (error: any) {
             console.error(`Job failed: ${error}`);
             this.#dispatchTaskProgressEvent({
@@ -65,7 +65,7 @@ class TaskQueue {
                 task: job,
                 error: error.message
             });
-            done(null);
+            done(error);
         }
     }
 

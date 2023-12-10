@@ -25,6 +25,5 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
             success: false,
             error: err
         })
-    }
-    
+    } 
 }

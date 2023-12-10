@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
-import { installPythonTask } from '../../modules/comfyui/bootstrap';
 
 /**
  * fetch all extensions
