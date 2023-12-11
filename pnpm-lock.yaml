@@ -58,6 +58,12 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.2.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
       simple-git:
         specifier: ^3.21.0
         version: 3.21.0
@@ -67,7 +73,13 @@ importers:
       ws:
         specifier: ^8.14.2
         version: 8.14.2
+      zustand:
+        specifier: ^4.4.6
+        version: 4.4.6(@types/react@18.2.21)(react@18.2.0)
     devDependencies:
+      '@chialab/esbuild-plugin-html':
+        specifier: ^0.17.3
+        version: 0.17.3
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
@@ -83,6 +95,15 @@ importers:
       '@types/node':
         specifier: ^17.0.12
         version: 17.0.45
+      '@types/react':
+        specifier: 18.2.21
+        version: 18.2.21
+      '@types/react-dom':
+        specifier: 18.2.7
+        version: 18.2.7
+      '@types/sass':
+        specifier: ^1.45.0
+        version: 1.45.0
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
@@ -116,6 +137,9 @@ importers:
       esbuild:
         specifier: ^0.19.8
         version: 0.19.8
+      esbuild-sass-plugin:
+        specifier: ^2.16.0
+        version: 2.16.0(esbuild@0.19.8)
       eslint:
         specifier: 8.8.0
         version: 8.8.0
@@ -125,6 +149,9 @@ importers:
       eslint-plugin-vue:
         specifier: 8.4.0
         version: 8.4.0(eslint@8.8.0)
+      sass:
+        specifier: ^1.66.1
+        version: 1.69.5
       tsconfig:
         specifier: workspace:*
         version: link:../../packages/tsconfig
@@ -929,6 +956,34 @@ packages:
 
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+    dev: true
+
+  /@chialab/esbuild-plugin-html@0.17.3:
+    resolution: {integrity: sha512-Q9ztdU/wJ0em7LHA+CeB/xqmhIoI5Gk4Y+gCiGmxVrHaT6AkkfAjYVojlyAA91JlpvXmtDIhUaVcJyhtmcip7g==}
+    engines: {node: '>=13'}
+    dependencies:
+      '@chialab/esbuild-rna': 0.17.8
+      '@chialab/node-resolve': 0.17.1
+    dev: true
+
+  /@chialab/esbuild-rna@0.17.8:
+    resolution: {integrity: sha512-hovU4W5zlyMnbJjexdczpQ9mcUfFsJuv9FWUhzpXiQwPprlp5lul+frTed9s8AyVDTDq2yq3Gx2Ac411QsXYGA==}
+    engines: {node: '>=13'}
+    dependencies:
+      '@chialab/estransform': 0.17.5
+      '@chialab/node-resolve': 0.17.1
+    dev: true
+
+  /@chialab/estransform@0.17.5:
+    resolution: {integrity: sha512-maJUFkwk0ie0L4VvDO74NDYyRvaTQAI0qmSmrms8bZxUkZ+zQZd1ByWKDCYTRwtR6AOzTvgEOl2ZvEG+OUKv/A==}
+    engines: {node: '>=13'}
+    dependencies:
+      '@parcel/source-map': 2.1.1
+    dev: true
+
+  /@chialab/node-resolve@0.17.1:
+    resolution: {integrity: sha512-YWaK0MKKeB0FILI6j7qiAlGoSC9MqJZDFXzlAgfOaMCbn8Feqh6njxv7mI3oVkdi7QwV6zPRaTN6hKig/NriMA==}
+    engines: {node: '>=13'}
     dev: true
 
   /@cspotcode/source-map-support@0.8.1:
@@ -2525,6 +2580,13 @@ packages:
       '@octokit/webhooks-methods': 3.0.3
       '@octokit/webhooks-types': 6.11.0
       aggregate-error: 3.1.0
+    dev: true
+
+  /@parcel/source-map@2.1.1:
+    resolution: {integrity: sha512-Ejx1P/mj+kMjQb8/y5XxDUn4reGdr+WyKYloBljpppUy8gs42T+BNoEOuRYqDVdgPc6NxduzIDoJS9pOFfV5Ew==}
+    engines: {node: ^12.18.3 || >=14}
+    dependencies:
+      detect-libc: 1.0.3
     dev: true
 
   /@pkgr/utils@2.4.2:
@@ -5327,6 +5389,12 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
+  /detect-libc@1.0.3:
+    resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
+    engines: {node: '>=0.10'}
+    hasBin: true
+    dev: true
+
   /detect-libc@2.0.2:
     resolution: {integrity: sha512-UX6sGumvvqSaXgdKGUsgZWqcUyIXZ/vZTrlRT/iobiKhGL0zL4d3osHj3uqllWJK+i+sixDS/3COVEOFbupFyw==}
     engines: {node: '>=8'}
@@ -5680,6 +5748,7 @@ packages:
 
   /encoding@0.1.13:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    requiresBuild: true
     dependencies:
       iconv-lite: 0.6.3
     dev: true
@@ -5806,6 +5875,16 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
+
+  /esbuild-sass-plugin@2.16.0(esbuild@0.19.8):
+    resolution: {integrity: sha512-mGCe9MxNYvZ+j77Q/QFO+rwUGA36mojDXkOhtVmoyz1zwYbMaNrtVrmXwwYDleS/UMKTNU3kXuiTtPiAD3K+Pw==}
+    peerDependencies:
+      esbuild: ^0.19.4
+    dependencies:
+      esbuild: 0.19.8
+      resolve: 1.22.8
+      sass: 1.69.5
+    dev: true
 
   /esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
@@ -7362,6 +7441,7 @@ packages:
   /iconv-lite@0.6.3:
     resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
     engines: {node: '>=0.10.0'}
+    requiresBuild: true
     dependencies:
       safer-buffer: 2.1.2
     dev: true

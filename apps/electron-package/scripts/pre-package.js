@@ -7,8 +7,8 @@ async function cleanAndCopy() {
         await fsExtra.remove(path.resolve(__dirname, "../layers"));
         await fsExtra.ensureDir(path.resolve(__dirname, "../layers"));
         await fsExtra.copy(
-            path.resolve(__dirname, '../../electron-backend/layers/renderer'),
-            path.resolve(__dirname, '../layers/renderer')
+            path.resolve(__dirname, '../../electron-backend/layers/renderer/dist'),
+            path.resolve(__dirname, '../layers/renderer/dist')
         )
         console.log("copying electron-frontend/out to package/layers/renderer/out")
         await fsExtra.copy(

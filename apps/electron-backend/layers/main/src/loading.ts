@@ -11,7 +11,7 @@ export function showLoadingScreen() {
         transparent: false,
         backgroundColor: "white"
     });
-    loadingScreen.loadFile(path.resolve(__dirname, '../../renderer/loading.html'));
+    loadingScreen.loadFile(path.resolve(__dirname, '../../renderer/dist/loading.html'));
     loadingScreen.on('closed', () => (loadingScreen = null));
     loadingScreen.show();
 }

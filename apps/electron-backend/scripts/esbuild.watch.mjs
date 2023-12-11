@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-const esbuild = require("esbuild");
-const electronPath = require("electron");
-const { spawn } = require("child_process");
-const path = require("path");
-const {MainBuildConfig, PreloadBuildConfig} = require("./esbuild.config");
+import esbuild from "esbuild";
+import electronPath from "electron";
+import { spawn } from "child_process";
+import path from "path";
+import { __dirname, MainBuildConfig, PreloadBuildConfig, RendererBuildConfig } from "./esbuild.config.mjs";
+
 // use madge to check circle dependencies 
 // madge --circular --extensions ts ./src/app.ts  
 
@@ -12,8 +13,8 @@ const setupMainBuild = async () => {
   let ctx = await esbuild.context({
     ...MainBuildConfig,
     plugins: [{
-      name: "rebuild-notify", 
-      setup(build) { 
+      name: "rebuild-notify",
+      setup(build) {
         build.onEnd((result) => {
           restartElectron();
         })
@@ -21,6 +22,22 @@ const setupMainBuild = async () => {
     }]
   })
   await ctx.watch({})
+
+  let ctxRenderer = await esbuild.context({
+    ...RendererBuildConfig,
+    plugins: [
+      ...RendererBuildConfig.plugins,
+      {
+        name: "rebuild-notify",
+        setup(build) {
+          build.onEnd((result) => {
+            restartElectron();
+          })
+        }
+      }]
+  })
+  await ctxRenderer.watch({})
+
   function restartElectron() {
     if (spawnProcess !== null) {
       spawnProcess.off("exit", process.exit);
@@ -52,8 +69,8 @@ const setupPreloadBuild = async () => {
   let ctx = await esbuild.context({
     ...PreloadBuildConfig,
     plugins: [{
-      name: "rebuild-notify", 
-      setup(build) { 
+      name: "rebuild-notify",
+      setup(build) {
         build.onEnd((result) => {
           // ctx.send({
           //   type: "full-reload",

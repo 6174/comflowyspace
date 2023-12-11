@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const esbuild = require("esbuild");
-const {MainBuildConfig, PreloadBuildConfig} = require("./esbuild.config");
+import esbuild from "esbuild";
+import {MainBuildConfig, PreloadBuildConfig, RendererBuildConfig} from "./esbuild.config.mjs";
 
 const mainBuild = async () => {
   await esbuild.build({
@@ -14,10 +14,17 @@ const preloadBuild = async () => {
   })
 }
 
+const rendererBuild = async () => {
+  await esbuild.build({
+    ...RendererBuildConfig
+  }) 
+}
+
 (async () => {
   try {
     await mainBuild();
     await preloadBuild();
+    await rendererBuild();
   } catch (e) {
     console.error(e);
     process.exit(1);

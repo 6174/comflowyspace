@@ -5,9 +5,9 @@
   "main": "layers/main/dist/index.js",
   "scripts": {
     "start": "electron .",
-    "dev": "node scripts/esbuild.watch.js",
+    "dev": "node scripts/esbuild.watch.mjs",
     "build": "npm run build:main && npm run build:preload",
-    "compile": "cross-env MODE=production node scripts/esbuild.js",
+    "compile": "cross-env MODE=production node scripts/esbuild.mjs",
     "lint": "eslint . --ext js,ts",
     "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
@@ -22,16 +22,23 @@
     "express": "^4.18.2",
     "fastq": "^1.15.0",
     "fs-extra": "^11.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "simple-git": "^3.21.0",
     "uuid": "9.0.1",
-    "ws": "^8.14.2"
+    "ws": "^8.14.2",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@chialab/esbuild-plugin-html": "^0.17.3",
     "@comflowy/common": "workspace:*",
     "@comflowy/node": "workspace:*",
     "@electron-forge/cli": "^7.2.0",
     "@types/configstore": "^6.0.2",
     "@types/node": "^14.14.6",
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.9",
+    "@types/sass": "^1.45.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "5.10.2",
     "cli-truncate": "^4.0.0",
@@ -43,9 +50,11 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^6.1.7",
     "esbuild": "^0.19.8",
+    "esbuild-sass-plugin": "^2.16.0",
     "eslint": "8.8.0",
     "eslint-config-custom": "workspace:*",
     "eslint-plugin-vue": "8.4.0",
+    "sass": "^1.66.1",
     "tsconfig": "workspace:*",
     "typescript": "4.5.5"
   }
