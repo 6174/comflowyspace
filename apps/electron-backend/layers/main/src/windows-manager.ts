@@ -86,7 +86,7 @@ class WindowManager {
       this.listWindow = [];
     })
 
-    window.loadURL(resolveWindowUrl("tabs"));
+    window.loadFile(path.resolve(__dirname, "../../renderer/dist/tabs.html"));
     await setTimeout(1000);
     closeLoadingScreen();
     window.show();

@@ -41,6 +41,7 @@
     "@types/sass": "^1.45.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "5.10.2",
+    "chokidar": "^3.5.3",
     "cli-truncate": "^4.0.0",
     "cross-env": "7.0.3",
     "electron": "^27.1.2",

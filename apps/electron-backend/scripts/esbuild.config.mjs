@@ -5,6 +5,7 @@ import path from "path"
 import htmlPlugin from '@chialab/esbuild-plugin-html';
 import {sassPlugin} from 'esbuild-sass-plugin';
 import * as fs from "fs";
+import process from "process";
 
 console.log("html Plugin", htmlPlugin);
 console.log("saas Plugin", sassPlugin);
@@ -40,6 +41,9 @@ const RendererBuildConfig = {
     outdir: path.resolve(__dirname, "../layers/renderer/", "./dist"),
     bundle: true,
     platform: 'node',
+    define: {
+        'process.env.NODE_ENV': JSON.stringify(process.env.MODE || "development"),
+    },
     target: `chrome${chrome}`,
     sourcemap: false,
     assetNames: 'assets/[name]-[hash]',

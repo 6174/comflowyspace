@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import esbuild from "esbuild";
+import chokidar from "chokidar";
 import electronPath from "electron";
 import { spawn } from "child_process";
 import path from "path";
@@ -23,20 +24,12 @@ const setupMainBuild = async () => {
   })
   await ctx.watch({})
 
-  let ctxRenderer = await esbuild.context({
-    ...RendererBuildConfig,
-    plugins: [
-      ...RendererBuildConfig.plugins,
-      {
-        name: "rebuild-notify",
-        setup(build) {
-          build.onEnd((result) => {
-            restartElectron();
-          })
-        }
-      }]
-  })
-  await ctxRenderer.watch({})
+  await buildRenderer();
+  chokidar.watch(path.resolve(__dirname, "../layers/renderer/src/**/*.{ts,tsx,scss,html}")).on('change', async () => {
+    console.log("bug:", path.resolve(__dirname, "../../renderer/src/**/*"));
+    await buildRenderer();
+    restartElectron();
+  });
 
   function restartElectron() {
     if (spawnProcess !== null) {
@@ -62,6 +55,12 @@ const setupMainBuild = async () => {
 
     // Stops the watch script when the application has been quit
     spawnProcess.on("exit", process.exit);
+  }
+
+  async function buildRenderer() {
+    await esbuild.build({
+      ...RendererBuildConfig
+    }) 
   }
 }
 
