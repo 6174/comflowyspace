@@ -1,0 +1,13 @@
+.tabManager {
+  margin-left: 80px;
+
+  .drag-area {
+    -webkit-app-region: drag;
+    /* 指定拖动区域 */
+    height: 10px;
+  }
+
+  .tab-manager-inner {
+    user-select: none;
+  }
+}
