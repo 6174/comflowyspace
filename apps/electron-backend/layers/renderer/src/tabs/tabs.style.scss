@@ -1,6 +1,9 @@
 body, html {
   padding: 0;
   margin: 0;
+  --hover-bg: #262837;
+  --active-bg: #454758;
+  --bg: #1B1B1F;
   * {
     box-sizing: border-box;
   }
@@ -11,19 +14,90 @@ body, html {
 }
 .tabManager {
   margin-left: 80px;
+  color: white;
+  margin-top: 6px;
+  height: 24px;
+  overflow: hidden;
 
   .drag-area {
     -webkit-app-region: drag;
     /* 指定拖动区域 */
-    height: 10px;
+    position: absolute;
+    top: 0;
+    height: 12px;
+    left: 0;
+    right: 0;
+    z-index: -1;
   }
-
   .tab-list {
     user-select: none;
     display: flex;
     .tab {
       flex: 1;
-      max-width: 100px;
+      max-width: 130px;
+      padding: 0 6px;
+      .tab-inner {
+        display: flex;
+        border-radius: 4px;
+        font-size: 12px;
+        justify-content: center;
+        padding-right: 4px;
+        > div {
+          height: 24px;
+          line-height: 24px;
+        }
+        .title {
+          flex: 1;
+          word-break: keep-all;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .close {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .closeIcon {
+            border-radius: 14px;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &:hover {
+              background-color: #3d3f4e;
+            }
+            svg {
+              transform: scale(1.5);
+            }
+          }
+          &::before {
+            content: "";
+            width: 10px;
+            height: 40px;
+            background: linear-gradient(268deg, var(--bg) 1.89%, rgba(255, 255, 255, 0.00) 98.61%);
+          }
+        }
+      }
+      &:hover {
+        .tab-inner {
+          background-color: var(--hover-bg);
+          .close::before {
+            background: linear-gradient(268deg, var(--hover-bg) 1.89%, rgba(255, 255, 255, 0.00) 98.61%);
+          }
+        }
+
+      }
+
+      &.active {
+        .tab-inner {
+          background-color: var(--active-bg);
+          .close::before {
+            background: linear-gradient(268deg, var(--active-bg) 1.89%, rgba(255, 255, 255, 0.00) 98.61%);
+          }
+        }
+
+      }
     }
   }
 }

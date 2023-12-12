@@ -57,7 +57,7 @@ class WindowManager {
       show: false,
       width: 800,
       height: 600,
-      backgroundColor: isMacOS ? "#D1D5DB" : "#6B7280",
+      backgroundColor: "#1B1B1F",
       titleBarStyle: isMacOS ? 'hiddenInset' : 'default',
       frame: isMacOS,
       webPreferences: {

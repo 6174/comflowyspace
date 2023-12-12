@@ -28,7 +28,7 @@ const setupMainBuild = async () => {
   chokidar.watch(path.resolve(__dirname, "../layers/renderer/src/**/*.{ts,tsx,scss,html}")).on('change', async () => {
     console.log("bug:", path.resolve(__dirname, "../../renderer/src/**/*"));
     await buildRenderer();
-    restartElectron();
+    // restartElectron();
   });
 
   function restartElectron() {
