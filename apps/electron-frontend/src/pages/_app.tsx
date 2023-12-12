@@ -8,8 +8,8 @@ import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
-  const {onInit, env, loading} = useDashboardState();
-  console.log("pathname", env);
+  const {onInit} = useDashboardState();
+
   useEffect(()=> {
     onInit();
   }, [])

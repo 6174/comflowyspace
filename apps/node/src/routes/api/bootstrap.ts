@@ -1,5 +1,5 @@
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { checkBasicRequirements, checkIfInstalled, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
+import { checkIfInstalled, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
 
 export enum BootStrapTaskType {

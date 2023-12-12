@@ -10,6 +10,7 @@ export type EnvRequirements = {
     isBasicModelInstalled: boolean;
     isBasicExtensionInstalled: boolean;
     isComfyUIStarted: boolean;
+    isSetupedConfig: boolean;
 }
 
 type DashboardState = {
@@ -20,6 +21,7 @@ type DashboardState = {
 }
 
 export enum BootStrapTaskType {
+    "setupConfig" = "setupConfig",
     "installConda" = "installConda",
     "installPython" = "installPython",
     "installGit" = "installGit",
@@ -33,6 +35,7 @@ export enum BootStrapTaskType {
 export type BootstrapTask = {
     type: BootStrapTaskType;
     title: string;
+    finished?: boolean;
 }
 
 type DashboardAction = {
@@ -62,6 +65,9 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
 
 function checkEnvRequirements(env: EnvRequirements): BootstrapTask[] {
     const tasks: BootstrapTask[] = [];
+    if (!env.isSetupedConfig) {
+        tasks.push({ type: BootStrapTaskType.setupConfig, title: "setup config" });
+    }
     if (!env.isCondaInstalled) {
         tasks.push({type: BootStrapTaskType.installConda, title: "Install Conda"});
     }
