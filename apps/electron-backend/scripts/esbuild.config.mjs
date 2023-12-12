@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from "path"
 import htmlPlugin from '@chialab/esbuild-plugin-html';
-import {sassPlugin} from 'esbuild-sass-plugin';
+import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
 import * as fs from "fs";
 import process from "process";
 
@@ -49,7 +49,12 @@ const RendererBuildConfig = {
     assetNames: 'assets/[name]-[hash]',
     chunkNames: '[ext]/[name]-[hash]',
     external: ['electron', ...builtinModules], // Add external dependencies here
-    plugins: [htmlPlugin(), sassPlugin()]
+    plugins: [
+        htmlPlugin(), 
+        sassPlugin({
+            filter: /\.scss$/
+        }),
+    ]
 }
 
 function findAllHtmlFilesInRenderer() {

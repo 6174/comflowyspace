@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import styles from "./tabs.style.scss"
+import "./tabs.style.scss"
 import { useTabsState } from './tabstore';
-console.log("styles: ", styles);
 function App() {
   const {active, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
   const [items, setItems] = useState([]);
@@ -30,17 +29,26 @@ function App() {
     }
   }, [])
 
+  const homeTab = tabs.find(tab => tab.name === "Home") || {} as any;
+  const otherTabs = tabs.filter(tab => tab.name !== "Home");
   return (
-    <div className={styles.tabManager}>
+    <div className="tabManager">
       <div className="drag-area"></div>
-      <div className="tab-manager-inner">
-        <div className='fixed-tab' onClick={ev => {
-          if (active ! == 0) {
-            onChangeTab(0);
-          }
-        }}>
-          Home5
+      <div className="tab-list">
+        <div className={`tab ${homeTab.id === active ? "active" : ""}`} key="home" onClick={() => {
+            onChangeTab(homeTab.id);
+          }}>
+            Home
         </div>
+        {otherTabs.map(tab => {
+          return (
+            <div className={`tab ${tab.id === active ? "active" : ""}`} key={tab.id} onClick={() => {
+              onChangeTab(tab.id);
+            }}>
+              {tab.name}
+            </div>
+          )
+        })}
       </div>
     </div>
   );

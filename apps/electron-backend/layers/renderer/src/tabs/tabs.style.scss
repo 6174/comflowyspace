@@ -1,3 +1,14 @@
+body, html {
+  padding: 0;
+  margin: 0;
+  * {
+    box-sizing: border-box;
+  }
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+}
 .tabManager {
   margin-left: 80px;
 
@@ -7,7 +18,12 @@
     height: 10px;
   }
 
-  .tab-manager-inner {
+  .tab-list {
     user-select: none;
+    display: flex;
+    .tab {
+      flex: 1;
+      max-width: 100px;
+    }
   }
 }
