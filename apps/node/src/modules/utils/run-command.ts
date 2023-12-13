@@ -28,22 +28,14 @@ export async function runCommand(
     cb && cb(subProcess);
 
     subProcess.stdout?.on('data', (chunk) => {
-<<<<<<< HEAD
-        console.log("stdout", chunk.toString());
-=======
         console.log("out", chunk.toString());
->>>>>>> test-nodepty
         dispatcher && dispatcher({
             message: chunk.toString()
         })
     });
 
     subProcess.stderr?.on('data', (chunk) => {
-<<<<<<< HEAD
-        console.log("stderr", chunk.toString());
-=======
         console.log("error", chunk.toString());
->>>>>>> test-nodepty
         dispatcher && dispatcher({
             message: chunk.toString()
         })
