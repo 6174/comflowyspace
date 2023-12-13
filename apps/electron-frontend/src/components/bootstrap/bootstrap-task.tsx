@@ -17,8 +17,8 @@ export function BootstrapTask(props: BootstrapTaskProps) {
       onMessage: (msg) => {
         console.log(msg);
         if (msg.type === "SUCCESS") {
-          message.success("Extension installed successfully");
           if (task) {
+            message.success(task.title + " success");
             task.finished = true;
             setBootstrapTasks([...bootstrapTasks]);
           }

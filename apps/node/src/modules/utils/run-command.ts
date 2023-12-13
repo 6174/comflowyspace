@@ -88,11 +88,16 @@ export function runCommandWithPty(
 
         cb && cb(pty);
         
-        pty.onData(function (data: string) {
+        const disposable = pty.onData(function (data: string) {
             console.log(data);
             dispatcher && dispatcher({
                 message: data
             });
+            if (data.trim() === 'END_OF_COMMAND') {
+                console.log('The command has finished executing.');
+                disposable.dispose();
+                pty.kill();
+            }
         });
 
         pty.onExit((e: { exitCode: number }) => {
