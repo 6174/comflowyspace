@@ -32,7 +32,9 @@ export async function checkBasicRequirements() {
         isGitInstalled,
         isTorchInstalled,
         isComfyUIInstalled,
-        isSetupedConfig: true
+        isSetupedConfig: true,
+        isBasicModelInstalled: true,
+        isBasicExtensionInstalled: true
     }
 }
 
@@ -239,23 +241,11 @@ let comfyuiProcess: ExecaChildProcess<string>;
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
         const repoPath = path.resolve(appDir, 'ComfyUI');
-        const process = execaCommand(`${PYTHON_PATH} main.py --enable-cors-header`, {
-            shell: true,
+        await runCommand(`${PYTHON_PATH} main.py --enable-cors-header`, dispatcher, {
             cwd: repoPath
+        }, (process) => {
+            comfyuiProcess = process;
         });
-        process.stdout?.on('data', (chunk) => {
-            dispatcher({
-                message: chunk.toString()
-            })
-        });
-
-        process.stderr?.on('data', (chunk) => {
-            dispatcher({
-                message: chunk.toString()
-            })
-        });
-
-        comfyuiProcess = process;
     } catch (err: any) {
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }

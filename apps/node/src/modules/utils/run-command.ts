@@ -1,4 +1,4 @@
-import { Options, execaCommand } from "execa";
+import { ExecaChildProcess, Options, execaCommand } from "execa";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import * as os from "os";
 import { isMac, isWindows } from "./env";
@@ -7,26 +7,35 @@ export const OS_TYPE = os.type().toUpperCase();
 export const OS_HOME_DIRECTORY = os.homedir();
 export const SHELL_ENV_PATH = getSystemPath();
 
-export async function runCommand(command: string, dispatcher: TaskEventDispatcher = () => { }, options: Options = {}): Promise<{
+export async function runCommand(
+    command: string, 
+    dispatcher: TaskEventDispatcher = () => { }, 
+    options: Options = {}, 
+    cb?: (process: ExecaChildProcess) => void
+): Promise<{
     stderr: string,
     exitCode: number,
-    stdout: string
+    stdout: string,
 }> {
     const subProcess = execaCommand(command, {
         env: {
             PATH: SHELL_ENV_PATH
         },
-        shell: isMac ? "/bin/zsh" : true,
+        // shell: isMac ? "/bin/zsh" : true,
         ...options
     });
 
+    cb && cb(subProcess);
+
     subProcess.stdout?.on('data', (chunk) => {
+        console.log(chunk.toString());
         dispatcher && dispatcher({
             message: chunk.toString()
         })
     });
 
     subProcess.stderr?.on('data', (chunk) => {
+        console.log(chunk.toString());
         dispatcher && dispatcher({
             message: chunk.toString()
         })
