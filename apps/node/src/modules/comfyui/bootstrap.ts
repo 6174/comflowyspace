@@ -237,7 +237,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
     return true;
 }
 
-import * as nodePty from "node-pty-prebuilt-multiarch-cp"
+import * as nodePty from "node-pty"
 let comfyuiProcess: nodePty.IPty;
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
@@ -245,9 +245,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
         const repoPath = path.resolve(appDir, 'ComfyUI');
         await runCommandWithPty(`${PYTHON_PATH} main.py --enable-cors-header`, dispatcher, {
             cwd: repoPath
-        }, (process) => {
+        }, (process: nodePty.IPty) => {
             comfyuiProcess = process;
         });
+        console.log("start comfyUI success");
     } catch (err: any) {
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }

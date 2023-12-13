@@ -1,0 +1,2 @@
+- if you need to seperate run current (not in electron), you may encounter node-pty issue
+- You can rebuild node pty with `npm_config_arch=x86_64 pnpm rebuild node-pty`, arch maybe x86_64 or arm64

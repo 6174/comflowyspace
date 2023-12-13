@@ -1,4 +1,4 @@
-import * as nodePty from "node-pty-prebuilt-multiarch-cp"
+import * as nodePty from "node-pty"
 import { getAppDataDir } from "../utils/get-appdata-dir";
 import { PYTHON_PATH, SHELL_ENV_PATH } from "../utils/run-command";
 import path from "path";
@@ -16,12 +16,14 @@ const pty = nodePty.spawn(shell, [], {
 });
 
 const repoPath = path.resolve(appDir, 'ComfyUI');
-pty.write(`${PYTHON_PATH}  ${repoPath}/main.py --enable-cors-header; echo END_OF_COMMAND\n`);
+pty.write(`echo Hell0; sleep 5; echo END_OF_COMMAND\n`);
 
 const dispose = pty.onData(function (data: string) {
   console.log(data);
-  if (data.includes('END_OF_COMMAND')) {
+  if (data.trim() === 'END_OF_COMMAND') {
     console.log('The command has finished executing.');
+    dispose.dispose();
+    pty.kill();
   }
 });
 

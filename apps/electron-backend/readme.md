@@ -1,0 +1,2 @@
+- Dependent on node-pty, so we need to rebuild the library
+  - ./node_modules/.bin/electron-rebuild --arc=arm64

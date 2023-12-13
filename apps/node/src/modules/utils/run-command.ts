@@ -62,18 +62,19 @@ export async function runCommand(
     }
 }
 
-import * as nodePty from "node-pty-prebuilt-multiarch-cp"
+import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
 
-const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
+const shell = process.platform === 'win32' ? 'cmd' : 'zsh';
 const appDir = getAppDataDir();
 
-export async function runCommandWithPty(
+export function runCommandWithPty(
     command: string,
     dispatcher: TaskEventDispatcher = () => { },
     options: Options = {},
     cb?: (process: nodePty.IPty) => void
-): Promise<nodePty.IPty> {
+) {
+    console.log("run command with PTY");
     return new Promise((resolve, reject) => {
         const pty = nodePty.spawn(shell, [], {
             name: 'xterm-color',
@@ -88,14 +89,10 @@ export async function runCommandWithPty(
         cb && cb(pty);
         
         pty.onData(function (data: string) {
-            console.log("pty data", data);
+            console.log(data);
             dispatcher && dispatcher({
                 message: data
             });
-            if (data.includes('END_OF_COMMAND')) {
-                console.log('The command has finished executing.');
-                resolve(pty);
-            }
         });
 
         pty.onExit((e: { exitCode: number }) => {
@@ -106,7 +103,7 @@ export async function runCommandWithPty(
                 resolve(pty);
             }
         });
-        pty.write(`${command}; echo END_OF_COMMAND\n`);
+        pty.write(`${command};echo END_OF_COMMAND\n`);
     })
 }
 
