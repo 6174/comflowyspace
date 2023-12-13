@@ -23,7 +23,7 @@ const MainBuildConfig = {
     format: 'cjs',
     target: [`node${node}`],
     sourcemap: false,
-    external: ['electron', ...builtinModules], 
+    external: ['electron', 'node-pty-prebuilt-multiarch-cp', ...builtinModules], 
 }
 
 const PreloadBuildConfig = {

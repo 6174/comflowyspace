@@ -22,6 +22,7 @@
     "express": "^4.18.2",
     "fastq": "^1.15.0",
     "fs-extra": "^11.2.0",
+    "node-pty-prebuilt-multiarch-cp": "0.10.1-pre.48",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "simple-git": "^3.21.0",

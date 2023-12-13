@@ -44,9 +44,6 @@ class TaskQueue {
         });
         try {
             const result = await executor((event) => {
-                if (event.message) {
-                    console.log("PROGRESS: ", event.message);
-                }
                 this.#dispatchTaskProgressEvent({
                     type: "PROGRESS",
                     task: job,
@@ -63,7 +60,6 @@ class TaskQueue {
             });
             done(null, result);
         } catch (error: any) {
-            console.error(`Job failed:`, error);
             this.#dispatchTaskProgressEvent({
                 type: "FAILED",
                 task: job,
