@@ -1,5 +1,5 @@
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { checkIfInstalled, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
+import { checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
 
 export enum BootStrapTaskType {
@@ -21,7 +21,7 @@ export enum BootStrapTaskType {
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
         const {data} = req.body;
-        const taskType = data.taskType as BootStrapTaskType;
+        const taskType = data.name as BootStrapTaskType;
         const taskId = data.taskId;
         const task: TaskProps = {
             taskId,
@@ -40,6 +40,8 @@ export async function ApiBootstrap(req: Request, res: Response) {
                             return true;
                         }
                         return await installPythonTask(dispatcher);
+                    case BootStrapTaskType.installTorch:
+                        return await installPyTorchForGPU(dispatcher);
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {
@@ -61,7 +63,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         }
                         return await startComfyUI(dispatcher)
                     default:
-                        break;
+                        throw new Error("No task named " + taskType)
                 }
                 return true;
             }

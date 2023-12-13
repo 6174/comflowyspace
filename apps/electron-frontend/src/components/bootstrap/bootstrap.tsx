@@ -9,6 +9,7 @@ import { InstallModels } from './install-models';
 import { InstallExtensions } from './install-extensions';
 import { StartComfyUI } from './start-comfyui';
 import { SetupConfig } from './setup-config';
+import { InstallComfyUI } from './install-comfyui';
 
 const Bootstrap = () => {
   const {onInit, env, loading, bootstrapTasks} = useDashboardState();
@@ -16,6 +17,15 @@ const Bootstrap = () => {
   const finisedTasks = bootstrapTasks.filter(task => task.finished);
   const unfinishedTasks = bootstrapTasks.filter(task => !task.finished);
   const currentTask = unfinishedTasks[0];
+  if (!currentTask) {
+    return (
+      <div className={styles.bootstrap}>
+        <h1>Bootstrap tasks</h1>
+        <p>All tasks finished!</p>
+      </div>
+    )
+  }
+  
   let $task = null;
   switch (currentTask.type) {
     case BootStrapTaskType.setupConfig:
@@ -27,11 +37,14 @@ const Bootstrap = () => {
     case BootStrapTaskType.installPython:
       $task = <InstallPython/>;
       break;
+    case BootStrapTaskType.installTorch:
+      $task = <InstallTorch/>;
+      break;
     case BootStrapTaskType.installGit:
       $task = <InstallGit/>;
       break;
-    case BootStrapTaskType.installTorch:
-      $task = <InstallTorch/>;
+    case BootStrapTaskType.installComfyUI:
+      $task = <InstallComfyUI/>;
       break;
     case BootStrapTaskType.installBasicModel:
       $task = <InstallModels/>;

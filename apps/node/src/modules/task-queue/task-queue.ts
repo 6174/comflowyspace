@@ -36,8 +36,12 @@ class TaskQueue {
     }
 
     private processJob = async (job: TaskProps, done: Done) => {
-        console.log("start process job", job);
         const { executor, params } = job;
+        this.#dispatchTaskProgressEvent({
+            type: "PROGRESS",
+            task: job,
+            message: "Start task " + job.name
+        });
         try {
             const result = await executor((event) => {
                 if (event.message) {
@@ -59,11 +63,12 @@ class TaskQueue {
             });
             done(null, result);
         } catch (error: any) {
-            console.error(`Job failed: ${error}`);
+            console.error(`Job failed:`, error);
             this.#dispatchTaskProgressEvent({
                 type: "FAILED",
                 task: job,
-                error: error.message
+                error: error.message,
+                message: error.message,
             });
             done(error);
         }

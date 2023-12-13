@@ -1,10 +1,10 @@
 import { BootStrapTaskType } from "@comflowy/common/store/dashboard-state";
 import { BootstrapTask } from "./bootstrap-task";
 
-export function StartComfyUI() {
+export function InstallComfyUI() {
   return (
-    <div className="StartComfyUI">
-      <BootstrapTask type={BootStrapTaskType.startComfyUI}/>
+    <div className="InstallComfyUI">
+      <BootstrapTask type={BootStrapTaskType.installComfyUI}/>
     </div>
   )
 }

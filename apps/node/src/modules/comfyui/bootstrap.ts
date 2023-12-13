@@ -1,7 +1,7 @@
 import { ExecaChildProcess, execaCommand } from "execa";
 import * as os from "os";
 import * as path from "path";
-
+import { isMac } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
@@ -31,7 +31,8 @@ export async function checkBasicRequirements() {
         isPythonInstalled,
         isGitInstalled,
         isTorchInstalled,
-        isComfyUIInstalled
+        isComfyUIInstalled,
+        isSetupedConfig: true
     }
 }
 
@@ -77,15 +78,22 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
     try {
         let installerUrl, installerPath, installCommand: any[] = [];
         if (systemType.toUpperCase().includes("WINDOWS")) {
-            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe';
+            installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe';
             installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
             installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
         } else if (systemType.toUpperCase().includes("DARWIN")) {
-            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
-            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-MacOSX-x86_64.sh');
+            const architecture = await getMacArchitecture();
+            installerUrl = architecture === 'arm64'
+                ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
+                : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
+            installerPath = path.resolve(appTmpDir, architecture === 'arm64' 
+                ? 'Miniconda3-latest-MacOSX-arm64.sh'
+                : 'Miniconda3-latest-MacOSX-x86_64.sh'
+            );
+
             installCommand = ['bash', [installerPath, '-b']];
         } else if (systemType.toUpperCase().includes("LINUX")) {
-            installerUrl = 'https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh';
+            installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh';
             installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
             installCommand = ['bash', [installerPath, '-b']];
         }
@@ -160,21 +168,14 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
+    console.log("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
     });
-    if (systemType.toUpperCase().includes("DARWIN")) {
+    if (isMac) {
         try {
-            const architecture = await getMacArchitecture();
-            const scriptUrl = architecture === 'arm64'
-                ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
-                : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
-
-            const installerPath = path.resolve(appTmpDir, 'MinicondaInstaller.sh');
-
-            await downloadUrl(dispatcher, scriptUrl, installerPath);
-            await runCommand(`sh ${installerPath}`, dispatcher);
-
+            const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
+            await runCommand(installCommand, dispatcher);
         } catch (error: any) {
             throw new Error(`PyTorch installation failed: ${error.message}`)
         }
@@ -194,17 +195,14 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
             else if (gpuType === 'nvidia') {
                 const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
 
-                await runCommand(condaActivate + installCommand, dispatcher);
+                await runCommand(installCommand, dispatcher);
             } else {
-                dispatcher({
-                    message: `UNKNOWN GPU Type`
-                });
+                throw new Error(`Unkown GPU Type`)
             }
         } catch (error: any) {
             throw new Error(`PyTorch installation failed: ${error.message}`)
         }
     }
-
     dispatcher({
         message: "Installing PyTorch Finish"
     });
