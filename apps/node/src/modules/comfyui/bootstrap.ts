@@ -6,7 +6,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-command";
+import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand, runCommandWithPty } from "../utils/run-command";
 import { CONDA_ENV_NAME } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -237,15 +237,26 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
     return true;
 }
 
-let comfyuiProcess: ExecaChildProcess<string>;
+import * as nodePty from "node-pty"
+let comfyuiProcess: nodePty.IPty;
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
+        console.log("start comfyUI");
         const repoPath = path.resolve(appDir, 'ComfyUI');
-        await runCommand(`${PYTHON_PATH} main.py --enable-cors-header`, dispatcher, {
+        await runCommandWithPty(`${PYTHON_PATH} main.py --enable-cors-header`, (event => {
+            dispatcher(event);
+            if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
+                dispatcher({
+                    type: "SUCCESS",
+                    message: "Comfy UI started success"
+                })
+            }
+        }), {
             cwd: repoPath
-        }, (process) => {
+        }, (process: nodePty.IPty) => {
             comfyuiProcess = process;
         });
+        console.log("start comfyUI success");
     } catch (err: any) {
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }
@@ -256,8 +267,7 @@ export async function stopComfyUI(): Promise<boolean> {
     try {
         // 暂停 Python 程序
         if (comfyuiProcess) {
-            const ret = comfyuiProcess.kill(); // 可以根据需要使用不同的信号
-            return ret;
+            comfyuiProcess.kill(); // 可以根据需要使用不同的信号
         }
     } catch (error) {
         throw new Error(`Error stopping comfyui`);
@@ -268,7 +278,9 @@ export async function stopComfyUI(): Promise<boolean> {
 export async function isComfyUIAlive(): Promise<boolean> {
     try {
         // 检查 Python 进程是否存在
-        return comfyuiProcess?.exitCode === null;
+        const ret = await fetch("http://127.0.0.1:8188");
+        console.log("isComfyUIlive", ret);
+        return true;
     } catch (error) {
         console.error('Error checking process:', error);
         return false;

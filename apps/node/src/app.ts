@@ -16,7 +16,6 @@ export async function startAppServer(params: {
   const {port = 3333, staticFolder} = params;
   const app = express();
 
-  console.log("static folder", staticFolder);
   app.use(express.static(staticFolder ? staticFolder : 'public'));
   app.use(express.json());
 

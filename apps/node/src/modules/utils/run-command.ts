@@ -28,14 +28,22 @@ export async function runCommand(
     cb && cb(subProcess);
 
     subProcess.stdout?.on('data', (chunk) => {
+<<<<<<< HEAD
         console.log("stdout", chunk.toString());
+=======
+        console.log("out", chunk.toString());
+>>>>>>> test-nodepty
         dispatcher && dispatcher({
             message: chunk.toString()
         })
     });
 
     subProcess.stderr?.on('data', (chunk) => {
+<<<<<<< HEAD
         console.log("stderr", chunk.toString());
+=======
+        console.log("error", chunk.toString());
+>>>>>>> test-nodepty
         dispatcher && dispatcher({
             message: chunk.toString()
         })
@@ -62,6 +70,55 @@ export async function runCommand(
     }
 }
 
+import * as nodePty from "node-pty"
+import { getAppDataDir } from "./get-appdata-dir";
+
+const shell = process.platform === 'win32' ? 'cmd' : 'zsh';
+const appDir = getAppDataDir();
+
+export function runCommandWithPty(
+    command: string,
+    dispatcher: TaskEventDispatcher = () => { },
+    options: Options = {},
+    cb?: (process: nodePty.IPty) => void
+) {
+    console.log("run command with PTY");
+    return new Promise((resolve, reject) => {
+        const pty = nodePty.spawn(shell, [], {
+            name: 'xterm-color',
+            cols: 80,
+            rows: 30,
+            env: {
+                PATH: SHELL_ENV_PATH
+            },
+            cwd: (options.cwd || appDir) as string
+        });
+
+        cb && cb(pty);
+        
+        const disposable = pty.onData(function (data: string) {
+            console.log(data);
+            dispatcher && dispatcher({
+                message: data
+            });
+            if (data.trim() === 'END_OF_COMMAND') {
+                console.log('The command has finished executing.');
+                disposable.dispose();
+                pty.kill();
+            }
+        });
+
+        pty.onExit((e: { exitCode: number }) => {
+            console.log("exitcode", e.exitCode);
+            if (e.exitCode !== 0) {
+                reject(e);
+            } else {
+                resolve(pty);
+            }
+        });
+        pty.write(`${command};echo END_OF_COMMAND\n`);
+    })
+}
 
 export function getSystemPath(): string {
     let paths;

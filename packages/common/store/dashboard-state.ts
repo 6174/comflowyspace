@@ -62,7 +62,13 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
     },
     bootstrapTasks: [],
     setEnvRequirements: (requirements: EnvRequirements) => set({ env: requirements }),
-    setBootstrapTasks: (tasks: BootstrapTask[]) => set({ bootstrapTasks: tasks }),
+    setBootstrapTasks: (tasks: BootstrapTask[]) => {
+        const allTaskFinished = tasks.every(t => t.finished);
+        set({ 
+            bootstrapTasks: tasks,
+            bootstraped: allTaskFinished
+        })
+    },
 }));
 
 function checkEnvRequirements(env: EnvRequirements): BootstrapTask[] {
