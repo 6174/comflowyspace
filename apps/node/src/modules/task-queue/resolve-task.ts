@@ -13,6 +13,7 @@ export function resolveTask(taskProps: TaskProps) {
 }
 
 
-export async function downloadURLTask(dispatch: TaskEventDispatcher, params: any) {
+export async function downloadURLTask(dispatch: TaskEventDispatcher, params: any): Promise<boolean> {
     console.log("download url task", params);
+    return true;
 }

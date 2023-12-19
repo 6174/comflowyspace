@@ -1,4 +1,3 @@
-import { ExecaChildProcess, execaCommand } from "execa";
 import * as os from "os";
 import * as path from "path";
 import { isMac } from "../utils/env"
@@ -6,8 +5,8 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand, runCommandWithPty } from "../utils/run-command";
-import { CONDA_ENV_NAME } from "../config-manager";
+import { PIP_PATH, PYTHON_PATH, runCommand, runCommandWithPty } from "../utils/run-command";
+import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
 import * as fsExtra from "fs-extra"
@@ -17,11 +16,18 @@ const appDir = getAppDataDir();
 const comfyUIPath = path.resolve(appDir, 'ComfyUI');
 
 export async function checkBasicRequirements() {
-    const isCondaInstalled = await checkIfInstalled("conda");
-    const isPythonInstalled = await checkIfInstalled("python");
-    const isGitInstalled = await checkIfInstalled("git --version");
-    const isComfyUIInstalled = await checkIfInstalledComfyUI();
-    let isTorchInstalled = false;
+    const isSetupedConfig = await checkIsSetupedConfig();
+    let isCondaInstalled = false, 
+        isPythonInstalled = false, 
+        isTorchInstalled = false,
+        isComfyUIInstalled = false,
+        isGitInstalled = false;
+    if (isSetupedConfig) {
+        isComfyUIInstalled = await checkIfInstalledComfyUI();
+    }
+    isCondaInstalled = await checkIfInstalled("conda");
+    isPythonInstalled = await checkIfInstalled("python");
+    isGitInstalled = await checkIfInstalled("git --version");
     if (isCondaInstalled && isPythonInstalled) {
         isTorchInstalled = await verifyIsTorchInstalled()
     }
@@ -32,10 +38,15 @@ export async function checkBasicRequirements() {
         isGitInstalled,
         isTorchInstalled,
         isComfyUIInstalled,
-        isSetupedConfig: true,
+        isSetupedConfig,
         isBasicModelInstalled: true,
         isBasicExtensionInstalled: true
     }
+}
+
+export async function checkIsSetupedConfig() {
+    const config = appConfigManager.get(CONFIG_KEYS.appSetupConfig)
+    return !!config;
 }
 
 export async function checkIfInstalledComfyUI(): Promise<boolean> {

@@ -10,6 +10,7 @@ import { InstallExtensions } from './install-extensions';
 import { StartComfyUI } from './start-comfyui';
 import { SetupConfig } from './setup-config';
 import { InstallComfyUI } from './install-comfyui';
+import LogoSvg from "ui/icons/logo";
 
 const Bootstrap = () => {
   const {onInit, env, loading, bootstrapTasks} = useDashboardState();
@@ -60,7 +61,7 @@ const Bootstrap = () => {
   }
   return (
     <div className={styles.bootstrap}>
-      <h1>Bootstrap tasks</h1>
+      <h1><LogoSvg/> Comflowy Bootstrap</h1>
       <p>{currentTask.title}...({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
       {$task}
     </div>

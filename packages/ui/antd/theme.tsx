@@ -13,7 +13,7 @@ export const ThemeProvider = (props: {
       algorithm: props.dark ? theme.darkAlgorithm : theme.defaultAlgorithm,
       token: {
         // colorPrimary: '#00b96b',
-        colorPrimary: "#765AFD"
+        colorPrimary: "#2BCBBB"
       }
     }}>
     {props.children}

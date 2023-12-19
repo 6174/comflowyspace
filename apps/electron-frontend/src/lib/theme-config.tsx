@@ -1,10 +1,11 @@
 import type { ThemeConfig } from "antd";
-
-const theme: ThemeConfig = {
+import {theme} from "antd";
+const themeConfig: ThemeConfig = {
+  algorithm: theme.darkAlgorithm,
   token: {
     fontSize: 16,
-    colorPrimary: "#6952FF",
+    colorPrimary: "#2BCBBB",
   },
 };
 
-export default theme;
+export default themeConfig;

@@ -1,6 +1,14 @@
 .bootstrap {
   padding: 40px;
   :global {
-       
+      h1 {
+        display: flex;
+        align-items: center;
+        font-size: 64px;
+        transform: scale(.6);
+        transform-origin: 0% 0%;
+        margin-bottom: -20px;
+        margin-left: -6px;
+      } 
   }
 }
