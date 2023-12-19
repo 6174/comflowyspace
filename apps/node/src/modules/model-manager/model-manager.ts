@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { FOLDER_NAMES_AND_PATHS, getModelDir } from './model-paths';
+import { getFolderNamesAndPaths, getModelDir } from './model-paths';
 import * as fs from 'fs';
 import {models} from './models';
 import { AllModels, MarketModel, ModelType } from './types';
@@ -7,6 +7,7 @@ import { AllModels, MarketModel, ModelType } from './types';
 class ModelManager {
     getAllInstalledModels = (): AllModels => {
         const models: AllModels = {};
+        const {FOLDER_NAMES_AND_PATHS} = getFolderNamesAndPaths();
         Object.entries(FOLDER_NAMES_AND_PATHS).forEach(([folderName, [paths, extensions]]) => {
             if (Array.isArray(extensions)) {
                 const supportedExtensions: string[] = extensions; // Remove dot from extensions

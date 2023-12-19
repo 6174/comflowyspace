@@ -1,44 +1,50 @@
 import * as path from 'path';
-import { getAppDataDir } from "../utils/get-appdata-dir";
+import { getComfyUIDir } from "../utils/get-appdata-dir";
 import { FolderPaths, MarketModel, ModelExt, ModelType } from './types';
-
-
 
 export const supported_pt_extensions: ModelExt[] = ['.ckpt', '.pt', '.bin', '.pth', '.safetensors'];
 
-export const BASE_PATH = path.resolve(getAppDataDir(), "ComfyUI"); // Add the appropriate value for BASE_PATH
-export const MODELS_DIR = `${BASE_PATH}/models`;
-
-export const FOLDER_NAMES_AND_PATHS: FolderPaths = {
-  checkpoints: [[`${MODELS_DIR}/checkpoints`], supported_pt_extensions],
-  configs: [[`${MODELS_DIR}/configs`], ['.yaml']],
-  loras: [[`${MODELS_DIR}/loras`], supported_pt_extensions],
-  vae: [[`${MODELS_DIR}/vae`], supported_pt_extensions],
-  clip: [[`${MODELS_DIR}/clip`], supported_pt_extensions],
-  unet: [[`${MODELS_DIR}/unet`], supported_pt_extensions],
-  'T2I-Adapter': [[`${MODELS_DIR}/clip`], supported_pt_extensions],
-  'T2I-Style': [[`${MODELS_DIR}/unet`], supported_pt_extensions],
-  clip_vision: [[`${MODELS_DIR}/clip_vision`], supported_pt_extensions],
-  style_models: [[`${MODELS_DIR}/style_models`], supported_pt_extensions],
-  embeddings: [[`${MODELS_DIR}/embeddings`], supported_pt_extensions],
-  diffusers: [[`${MODELS_DIR}/diffusers`], ['folder']],
-  vae_approx: [[`${MODELS_DIR}/vae_approx`], supported_pt_extensions],
-  controlnet: [
-    [`${MODELS_DIR}/controlnet`, `${MODELS_DIR}/t2i_adapter`],
-    supported_pt_extensions,
-  ],
-  gligen: [[`${MODELS_DIR}/gligen`], supported_pt_extensions],
-  upscale_models: [[`${MODELS_DIR}/upscale_models`], supported_pt_extensions],
-  // custom_nodes: [[`${BASE_PATH}/custom_nodes`], []], // Adjust 'any' based on the actual value type
-  hypernetworks: [[`${MODELS_DIR}/hypernetworks`], supported_pt_extensions],
-  classifiers: [[`${MODELS_DIR}/classifiers`], { '': null }], // Adjust 'null' based on the actual value type
-};
-
-export const OUTPUT_DIRECTORY = `${BASE_PATH}/output`;
-export const TEMP_DIRECTORY = `${BASE_PATH}/temp`;
-export const INPUT_DIRECTORY = `${BASE_PATH}/input`;
-
+export function getFolderNamesAndPaths() {
+  const BASE_PATH = getComfyUIDir();
+  const MODELS_DIR = `${BASE_PATH}/models`;
+  const FOLDER_NAMES_AND_PATHS: FolderPaths = {
+    checkpoints: [[`${MODELS_DIR}/checkpoints`], supported_pt_extensions],
+    configs: [[`${MODELS_DIR}/configs`], ['.yaml']],
+    loras: [[`${MODELS_DIR}/loras`], supported_pt_extensions],
+    vae: [[`${MODELS_DIR}/vae`], supported_pt_extensions],
+    clip: [[`${MODELS_DIR}/clip`], supported_pt_extensions],
+    unet: [[`${MODELS_DIR}/unet`], supported_pt_extensions],
+    'T2I-Adapter': [[`${MODELS_DIR}/clip`], supported_pt_extensions],
+    'T2I-Style': [[`${MODELS_DIR}/unet`], supported_pt_extensions],
+    clip_vision: [[`${MODELS_DIR}/clip_vision`], supported_pt_extensions],
+    style_models: [[`${MODELS_DIR}/style_models`], supported_pt_extensions],
+    embeddings: [[`${MODELS_DIR}/embeddings`], supported_pt_extensions],
+    diffusers: [[`${MODELS_DIR}/diffusers`], ['folder']],
+    vae_approx: [[`${MODELS_DIR}/vae_approx`], supported_pt_extensions],
+    controlnet: [
+      [`${MODELS_DIR}/controlnet`, `${MODELS_DIR}/t2i_adapter`],
+      supported_pt_extensions,
+    ],
+    gligen: [[`${MODELS_DIR}/gligen`], supported_pt_extensions],
+    upscale_models: [[`${MODELS_DIR}/upscale_models`], supported_pt_extensions],
+    // custom_nodes: [[`${BASE_PATH}/custom_nodes`], []], // Adjust 'any' based on the actual value type
+    hypernetworks: [[`${MODELS_DIR}/hypernetworks`], supported_pt_extensions],
+    classifiers: [[`${MODELS_DIR}/classifiers`], { '': null }], // Adjust 'null' based on the actual value type
+  };
+  const OUTPUT_DIRECTORY = `${BASE_PATH}/output`;
+  const TEMP_DIRECTORY = `${BASE_PATH}/temp`;
+  const INPUT_DIRECTORY = `${BASE_PATH}/input`;
+  return {
+    BASE_PATH,
+    MODELS_DIR,
+    FOLDER_NAMES_AND_PATHS,
+    OUTPUT_DIRECTORY,
+    TEMP_DIRECTORY,
+    INPUT_DIRECTORY
+  };
+}
 export function getModelDir(type: ModelType, save_path: string = "default"): string {
+  const {BASE_PATH, MODELS_DIR, FOLDER_NAMES_AND_PATHS} = getFolderNamesAndPaths();
   if (save_path !== 'default') {
     if (save_path.includes('..') || save_path.startsWith('/')) {
       console.warn(`[WARN] '${save_path}' is not allowed path. So it will be saved into 'models/etc'.`);

@@ -1,5 +1,5 @@
 import path from "path";
-import { getAppDataDir } from "../utils/get-appdata-dir";
+import { getAppDataDir, getComfyUIDir } from "../utils/get-appdata-dir";
 
 export interface Extension {
     title: string;
@@ -21,11 +21,11 @@ export interface Extension {
   }
   
   export function getExtensionDir(name: string = ""): string {
-    return path.join(getAppDataDir(), 'ComfyUI', 'custom_nodes', name)
+    return path.join(getComfyUIDir(), 'custom_nodes', name)
   }
   
   export function getWebExtensionDir(name: string = ""): string {
-    return path.join(getAppDataDir(), 'ComfyUI', 'web', "extensions", name)
+    return path.join(getComfyUIDir(), 'web', "extensions", name)
   }
   
   export const EXTENTION_FOLDER = getExtensionDir()
