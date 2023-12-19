@@ -1,7 +1,7 @@
-
-export interface ComfyElectronApi {
+  export interface ComfyElectronApi {
   name: string;
   version: number;
+  selectDirectory: () => Promise<any>;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {

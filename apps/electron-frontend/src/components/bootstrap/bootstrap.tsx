@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {BootStrapTaskType, useDashboardState} from "@comflowy/common/store/dashboard-state";
+import {BootStrapTaskType, BootstrapTask, useDashboardState} from "@comflowy/common/store/dashboard-state";
 import styles from "./bootstrap.style.module.scss";
 import { InstallConda } from './install-conda';
 import { InstallPython } from './install-python';
@@ -11,6 +11,8 @@ import { StartComfyUI } from './start-comfyui';
 import { SetupConfig } from './setup-config';
 import { InstallComfyUI } from './install-comfyui';
 import LogoSvg from "ui/icons/logo";
+import {useJoin} from "ui/utils/use-join";
+import { Button, Space } from 'antd';
 
 const Bootstrap = () => {
   const {onInit, env, loading, bootstrapTasks} = useDashboardState();
@@ -21,11 +23,19 @@ const Bootstrap = () => {
   if (!currentTask) {
     return (
       <div className={styles.bootstrap}>
-        <h1>Bootstrap tasks</h1>
-        <p>All tasks finished!</p>
+        <h1><LogoSvg/> Comflowy Bootstrap</h1>
+        <p>Preparing....</p>
       </div>
     )
   }
+  const seporator = <span>...</span>
+  const titles = useJoin<BootstrapTask>(bootstrapTasks, (task) => {
+    return (
+      <div className="task" key={task.title}>
+        <Button type={task.finished ? "primary" : "default"}>{task.title}</Button>
+      </div>
+    )
+  }, seporator);
   
   let $task = null;
   switch (currentTask.type) {
@@ -62,7 +72,7 @@ const Bootstrap = () => {
   return (
     <div className={styles.bootstrap}>
       <h1><LogoSvg/> Comflowy Bootstrap</h1>
-      <p>{currentTask.title}...({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
+      <p>{currentTask.title}... ({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
       {$task}
     </div>
   )

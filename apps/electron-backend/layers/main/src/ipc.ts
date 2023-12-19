@@ -1,9 +1,10 @@
-import { IpcMainEvent, ipcMain } from "electron"
+import { ipcMain, dialog } from "electron"
 
 export function startIPC() {
-  // listen the channel `message` and resend the received message to the renderer process
-  ipcMain.on('message', (event: IpcMainEvent, message: any) => {
-    console.log(message)
-    setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
-  })
+  ipcMain.handle('select-directory', openDirectoryDialog)
+}
+
+async function openDirectoryDialog() {
+  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+  return result.filePaths;
 }

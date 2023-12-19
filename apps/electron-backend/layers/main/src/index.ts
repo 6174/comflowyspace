@@ -9,11 +9,13 @@ import { isDev } from './utils';
 import path from 'path';
 import { APP_SERVER_PORT } from './config';
 import { showLoadingScreen } from './loading';
+import { startIPC } from './ipc';
 
 app.disableHardwareAcceleration();
 
 app.on('ready', async () => {
   try {
+    startIPC()
     log.info('Start Server');  
     showLoadingScreen();
     // run next frontend service

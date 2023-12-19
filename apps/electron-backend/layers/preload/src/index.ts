@@ -17,6 +17,10 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
     receiveFromMain: (channel: string, func: any) => {
         ipcRenderer.on(channel, (event, ...args) => func(...args));
     },
+    selectDirectory: async () => {
+        const ret = await ipcRenderer.invoke('select-directory');
+        return ret;
+    },
     windowTabManager: {
         onWindowTabsChange: (callback: (tabsData: {
             tabs: WindowTab[];

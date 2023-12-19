@@ -51,7 +51,7 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
     onInit: async () => {
         const ret = await getComfyUIEnvRequirements();
         if (ret.data) {
-            const tasks = checkEnvRequirements(ret.data);
+            const tasks = checkEnvRequirements(ret.data).filter(t => !t.finished);
             set({
                 env: ret.data,
                 bootstrapTasks: tasks,
@@ -64,7 +64,7 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
     setEnvRequirements: (requirements: EnvRequirements) => set({ env: requirements }),
     setBootstrapTasks: (tasks: BootstrapTask[]) => {
         const allTaskFinished = tasks.every(t => t.finished);
-        set({ 
+        set({
             bootstrapTasks: tasks,
             bootstraped: allTaskFinished
         })
@@ -75,7 +75,7 @@ function checkEnvRequirements(env: EnvRequirements): BootstrapTask[] {
     const tasks: BootstrapTask[] = [];
     tasks.push({
         type: BootStrapTaskType.setupConfig,
-        title: "setup config", 
+        title: "Setup", 
         description: "Considering network issue, you can setup a http_proxy url",
         finished: env.isSetupedConfig,
     });

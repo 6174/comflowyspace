@@ -10,5 +10,14 @@
         margin-bottom: -20px;
         margin-left: -6px;
       } 
+      .field {
+        margin-top: 20px;
+        .field-label {
+          font-weight: bold;
+        }
+        input {
+          font-size: 12px;
+        }
+      }
   }
 }
