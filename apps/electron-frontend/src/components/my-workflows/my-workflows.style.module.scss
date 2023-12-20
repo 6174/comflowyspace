@@ -3,5 +3,23 @@
         .workflow-create-box {
             margin-bottom: 20px;
         }
+        .create-button {
+            user-select: none;
+            display: flex;
+            border-radius: 10px;
+            border: 1px solid rgba(71, 71, 71, 0.10);
+            background: #262837;
+            padding: 12px;
+            .icon {
+                margin-right: 6px;
+            }
+            .description {
+                font-size: 12px;
+                opacity: .5;
+            }
+            &:hover {
+                background-color: #34374b;
+            }
+        }
     }   
 }

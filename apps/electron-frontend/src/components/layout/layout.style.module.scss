@@ -10,6 +10,7 @@
             height: 100%;
             border-right: solid 1px var(--borderColor);
             .logo {
+                margin-top: 6px;
                 display: flex;
                 // justify-content: center;
                 align-items: center;
@@ -65,20 +66,21 @@
                 a {
                     text-decoration: none;
                     line-height: 26px;
-                    color: var(--fontColor);
+                    color: #A4A4A5;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                 }
 
                 &:hover {
-                    background-color: var(--hover-background-color);
-                    a {
-                        // font-weight: bold;
-                    }
+                    background-color: var(--backgroundColorL1);
                 }
                 &.active {
                     background-color: var(--primaryColor);
+                    a {
+                        color: white;
+                        font-weight: 500;
+                    }
                     .icon {
                         background-color: transparent;
                         svg {
@@ -92,6 +94,19 @@
         }
         .workspace-main {
             flex: 1;
+            padding: 20px;
+            h2 {
+                font-size: 18px;
+                margin: 10px 0;
+            }
+            .sub {
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 15.456px;
+                opacity: .3;
+                margin-top: -10px;
+            }
         }
     }
 }

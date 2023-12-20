@@ -1,17 +1,23 @@
-import React from "react";
 import WorkflowIcon from "./workflow-icon";
 import LogoIcon from "./logo"
 import BulbIcon from "./bulb-icon";
 import ExtensionIcon from "./extension-icon";
 import ModelIcon from "./model-icon";
-import TutorialIcon from "./book-icon"
+import TutorialIcon from "./book-icon";
+import ImageIcon from "./img-icon";
+import TemplateIcon from "./template-icon";
+import NewIcon from "./new-icon";
+
 export {
   WorkflowIcon,
   LogoIcon,
   BulbIcon,
   ExtensionIcon,
   ModelIcon,
-  TutorialIcon
+  TutorialIcon,
+  NewIcon,
+  ImageIcon,
+  TemplateIcon,
 }
 
 export function FileNameIcon() {
@@ -794,30 +800,6 @@ export function PreferenceIcon() {
     </svg>
   );
 }
-
-export function ImageIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        fill="#1C1C1E"
-        fillRule="evenodd"
-        d="M6.612 3.612a3 3 0 00-3 3v10.776a3 3 0 003 3h10.776a3 3 0 003-3V6.612a3 3 0 00-3-3H6.612zm-1 3a1 1 0 011-1h10.776a1 1 0 011 1v8.111l-1.95-1.501a1.478 1.478 0 00-1.888.071l-2.113 1.898a.492.492 0 01-.777-.163l-1.169-2.579a1.97 1.97 0 00-3.111-.652l-1.768 1.59V6.611z"
-        clipRule="evenodd"
-      ></path>
-      <path
-        fill="#1C1C1E"
-        d="M16.963 8.912a1.97 1.97 0 11-3.94 0 1.97 1.97 0 013.94 0z"
-      ></path>
-    </svg>
-  );
-}
-
 
 export function CodeIcon() {
   return (

@@ -3,7 +3,7 @@ import styles from "./my-workflows.style.module.scss";
 import { useLiveQuery } from "dexie-react-hooks";
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { Button, Space, message } from 'antd';
-import {PlusIcon} from "ui/icons";
+import {PlusIcon, NewIcon, ImageIcon, TemplateIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
 
@@ -11,7 +11,6 @@ function MyWorkflowsPage() {
 
   return (
     <div className={styles.myWorkflows}>
-      <h1>My Workflows</h1>
       <WorkflowCreateBox/>
       <WorkflowList/>
     </div>
@@ -27,9 +26,38 @@ function WorkflowCreateBox() {
 
   return (
     <div className="workflow-create-box">
+      <h2>Create New Workflow</h2>
+      <p className="sub">Choose the method for creating your worklow</p>
       <Space>
-        <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
-        <Button type="primary" className='icon-button'> <PlusIcon/> Create From Template</Button>
+        <div className="create-button">
+          <div className="icon">
+            <NewIcon/>
+          </div>
+          <div className="info">
+            <div className="title">Default workflow</div>
+            <div className="description">Create default workflow</div>
+          </div>
+        </div>
+        <div className="create-button">
+          <div className="icon">
+            <ImageIcon/>
+          </div>
+          <div className="info">
+            <div className="title">Import</div>
+            <div className="description">Create from a image or json</div>
+          </div>
+        </div>
+        <div className="create-button">
+          <div className="icon">
+            <TemplateIcon/>
+          </div>
+          <div className="info">
+            <div className="title">Template</div>
+            <div className="description">Select a template to start</div>
+          </div>
+        </div>
+        {/* <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
+        <Button type="primary" className='icon-button'> <PlusIcon/> Create From Template</Button> */}
       </Space>
     </div>
   )
