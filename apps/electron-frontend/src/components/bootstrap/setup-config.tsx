@@ -21,7 +21,6 @@ export function SetupConfig() {
       <div className="field">
         <Button type="primary">Save</Button>
       </div>
-
     </div>
   )
 }

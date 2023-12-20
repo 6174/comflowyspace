@@ -22,16 +22,15 @@ app.on('ready', async () => {
     await startAppServer({
       port: APP_SERVER_PORT,
       staticFolder: isDev ? null : path.resolve(__dirname, "../../renderer/out")
-    });
-
+    }); 
     log.info('create main window');
     // start desktop window
     await windowManger.createMainWindow();
     // createWindow();
     // auto update listener
     log.info('start auto update');
-    // startAutoUpdater()
 
+    // startAutoUpdater()
   } catch(err: any) {
     log.error(err);
     dialog.showErrorBox('Error', err.message);

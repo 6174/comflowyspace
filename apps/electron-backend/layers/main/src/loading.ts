@@ -14,6 +14,7 @@ export function showLoadingScreen() {
     loadingScreen.loadFile(path.resolve(__dirname, '../../renderer/dist/loading.html'));
     loadingScreen.on('closed', () => (loadingScreen = null));
     loadingScreen.show();
+    // loadingScreen.webContents.openDevTools({ mode: 'detach' })
 }
 
 export function closeLoadingScreen() {
