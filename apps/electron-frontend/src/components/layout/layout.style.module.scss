@@ -1,28 +1,74 @@
 .app {
+    border-top: solid 1px var(--borderColor); 
     display: flex;
+    height: calc(100vh - 1px);
+    overflow: hidden;
     :global {
         .workspace-nav {
-            width: 240px;
+            width: 210px;
             padding: 20px;
+            height: 100%;
+            border-right: solid 1px var(--borderColor);
+            .logo {
+                display: flex;
+                // justify-content: center;
+                align-items: center;
+                position: relative;
+                left: -4px;
+                svg {
+                    width: 26px;
+                    height: 26px;
+                }
+                .text {
+                    font-size: 24px;
+                    font-weight: 500;
+                }
+            }
+            .sub {
+                color: #FFF;
+                font-size: 11px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 11px; /* 100% */
+                letter-spacing: 1.5px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+                opacity: .5;
+            }
             .nav-header {
                 padding: 0 20px 24px;
                 font-weight: bold;
                 font-size: 16px;
             }
-            .nav-list {
-                margin-top: 30px;
-                // border: solid 1px;
-                padding: 20px;
-                border-radius: 10px;
-            }
             .workspace-nav-item {
                 padding: 4px 10px;
-                margin-bottom: 6px;
-                border-radius: 4px;
+                padding-left: 0;
+                margin-bottom: 14px;
+                border-radius: 10px;
                 box-sizing: border-box;
+                display: flex;
+                .icon {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 6px;
+                    border-radius: 10px;
+                    background-color: var(--backgroundColorL1);
+                    margin-right: 10px;
+                    svg {
+                        * {
+                            fill: #A8A9AF;
+                            opacity: 1;
+                        }
+                    }
+                }
                 a {
                     text-decoration: none;
+                    line-height: 26px;
                     color: var(--fontColor);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 &:hover {
@@ -32,7 +78,15 @@
                     }
                 }
                 &.active {
-                    background-color: var(--hover-background-color);
+                    background-color: var(--primaryColor);
+                    .icon {
+                        background-color: transparent;
+                        svg {
+                            * {
+                                fill: white;
+                            }
+                        }
+                    }
                 }
             }
         }
