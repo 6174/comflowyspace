@@ -35,23 +35,27 @@ export function BootstrapTask(props: BootstrapTaskProps) {
     });
   }, []);
 
+  useEffect(() => {
+    startTaskAction();
+  }, [])
+
   return (
     <div className={props.type}>
-      <div className="description">
+      {/* <div className="description">
         <Alert message={task.description} type="info"/>
-      </div>
+      </div> */}
       <div className="actions">
         {success ? 
           (
             <div>{task.title} success</div>
           ) : (
-            <Button loading={running} type="primary" onClick={ev => {
+            <Button loading={running} disabled={running} type="primary" onClick={ev => {
               startTaskAction();
             }}>{task.title}</Button>
           )
         }
       </div>
-      <LogViewer messages={messages}/>
+      {/* <LogViewer messages={messages}/> */}
     </div>
   )
 }
