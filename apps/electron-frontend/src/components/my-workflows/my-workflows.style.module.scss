@@ -8,7 +8,7 @@
             display: flex;
             border-radius: 10px;
             border: 1px solid rgba(71, 71, 71, 0.10);
-            background: #262837;
+            background: var(--cardBackground);
             padding: 12px;
             .icon {
                 margin-right: 6px;
@@ -18,7 +18,34 @@
                 opacity: .5;
             }
             &:hover {
-                background-color: #34374b;
+                background-color: var(--cardHover);
+            }
+        }
+
+        .workflow-list-item {
+            user-select: none;
+            border-radius: 12px;
+            border: 1px solid rgba(71, 71, 71, 0.10);
+            background: var(--cardBackground);
+            padding: 10px;
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            .gallery-card {
+                width: 228px;
+                height: 158px;
+                background-color: var(--cardHover);
+                border-radius: 10px;
+            }
+
+            .title {
+                margin: 10px 0 6px;
+                font-size: 16px;
+                font-weight: 700;
+            }
+
+            &:hover {
+                background-color: var(--cardHover);
             }
         }
     }   

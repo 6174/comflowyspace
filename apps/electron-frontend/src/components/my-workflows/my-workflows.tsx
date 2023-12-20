@@ -29,12 +29,12 @@ function WorkflowCreateBox() {
       <h2>Create New Workflow</h2>
       <p className="sub">Choose the method for creating your worklow</p>
       <Space>
-        <div className="create-button">
+        <div className="create-button" onClick={createNewDoc}>
           <div className="icon">
             <NewIcon/>
           </div>
           <div className="info">
-            <div className="title">Default workflow</div>
+            <div className="title">New workflow</div>
             <div className="description">Create default workflow</div>
           </div>
         </div>
@@ -71,23 +71,23 @@ function WorkflowList() {
   console.log("docs", docs);
   return (
     <div className="workflow-list">
+      <h2>My Workflows</h2>
       {docs.map(doc => {
         return (
-          <div key={doc.id} className='workflow-list-item'>
+          <div key={doc.id} className='workflow-list-item' onClick={ev => {
+            // router.push(`/app/${doc.id}`)
+            openTabPage({
+              name: doc.title,
+              pageName: "app",
+              query: `id=${doc.id}`,
+              id: 0,
+              type: "DOC"
+            });
+          }} >
+            <div className="gallery-card">
+            </div>
             <div className='title'>
               {doc.title || "untitled"}
-            </div>
-            <div className='actions'>
-              <Button onClick={ev => {
-                // router.push(`/app/${doc.id}`)
-                openTabPage({
-                  name: doc.title,
-                  pageName: "app",
-                  query: `id=${doc.id}`,
-                  id: 0,
-                  type: "DOC"
-                });
-              }}>Edit</Button>
             </div>
           </div>
         )
