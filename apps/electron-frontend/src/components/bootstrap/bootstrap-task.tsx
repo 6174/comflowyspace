@@ -1,7 +1,7 @@
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
-import { Button, message } from "antd";
+import { Alert, Button, message } from "antd";
 import { useCallback, useEffect } from "react";
 import {LogViewer} from "ui/log-viewer/log-viewer";
 
@@ -38,14 +38,14 @@ export function BootstrapTask(props: BootstrapTaskProps) {
   return (
     <div className={props.type}>
       <div className="description">
-        {task.description}
+        <Alert message={task.description} type="info"/>
       </div>
       <div className="actions">
         {success ? 
           (
             <div>{task.title} success</div>
           ) : (
-            <Button loading={running} onClick={ev => {
+            <Button loading={running} type="primary" onClick={ev => {
               startTaskAction();
             }}>{task.title}</Button>
           )

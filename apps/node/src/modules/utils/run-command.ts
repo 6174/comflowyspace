@@ -81,7 +81,8 @@ export function runCommandWithPty(
             cols: 80,
             rows: 30,
             env: {
-                PATH: SHELL_ENV_PATH
+                PATH: SHELL_ENV_PATH,
+                DISABLE_UPDATE_PROMPT: "true"
             },
             cwd: (options.cwd || appDir) as string
         });

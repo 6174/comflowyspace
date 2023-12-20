@@ -2,6 +2,7 @@
   name: string;
   version: number;
   selectDirectory: () => Promise<any>;
+  selectHomeDir:() => Promise<string>;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {

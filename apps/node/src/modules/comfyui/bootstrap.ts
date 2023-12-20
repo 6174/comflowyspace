@@ -254,7 +254,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
     try {
         console.log("start comfyUI");
         const repoPath = path.resolve(appDir, 'ComfyUI');
-        await runCommandWithPty(`${PYTHON_PATH} main.py --enable-cors-header`, (event => {
+        await runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
             dispatcher(event);
             if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
                 dispatcher({

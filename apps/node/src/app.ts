@@ -9,6 +9,7 @@ import { ApiRouteInstallExtension } from './routes/api/install-extension';
 import { ApiRouteInstallModel } from './routes/api/install-model';
 import { ApiEnvCheck } from './routes/api/env-check';
 import { ApiBootstrap } from './routes/api/bootstrap';
+import { ApiSetupConfig } from './routes/api/setup-config';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -39,6 +40,7 @@ export async function startAppServer(params: {
   app.post('/api/install_extension', ApiRouteInstallExtension)
   app.post('/api/install_model', ApiRouteInstallModel)
   app.post('/api/add_task', ApiRouteAddTask);
+  app.post('/api/setup_config', ApiSetupConfig);
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });

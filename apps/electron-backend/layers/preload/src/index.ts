@@ -21,6 +21,10 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
         const ret = await ipcRenderer.invoke('select-directory');
         return ret;
     },
+    selectHomeDir: async () => {
+        const ret = await ipcRenderer.invoke('select-home-dir');
+        return ret;
+    },
     windowTabManager: {
         onWindowTabsChange: (callback: (tabsData: {
             tabs: WindowTab[];
