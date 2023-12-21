@@ -1,17 +1,19 @@
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
 import config, { getBackendUrl } from "@comflowy/common/config";
-import { Extension } from "@comflowy/common/store/extension-state";
+import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { Button, message } from "antd";
 import { useCallback } from "react";
 
 export function InstallExtensionButton(props: {extension: Extension}) {
     const {extension} = props;
+    const {onInit} = useExtensionsState()
     const {startTask, running, messages} = useRemoteTask({
         api: getBackendUrl(`/api/install_extension`),
         onMessage: (msg) => {
             console.log(msg);
             if (msg.type === "SUCCESS") {
                 message.success("Extension installed successfully");
+                onInit();
             }
         }
     });
