@@ -36,3 +36,21 @@
         }
     } 
 }
+
+.action-button {
+    padding: 2px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    &:hover {
+        background-color: var(--backgroundColorL2);
+    }
+    svg {
+        * {
+            fill: white;
+            opacity: 1;
+        }
+    }
+}

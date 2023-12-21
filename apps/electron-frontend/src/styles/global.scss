@@ -1,6 +1,7 @@
 html, body {
   --backgroundColor: #1B1B1F;
   --backgroundColorL1: #262837;
+  --backgroundColorL2: #35374B;
   --primaryColor: #2BCBBB;
   --borderColor: #262837;
   --fontColor: white;
@@ -8,6 +9,7 @@ html, body {
   --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
   --cardBackground: #262837;
   --cardHover: #34374b;
+  --transition: all ease .2s;
   -webkit-font-smoothing: antialiased;
   background-color: white;
   color: var(--fontColor);

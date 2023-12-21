@@ -48,6 +48,7 @@
                 border-radius: 10px;
                 box-sizing: border-box;
                 display: flex;
+                transition: var(--transition);
                 .icon {
                     display: flex;
                     justify-content: center;
@@ -56,6 +57,7 @@
                     border-radius: 10px;
                     background-color: var(--backgroundColorL1);
                     margin-right: 10px;
+                    transition: var(--transition);
                     svg {
                         * {
                             fill: #A8A9AF;

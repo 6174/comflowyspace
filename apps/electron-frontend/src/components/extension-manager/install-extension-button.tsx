@@ -25,14 +25,14 @@ export function InstallExtensionButton(props: {extension: Extension}) {
     }, [extension]);
     return (
         <div className="install-extension-button-wrapper">
-            <Button loading={isLoading} onClick={ev => {
+            <Button type="primary" loading={isLoading} onClick={ev => {
                 if (!running) {
                     installExtension();
                 }
             }}>Install</Button>
-            <div className="messages">
+            {/* <div className="messages">
                 {messages.map(message => <div key={message}>{message}</div>)}
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -1,17 +1,108 @@
 .extensionManager {
+  overflow-y: auto;
   :global {
     .extension-list {
       display: flex;
       flex-direction: column;
       max-height: calc(100vh - 100px);
-      overflow-y: auto;
       margin-right: 40px;
+      .result {
+        display: flex;
+        flex-wrap: wrap;
+      }
     }
-    .extension-list-item {
-      border: solid 1px;
+    .extension-card {
+      display: inline-block;
+      user-select: none;
+      margin-right: 10px;
+      margin-top: 10px;
+      width: 280px;
+      border: 1px solid rgba(71, 71, 71, 0.10);
       border-radius: 4px;
       padding: 10px;
       margin-bottom: 10px;
+      background-color: var(--backgroundColorL1);
+      height: 130px;
+      transition: var(--transition);
+      &:hover {
+        background-color: var(--backgroundColorL2);
+      }
+      .description {
+        font-size: 12px;
+        opacity: .5;
+        line-height: 1.2;
+        max-height: 60px;
+        overflow: hidden;
+        a {
+          color: white;
+          pointer-events: none;
+        }
+        * {
+          line-height: 1.2;
+          background-color: transparent !important;
+          color: white !important;
+        }
+      }
+    }
+  }
+}
+
+.extensionTitleBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  :global {
+    .icon {
+      $size: 30px;
+      width: $size;
+      height: $size;
+      border-radius: $size;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--primaryColor);
+      margin-right: 10px;
+      svg {
+        * {
+          fill: white;
+          opacity: 1;
+        }
+      }
+    }
+    .text {
+      flex: 1;
+      font-size: 16px;
+      >div {
+        word-break: break-all;
+        text-wrap: nowrap;
+        max-width: 232px;
+        padding-right: 18px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .author {
+        margin-top: -4px;
+        opacity: .6;
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+.extensionModal {
+  :global {
+    .description {
+      line-height: 1.2;
+      opacity: .8;
+      max-height: 300px;
+      overflow-y: auto;
+      p {
+        border-radius: 4px;
+        padding: 8px;
+      }
+    }
+    .footer-actions {
+      margin-top: 20px;
     }
   }
 }

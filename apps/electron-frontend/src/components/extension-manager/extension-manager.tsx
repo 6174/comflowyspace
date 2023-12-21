@@ -1,26 +1,39 @@
 import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
-import { Button, Col, Input, Row, Space } from "antd";
+import { Button, Col, Input, Modal, Row, Space } from "antd";
 import { InstallExtensionButton } from "./install-extension-button";
+import { CloseIcon, ExtensionIcon, MoreIcon } from "ui/icons";
 
 function ExtensionManager() {
-  return (
-    <div className={styles.extensionManager}>
-      <h1>Extensions</h1>
-      <ExtensionList />
-    </div>
-  )
-}
-
-function ExtensionList() {
   const {onInit, extensions, extensionNodeMap, loading} = useExtensionsState();
   useEffect(() => {
     onInit();
   }, []);
+
+  return (
+    <div className={styles.extensionManager}>
+      <div className="my-extensions">
+        <h2>My Extensions</h2>
+        <p className="sub">Extensions already installed on your device</p>
+        <ExtensionList extensions={extensions.filter(ext => ext.installed)} showFilter={false}/>
+      </div>
+      <div className="extension-market">
+        <h2>Community Extensions</h2>
+        <p className="sub">Install extensions from the community</p>
+        <ExtensionList extensions={extensions}/>
+      </div>
+    </div>
+  )
+}
+
+function ExtensionList(props: {
+  extensions: Extension[],
+  showFilter?: boolean
+}) {
+  const {extensions, showFilter = true} = props;
   const [displayedExtensions, setDisplayedExtensions] = useState(extensions);
   const [searchText, setSearchText] = useState('');
-  const [filterType, setFilterType] = useState('all');
 
   const doFilter = useCallback(() => {
     let filteredExtensions = extensions.filter(
@@ -29,50 +42,31 @@ function ExtensionList() {
         ext.description.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    if (filterType === 'installed') {
-      filteredExtensions = filteredExtensions.filter(ext => ext.installed);
-    } else if (filterType === 'uninstalled') {
-      filteredExtensions = filteredExtensions.filter(ext => !ext.installed);
-    }
-
     setDisplayedExtensions(filteredExtensions);
-  }, [extensions, searchText, filterType]);
-
-  const switchType = useCallback((type: string) => {
-    setFilterType(type);
-  }, [])
+  }, [extensions, searchText]);
 
   useEffect(() => {
     doFilter();
-  }, [extensions, filterType])
+  }, [extensions])
 
   return (
     <div className='extension-list'>
       <Row>
-        <Col span={12} style={{ marginBottom: 16 }}>
-          <Space>
-            <Button onClick={() => switchType('all')}>All</Button>
-            <Button onClick={() => switchType('installed')}>Installed</Button>
-            <Button onClick={() => switchType('uninstalled')}>Uninstalled</Button>
-          </Space>
-        </Col>
-        <Col span={12} style={{ marginBottom: 16 }}>
-          <Input
-            placeholder="Search Extensions"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onPressEnter={doFilter}
-          />
-        </Col>
+        {showFilter && 
+          <Col span={12} style={{ marginBottom: 16 }}>
+            <Input
+              placeholder="Search Extensions"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              onPressEnter={doFilter}
+            />
+          </Col>
+        }
       </Row>
+      <p className="sub">
+        Total extensions: {displayedExtensions.length}
+      </p>
       <div className="result">
-        {loading ? (
-          <div> Loading....</div>
-        ) : (
-          <div className="meta">
-            Total extensions: {displayedExtensions.length}
-          </div>
-        )}
         {displayedExtensions.map(ext => {
           return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
         })}
@@ -84,21 +78,88 @@ function ExtensionList() {
 function ExtensionListItem({extension}: {
   extension: Extension
 }) {
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleOk = () => {
+    setVisible(false);
+  };
+
+  const handleCancel = () => {
+    setVisible(false);
+  };
+
   return (
-    <div className='extension-list-item'>
-      <div className="title">Title: {extension.title}</div>
-      <div className="author">Author: {extension.author}</div>
+    <>
+      <ExtensionModal extension={extension} visible={visible} handleOk={handleOk} handleCancel={handleCancel}/>
+      <div className='extension-card' onClick={showModal}>
+        <div className={styles.extensionTitleBar}>
+          <div className="icon">
+            <ExtensionIcon/>
+          </div>
+          <div className="text">
+            <div className="name" title={extension.title}>{extension.title}</div>
+            <div className="author" title={extension.author}>Created by {extension.author}</div>
+          </div>
+        </div>
+        <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
+      </div>
+    </>
+  )
+}
+
+
+export function ExtensionModal(props: {
+  extension: Extension,
+  visible: boolean,
+  handleOk: () => void,
+  handleCancel: () => void
+}) {
+  const {visible, handleOk, handleCancel, extension} = props;
+  const title = (
+    <div className={styles.extensionTitleBar} >
+      <div className="icon">
+        <ExtensionIcon/>
+      </div>
+      <div className="text">
+        <div className="name" title={extension.title}>{extension.title}</div>
+        <div className="author" title={extension.author}>Created by {extension.author}</div>
+      </div>
+      <Space className="actions">
+        <div className="action-button">
+          <MoreIcon/>
+        </div>
+        <div className="action-button" onClick={handleCancel}>
+          <CloseIcon/>
+        </div>
+      </Space>
+    </div>
+  )
+  return (
+    <Modal
+      title={title}
+      open={visible}
+      onOk={handleOk}
+      closable={false}
+      footer={null}
+      className={styles.extensionModal}
+      onCancel={handleCancel}
+    >
       <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
-      <div className="actions">
+      <div className="footer-actions">
         <Space>
           {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
           {extension.installed && <Button>UnInstall</Button>}
           {extension.installed && extension.need_update && <Button>Update</Button>}
-          {extension.installed && !!extension.disabled ? <Button>UnDisabled</Button> : <Button>Disable</Button>}
+          {extension.installed && <Button>Disable</Button>}
         </Space>
       </div>
-    </div>
+    </Modal>
   )
 }
+
 
 export default ExtensionManager;
