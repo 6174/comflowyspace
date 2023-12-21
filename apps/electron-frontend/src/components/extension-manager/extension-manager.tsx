@@ -126,7 +126,9 @@ export function ExtensionModal(props: {
       </div>
       <div className="text">
         <div className="name" title={extension.title}>{extension.title}</div>
-        <div className="author" title={extension.author}>Created by {extension.author}</div>
+        <div className="author" title={extension.author}>
+        <a href={extension.reference}>Reference</a>, Created by {extension.author}
+        </div>
       </div>
       <Space className="actions">
         <div className="action-button">
