@@ -66,6 +66,7 @@
       align-items: center;
       background-color: var(--primaryColor);
       margin-right: 10px;
+      flex-shrink: 0;
       svg {
         * {
           fill: white;

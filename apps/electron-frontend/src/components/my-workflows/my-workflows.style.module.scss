@@ -1,9 +1,11 @@
 .myWorkflows {
     overflow-y: auto;
     padding-top: 14px;
+    height: 100%;
     :global {
         .workflow-create-box {
             margin-bottom: 20px;
+            margin-right: 16px;
         }
         .create-button {
             user-select: none;
@@ -12,6 +14,7 @@
             border: 1px solid rgba(71, 71, 71, 0.10);
             background: var(--cardBackground);
             padding: 12px;
+            transition: var(--transition);
             .icon {
                 margin-right: 6px;
             }
@@ -33,6 +36,7 @@
             display: inline-block;
             margin-right: 10px;
             margin-bottom: 10px;
+            transition: var(--transition);
             .gallery-card {
                 width: 228px;
                 height: 158px;
