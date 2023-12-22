@@ -28,6 +28,9 @@
       &:hover {
         background-color: var(--backgroundColorL2);
       }
+      &.disabled {
+        opacity: .6;
+      }
       .description {
         font-size: 12px;
         opacity: .5;

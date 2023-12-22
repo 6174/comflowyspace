@@ -4,6 +4,9 @@ import {Extension, useExtensionsState} from "@comflowy/common/store/extension-st
 import { Button, Col, Input, Modal, Row, Space } from "antd";
 import { InstallExtensionButton } from "./install-extension-button";
 import { CloseIcon, ExtensionIcon, MoreIcon } from "ui/icons";
+import { RemoveExtensionButton } from "./remove-extension-button";
+import { UpdateExtensionButton } from "./update-extension-button";
+import { DisableExtensionButton } from "./disable-extension-button";
 
 function ExtensionManager() {
   const {onInit, extensions, extensionNodeMap, loading} = useExtensionsState();
@@ -11,12 +14,14 @@ function ExtensionManager() {
     onInit();
   }, []);
 
+  const installedExtensions = extensions.filter(ext => ext.installed);
+  console.log("installed", installedExtensions);
   return (
     <div className={styles.extensionManager}>
       <div className="my-extensions">
         <h2>My Extensions</h2>
         <p className="sub">Extensions already installed on your device</p>
-        <ExtensionList extensions={extensions.filter(ext => ext.installed)} showFilter={false}/>
+        <ExtensionList extensions={installedExtensions} showFilter={false}/>
       </div>
       <div className="extension-market">
         <h2>Community Extensions</h2>
@@ -92,16 +97,17 @@ function ExtensionListItem({extension}: {
     setVisible(false);
   };
 
+  const title = `${extension.title}${extension.disabled && "(disabled)"}`;
   return (
     <>
       <ExtensionModal extension={extension} visible={visible} handleOk={handleOk} handleCancel={handleCancel}/>
-      <div className='extension-card' onClick={showModal}>
+      <div className={`extension-card ${extension.disabled && "disabled"}`} onClick={showModal}>
         <div className={styles.extensionTitleBar}>
           <div className="icon">
             <ExtensionIcon/>
           </div>
           <div className="text">
-            <div className="name" title={extension.title}>{extension.title}</div>
+            <div className="name" title={title}>{title}</div>
             <div className="author" title={extension.author}>Created by {extension.author}</div>
           </div>
         </div>
@@ -140,6 +146,8 @@ export function ExtensionModal(props: {
       </Space>
     </div>
   )
+
+
   return (
     <Modal
       title={title}
@@ -154,9 +162,9 @@ export function ExtensionModal(props: {
       <div className="footer-actions">
         <Space>
           {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
-          {extension.installed && <Button>UnInstall</Button>}
-          {extension.installed && extension.need_update && <Button>Update</Button>}
-          {extension.installed && <Button>Disable</Button>}
+          {extension.installed && <RemoveExtensionButton extension={extension}/>}
+          {extension.installed && extension.need_update && <UpdateExtensionButton extension={extension}/>}
+          {extension.installed && <DisableExtensionButton extension={extension}/>}
         </Space>
       </div>
     </Modal>

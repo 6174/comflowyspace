@@ -4,10 +4,14 @@ import { checkExtensionsInstalled } from './check-extension-status';
 import { Extension, ExtensionNodeMap } from './types';
 import { removeExtension } from './remove-extension';
 import { disableExtension, enableExtension } from './disable-extension';
+import { updateExtension } from './update-extension';
 
 class ComfyExtensionManager {
 
   async updateExtensions(extensions: Extension[]): Promise<void> {
+    for(let extension of extensions) {
+      await updateExtension(extension);
+    }
   }
 
   async removeExtensions(extensions: Extension[]){

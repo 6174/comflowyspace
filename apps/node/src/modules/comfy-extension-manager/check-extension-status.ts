@@ -40,6 +40,7 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
 
         const dirName = path.parse(url).name.replace('.git', '');
         const dirPath = path.join(custom_nodes_path, dirName);
+
         if (fs.existsSync(dirPath)) {
             try {
                 if (doUpdateCheck && (await gitRepoHasUpdates(dirPath, doFetch, doUpdate))) {
@@ -51,12 +52,12 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
             } catch {
                 item.installed = true;
             }
-        } else if (fs.existsSync(dirPath + '.disabled')) {
-            item.installed = true;
-            item.disabled = true;
-        } else {
-            item.installed = false;
         }
+        
+        if (fs.existsSync(dirPath + '.disabled')) {
+            item.disabled = true;
+        }
+
     } else if (item.install_type === 'copy' && item.files.length === 1) {
         const dirName = path.basename(item.files[0]);
         let base_path;
@@ -73,11 +74,10 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
 
         if (fs.existsSync(filePath)) {
             item.installed = true;
-        } else if (fs.existsSync(filePath + '.disabled')) {
-            item.installed = true;
+        }
+        
+        if (fs.existsSync(filePath + '.disabled')) {
             item.disabled = true;
-        } else {
-            item.installed = false;
         }
     }
 

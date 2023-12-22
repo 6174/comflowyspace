@@ -57,58 +57,72 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
                 extensionNodeList
             }
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({ 
             success: false,
-            error: err
+            error: err.message
         })
     } 
 }
 
 export async function ApiRouteDisableExtensions(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const extensions = data as Extension[];
+        const extensions = req.body.extensions as Extension[];
+        console.log("extensions", extensions);
         await comfyExtensionManager.disableExtensions(extensions);
         res.send({
             success: true
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({ 
             success: false,
-            error: err
+            error: err.message
         })
     } 
 }
 
 export async function ApiRouteEnableExtensions(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const extensions = data as Extension[];
+        const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.disableExtensions(extensions);
         res.send({
             success: true
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({ 
             success: false,
-            error: err
+            error: err.message
         })
     } 
 }
 
 export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const extensions = data as Extension[];
+        const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.removeExtensions(extensions);
         res.send({
             success: true
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({ 
             success: false,
-            error: err
+            error: err.message
         })
     } 
+}
+
+export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
+    try {
+        const { data } = req.body;
+        const extensions = data as Extension[];
+        await comfyExtensionManager.updateExtensions(extensions);
+        res.send({
+            success: true
+        });
+    } catch (err: any) {
+        res.send({
+            success: false,
+            error: err.message
+        })
+    }
 }

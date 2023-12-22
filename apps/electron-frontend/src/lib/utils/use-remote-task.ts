@@ -67,7 +67,7 @@ export function useRemoteTask(props: {
         }
     }
 
-    const onMessage = useCallback((ev) => {
+    const onMessage = useCallback(async (ev) => {
         const msg = JSON.parse(ev.data) as TaskEvent;
         if (msg.type === "SUCCESS") {
             setSuccess(true);
