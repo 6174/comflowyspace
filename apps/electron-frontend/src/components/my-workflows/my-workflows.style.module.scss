@@ -1,4 +1,6 @@
 .myWorkflows {
+    overflow-y: auto;
+    padding-top: 14px;
     :global {
         .workflow-create-box {
             margin-bottom: 20px;
