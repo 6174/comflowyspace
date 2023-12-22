@@ -47,4 +47,3 @@ class ModelManager {
 }
 
 export const modelManager = new ModelManager();
-

@@ -2,16 +2,30 @@ import extensionList from './extension-list';
 import extensionNodeMapping from './extension-node-mapping';
 import { checkExtensionsInstalled } from './check-extension-status';
 import { Extension, ExtensionNodeMap } from './types';
+import { removeExtension } from './remove-extension';
+import { disableExtension, enableExtension } from './disable-extension';
 
 class ComfyExtensionManager {
 
-  async updatePlugin(pluginName: string): Promise<void> {
+  async updateExtensions(extensions: Extension[]): Promise<void> {
   }
 
-  async updateAllPlugins(): Promise<void> {
+  async removeExtensions(extensions: Extension[]){
+    for(let extension of extensions) {
+      await removeExtension(extension);
+    }
   }
 
-  async removePlugin(pluginName: string): Promise<void> {
+  async disableExtensions(extensions: Extension[]){
+    for(let extension of extensions) {
+      await disableExtension(extension);
+    }
+  }
+
+  async enableExtensions(extensions: Extension[]){
+    for(let extension of extensions) {
+      await enableExtension(extension);
+    }
   }
 
   async getAllExtensions(): Promise<Extension[]> {

@@ -1,15 +1,11 @@
 import express, { Request, Response, response } from 'express';
 import cors from 'cors';
-import { ApiRouteGetExtensions } from './routes/api/get-extensions';
-import { ApiRouteGetModels } from './routes/api/get-models';
+import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
 import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
-import { ApiRouteInstallExtension } from './routes/api/install-extension';
-import { ApiRouteInstallModel } from './routes/api/install-model';
-import { ApiEnvCheck } from './routes/api/env-check';
-import { ApiBootstrap } from './routes/api/bootstrap';
-import { ApiSetupConfig } from './routes/api/setup-config';
+import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions } from './routes/api/extension';
+import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig } from './routes/api/bootstrap';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -38,6 +34,10 @@ export async function startAppServer(params: {
   
   app.post('/api/add_bootstrap_task', ApiBootstrap);
   app.post('/api/install_extension', ApiRouteInstallExtension)
+  app.post('/api/enable_extensions', ApiRouteEnableExtensions)
+  app.post('/api/disable_extensions', ApiRouteDisableExtensions)
+  app.post('/api/remove_extensions', ApiRouteRemoveExtensions)
+
   app.post('/api/install_model', ApiRouteInstallModel)
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/setup_config', ApiSetupConfig);

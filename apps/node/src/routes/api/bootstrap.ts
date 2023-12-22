@@ -1,6 +1,29 @@
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
+import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
+import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
+
+
+/**
+ * fetch all extensions
+ * @param req 
+ * @param res 
+ */
+export async function ApiEnvCheck(req: Request, res: Response) {
+    try {
+        const requirements = await checkBasicRequirements()
+        res.send({
+            success: true,
+            data: requirements
+        });
+    } catch (err) {
+        res.send({
+            success: false,
+            error: err
+        })
+    } 
+}
 
 export enum BootStrapTaskType {
     "installConda" = "installConda",
@@ -74,6 +97,30 @@ export async function ApiBootstrap(req: Request, res: Response) {
             data: {
                 taskId
             }
+        });
+    } catch (err) {
+        res.send({
+            success: false,
+            error: err
+        })
+    } 
+}
+
+/**
+ * fetch all extensions
+ * @param req 
+ * @param res 
+ */
+export async function ApiSetupConfig(req: Request, res: Response) {
+    try {
+        const {data} = req.body;
+        const setupString = JSON.stringify(data);
+        console.log(setupString);
+        appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
+        const isComfyUIInstalled = await checkIfInstalledComfyUI();
+        res.send({
+            success: true,
+            isComfyUIInstalled
         });
     } catch (err) {
         res.send({

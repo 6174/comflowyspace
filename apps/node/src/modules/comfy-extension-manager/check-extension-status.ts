@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import simpleGit from 'simple-git';
 import { Extension, getExtensionDir } from './types';
 
-const custom_nodes_path = getExtensionDir();
+
 const js_path = '/path/to/js'; // Change this to your JS path
 
 export async function gitRepoHasUpdates(dirPath: string, doFetch: boolean, doUpdate: boolean): Promise<boolean> {
@@ -26,6 +26,7 @@ export async function gitRepoHasUpdates(dirPath: string, doFetch: boolean, doUpd
 }
 
 export async function checkAExtensionInstalled(item: Extension, doFetch = false, doUpdateCheck = true, doUpdate = false): Promise<void> {
+    const custom_nodes_path = getExtensionDir();
     item.installed = false;
     item.need_update = false;
     item.disabled = false;
