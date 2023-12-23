@@ -1,5 +1,8 @@
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
+import { documentDatabaseInstance } from '@comflowy/common/local-storage/document-database';
+import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
+import { useRouter } from 'next/router';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 
@@ -7,22 +10,29 @@ import { ImageIcon } from 'ui/icons';
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const {widgets} = useAppStore();
+  const router = useRouter();
+  const createDoc = React.useCallback(async () => {
+    const ret = await documentDatabaseInstance.createDocFromTemplate();
+    message.success("Workflow created");
+  }, []);
 
   const onFileSelected = async (file: File) => {
     console.log(selectedFile);
     try {
       let workflow
       if (file.type === 'image/png') {
-        workflow = await readWorkflowFromPng(file);
+        workflow = await readWorkflowFromPng(file, widgets);
       }
   
       if (file.type === 'application/json') {
-        workflow = await readWorkflowFromFile(file);
+        workflow = await readWorkflowFromFile(file, widgets);
       }
 
       console.log(workflow);
-      
+
     } catch(err) {
+      console.log(err);
       message.error("Unexpected error: ", err.message);
     }
   }

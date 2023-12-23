@@ -17,12 +17,18 @@ export type PersistedWorkflowNode = {
   images?: PreviewImage[],
   position: XYPosition
 }
-export type PersistedWorkflowConnection = ({id: string, selected?: boolean} & Connection)
+export type PersistedWorkflowConnection = ({id: string, handleType?: string, selected?: boolean} & Connection)
 
 export type PersistedWorkflowDocument = {
   id: string;
   title: string;
   nodes: Record<string, PersistedWorkflowNode>;
+  extra?: any;
+  config?: any;
+  last_link_id?: string;
+  last_node_id?: string;
+  version?: number;
+  groups?: any[];
   connections: PersistedWorkflowConnection[];
 }
 
@@ -74,6 +80,17 @@ export class DocumentDatabase extends Dexie {
       title: "untitled",
       create_time: +(new Date()),
       snapshot: template
+    }
+    await this.documents.add(doc);
+    return doc;
+  }
+
+  async createDocFromData(data: PersistedWorkflowDocument): Promise<PersistedFullWorkflow> {
+    const doc: PersistedFullWorkflow = {
+      id: uuid(),
+      title: "untitled",
+      create_time: +(new Date()),
+      snapshot: data
     }
     await this.documents.add(doc);
     return doc;

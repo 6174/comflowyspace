@@ -12,6 +12,7 @@ export interface Widget {
   input: { required: Record<PropertyKey, Input> }
   output: FlowPropsKey[]
 }
+export type Widgets = Record<WidgetKey, Widget>
 
 export const Widget = {
   getDefaultFields(widget: Widget): Record<PropertyKey, any> {

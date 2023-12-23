@@ -1,13 +1,16 @@
 import exifr from 'exifr';
-import { PersistedWorkflowDocument } from '../local-storage';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../local-storage';
+import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
+import { Input, Widget, WidgetKey, Widgets } from '../comfui-interfaces';
+import { uuid } from '../utils';
 
-export async function readWorkflowFromFile( file: File ): Promise<PersistedWorkflowDocument> {
+export async function readWorkflowFromFile( file: File, widgets: Widgets ): Promise<PersistedWorkflowDocument> {
   const reader = new FileReader()
   reader.readAsText(file)
   return new Promise((resolve, reject) => {
     reader.addEventListener('load', (ev) => {
       if (ev.target?.result != null && typeof ev.target.result === 'string') {
-        resolve(JSON.parse(ev.target.result))
+        resolve(safeLoadWorkflow(JSON.parse(ev.target.result), widgets))
       }
     })
     reader.addEventListener('error', reject)
@@ -21,7 +24,23 @@ export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
   a.click()
 }
 
-export async function readWorkflowFromPng(file: File): Promise<PersistedWorkflowDocument> {
+function safeLoadWorkflow(workflow: any, widgets: Widgets): PersistedWorkflowDocument {
+  if (!workflow) {
+    throw new Error('Invalid workflow file. Please check if the file is corrupted.')
+  }
+  // if (workflow.version !== 1) {
+  //   throw new Error('Invalid workflow file version. Please check if the file is corrupted.')
+  // }
+  if (workflow.comflowy_version) {
+    // comflowy_type workflow
+    return workflow;
+  } else {
+    // comfyUI type
+    return comfyUIWorkflowToPersistedWorkflowDocument(workflow, widgets)
+  }
+}
+
+export async function readWorkflowFromPng(file: File, widgets: Widgets): Promise<PersistedWorkflowDocument> {
   if (file.type !== 'image/png') {
     throw new Error('Invalid file type. Only PNG images are supported.');
   }
@@ -33,9 +52,9 @@ export async function readWorkflowFromPng(file: File): Promise<PersistedWorkflow
     image.onload = async () => {
       try {
         const exifData = await exifr.parse(image);
-        const workflow = JSON.parse(exifData.workflow)
+        const workflow = JSON.parse(exifData.workflow) as ComfyUIWorkflow
+        resolve(safeLoadWorkflow(workflow, widgets));
         console.log('EXIF data:', workflow);
-        resolve(workflow);
       } catch (error) {
         reject(error);
       } finally {
@@ -48,3 +67,100 @@ export async function readWorkflowFromPng(file: File): Promise<PersistedWorkflow
     };
   });
 }
+
+
+export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: ComfyUIWorkflow, widgets: Widgets): PersistedWorkflowDocument {
+  const { nodes, links } = comfyUIWorkflow;
+  const nodesMap: Record<string, PersistedWorkflowNode> = {};
+  const missed_widget = [];
+  nodes.forEach((node) => {
+    const widget = widgets[node.type];
+    const fields: any = {};
+    if (widget) {
+      const inputKeys = Object.keys(widget.input.required);
+      inputKeys.forEach((key, index) => {
+        const value = node.widgets_values[index];
+        fields[key] = value;
+      });
+    } else {
+      missed_widget.push(node.type);
+    }
+
+    const newNode: PersistedWorkflowNode = {
+      id: node.id + "",
+      value: {
+        widget: node.type,
+        fields,
+      },
+      dimensions: {
+        width: node.size[0],
+        height: node.size[1],
+      },
+      position: {
+        x: node.pos[0],
+        y: node.pos[1],
+      }
+    }
+    nodesMap[node.id + ""] = newNode;
+  });
+
+  const connections: PersistedWorkflowConnection[] = links.map((link) => {
+    const linkId = link[0] + "";
+    const sourceNodeId = link[1] + "";
+    const sourceHandleId = link[2];
+    const targetNodeId = link[3] + "";
+    const targetHandleId = link[4];
+    const connectionType = link[5];
+
+    const sourceNode = nodesMap[sourceNodeId];
+    const targetNode = nodesMap[targetNodeId];
+    const sourceWidget = widgets[sourceNode.value.widget];
+    const targetWidget = widgets[targetNode.value.widget];
+    if (!sourceNode || !targetNode) {
+      throw new Error("sourceNode or targetNode not found");
+    }
+
+    let sourceHandle = "";
+    let targetHandle = "";
+    if (sourceWidget) {
+      const outputKeys = sourceWidget.output;
+      const outputKey = outputKeys[sourceHandleId];
+      if (!outputKey) {
+        throw new Error("outputKey not found");
+      }
+      sourceHandle = outputKey;
+    }
+
+    if (targetWidget) {
+      const inputs = [];
+      for (const [property, input] of Object.entries(targetWidget.input.required)) {
+        if (!Input.isParameterOrList(input)) {
+          inputs.push(property)
+        }
+      }
+      const inputKey = inputs[targetHandleId];
+      if (!inputKey) {
+        throw new Error("inputKey not found");
+      }
+      targetHandle = inputKey;
+    }
+
+    return {
+      id: linkId,
+      source: sourceNodeId,
+      target: targetNodeId,
+      sourceHandle,
+      targetHandle,
+      handleType: connectionType,
+    }
+  });
+
+  return {
+    id: uuid(),
+    title: "Untitled",
+    nodes: nodesMap,
+    connections,
+  };
+}
+
+

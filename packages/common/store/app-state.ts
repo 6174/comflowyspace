@@ -113,7 +113,7 @@ export const AppState = {
 
     const stateNode = state.nodes.find(sn => sn.id == node.id);
     const item: Node = {
-      id: node.id,
+      id: node.id + "",
       data: {
         widget,
         value: node.value
@@ -183,7 +183,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-      console.log("nodes", workflow.nodes["2"]);
 
       throttledUpdateDocument({
         ...st.persistedWorkflow!,
