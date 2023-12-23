@@ -1,4 +1,5 @@
 import { Widget, WidgetKey } from "./comfy-widget-types"
+import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-workflow";
 export const NODE_IDENTIFIER = 'sdNode';
 export type NodeId = string
 
@@ -8,6 +9,8 @@ export type NodeId = string
 export interface SDNode {
   widget: WidgetKey
   fields: Record<PropertyKey, any>
+  inputs: ComfyUIWorkflowNodeInput[]
+  outputs: ComfyUIWorkflowNodeOutput[]
   images?: PreviewImage[],
 }
 
@@ -19,7 +22,12 @@ export interface PreviewImage {
 
 export const SDNode = {
   fromWidget(widget: Widget): SDNode {
-    return { widget: widget.name, fields: Widget.getDefaultFields(widget) }
+    return { 
+      widget: widget.name, 
+      fields: Widget.getDefaultFields(widget),
+      inputs: [],
+      outputs: [],
+    }
   },
 }
 

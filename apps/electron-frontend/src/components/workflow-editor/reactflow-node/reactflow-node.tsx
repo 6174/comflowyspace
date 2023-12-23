@@ -29,23 +29,24 @@ function NodeComponent({
   onNodesDelete,
 }: Props): JSX.Element {
   const params = []
-  const inputs = []
   const widget = node.data.widget;
+  const inputs = node.data.value.inputs || [];
+  const inputKeys = inputs.map(input => input.name);
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
     widget.input.required.upload = ["IMAGEUPLOAD"];
   }
+
   for (const [property, input] of Object.entries(widget.input.required)) {
-    if (Input.isParameterOrList(input)) {
+    if (!inputKeys.includes(property)) {
       params.push({ property, input })
-    } else {
-      inputs.push(property)
     }
   }
 
   const isInProgress = progressBar !== undefined
   const [minHeight, setMinHeight] = useState(100);
   const [minWidth, setMinWidth] = useState(180);
-  const mainRef = useRef<HTMLDivElement>()
+  const mainRef = useRef<HTMLDivElement>();
+
   useEffect(() => {
     if (mainRef.current) {
       setMinHeight(mainRef.current.clientHeight + 25)
@@ -80,10 +81,11 @@ function NodeComponent({
         )}
       </div>
       <div className="node-main" ref={mainRef}>
+
         <div className="node-slots">
           <div className="node-inputs">
-            {inputs.map((k) => (
-              <Slot key={k} id={k} label={k} type="target" position={Position.Left} />
+            {inputs.map((input) => (
+              <Slot key={input.name} id={input.name} label={input.name} type="target" position={Position.Left} />
             ))}
           </div>
           <div className="node-outputs">
@@ -92,11 +94,13 @@ function NodeComponent({
             ))}
           </div>
         </div>
+
         <div className="node-params">
           {params.map(({ property, input }) => (
             <InputContainer key={property} name={property} id={node.id} input={input} widget={widget}/>
           ))}
         </div>
+
       </div>
       <div className="node-images-preview">
         {

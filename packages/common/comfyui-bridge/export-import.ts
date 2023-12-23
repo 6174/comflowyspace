@@ -102,6 +102,8 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       value: {
         widget: node.type,
         fields,
+        inputs: node.inputs || [],
+        outputs: node.outputs || [],
       },
       dimensions: {
         width: node.size[0],
@@ -125,38 +127,25 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
 
     const sourceNode = nodesMap[sourceNodeId];
     const targetNode = nodesMap[targetNodeId];
-    const sourceWidget = widgets[sourceNode.value.widget];
-    const targetWidget = widgets[targetNode.value.widget];
+    // const sourceWidget = widgets[sourceNode.value.widget];
+    // const targetWidget = widgets[targetNode.value.widget];
     if (!sourceNode || !targetNode) {
       throw new Error("sourceNode or targetNode not found");
     }
 
-    let sourceHandle = "";
-    let targetHandle = "";
-    if (sourceWidget) {
-      const outputKeys = sourceWidget.output;
-      const outputKey = outputKeys[sourceHandleId];
-      if (!outputKey) {
-        throw new Error("outputKey not found");
-      }
-      sourceHandle = outputKey.toUpperCase();
+    const outputKeys = sourceNode.value.outputs.map((output) => output.name);
+    const outputKey = outputKeys[sourceHandleId];
+    if (!outputKey) {
+      throw new Error("outputKey not found");
     }
+    const sourceHandle = outputKey.toUpperCase();
 
-    if (targetWidget) {
-      const inputs = [];
-      for (const [property, input] of Object.entries(targetWidget.input.required)) {
-        if (property === "text_g" || property === "text_l") {
-          inputs.push(property);
-        } else if (!Input.isParameterOrList(input)) {
-          inputs.push(property)
-        }
-      }
-      const inputKey = inputs[targetHandleId];
-      if (!inputKey) {
-        throw new Error("inputKey not found");
-      }
-      targetHandle = inputKey.toUpperCase();
+    const inputs = targetNode.value.inputs.map((input) => input.name);
+    const inputKey = inputs[targetHandleId];
+    if (!inputKey) {
+      throw new Error("inputKey not found");
     }
+    const targetHandle = inputKey.toUpperCase();
 
     return {
       id: linkId,

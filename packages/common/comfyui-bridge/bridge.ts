@@ -122,6 +122,10 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const fields = { ...node.value.fields }
+    // const params = [];
+    // const inputs = node.value.inputs;
+    // const inputKeys = inputs.map((input) => input.name);
+
     for (const [property, value] of Object.entries(fields)) {
       const input = widgets[node.value.widget].input.required[property]
       if (Input.isInt(input) && value === -1) {
