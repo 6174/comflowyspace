@@ -6,6 +6,7 @@ import { Button, Space, message } from 'antd';
 import {PlusIcon, NewIcon, ImageIcon, TemplateIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
+import { ImportWorkflow } from './import';
 
 function MyWorkflowsPage() {
 
@@ -38,15 +39,7 @@ function WorkflowCreateBox() {
             <div className="description">Create default workflow</div>
           </div>
         </div>
-        <div className="create-button">
-          <div className="icon">
-            <ImageIcon/>
-          </div>
-          <div className="info">
-            <div className="title">Import</div>
-            <div className="description">Create from a image or json</div>
-          </div>
-        </div>
+        <ImportWorkflow/>
         <div className="create-button" onClick={() => {
           router.push("/templates");
         }}>
