@@ -137,7 +137,7 @@ export default {
       "value": {
         "widget": "CLIPTextEncode",
         "fields": {
-          "undefined": "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,"
+          "text": "beautiful scenery nature glass bottle landscape, , purple galaxy bottle,"
         },
         "inputs": [
           {
@@ -171,7 +171,7 @@ export default {
       "value": {
         "widget": "CLIPTextEncode",
         "fields": {
-          "undefined": "text, watermark"
+          "text": "text, watermark"
         },
         "inputs": [
           {
@@ -242,7 +242,7 @@ export default {
       "value": {
         "widget": "SaveImage",
         "fields": {
-          "undefined": "ComfyUI"
+          "filename_prefix": "ComfyUI"
         },
         "inputs": [
           {

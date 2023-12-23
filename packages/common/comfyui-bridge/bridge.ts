@@ -128,7 +128,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
     for (const [property, value] of Object.entries(fields)) {
       const input = widgets[node.value.widget].input.required[property]
-      if (Input.isInt(input) && value === -1) {
+      if (input && Input.isInt(input) && value === -1) {
         fields[property] = Math.trunc(Math.random() * input[1].max!)
       }
     }
