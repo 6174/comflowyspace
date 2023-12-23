@@ -40,7 +40,7 @@ export function RemoveExtensionButton(props: {extension: Extension}) {
 
     return (
         <div className="remove-extension-button-wrapper">
-            <Button type="primary" loading={running} disabled={running} onClick={ev => {
+            <Button loading={running} disabled={running} onClick={ev => {
                 if (!running) {
                     removeExtension();
                 }

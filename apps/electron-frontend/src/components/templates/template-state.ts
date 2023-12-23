@@ -18,6 +18,7 @@ function getHardCodedTemplates(): Template[] {
 
 export type Template = {
     name: string;
+    tags?: string[];
     description: string;
     created_by?: string;
     thumbnail? : string;
@@ -37,7 +38,7 @@ type TemplatesAction = {
 export const useTemplatesState = create<TemplatesState & TemplatesAction>((set) => ({
     templates: [],
     loading: false,
-    onInit: async () => {
+    onInit: async () => {   
         try {
             // set local templates first for fast loading
             const hardCodedTemplates = getHardCodedTemplates();

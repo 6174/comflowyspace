@@ -137,9 +137,9 @@ export function ExtensionModal(props: {
         </div>
       </div>
       <Space className="actions">
-        <div className="action-button">
+        {/* <div className="action-button">
           <MoreIcon/>
-        </div>
+        </div> */}
         <div className="action-button" onClick={handleCancel}>
           <CloseIcon/>
         </div>

@@ -39,7 +39,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
 
     return (
         <div className="update-extension-button-wrapper">
-            <Button type="primary" loading={running} disabled={running} onClick={ev => {
+            <Button loading={running} disabled={running} onClick={ev => {
                 if (!running) {
                     action();
                 }

@@ -47,7 +47,9 @@ function WorkflowCreateBox() {
             <div className="description">Create from a image or json</div>
           </div>
         </div>
-        <div className="create-button">
+        <div className="create-button" onClick={() => {
+          router.push("/templates");
+        }}>
           <div className="icon">
             <TemplateIcon/>
           </div>
