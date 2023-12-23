@@ -88,7 +88,7 @@ export class DocumentDatabase extends Dexie {
   async createDocFromData(data: PersistedWorkflowDocument): Promise<PersistedFullWorkflow> {
     const doc: PersistedFullWorkflow = {
       id: uuid(),
-      title: "untitled",
+      title: "untitled " + data.id,
       create_time: +(new Date()),
       snapshot: data
     }

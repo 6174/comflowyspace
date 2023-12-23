@@ -51,6 +51,8 @@ export type ComfyUIWorkflowGroup = {
 }
 
 export type ComfyUIWorkflow = {
+  id?: string;
+  title?: string;
   nodes: ComfyUIWorkflowNode[];
   links: ComfyUIWorkflowConnection[];
   groups: ComfyUIWorkflowGroup[];

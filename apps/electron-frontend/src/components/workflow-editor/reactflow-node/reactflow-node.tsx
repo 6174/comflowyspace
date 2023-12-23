@@ -84,13 +84,13 @@ function NodeComponent({
 
         <div className="node-slots">
           <div className="node-inputs">
-            {inputs.map((input) => (
-              <Slot key={input.name} id={input.name} label={input.name} type="target" position={Position.Left} />
+            {inputs.map((input, index) => (
+              <Slot key={input.name + index} id={input.name} label={input.name} type="target" position={Position.Left} />
             ))}
           </div>
           <div className="node-outputs">
-            {widget.output.map((k) => (
-              <Slot key={k} id={k} label={k} type="source" position={Position.Right} />
+            {widget.output.map((k, index) => (
+              <Slot key={k + index} id={k} label={k} type="source" position={Position.Right} />
             ))}
           </div>
         </div>

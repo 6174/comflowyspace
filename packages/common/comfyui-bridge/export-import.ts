@@ -158,8 +158,8 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
   });
 
   return {
-    id: uuid(),
-    title: "Untitled",
+    id: comfyUIWorkflow.id || uuid(),
+    title: comfyUIWorkflow.title || "Untitled",
     nodes: nodesMap,
     connections,
   };
