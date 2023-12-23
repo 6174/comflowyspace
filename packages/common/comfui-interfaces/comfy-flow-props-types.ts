@@ -107,7 +107,7 @@ export const Input = {
   },
 
   isParameterOrList(i: Input): boolean {
-    return Input.isBool(i) || Input.isInt(i) || Input.isFloat(i) || Input.isString(i) || Input.isList(i) || Input.isImageUpload(i)
+    return Input.isBool(i) || Input.isInt(i) || Input.isFloat(i) || Input.isList(i) || Input.isImageUpload(i)
   },
   getInputColor(i: Input): string {
     // GREEN

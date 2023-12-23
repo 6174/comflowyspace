@@ -25,8 +25,9 @@ export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
 }
 
 function safeLoadWorkflow(workflow: any, widgets: Widgets): PersistedWorkflowDocument {
-  if (!workflow) {
-    throw new Error('Invalid workflow file. Please check if the file is corrupted.')
+  console.log("source workflow", workflow);
+  if (!workflow || !workflow.nodes) {
+    throw new Error('Invalid workflow file. Please check if the file is correct workflow format.')
   }
   // if (workflow.version !== 1) {
   //   throw new Error('Invalid workflow file version. Please check if the file is corrupted.')
@@ -76,10 +77,20 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
   nodes.forEach((node) => {
     const widget = widgets[node.type];
     const fields: any = {};
-    if (widget) {
-      const inputKeys = Object.keys(widget.input.required);
-      inputKeys.forEach((key, index) => {
-        const value = node.widgets_values[index];
+    if (widget && node.widgets_values) {
+      const params: string[] = [];
+      for (const [property, input] of Object.entries(widget.input.required)) {
+        if (Input.isParameterOrList(input)) {
+          params.push(property)
+        }
+      }
+
+      if (node.type === "KSampler") {
+        params.splice(1, 0, "control_after_generate")
+      }
+
+      node.widgets_values.forEach((value, index) => {
+        const key = params[index];
         fields[key] = value;
       });
     } else {
@@ -128,13 +139,15 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       if (!outputKey) {
         throw new Error("outputKey not found");
       }
-      sourceHandle = outputKey;
+      sourceHandle = outputKey.toUpperCase();
     }
 
     if (targetWidget) {
       const inputs = [];
       for (const [property, input] of Object.entries(targetWidget.input.required)) {
-        if (!Input.isParameterOrList(input)) {
+        if (property === "text_g" || property === "text_l") {
+          inputs.push(property);
+        } else if (!Input.isParameterOrList(input)) {
           inputs.push(property)
         }
       }
@@ -142,7 +155,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       if (!inputKey) {
         throw new Error("inputKey not found");
       }
-      targetHandle = inputKey;
+      targetHandle = inputKey.toUpperCase();
     }
 
     return {
