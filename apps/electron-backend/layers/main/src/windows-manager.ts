@@ -76,7 +76,7 @@ class WindowManager {
     // if (isDev) {
       this.mainWindow.webContents.openDevTools({ mode: 'detach' })
     // }
-
+    
     window.on('closed', () => {
       // @ts-ignore
       this.mainWindow = null;

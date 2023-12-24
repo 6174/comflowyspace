@@ -99,5 +99,9 @@ body, html {
 
       }
     }
+    .blank {
+      -webkit-app-region: drag;
+      flex: 1;
+    }
   }
 }
