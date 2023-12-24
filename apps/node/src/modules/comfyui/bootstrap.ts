@@ -21,9 +21,11 @@ export async function checkBasicRequirements() {
         isPythonInstalled = false, 
         isTorchInstalled = false,
         isComfyUIInstalled = false,
+        isComfyUIStarted = false,
         isGitInstalled = false;
     if (isSetupedConfig) {
         isComfyUIInstalled = await checkIfInstalledComfyUI();
+        isComfyUIStarted = await isComfyUIAlive();
     }
     isCondaInstalled = await checkIfInstalled("conda");
     isPythonInstalled = await checkIfInstalled("python");
@@ -38,6 +40,7 @@ export async function checkBasicRequirements() {
         isGitInstalled,
         isTorchInstalled,
         isComfyUIInstalled,
+        isComfyUIStarted,
         isSetupedConfig,
         isBasicModelInstalled: true,
         isBasicExtensionInstalled: true

@@ -15,7 +15,7 @@ import {useJoin} from "ui/utils/use-join";
 import { Button, Space } from 'antd';
 
 const Bootstrap = () => {
-  const {onInit, env, loading, bootstrapTasks} = useDashboardState();
+  const {bootstrapTasks} = useDashboardState();
   console.log("bootstrap", bootstrapTasks);
   const finisedTasks = bootstrapTasks.filter(task => task.finished);
   const unfinishedTasks = bootstrapTasks.filter(task => !task.finished);
@@ -28,14 +28,15 @@ const Bootstrap = () => {
       </div>
     )
   }
-  const seporator = <span>...</span>
-  const titles = useJoin<BootstrapTask>(bootstrapTasks, (task) => {
-    return (
-      <div className="task" key={task.title}>
-        <Button type={task.finished ? "primary" : "default"}>{task.title}</Button>
-      </div>
-    )
-  }, seporator);
+  
+  // const seporator = <span>...</span>
+  // const titles = useJoin<BootstrapTask>(bootstrapTasks, (task) => {
+  //   return (
+  //     <div className="task" key={task.title}>
+  //       <Button type={task.finished ? "primary" : "default"}>{task.title}</Button>
+  //     </div>
+  //   )
+  // }, seporator);
   
   let $task = null;
   switch (currentTask.type) {

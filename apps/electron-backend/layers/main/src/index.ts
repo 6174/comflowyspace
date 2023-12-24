@@ -11,7 +11,7 @@ import { APP_SERVER_PORT } from './config';
 import { showLoadingScreen } from './loading';
 import { startIPC } from './ipc';
 
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 app.on('ready', async () => {
   try {

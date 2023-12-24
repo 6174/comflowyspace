@@ -52,10 +52,11 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
         const ret = await getComfyUIEnvRequirements();
         if (ret.data) {
             const tasks = checkEnvRequirements(ret.data).filter(t => !t.finished);
+            const allTaskFinished = tasks.every(t => t.finished);
             set({
                 env: ret.data,
                 bootstrapTasks: tasks,
-                bootstraped: false,
+                bootstraped: allTaskFinished,
                 loading: false
             });
         }
