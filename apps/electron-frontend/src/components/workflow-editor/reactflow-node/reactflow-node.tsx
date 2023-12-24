@@ -32,6 +32,7 @@ function NodeComponent({
   const widget = node.data.widget;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];
+  const nodeTitle = node.data.value.title || widget.name;
   const inputKeys = inputs.map(input => input.name);
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
     widget.input.required.upload = ["IMAGEUPLOAD"];
@@ -72,7 +73,7 @@ function NodeComponent({
       />
 
       <div className="node-header">
-        <h2 className="node-title">{widget.name}</h2>
+        <h2 className="node-title">{ nodeTitle }</h2>
         {isInProgress ? <Progress percent={progressBar * 100} size="small" /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">

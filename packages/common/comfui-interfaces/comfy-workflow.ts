@@ -30,6 +30,7 @@ export type ComfyUIWorkflowNode = {
   widgets_values: string[];
   color: string;
   bgcolor: string;
+  title?: string;
   inputs: ComfyUIWorkflowNodeInput[];
   outputs: ComfyUIWorkflowNodeOutput[];
 }

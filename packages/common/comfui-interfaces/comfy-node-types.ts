@@ -11,7 +11,10 @@ export interface SDNode {
   fields: Record<PropertyKey, any>
   inputs: ComfyUIWorkflowNodeInput[]
   outputs: ComfyUIWorkflowNodeOutput[]
-  images?: PreviewImage[],
+  images?: PreviewImage[]
+  color?: string;
+  bgcolor?: string;
+  title?: string;
 }
 
 export interface PreviewImage {
