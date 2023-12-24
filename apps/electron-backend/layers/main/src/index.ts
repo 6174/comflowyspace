@@ -10,7 +10,7 @@ import path from 'path';
 import { APP_SERVER_PORT } from './config';
 import { showLoadingScreen } from './loading';
 import { startIPC } from './ipc';
-
+// console.log(GPUFeatureStatus)
 // app.disableHardwareAcceleration();
 
 app.on('ready', async () => {

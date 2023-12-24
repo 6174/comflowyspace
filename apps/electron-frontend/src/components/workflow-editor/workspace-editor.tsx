@@ -40,6 +40,7 @@ export default function WorkflowEditor() {
         onLoadWorkflow(doc);
       })
     }
+    checkWebGLStatus();
   }, [id, inited])
 
   const onDragOver = React.useCallback((event) => {
@@ -121,4 +122,15 @@ export default function WorkflowEditor() {
       </ReactFlow>
     </div>
   )
+}
+
+function checkWebGLStatus() {
+  var canvas = document.createElement('canvas');
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+  if (gl && gl instanceof WebGLRenderingContext) {
+    console.log('WebGL is enabled');
+  } else {
+    console.log('WebGL is disabled');
+  }
 }

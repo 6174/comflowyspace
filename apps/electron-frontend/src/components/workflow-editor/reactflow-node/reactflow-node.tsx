@@ -6,7 +6,6 @@ import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-import { useAppStore } from '@comflowy/common/store';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -55,7 +54,6 @@ function NodeComponent({
     }
   }, [mainRef])
 
-  const {onChangeDragingAndResizingState} = useAppStore();
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
       <NodeResizer 
@@ -64,11 +62,9 @@ function NodeComponent({
         minHeight={minHeight} 
         onResizeStart={(ev) => {
           console.log("resize start");
-          onChangeDragingAndResizingState(true);
         }}
         onResizeEnd={(ev) => {
           console.log("resize end");
-          onChangeDragingAndResizingState(false);
         }}
       />
 

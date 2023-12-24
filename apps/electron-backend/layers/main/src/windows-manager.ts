@@ -115,6 +115,7 @@ class WindowManager {
     });
     contextMenu({ window });
     const url = this.#getRealUrl(tabData);
+    window.webContents.frameRate = 60;
     window.webContents.loadURL(url);
     // if (isDev) {
       window.webContents.openDevTools({ mode: 'detach' })
