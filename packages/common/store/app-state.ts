@@ -23,7 +23,8 @@ import {
   type WidgetKey,
   NODE_IDENTIFIER,
   Connection,
-  PreviewImage
+  PreviewImage,
+  UnknownWidget
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
@@ -196,7 +197,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         if (widget !== undefined) {
           state = AppState.addNode(state, widget, node);
         } else {
-          console.warn(`Unknown widget ${node.value.widget}`)
+          state = AppState.addNode(state, {
+            ...UnknownWidget,
+            name: node.value.widget
+          }, node);
+          console.log(`Unknown widget ${node.value.widget}`)
         }
       }
       for (const connection of workflow.connections) {
@@ -304,6 +309,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       nodes: workflow.snapshot.nodes,
       connections: workflow.snapshot.connections
     });
+    console.log("load workflow", workflow);
     set(st => {
       return {
         ...st,

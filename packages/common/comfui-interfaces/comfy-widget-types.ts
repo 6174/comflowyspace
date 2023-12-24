@@ -12,6 +12,15 @@ export interface Widget {
   input: { required: Record<PropertyKey, Input> }
   output: FlowPropsKey[]
 }
+
+export const UnknownWidget: Widget = {
+  name: "UNKNOWN_WIDGET",
+  display_name: "Unknown",
+  category: "Unknown",
+  input: {required: {}},
+  output: [],
+};
+
 export type Widgets = Record<WidgetKey, Widget>
 
 export const Widget = {

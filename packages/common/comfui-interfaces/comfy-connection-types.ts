@@ -34,5 +34,6 @@ export interface MessageType {
     source: string
     sourceHandle: string
     target: string
-    targetHandle: string
+    targetHandle: string,
+    targetHandleType?: string
   }

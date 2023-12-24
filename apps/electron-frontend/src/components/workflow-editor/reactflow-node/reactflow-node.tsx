@@ -31,6 +31,7 @@ function NodeComponent({
   const params = []
   const widget = node.data.widget;
   const inputs = node.data.value.inputs || [];
+  const outputs = node.data.value.outputs || [];
   const inputKeys = inputs.map(input => input.name);
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
     widget.input.required.upload = ["IMAGEUPLOAD"];
@@ -89,8 +90,8 @@ function NodeComponent({
             ))}
           </div>
           <div className="node-outputs">
-            {widget.output.map((k, index) => (
-              <Slot key={k + index} id={k} label={k} type="source" position={Position.Right} />
+            {outputs.map((output, index) => (
+              <Slot key={output.name + index} id={output.name} label={output.name} type="source" position={Position.Right} />
             ))}
           </div>
         </div>
