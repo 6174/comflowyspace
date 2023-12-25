@@ -136,14 +136,28 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       throw new Error("sourceNode or targetNode not found");
     }
 
-    const outputKeys = sourceNode.value.outputs.map((output) => output.name);
+    const outputKeys = sourceNode.value.outputs.map((output) => {
+      let ret = output.name;
+      // "Reroute" Widget
+      if (!ret || ret === "") {
+        ret = output.type
+      }
+      return ret;
+    });
     const outputKey = outputKeys[sourceHandleId];
     if (!outputKey) {
       throw new Error("outputKey not found");
     }
     const sourceHandle = outputKey.toUpperCase();
 
-    const inputs = targetNode.value.inputs.map((input) => input.name);
+    const inputs = targetNode.value.inputs.map((input) => {
+      let ret = input.name;
+      // "Reroute" Widget
+      if (!ret || ret === "") {
+        ret = input.type
+      }
+      return ret;
+    });
     const inputKey = inputs[targetHandleId];
     if (!inputKey) {
       throw new Error("inputKey not found");

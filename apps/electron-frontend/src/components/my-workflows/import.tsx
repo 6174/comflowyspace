@@ -33,7 +33,7 @@ export const ImportWorkflow = () => {
 
     } catch(err) {
       console.log(err);
-      message.error("Unexpected error: ", err.message);
+      message.error("Unexpected error: " + err.message, 3);
     }
   }
 
