@@ -1,8 +1,8 @@
 import { Input, NodeId, Widget } from "@comflowy/common/comfui-interfaces"
 import { useAppStore } from "@comflowy/common/store"
-import { shallow } from 'zustand/shallow';
 import InputComponent from "./reactflow-input";
 import { InputUploadImage } from "./input-upload-image";
+import { memo } from "react";
 
 interface InputContainerProps {
     id: NodeId
@@ -11,15 +11,9 @@ interface InputContainerProps {
     widget: Widget
 }
 
-export function InputContainer({ id, name, input, widget }: InputContainerProps): JSX.Element {
-    const { value, onPropChange } = useAppStore(
-        (st) => ({
-            value: st.graph[id]?.fields[name],
-            onPropChange: st.onPropChange,
-        }),
-        shallow
-    )
-
+function _InputContainer({ id, name, input, widget }: InputContainerProps): JSX.Element {
+    const value = useAppStore((st) => st.graph[id]?.fields[name]);
+    const onPropChange = useAppStore((st) => st.onPropChange);
     const isImageUpload = Input.isImageUpload(input);
     return (
         <div className="node-input-container nodrag nopan">
@@ -28,3 +22,7 @@ export function InputContainer({ id, name, input, widget }: InputContainerProps)
         </div>
     )
 }
+
+export const InputContainer = memo(_InputContainer);
+
+

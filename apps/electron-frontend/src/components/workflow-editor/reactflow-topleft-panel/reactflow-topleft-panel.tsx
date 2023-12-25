@@ -27,7 +27,8 @@ export default function ReactflowTopLeftPanel() {
 }
 
 export function UndoRedo() {
-    const {undoManager, onSyncFromYjsDoc} = useAppStore();
+    const undoManager = useAppStore(st => st.undoManager);
+    const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
     const inActiveColor = '#1c1c1e54';
     const activeColor = '#1C1C1E';
     const canUndo = undoManager? undoManager.canUndo() : false;

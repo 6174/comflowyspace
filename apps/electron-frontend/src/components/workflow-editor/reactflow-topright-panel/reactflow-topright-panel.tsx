@@ -6,7 +6,8 @@ import { useCallback } from "react";
 import IconDown from "ui/icons/icon-down";
 
 export default function ReactflowTopRightPanel() {
-    const {onResetFromPersistedWorkflow, persistedWorkflow} = useAppStore();
+    const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
+    const persistedWorkflow = useAppStore(st => st.persistedWorkflow);
 
     const resetDefault = useCallback(() => {
         onResetFromPersistedWorkflow(

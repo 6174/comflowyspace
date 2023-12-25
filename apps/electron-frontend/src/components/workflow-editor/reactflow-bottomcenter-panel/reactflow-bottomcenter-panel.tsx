@@ -3,10 +3,10 @@ import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
+import { memo } from "react";
 
-export default function ReactflowBottomCenterPanel() {
-    const {onSubmit} = useAppStore();
-
+function ReactflowBottomCenterPanel() {
+    const onSubmit = useAppStore(st => st.onSubmit);
     return (
         <div className={styles.bottomCenterPanel}>
              <Space>
@@ -40,3 +40,5 @@ export default function ReactflowBottomCenterPanel() {
         </div>
     )
 }
+
+ export default memo(ReactflowBottomCenterPanel)

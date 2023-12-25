@@ -14,7 +14,8 @@ export function InputUploadImage({widget, id}: {
     widget: Widget,
     id: string
 }) {
-    const {graph, onPropChange} = useAppStore();
+    const graph = useAppStore(st => st.graph);
+    const onPropChange = useAppStore(st => st.onPropChange);
     const value = graph[id]?.fields.image;
 
     const onChange = useCallback((val) => {

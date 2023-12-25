@@ -11,11 +11,25 @@ import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-p
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
+import { shallow } from 'zustand/shallow';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore()
+  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+    nodes: st.nodes,
+    widgets: st.widgets,
+    edges: st.edges,
+    onNodesDelete: st.onNodesDelete,
+    onAddNode: st.onAddNode,
+    onEdgesDelete: st.onEdgesDelete,
+    onNodesChange: st.onNodesChange,
+    onEdgesChange: st.onEdgesChange,
+    onLoadWorkflow: st.onLoadWorkflow,
+    onConnect: st.onConnect,
+    onInit: st.onInit,
+    onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
+  }), shallow)
   const transform  = useStore((st => {
     return st.transform[2]
   }));

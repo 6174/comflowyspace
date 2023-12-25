@@ -7,7 +7,8 @@ const { Search } = Input;
 import styles from "./widget-tree.style.module.scss";
 import { Widget } from '@comflowy/common/comfui-interfaces';
 export const WidgetTree = () => {
-    const { widgets, widgetCategory } = useAppStore()
+    const widgets = useAppStore(st => st.widgets);
+    const widgetCategory = useAppStore(st => st.widgetCategory);
     const [expandedKeys, setExpandedKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
     const [autoExpandParent, setAutoExpandParent] = useState(true);
