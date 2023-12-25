@@ -4,7 +4,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: white;
+  background-color: var(--backgroundColor);
   :global {
     .react-flow__panel {
       .ant-space-item {

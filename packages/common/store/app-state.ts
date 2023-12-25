@@ -121,10 +121,8 @@ export const AppState = {
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
-      style: {
-        width: node.dimensions?.width,
-        height: node.dimensions?.height,
-      },
+      width: node.dimensions?.width,
+      height: node.dimensions?.height,
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
     }
