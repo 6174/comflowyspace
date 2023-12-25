@@ -183,19 +183,34 @@ class WindowManager {
 
   initEventListener() {
     ipcMain.handle("open-new-tab", async (_event, tabData: WindowTab) => {
-      const window = await this.newTab(tabData)
-      this.dispatchChangeEvent();
-      return window.webContents.id;
+      const tab = this.listWindow.find(instance => {
+        return instance.tabData.query === tabData.query && instance.tabData.pageName === tabData.pageName
+      });
+      if (tab) {
+        this.#setActiveTab(tab.window);
+        this.dispatchChangeEvent();
+        return tab.window.webContents.id;
+      } else {
+        const window = await this.newTab(tabData) 
+        this.dispatchChangeEvent();
+        return window.webContents.id;
+      }
     });
     
     ipcMain.handle("close-tab", async (_event, id: number) => {
-      this.listWindow.forEach(win => {
+      let tabIndex = 0;
+      this.listWindow.forEach((win, index) => {
         if (win.window.webContents.id === id) {
+          tabIndex = index;
           (win.window.webContents as any).destroy();
           this.listWindow = this.listWindow.filter(instance => instance.window.webContents.id !== id);
         }
       });
-      this.#setActiveTab(this.mainWebView);
+      if (tabIndex > 0) {
+        this.#setActiveTab(this.listWindow[tabIndex - 1].window);
+      } else {
+        this.#setActiveTab(this.mainWebView);
+      }
       this.dispatchChangeEvent();
     });
     
