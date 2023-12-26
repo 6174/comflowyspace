@@ -38,6 +38,11 @@
 .xterm {
   cursor: text;
   position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 12px;
+  border-radius: 6px;
+  padding: 10px;
   user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
