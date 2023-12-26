@@ -23,6 +23,7 @@
     "@ant-design/cssinjs": "1.17.0",
     "@types/throttle-debounce": "^5.0.0",
     "antd": "5.10.0",
+    "react-uid": "^2.3.3",
     "throttle-debounce": "^5.0.0"
   }
 }

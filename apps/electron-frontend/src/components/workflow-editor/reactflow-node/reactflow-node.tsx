@@ -66,7 +66,7 @@ function NodeComponent({
   )
 
   return (
-    <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
+    <div className={`${nodeStyles.reactFlowNode}  ${(node.selected || isInProgress) ? nodeStyles.reactFlowSelected : ""}`}>
       <NodeResizeControl
         style={{
           background: "transparent",
@@ -78,21 +78,22 @@ function NodeComponent({
         {node.selected && resizeIcon}
       </NodeResizeControl>
 
-      {/* <NodeResizer 
-        isVisible={node.selected} 
-        minWidth={minWidth} 
-        minHeight={minHeight} 
-        onResizeStart={(ev) => {
-          console.log("resize start");
-        }}
-        onResizeEnd={(ev) => {
-          console.log("resize end");
-        }}
-      /> */}
-
       <div className="node-header">
         <h2 className="node-title">{ nodeTitle }</h2>
-        {isInProgress ? <Progress percent={progressBar * 100} size="small" /> : <></>}
+
+        {isInProgress ? <Progress
+            percent={progressBar * 100} 
+            style={{
+              position: "absolute",
+              top: 14,
+              left: 0,
+              width: "100%",
+              height: 4,
+              zIndex: 1,
+              borderRadius: 0
+            }} 
+            showInfo={false} 
+            size="small" /> : <></>}
         {node.selected ? (
           <div className="node-selected-actions">
           </div>

@@ -1,4 +1,18 @@
 .comfyuiProcessManager {
   :global {
+    .term {
+      padding: 10px;
+      background-color: #000;
+      color: white;
+      border-radius: 10px;
+      overflow-y: auto;
+      min-height: 200px;
+      max-height: 400px;
+      .message {
+        font-size: 12px;
+        line-height: 1.4;
+        margin-bottom: 4px;;
+      }
+    }
   }
 }

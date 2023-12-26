@@ -17,7 +17,12 @@ export function BootstrapTask(props: BootstrapTaskProps) {
   const {startTask, error, success, running, messages} = useRemoteTask({
       api: getBackendUrl(`/api/add_bootstrap_task`),
       onMessage: (msg) => {
-        setMessages([...messages, msg.message || msg.error]);
+        if (task.type === BootStrapTaskType.startComfyUI) {
+          setMessages([...messages, msg.message || msg.error].map(msg => ({
+            type: "START",
+            message: msg
+          })))
+        }
         console.log(msg);
         if (msg.type === "SUCCESS") {
           if (task) {

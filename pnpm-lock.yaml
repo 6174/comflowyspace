@@ -515,6 +515,9 @@ importers:
       antd:
         specifier: 5.10.0
         version: 5.10.0(react-dom@18.2.0)(react@18.2.0)
+      react-uid:
+        specifier: ^2.3.3
+        version: 2.3.3(@types/react@18.2.21)(react@18.2.0)
       throttle-debounce:
         specifier: ^5.0.0
         version: 5.0.0
@@ -10673,6 +10676,21 @@ packages:
 
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+
+  /react-uid@2.3.3(@types/react@18.2.21)(react@18.2.0):
+    resolution: {integrity: sha512-iNpDovcb9qBpBTo8iUgqRSQOS8GV3bWoNaTaUptHkXtAooXSo0OWe7vN6TqqB8x3x0bNBbQx96kkmSltQ5h9kQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@types/react': 18.2.21
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.21
+      react: 18.2.0
+      tslib: 2.6.2
+    dev: false
 
   /react-use-websocket@4.5.0(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-oxYVLWM3Lv0InCfjW7hG/Hk0hkE0P1SiLd5/I3d5x0W4riAnDUkD4VEu7qNVAqxNjBF3nU7k0jLMOetLXpwfsA==}
