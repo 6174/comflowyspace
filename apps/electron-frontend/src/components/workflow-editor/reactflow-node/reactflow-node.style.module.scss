@@ -1,6 +1,15 @@
 .reactFlowSelected {
-    border: solid 2px var(--primaryColor) !important;
+    // border: 2px solid !important;
+    // border-image: linear-gradient(to right, var(--primaryColor), var(--secondaryColor)) 1 !important;
+    // border-image-slice: 1;
+    // clip-path: inset(0 round 8px);
+    &::before, &::after {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
 }
+
 .reactFlowNode {
     display: flex;
     flex-direction: column;
@@ -10,8 +19,57 @@
     background-color: var(--backgroundColorL1);
     position: relative;
     min-width: 190px;
+    box-sizing: border-box;
+    transition: var(--transition);
     width: 100%;
+    $size: -4px;
+    &::after, &::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: $size;
+        left: $size;
+        right: $size;
+        bottom: $size;
+        z-index: -1;
+        background-color: var(--backgroundColorL1);
+        border-radius: 8px;
+        visibility: hidden;
+        opacity: 0;
+    }
+    $size2: -6px;
+    &::before {
+        top: $size2;
+        left: $size2;
+        right: $size2;
+        bottom: $size2;
+        background-image: linear-gradient(to right, var(--primaryColor), var(--secondaryColor));
+        border-radius: 10px;
+    }
+
     :global {
+        .resize-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            background: var(--backgroundColorL1);
+            transition: var(--transition);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            top: 4px;
+            left: 4px;
+            &:hover {
+                background-color: var(--backgroundColorL2);
+            }
+            svg {
+                transform: scale(.8);
+                // position: relative;
+                // top: -4px;
+                // left: -4px;
+            }
+        }
         .node-header {
             flex-direction: row;
             display: flex;

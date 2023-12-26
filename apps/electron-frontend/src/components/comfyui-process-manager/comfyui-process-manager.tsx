@@ -16,7 +16,7 @@ const ComfyUIProcessManager = () => {
 
   const onMessage = (ev: MessageEvent) => {
     const msg = JSON.parse(ev.data) as Message;
-    term.current.write(msg.message);
+    term.current && term.current.write(msg.message);
     setMessages([...messages, msg]);
   };
 

@@ -8,6 +8,7 @@ import ImageIcon from "./img-icon";
 import TemplateIcon from "./template-icon";
 import NewIcon from "./new-icon";
 import MoreIcon from "./more-icon";
+import ResizeIcon from "./resize-icon";
 
 export {
   WorkflowIcon,
@@ -19,7 +20,8 @@ export {
   NewIcon,
   ImageIcon,
   TemplateIcon,
-  MoreIcon
+  MoreIcon,
+  ResizeIcon
 }
 
 export function FileNameIcon() {

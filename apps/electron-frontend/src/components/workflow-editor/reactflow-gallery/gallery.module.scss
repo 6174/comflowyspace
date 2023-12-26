@@ -1,0 +1,19 @@
+.galleryWrapper {
+  height: 400px;
+  overflow-y: auto;
+  :global {
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-gap: 4px;
+      max-height: 400px;
+    }
+    .ant-image {
+      width: 100%;
+      height: 100%;
+      img {
+        border-radius: 4px;
+      }
+    }
+  }
+}

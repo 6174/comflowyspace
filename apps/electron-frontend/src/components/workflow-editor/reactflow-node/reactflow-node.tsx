@@ -1,11 +1,12 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer} from 'reactflow'
+import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl} from 'reactflow'
 import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
 
 import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
+import { ResizeIcon } from 'ui/icons';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -58,9 +59,26 @@ function NodeComponent({
     updateMinHeight();
   }, [mainRef])
 
+  const resizeIcon = (
+    <div className="resize-icon">
+      <ResizeIcon/>
+    </div>
+  )
+
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
-      <NodeResizer 
+      <NodeResizeControl
+        style={{
+          background: "transparent",
+          border: "none"
+        }}
+        minWidth={minWidth}
+        minHeight={minHeight} 
+      >
+        {node.selected && resizeIcon}
+      </NodeResizeControl>
+
+      {/* <NodeResizer 
         isVisible={node.selected} 
         minWidth={minWidth} 
         minHeight={minHeight} 
@@ -70,7 +88,7 @@ function NodeComponent({
         onResizeEnd={(ev) => {
           console.log("resize end");
         }}
-      />
+      /> */}
 
       <div className="node-header">
         <h2 className="node-title">{ nodeTitle }</h2>
