@@ -5,4 +5,12 @@
     padding: 12px;
     margin-left: -10%;
     background-color: var(--backgroundColorL1);
+    :global {
+        .action svg {
+            * {
+                fill: white;
+                opacity: 1;
+            }
+        }
+    }
 }

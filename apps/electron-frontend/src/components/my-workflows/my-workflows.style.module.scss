@@ -48,6 +48,10 @@
                 margin: 10px 0 6px;
                 font-size: 16px;
                 font-weight: 700;
+                max-width: 200px;
+                overflow: hidden;
+                text-wrap: nowrap;
+                text-overflow: ellipsis;
             }
 
             &:hover {
