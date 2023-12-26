@@ -230,6 +230,7 @@ class WindowManager {
     });
 
     ipcMain.handle("trigger-action", async (_event, data) => {
+      console.log("trigger action");
       this.mainWindow!.getBrowserView()?.webContents?.send("action", data);
     });
 

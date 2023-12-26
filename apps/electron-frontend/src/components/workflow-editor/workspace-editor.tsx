@@ -12,6 +12,7 @@ import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-toprigh
 import { useRouter } from 'next/router';
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { shallow } from 'zustand/shallow';
+import ComfyuiProcessManager from '../comfyui-process-manager/comfyui-process-manager';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -134,6 +135,7 @@ export default function WorkflowEditor() {
           <ReactflowTopRightPanel/>
         </Panel>
       </ReactFlow>
+      <ComfyuiProcessManager/>
     </div>
   )
 }

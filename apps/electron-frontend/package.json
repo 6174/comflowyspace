@@ -11,6 +11,7 @@
     "@ant-design/cssinjs": "^1.17.0",
     "@ant-design/icons": "^5.2.6",
     "@comflowy/common": "workspace:*",
+    "@comflowy/node": "workspace:*",
     "antd": "5.10.0",
     "antd-img-crop": "^4.18.0",
     "dexie-react-hooks": "^1.1.7",
@@ -24,7 +25,8 @@
     "react-use-websocket": "^4.5.0",
     "reactflow": "^11.10.1",
     "ui": "workspace:*",
-    "@comflowy/node": "workspace:*",
+    "xterm": "^5.3.0",
+    "xterm-addon-fit": "^0.8.0",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.10",
     "zustand": "^4.4.6"

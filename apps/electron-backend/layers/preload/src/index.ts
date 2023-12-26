@@ -15,7 +15,10 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
     name: "comfyElectronApi",
     version: 0.1,
     receiveFromMain: (channel: string, func: any) => {
-        const callback = (event: any, ...args: any[]) => func(...args)
+        const callback = (event: any, ...args: any[]) => {
+            // console.log("receive from main", channel, args);
+            func(...args)
+        }
         ipcRenderer.on(channel, callback);
         return () => ipcRenderer.removeListener(channel, callback);
     },
@@ -59,6 +62,7 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
         triggerAction: async (data: {
             type: string
         }) => {
+            // console.log("trigger action", data);
             const ret = await ipcRenderer.invoke('trigger-action', data);
         }
     }

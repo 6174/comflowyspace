@@ -36,6 +36,7 @@ export function setupWebsocketHandler(app: Express): http.Server {
 
         if (ret.pathname === "/ws/comfyui") {
             wss.handleUpgrade(req, socket, head, ws => {
+                console.log("connected comfyui ws");
                 comfyUIClients.push(ws);
                 ws.on('message', function incoming(message: string) {
                     console.log("recieved Message", message);

@@ -9,7 +9,6 @@ export default function WorkflowEditorEntry() {
       <ReactFlowProvider>
         <WorkflowEditor />
       </ReactFlowProvider>
-      <ComfyUIProcessManager />
     </div>
   )
 }

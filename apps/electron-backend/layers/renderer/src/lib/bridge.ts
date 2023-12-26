@@ -16,6 +16,10 @@ export interface ComfyElectronApi {
       tabs: WindowTab[];
       active: number;
     }>;
+    triggerAction: (data: {
+      type: string,
+      [_: string]: any
+    }) => Promise<void>;
   };
 }
 

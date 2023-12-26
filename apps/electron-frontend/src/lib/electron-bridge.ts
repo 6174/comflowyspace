@@ -3,6 +3,7 @@
   version: number;
   selectDirectory: () => Promise<any>;
   selectHomeDir:() => Promise<string>;
+  receiveFromMain:(channel: string, func: any) => () => void;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {
@@ -18,6 +19,10 @@
       tabs: WindowTab[];
       active: number;
     }>;
+    triggerAction: (data: {
+      type: string,
+      [_:string]: any
+    }) => Promise<void>;
   };
 }
 
@@ -43,5 +48,13 @@ export function openTabPage(tab: WindowTab) {
     comfyElectronApi.windowTabManager.openNewTab(tab);
   } else {
     window.open(tab.pageName + "?" + tab.query, '_blank');
+  }
+}
+
+export function listenElectron(channel: string, func: any) {
+  if (comfyElectronApi) {
+    return comfyElectronApi.receiveFromMain(channel, func);
+  } else {
+    return () => {};
   }
 }

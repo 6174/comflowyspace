@@ -4,6 +4,7 @@ import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/das
 import { Alert, Button, message } from "antd";
 import { useCallback, useEffect } from "react";
 import {LogViewer} from "ui/log-viewer/log-viewer";
+import useComfyUIProcessManagerState from "../comfyui-process-manager/comfyui-process-manager-state";
 
 export type BootstrapTaskProps = {
   type: BootStrapTaskType,
@@ -11,10 +12,12 @@ export type BootstrapTaskProps = {
 
 export function BootstrapTask(props: BootstrapTaskProps) {
   const {loading, bootstrapTasks, setBootstrapTasks} = useDashboardState();
+  const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
   const task = bootstrapTasks.find(task => task.type === props.type);
   const {startTask, error, success, running, messages} = useRemoteTask({
       api: getBackendUrl(`/api/add_bootstrap_task`),
       onMessage: (msg) => {
+        setMessages([...messages, msg.message || msg.error]);
         console.log(msg);
         if (msg.type === "SUCCESS") {
           if (task) {
