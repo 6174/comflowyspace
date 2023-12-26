@@ -5,8 +5,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: var(--transition);
+    user-select: none;
     &:hover {
-        background-color: var(--hover-background-color);
+        background-color: var(--backgroundColorL2);
     }
     .icon {
         display: flex;

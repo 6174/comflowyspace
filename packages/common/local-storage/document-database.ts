@@ -38,6 +38,7 @@ export type PersistedFullWorkflow = {
   thumbnail?: string;
   last_edit_time?: number;
   create_time: number;
+  gallery?: PreviewImage[];
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
 }
 

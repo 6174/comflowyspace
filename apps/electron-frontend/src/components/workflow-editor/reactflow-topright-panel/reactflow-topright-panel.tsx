@@ -4,6 +4,7 @@ import { getWorkflowTemplate } from "@comflowy/common/templates/templates";
 import { Popconfirm, Space } from "antd";
 import { useCallback } from "react";
 import IconDown from "ui/icons/icon-down";
+import { GalleryEntry } from "../reactflow-gallery/gallery";
 
 export default function ReactflowTopRightPanel() {
     const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
@@ -34,6 +35,7 @@ export default function ReactflowTopRightPanel() {
                         Reset workflow
                     </div>
                 </Popconfirm>
+                <GalleryEntry/>
                 <div className="action action-history">
                     Console
                 </div>

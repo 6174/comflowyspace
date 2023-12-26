@@ -13,7 +13,6 @@ import {
   applyEdgeChanges,
 } from 'reactflow';
 import {
-  type GalleryItem,
   type QueueItem,
   type NodeId,
   type NodeInProgress,
@@ -75,9 +74,6 @@ export interface AppState {
 
   // job queue
   queue: QueueItem[]
-
-  // gallery
-  gallery: GalleryItem[]
 
   nodeInProgress?: NodeInProgress
   promptError?: string
@@ -164,7 +160,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   widgets: {},
   widgetCategory: {},
   queue: [],
-  gallery: [],
+
   /**
    * AppStore Initialization Entry 
    */
@@ -352,15 +348,46 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ nodeInProgress: { id, progress } })
   },
   onImageSave: (id, images) => {
-    WorkflowDocumentUtils.onImageSave(get().doc, id, images);
+    // sync to state
     set((st) => ({
       ...st,
+      persistedWorkflow: {
+        ...st.persistedWorkflow!,
+        gallery: [
+          ...st.persistedWorkflow?.gallery || [],
+          ...images || []
+        ]
+      },
       graph: {
         ...st.graph,
         [id]: { ...st.graph[id], images },
       },
     }))
-    get().onSyncFromYjsDoc();
+
+    // sync to storage
+    const st = get();
+    WorkflowDocumentUtils.onImageSave(get().doc, id, images);
+    const workflowMap = st.doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    throttledUpdateDocument({
+      ...st.persistedWorkflow!,
+      last_edit_time: +new Date(),
+      gallery: [
+        ...st.persistedWorkflow?.gallery || [],
+        ...images || []
+      ],
+      snapshot: workflow
+    });
+    /**
+     * Save image will save image to output directory
+     * So this is the output image to save
+    */
+    // const node = st.graph[id];
+    // if (node.widget === "SaveImage") {
+    //   // 
+    // } else {
+    //   // 
+    // }
   },
   onLoadImageWorkflow: (image) => {
     void exifr.parse(getBackendUrl(`/view/${image}`)).then((res) => {

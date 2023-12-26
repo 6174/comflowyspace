@@ -48,12 +48,15 @@ function NodeComponent({
   const [minWidth, setMinWidth] = useState(180);
   const mainRef = useRef<HTMLDivElement>();
 
-  const imgRefs = imagePreviews.map(() => useRef());
-  useEffect(() => {
+  const updateMinHeight = () => {
     if (mainRef.current) {
       setMinHeight(mainRef.current.clientHeight + 25)
     }
-  }, [mainRef, imgRefs])
+  }
+
+  useEffect(() => {
+    updateMinHeight();
+  }, [mainRef])
 
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
@@ -111,16 +114,19 @@ function NodeComponent({
                   justifyContent: "center",
                   alignItems: "center"
                 }}>
-                  <img
+                  <Image
                     className="node-preview-image"
                     onLoadCapture={ev => {
                       console.log("onload capture");
-                    }}
-                    ref={imgRefs[index] as any}
-                    onLoad={ev => {
-                      console.log("onload capture");
                       setMinHeight(mainRef.current.clientHeight + 25)
                     }}
+                    // ref={image => {
+                    //   console.log("find ref image");
+                    //   image && image.complete && updateMinHeight();
+                    // }}
+                    // onLoad={ev => {
+                    //   console.log("onload capture"); 
+                    // }}
                     src={imageSrc}
                     style={{
                       maxWidth: 200,
