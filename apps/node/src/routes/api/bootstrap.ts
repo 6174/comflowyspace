@@ -88,7 +88,6 @@ export async function ApiBootstrap(req: Request, res: Response) {
                     default:
                         throw new Error("No task named " + taskType)
                 }
-                return true;
             }
         }
         taskQueue.addTask(task);

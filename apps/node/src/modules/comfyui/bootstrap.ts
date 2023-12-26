@@ -252,26 +252,48 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 }
 
 import * as nodePty from "node-pty"
+import { SlotEvent } from "@comflowy/common/utils/slot-event";
 let comfyuiProcess: nodePty.IPty;
+export type ComfyUIProgressEventType = {
+    type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
+    message: string | undefined
+}
+export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
         console.log("start comfyUI");
         const repoPath = path.resolve(appDir, 'ComfyUI');
         await runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
             dispatcher(event);
+            const cevent: ComfyUIProgressEventType = {
+                type: "INFO",
+                message: event.message
+            };
+
             if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
                 dispatcher({
                     type: "SUCCESS",
                     message: "Comfy UI started success"
                 })
+                cevent.type = "START"
+                cevent.message = "Comfy UI started success"
             }
+
+            if (event.message?.includes("ERROR")) {
+                cevent.type = "ERROR"
+            }
+
+            comfyUIProgressEvent.emit(cevent);
         }), {
             cwd: repoPath
         }, (process: nodePty.IPty) => {
             comfyuiProcess = process;
         });
-        console.log("start comfyUI success");
     } catch (err: any) {
+        comfyUIProgressEvent.emit({
+            type: "ERROR",
+            message: err.message
+        });
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }
     return true;
@@ -279,10 +301,13 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
 
 export async function stopComfyUI(): Promise<boolean> {
     try {
-        // 暂停 Python 程序
         if (comfyuiProcess) {
-            comfyuiProcess.kill(); // 可以根据需要使用不同的信号
+            comfyuiProcess.kill(); 
         }
+        comfyUIProgressEvent.emit({
+            type: "STOP",
+            message: "STOP COMFYUI SUCCESS"
+        });
     } catch (error) {
         throw new Error(`Error stopping comfyui`);
     }
@@ -291,9 +316,7 @@ export async function stopComfyUI(): Promise<boolean> {
 
 export async function isComfyUIAlive(): Promise<boolean> {
     try {
-        // 检查 Python 进程是否存在
-        const ret = await fetch("http://127.0.0.1:8188");
-        console.log("isComfyUIlive", ret);
+        await fetch("http://127.0.0.1:8188");
         return true;
     } catch (error) {
         console.error('Error checking process:', error);

@@ -31,7 +31,7 @@ const Gallery = () => {
   );
 };
 
-export const GalleryEntry = () => {
+export const GalleryEntry = React.memo(() => {
   const [visible, setVisible] = useState(false);
 
   const showModal = () => {
@@ -63,4 +63,4 @@ export const GalleryEntry = () => {
       </Modal>
     </div>
   )
-};
+});

@@ -13,6 +13,10 @@ import { startIPC } from './ipc';
 // console.log(GPUFeatureStatus)
 // app.disableHardwareAcceleration();
 
+// Disable timestamp
+log.transports.console.format = '{level} {text}';
+log.transports.file.format = '{level} {text}';
+
 app.on('ready', async () => {
   try {
     startIPC()

@@ -80,10 +80,6 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
             item.disabled = true;
         }
     }
-
-    if (item.title === "ComfyUI-Manager") {
-        console.log(item);
-    }
 }
 
 export async function checkExtensionsInstalled(extensions: Extension[], doFetch = true, doUpdateCheck = true, doUpdate = false): Promise<void> {
