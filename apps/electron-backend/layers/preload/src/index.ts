@@ -15,7 +15,9 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
     name: "comfyElectronApi",
     version: 0.1,
     receiveFromMain: (channel: string, func: any) => {
-        ipcRenderer.on(channel, (event, ...args) => func(...args));
+        const callback = (event: any, ...args: any[]) => func(...args)
+        ipcRenderer.on(channel, callback);
+        return () => ipcRenderer.removeListener(channel, callback);
     },
     selectDirectory: async () => {
         const ret = await ipcRenderer.invoke('select-directory');
@@ -30,11 +32,12 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
             tabs: WindowTab[];
             active: number;
         }) => void) => {
-            ipcRenderer.on('window-tabs-change', (_, tabsData) => {
+            const cb =  (_: any, tabsData: any) => {
                 console.log("callback(tabsData)", tabsData);
                 callback(tabsData)
-            });
-            return () => ipcRenderer.removeListener('window-tabs-change', callback);
+            }
+            ipcRenderer.on('window-tabs-change', cb);
+            return () => ipcRenderer.removeListener('window-tabs-change', cb);
         },
         openNewTab: async (config: Partial<WindowTab>) => {
             const ret = await ipcRenderer.invoke('open-new-tab', config);
@@ -52,6 +55,11 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
         getTabsData: async () => {
             const ret = await ipcRenderer.invoke('get-tabs-data');
             return ret;
+        },
+        triggerAction: async (data: {
+            type: string
+        }) => {
+            const ret = await ipcRenderer.invoke('trigger-action', data);
         }
     }
 });

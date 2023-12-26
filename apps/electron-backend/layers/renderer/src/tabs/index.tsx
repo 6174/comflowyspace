@@ -5,6 +5,8 @@ import { useTabsState } from './tabstore';
 import HomeIcon from './home.icon';
 import DocIcon from './doc.icon';
 import CloseIcon from './close.icon';
+import {ComfyUIStatusButton} from "./comfyui-status-button";
+
 function App() {
   const {active, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
   const [items, setItems] = useState([]);
@@ -76,6 +78,9 @@ function App() {
           )
         })}
         <div className="blank"/>
+        <div className="actions">
+          <ComfyUIStatusButton/>
+        </div>
       </div>
     </div>
   );

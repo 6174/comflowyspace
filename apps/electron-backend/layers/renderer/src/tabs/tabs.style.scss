@@ -4,6 +4,18 @@ body, html {
   --hover-bg: #262837;
   --active-bg: #454758;
   --bg: #1B1B1F;
+  --backgroundColor: #1B1B1F;
+  --backgroundColorL1: #262837;
+  --backgroundColorL2: #35374B;
+  --primaryColor: #2BCBBB;
+  --borderColor: #262837;
+  --fontColor: white;
+  --borderRadius: 8px;
+  --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
+  --cardBackground: #262837;
+  --cardHover: #34374b;
+  --transition: all ease .2s;
+  -webkit-font-smoothing: antialiased;
   * {
     box-sizing: border-box;
   }
@@ -12,6 +24,29 @@ body, html {
     width: 100%;
   }
 }
+
+.action {
+  border-radius: 4px;
+  user-select: none;
+  padding: 2px 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: var(--transition);
+  user-select: none;
+  font-size: 12px;
+
+  &:hover {
+    background-color: var(--backgroundColorL2);
+  }
+
+  .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
 .tabManager {
   margin-left: 80px;
   color: white;

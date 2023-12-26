@@ -18,6 +18,7 @@ type DashboardState = {
     env?: EnvRequirements;
     bootstrapTasks: BootstrapTask[];
     bootstraped: boolean;
+    showComfyUIProcessModal: boolean;
 }
 
 export enum BootStrapTaskType {
@@ -48,6 +49,7 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
     docs: [],
     bootstraped: false,
     loading: true,
+    showComfyUIProcessModal: false,
     onInit: async () => {
         const ret = await getComfyUIEnvRequirements();
         if (ret.data) {

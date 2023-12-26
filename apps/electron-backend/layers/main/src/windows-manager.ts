@@ -229,6 +229,10 @@ class WindowManager {
       return ret;
     });
 
+    ipcMain.handle("trigger-action", async (_event, data) => {
+      this.mainWindow!.getBrowserView()?.webContents?.send("action", data);
+    });
+
     ipcMain.handle('replace-tab', async (_event, data: {
       id: number,
       newTab: WindowTab
