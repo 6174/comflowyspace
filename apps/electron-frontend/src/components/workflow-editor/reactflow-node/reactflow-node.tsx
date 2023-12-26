@@ -48,11 +48,12 @@ function NodeComponent({
   const [minWidth, setMinWidth] = useState(180);
   const mainRef = useRef<HTMLDivElement>();
 
+  const imgRefs = imagePreviews.map(() => useRef());
   useEffect(() => {
     if (mainRef.current) {
       setMinHeight(mainRef.current.clientHeight + 25)
     }
-  }, [mainRef])
+  }, [mainRef, imgRefs])
 
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected ? nodeStyles.reactFlowSelected : ""}`}>
@@ -98,34 +99,42 @@ function NodeComponent({
             <InputContainer key={property} name={property} id={node.id} input={input} widget={widget}/>
           ))}
         </div>
-
-      </div>
-      <div className="node-images-preview">
-        {
-          imagePreviews && imagePreviews.map(image => {
-            const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-            return (
-              <div className="node-image-preview-container" key={image.filename} style={{
-                display: "flex",
-                marginTop: 10,
-                justifyContent: "center",
-                alignItems: "center"
-              }}>
-                <Image
-                  className="node-preview-image"
-                  src={imageSrc}
-                  style={{
-                    maxWidth: 200,
-                    maxHeight: 200
-                  }}
-                  onClick={ev => {
-                    console.log("preview");
-                  }}
-                />
-              </div>
-            )
-          })
-        }
+          
+        <div className="node-images-preview">
+          {
+            imagePreviews && imagePreviews.map((image, index) => {
+              const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+              return (
+                <div className="node-image-preview-container" key={image.filename} style={{
+                  display: "flex",
+                  marginTop: 10,
+                  justifyContent: "center",
+                  alignItems: "center"
+                }}>
+                  <img
+                    className="node-preview-image"
+                    onLoadCapture={ev => {
+                      console.log("onload capture");
+                    }}
+                    ref={imgRefs[index] as any}
+                    onLoad={ev => {
+                      console.log("onload capture");
+                      setMinHeight(mainRef.current.clientHeight + 25)
+                    }}
+                    src={imageSrc}
+                    style={{
+                      maxWidth: 200,
+                      maxHeight: 200
+                    }}
+                    onClick={ev => {
+                      console.log("preview");
+                    }}
+                  />
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     </div>
   )

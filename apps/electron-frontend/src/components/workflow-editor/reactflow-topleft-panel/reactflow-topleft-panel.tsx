@@ -1,9 +1,10 @@
 import { useAppStore } from "@comflowy/common/store";
 import { Space } from "antd"
 import IconDown from "ui/icons/icon-down";
+import styles from "./reactflow-topleft-panel.style.module.scss";
 export default function ReactflowTopLeftPanel() {
     return (
-        <div className="top-left-panel">
+        <div className={styles.topLeftPanel}>
             <Space>
                 <div className="action action-file-dropdown">
                     <Space>

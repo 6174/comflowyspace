@@ -1,6 +1,12 @@
 .topLeftPanel {
     position: relative;
     :global {
-        
+        .icon {
+            svg {
+                * {
+                    fill: white;
+                }
+            }
+        }
     }
 }
