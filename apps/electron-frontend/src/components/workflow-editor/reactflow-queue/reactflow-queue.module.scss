@@ -1,0 +1,30 @@
+.queueWrapper {
+  height: 400px;
+  overflow-y: auto;
+  :global {
+    .queue {
+      margin-bottom: 30px;
+      background-color: var(--backgroundColorL2);
+      border-radius: 8px;
+      padding: 10px;
+      .section-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: solid 1px var(--borderColor);
+      }
+      button {
+        font-size: 12px;
+      }
+      .item {
+        margin-bottom: 10px;
+        display: flex;
+        .item-title {
+          margin-right: 20px;
+          width: 16px;
+          user-select: none;
+        }
+      }
+    }
+  }
+}

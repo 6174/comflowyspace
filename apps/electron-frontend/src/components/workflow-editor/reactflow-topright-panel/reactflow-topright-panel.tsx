@@ -5,6 +5,7 @@ import { Popconfirm, Space } from "antd";
 import { useCallback } from "react";
 import IconDown from "ui/icons/icon-down";
 import { GalleryEntry } from "../reactflow-gallery/gallery";
+import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 
 export default function ReactflowTopRightPanel() {
     const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
@@ -21,7 +22,7 @@ export default function ReactflowTopRightPanel() {
     }, [onResetFromPersistedWorkflow, persistedWorkflow]);
 
     return (
-        <div className="topLeftPanel">
+        <div className="topRightPannel">
             <Space>
                 <Popconfirm
                     title="Reset workflow"
@@ -36,15 +37,7 @@ export default function ReactflowTopRightPanel() {
                     </div>
                 </Popconfirm>
                 <GalleryEntry/>
-                <div className="action action-history">
-                    Console
-                </div>
-                <div className="action action-queue">
-                    Queue
-                </div>
-                <div className="action action-history">
-                    History
-                </div>
+                <QueueEntry/>
             </Space>
         </div>
     )

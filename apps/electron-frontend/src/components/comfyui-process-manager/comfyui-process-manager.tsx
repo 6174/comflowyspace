@@ -74,7 +74,6 @@ const ComfyUIProcessManager = () => {
     }
   }, [])
 
-  console.log("messages", messages);
   return (
     <div>
       <DraggableModalProvider>

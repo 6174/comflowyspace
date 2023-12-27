@@ -14,4 +14,10 @@ export interface QueueItem {
   id: number
   prompts: string[]
   model?: string
+  clientId?: string | undefined
+}
+
+export interface Queue {
+  queue_running: QueueItem[]
+  queue_pending: QueueItem[]
 }

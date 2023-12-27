@@ -84,7 +84,7 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   return ret;
 }
 
-export async function getQueue(): Promise<Queue> {
+export async function getQueueApi(): Promise<Queue> {
   return await fetch(getComfyUIBackendUrl('/queue')).then(async (r) => await r.json())
 }
 
@@ -100,6 +100,19 @@ export async function deleteFromQueue(id: number): Promise<void> {
   await fetch(getComfyUIBackendUrl('/queue'), {
     method: 'POST',
     body: JSON.stringify({ delete: [id] }),
+  })
+}
+
+export async function clearQueue(): Promise<void> {
+  await fetch(getComfyUIBackendUrl('/queue'), {
+    method: 'POST',
+    body: JSON.stringify({ clear: true }),
+  })
+}
+
+export async function interruptQueue(): Promise<void> {
+  await fetch(getComfyUIBackendUrl('/interrupt'), {
+    method: 'POST'
   })
 }
 

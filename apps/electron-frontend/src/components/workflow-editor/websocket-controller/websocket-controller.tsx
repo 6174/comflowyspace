@@ -3,11 +3,12 @@ import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 import { useEffect, useState } from 'react';
+import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 export function WsController(): JSX.Element {
   const clientId = useAppStore((st) => st.clientId);
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
   const onNewClientId = useAppStore((st) => st.onNewClientId);
-  const onQueueUpdate = useAppStore((st) => st.onQueueUpdate);
+  const onQueueUpdate = useQueueState((st) => st.onQueueUpdate);
   const onNodeInProgress = useAppStore((st) => st.onNodeInProgress);
   const onImageSave = useAppStore((st) => st.onImageSave);
 
