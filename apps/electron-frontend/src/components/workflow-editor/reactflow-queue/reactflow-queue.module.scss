@@ -1,7 +1,9 @@
 .queueWrapper {
-  height: 400px;
   overflow-y: auto;
   :global {
+    button {
+      font-size: 12px;
+    }
     .queue {
       margin-bottom: 30px;
       background-color: var(--backgroundColorL2);
@@ -12,9 +14,6 @@
         margin-bottom: 10px;
         padding-bottom: 10px;
         border-bottom: solid 1px var(--borderColor);
-      }
-      button {
-        font-size: 12px;
       }
       .item {
         margin-bottom: 10px;

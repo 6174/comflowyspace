@@ -4,7 +4,7 @@ import type { AppProps } from "next/app";
 import theme from "../lib/theme-config";
 import "../styles/global.scss";
 import {useDashboardState} from "@comflowy/common/store/dashboard-state";
-import { useAppStore } from "@comflowy/common/store";
+import { DraggableModalProvider } from "ui/antd/draggable-modal";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
@@ -16,7 +16,9 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <ConfigProvider theme={theme}>
-      <JSXCO {...pageProps} />
+      <DraggableModalProvider>
+        <JSXCO {...pageProps} />
+      </DraggableModalProvider>
     </ConfigProvider>
   );
 }

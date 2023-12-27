@@ -1,12 +1,9 @@
 .comfyuiProcessManager {
   :global {
     .term {
-      padding: 10px;
       color: white;
       border-radius: 10px;
-      overflow-y: auto;
-      min-height: 200px;
-      max-height: 400px;
+      height: 100%;
       .message {
         font-size: 12px;
         line-height: 1.4;

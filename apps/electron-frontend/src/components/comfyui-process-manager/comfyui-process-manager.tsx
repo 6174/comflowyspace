@@ -50,6 +50,16 @@ const ComfyUIProcessManager = () => {
       fitAddon.fit();
       const messages = useComfyUIProcessManagerState.getState().messages;
       term.current.write(messages.map(m => m.message).join("\n"));
+      
+      // Create a ResizeObserver instance to monitor size changes
+      const resizeObserver = new ResizeObserver(() => {
+        // Adjust the size of the terminal when the size of #terminal-container changes
+        fitAddon.fit();
+      });
+
+      // Start observing the container
+      resizeObserver.observe(termRef.current);
+
       return () => {
         term.current.dispose();
       };
@@ -76,25 +86,23 @@ const ComfyUIProcessManager = () => {
 
   return (
     <div>
-      <DraggableModalProvider>
-        <DraggableModal
-          title="ComfyUI Process Manager"
-          footer={null}
-          className={styles.comfyuiProcessManager}
-          onCancel={handleCancel}
-          initialWidth={450}
-          initialHeight={380}
-          open={visible}
-        >
-          <div className="term" ref={termRef} >
-            {/* {messages.map((msg, index) => {
-              return (
-                <div className="message" key={index}>{msg.message}</div>
-              )
-            })} */}
-          </div>
-        </DraggableModal>
-      </DraggableModalProvider>
+      <DraggableModal
+        title="ComfyUI Process Manager"
+        footer={null}
+        className={styles.comfyuiProcessManager}
+        onCancel={handleCancel}
+        initialWidth={450}
+        initialHeight={380}
+        open={visible}
+      >
+        <div className="term" ref={termRef} >
+          {/* {messages.map((msg, index) => {
+            return (
+              <div className="message" key={index}>{msg.message}</div>
+            )
+          })} */}
+        </div>
+      </DraggableModal>
     </div>
   )
 }

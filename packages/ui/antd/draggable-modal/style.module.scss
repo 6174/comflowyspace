@@ -11,17 +11,24 @@
     .ant-modal-content {
       padding: 0 !important;
       padding-bottom: 20px !important;
+      height: 100%;
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
     }
     
     .ant-modal-body {
       padding: 10px;
       padding-top: 0;
       overflow: hidden;
+      overflow-y: auto;
+      flex: 1;
     }
   
     .ant-modal-header {
       flex: 0;
       padding: 0;
+      margin-bottom: 0 !important;
     }
   
     .ant-modal-footer {
@@ -31,7 +38,14 @@
   
     .ant-design-draggable-modal-title {
       cursor: move;
-      padding: 16px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .ant-modal-close {
+      top: 8px !important;
+      inset-inline-end: 8px !important;
+      transform: scale(.9);
     }
   
     .ant-design-draggable-modal-title::before {

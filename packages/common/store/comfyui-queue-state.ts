@@ -3,7 +3,8 @@ import { Queue, QueueItem } from '../comfui-interfaces';
 import {create} from 'zustand';
 
 type QueueState = {
-  queue: Queue
+  queue: Queue,
+  loading: boolean;
 };
 
 type QueueActions = {
@@ -18,18 +19,22 @@ export const useQueueState = create<QueueState & QueueActions>((set, get) => ({
     queue_running: [],
     queue_pending: []
   },
+  loading: false,
   onQueueUpdate: async () => {
-    set({ queue: await getQueue() })
+    set({ loading: true })
+    set({ queue: await getQueue() , loading: false});
   },
   onDeleteFromQueue: async (id) => {
     await deleteFromQueue(id)
-    await get().onQueueUpdate()
+    await get().onQueueUpdate();
   },
   onClearQueue: async () => {
     await clearQueue();
+    await get().onQueueUpdate();
   },
   onInterruptQueue: async () => {
     await interruptQueue();
+    await get().onQueueUpdate();
   }
 }));
 
