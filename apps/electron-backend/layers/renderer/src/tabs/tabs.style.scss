@@ -3,7 +3,7 @@ body, html {
   margin: 0;
   --hover-bg: #262837;
   --active-bg: #454758;
-  --bg: #1B1B1F;
+  --bg: #141417;
   --backgroundColor: #1B1B1F;
   --backgroundColorL1: #262837;
   --backgroundColorL2: #35374B;
@@ -16,7 +16,7 @@ body, html {
   --cardHover: #34374b;
   --transition: all ease .2s;
   -webkit-font-smoothing: antialiased;
-  background-color: #141417;
+  background-color: var(--bg);
   * {
     box-sizing: border-box;
   }
