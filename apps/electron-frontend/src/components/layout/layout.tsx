@@ -10,7 +10,8 @@ import styles from "./layout.style.module.scss";
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
 import { BulbIcon, ExtensionIcon, ModelIcon, WorkflowIcon } from 'ui/icons'
-import ComfyUIProcessManager from '../comfyui-process-manager/comfyui-process-manager'
+import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async'
+
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   return (
     <>
@@ -25,7 +26,7 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
         {children}
       </div>
     </div>
-    <ComfyUIProcessManager/>
+      <AsyncComfyUIProcessManager/>
   </>
   )
 }

@@ -12,11 +12,7 @@ import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-toprigh
 import { useRouter } from 'next/router';
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { shallow } from 'zustand/shallow';
-import { isWindow } from 'ui/utils/is-window';
-
-const AsyncCO = React.lazy(async () => {
-  return await import("@/components/comfyui-process-manager/comfyui-process-manager");
-});
+import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -39,12 +35,6 @@ export default function WorkflowEditor() {
     return st.transform[2]
   }));
 
-  const [showFrontEndCode, setShowFrontEndCode] = React.useState(false);
-  React.useEffect(() => {
-    if (isWindow) {
-      setShowFrontEndCode(true);
-    }
-  }, [])
 
   const styledEdges = edges.map(edge => {
     return {
@@ -146,7 +136,7 @@ export default function WorkflowEditor() {
           <ReactflowTopRightPanel/>
         </Panel>
       </ReactFlow>
-      {showFrontEndCode && <AsyncCO /> }
+      <AsyncComfyUIProcessManager/>
     </div>
   )
 }
