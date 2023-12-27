@@ -75,6 +75,7 @@ export function runCommandWithPty(
     cb?: (process: nodePty.IPty) => void
 ) {
     console.log("run command with PTY");
+    const fullCommand = `${command};echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
         const pty = nodePty.spawn(shell, [], {
             name: 'xterm-color',
@@ -89,11 +90,19 @@ export function runCommandWithPty(
 
         cb && cb(pty);
         
+        let buffer = "";
         const disposable = pty.onData(function (data: string) {
-            console.log(data);
-            dispatcher && dispatcher({
-                message: data
-            });
+            if (data.trim() === fullCommand.trim()) {
+                return;
+            }
+            buffer += data;
+            if (data.indexOf('\n') > 0) {
+                console.log("[Log:" + buffer + "]");
+                dispatcher && dispatcher({
+                    message: buffer
+                });
+                buffer = ""
+            }
             if (data.trim() === 'END_OF_COMMAND') {
                 console.log('The command has finished executing.');
                 disposable.dispose();
@@ -109,7 +118,7 @@ export function runCommandWithPty(
                 resolve(pty);
             }
         });
-        pty.write(`${command};echo END_OF_COMMAND\n`);
+        pty.write(fullCommand);
     })
 }
 

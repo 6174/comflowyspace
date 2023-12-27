@@ -11,19 +11,11 @@ export type BootstrapTaskProps = {
 }
 
 export function BootstrapTask(props: BootstrapTaskProps) {
-  const {loading, bootstrapTasks, setBootstrapTasks} = useDashboardState();
-  const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
+  const {bootstrapTasks, setBootstrapTasks} = useDashboardState();
   const task = bootstrapTasks.find(task => task.type === props.type);
   const {startTask, error, success, running, messages} = useRemoteTask({
       api: getBackendUrl(`/api/add_bootstrap_task`),
       onMessage: (msg) => {
-        if (task.type === BootStrapTaskType.startComfyUI) {
-          setMessages([...messages, msg.message || msg.error].map(msg => ({
-            type: "START",
-            message: msg
-          })))
-        }
-        console.log(msg);
         if (msg.type === "SUCCESS") {
           if (task) {
             message.success(task.title + " success");
