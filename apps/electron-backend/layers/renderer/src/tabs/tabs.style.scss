@@ -26,28 +26,6 @@ body, html {
   }
 }
 
-.action {
-  border-radius: 4px;
-  user-select: none;
-  padding: 2px 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: var(--transition);
-  user-select: none;
-  font-size: 12px;
-
-  &:hover {
-    background-color: var(--backgroundColorL2);
-  }
-
-  .icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-}
-
 .tabManager {
   margin-left: 80px;
   color: white;
@@ -140,4 +118,54 @@ body, html {
       flex: 1;
     }
   }
+}
+
+
+.actions {
+  display: flex;
+  border-radius: 8px;
+  border: solid 1px #454758;
+  margin-right: 10px;
+  .action {
+    border-radius: 4px;
+    user-select: none;
+    padding: 0px 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+    user-select: none;
+    font-size: 12px;
+    height: 22px;
+
+    &:hover {
+      background-color: var(--backgroundColorL2);
+    }
+
+    .icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .action-comfyui-status, .action-comfyui-queue {
+    font-size: 10px;
+    border-right: solid 1px #454758;
+    padding-right: 4px;
+    .icon {
+      transform: scale(.8);
+    }
+  }
+
+  .action-comfyui-queue {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .action-comfyui-status {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-right: transparent;
+  }
+
 }
