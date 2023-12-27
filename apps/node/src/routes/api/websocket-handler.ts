@@ -15,6 +15,7 @@ export function setupWebsocketHandler(app: Express): http.Server {
     
     // comfyui event channel
     const comfyUIClients: WebSocket[] = [];
+    const comfyUIMessages:string[] = [];
 
     server.on("upgrade", (req: http.IncomingMessage, socket, head) => {
         const ret = url.parse(req.url as string, true);
@@ -38,6 +39,9 @@ export function setupWebsocketHandler(app: Express): http.Server {
             wss.handleUpgrade(req, socket, head, ws => {
                 console.log("connected comfyui ws");
                 comfyUIClients.push(ws);
+                comfyUIMessages.forEach(message => {
+                    ws.send(message);
+                });
                 ws.on('message', function incoming(message: string) {
                     console.log("recieved Message", message);
                 });
@@ -57,6 +61,7 @@ export function setupWebsocketHandler(app: Express): http.Server {
 
     comfyUIProgressEvent.on((event: ComfyUIProgressEventType) => {
         const eventString = JSON.stringify(event);
+        comfyUIMessages.push(eventString);
         comfyUIClients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(eventString);

@@ -16,25 +16,24 @@ const initialState: State = {
   messages: [],
 };
 
-
 const useComfyUIProcessManagerState = create<State & Actions>((set, get) => ({
   ...initialState,
   onInit: () => {
-    try {
-      const raw = localStorage.getItem("comfyui-messages");
-      if (raw) {
-        const messages = JSON.parse(raw);
-        set({
-          messages
-        })
-      }
-    } catch (err) {
-      console.log("init error")
-    }
+    // try {
+    //   const raw = localStorage.getItem("comfyui-messages");
+    //   if (raw) {
+    //     const messages = JSON.parse(raw);
+    //     set({
+    //       messages
+    //     })
+    //   }
+    // } catch (err) {
+    //   console.log("init error")
+    // }
   },
   setMessages: (messages: Message[]) => {
     set({messages})
-    localStorage.setItem("comfyui-messages", JSON.stringify(messages));
+    // localStorage.setItem("comfyui-messages", JSON.stringify(messages));
   },
 }));
 

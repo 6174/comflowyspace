@@ -4,18 +4,15 @@
   :global {
 
     .ant-modal {
-      display: flex;
       max-width: none;
       transform-origin: 50% 50% !important;
     }
   
     .ant-modal-content {
-      flex: 1;
-      display: flex;
-      padding: 0;
-      padding-bottom: 20px;
-      flex-direction: column;
+      padding: 0 !important;
+      padding-bottom: 20px !important;
     }
+    
     .ant-modal-body {
       padding: 10px;
       padding-top: 0;

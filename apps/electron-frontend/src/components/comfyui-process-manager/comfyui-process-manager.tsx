@@ -6,6 +6,7 @@ import { Modal } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
 import {DraggableModal, DraggableModalProvider} from "ui/antd/draggable-modal";
 import { comfyElectronApi, listenElectron } from "@/lib/electron-bridge";
+import {isWindow} from "ui/utils/is-window";
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -37,32 +38,32 @@ const ComfyUIProcessManager = () => {
     setVisible(false);
   };
 
-  // useEffect(() => {
-  //   const initTerminal = async () => {
-  //     await new Promise(resolve => setTimeoutx(resolve, 300));
-  //     const {Terminal} = await import('xterm')
-  //     const {FitAddon} = await import ('xterm-addon-fit');
-  //     const fitAddon = new FitAddon();
-  //     term.current = new Terminal();
-  //     term.current.loadAddon(fitAddon);
-  //     term.current.open(termRef.current);
-  //     fitAddon.fit();
-  //     const messages = useComfyUIProcessManagerState.getState().messages;
-  //     term.current.write(messages.join("\n"));
-  //     return () => {
-  //       term.current.dispose();
-  //     };
-  //   }
-  //   if (visible) {
-  //     const ret = initTerminal();
-  //     return () => {
-  //       ret.then(dispose => dispose());
-  //     }
-  //   }
-  // }, [visible]);
+  useEffect(() => {
+    const initTerminal = async () => {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const {Terminal} = await import('xterm')
+      const {FitAddon} = await import ('xterm-addon-fit');
+      const fitAddon = new FitAddon();
+      term.current = new Terminal();
+      term.current.loadAddon(fitAddon);
+      term.current.open(termRef.current);
+      fitAddon.fit();
+      const messages = useComfyUIProcessManagerState.getState().messages;
+      term.current.write(messages.map(m => m.message).join("\n"));
+      return () => {
+        term.current.dispose();
+      };
+    }
+    if (visible) {
+      const ret = initTerminal();
+      return () => {
+        ret.then(dispose => dispose());
+      }
+    }
+  }, [visible]);
 
   useEffect(() => {
-    onInit();
+    // onInit();
     const dispose = listenElectron("action", (data) => {
       if (data.type === "open-comfyui-process-manager") {
         showModal();
@@ -87,11 +88,11 @@ const ComfyUIProcessManager = () => {
           open={visible}
         >
           <div className="term" ref={termRef} >
-            {messages.map((msg, index) => {
+            {/* {messages.map((msg, index) => {
               return (
                 <div className="message" key={index}>{msg.message}</div>
               )
-            })}
+            })} */}
           </div>
         </DraggableModal>
       </DraggableModalProvider>
