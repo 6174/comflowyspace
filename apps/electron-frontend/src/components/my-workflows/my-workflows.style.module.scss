@@ -27,18 +27,22 @@
             }
         }
 
+        .workflow-list {
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-gap: 10px;
+            padding: 10px;
+        }
+
         .workflow-list-item {
             user-select: none;
             border-radius: 12px;
             border: 1px solid rgba(71, 71, 71, 0.10);
             background: var(--cardBackground);
             padding: 10px;
-            display: inline-block;
-            margin-right: 10px;
-            margin-bottom: 10px;
             transition: var(--transition);
             .gallery-card {
-                width: 228px;
                 height: 158px;
                 background-color: var(--cardHover);
                 border-radius: 10px;

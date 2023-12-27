@@ -13,6 +13,7 @@ function MyWorkflowsPage() {
   return (
     <div className={styles.myWorkflows}>
       <WorkflowCreateBox/>
+      <h2>My Workflows</h2>
       <WorkflowList/>
     </div>
   )
@@ -59,14 +60,11 @@ function WorkflowCreateBox() {
 }
 
 function WorkflowList() {
-  const router = useRouter();
   const docs = useLiveQuery(async () => {
     return await documentDatabaseInstance.getDoclistFromLocal();
   }) || [];
-  console.log("docs", docs);
   return (
     <div className="workflow-list">
-      <h2>My Workflows</h2>
       {docs.map(doc => {
         return (
           <div key={doc.id} className='workflow-list-item' onClick={ev => {

@@ -1,29 +1,25 @@
 .extensionManager {
   overflow-y: auto;
   padding-top: 14px;
+  padding-bottom: 20px;
+  height: 100%;
   :global {
     .extension-list {
-      display: flex;
-      flex-direction: column;
-      max-height: calc(100vh - 100px);
-      margin-right: 40px;
-      .result {
-        display: flex;
-        flex-wrap: wrap;
-      }
+      padding-right: 20px;
     }
+    
+    .result {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-gap: 10px;
+    }
+
     .extension-card {
-      display: inline-block;
       user-select: none;
-      margin-right: 10px;
-      margin-top: 10px;
-      width: 280px;
       border: 1px solid rgba(71, 71, 71, 0.10);
       border-radius: 4px;
       padding: 10px;
-      margin-bottom: 10px;
       background-color: var(--backgroundColorL1);
-      height: 130px;
       transition: var(--transition);
       &:hover {
         background-color: var(--backgroundColorL2);
