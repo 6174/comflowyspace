@@ -134,6 +134,11 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   const data: Record<NodeId, PersistedWorkflowNode> = {}
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
+    const widget = widgets[node.value.widget];
+    if (!widget) {
+      continue
+    }
+
     const fields = { ...node.value.fields }
     // const params = [];
     // const inputs = node.value.inputs;
@@ -151,6 +156,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       position: node.position,
       value: { ...node.value, fields },
     }
+
     prompt[id] = {
       class_type: node.value.widget,
       inputs: fields,
@@ -162,9 +168,19 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     if (source === undefined) {
       continue
     }
-    const outputIndex = widgets[source.value.widget].output.findIndex((f) => f === edge.sourceHandle)
     if (prompt[edge.target!] !== undefined) {
-      prompt[edge.target!].inputs[edge.targetHandle!.toLocaleLowerCase()] = [edge.source, outputIndex]
+      const sourceWidget = widgets[source.value.widget]; 
+      let value;
+      if (sourceWidget) {
+        const outputIndex = sourceWidget.output.findIndex((f) => f === edge.sourceHandle)
+        value = [edge.source, outputIndex];
+      } else {
+        // special widget such as primitiveNode & reroute node & combo 
+        if (source.value.widget === "PrimitiveNode") {
+          value = source.value.fields[source.value.outputs[0].name];
+        }
+      }
+      prompt[edge.target!].inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
     }
   }
 
