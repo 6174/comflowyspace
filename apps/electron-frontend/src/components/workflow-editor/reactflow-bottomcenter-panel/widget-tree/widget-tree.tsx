@@ -98,7 +98,8 @@ export const WidgetTree = () => {
  **/ 
 function WidgetTreeNodeTitle({widget}: {widget: Widget}) {
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-        event.dataTransfer.setData('application/reactflow', widget.name);
+        const widgetInfo = JSON.stringify(widget);
+        event.dataTransfer.setData('application/reactflow', widgetInfo);
         event.dataTransfer.effectAllowed = 'move';
     }, [widget]);
     const ref = useRef<HTMLDivElement>();

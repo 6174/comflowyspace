@@ -30,9 +30,13 @@ function ReactflowBottomCenterPanel() {
                     Group
                 </div>
                 <div className="spliter"></div>
-                <div className="action action-Run" onClick={ev => {
-                    onSubmit();
-                    message.info("Add task to queue");
+                <div className="action action-Run" onClick={async ev => {
+                    const ret = await onSubmit();
+                    if (ret.error) {
+                        message.error(ret.error, 3)
+                    } else {
+                        message.info("Add task to queue");
+                    }
                 }}>
                     Run
                 </div>

@@ -34,7 +34,7 @@ import { TemporaryNodeState, WorkflowDocumentUtils, createNodeId } from './ydoc-
 import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument } from "../local-storage";
 
 import { create } from 'zustand'
-import { createPrompt, deleteFromQueue, getQueueApi, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
+import { PromptResponse, createPrompt, deleteFromQueue, getQueueApi, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
 import {
   writeWorkflowToFile,
 } from '../comfyui-bridge/export-import';
@@ -78,7 +78,7 @@ export interface AppState {
   previewedImageIndex?: number
   onConnect: OnConnect
 
-  onSubmit: () => Promise<void>
+  onSubmit: () => Promise<PromptResponse>
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
   onInit: () => Promise<void>
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
@@ -328,6 +328,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const res = await sendPrompt(prompt);
     console.log("prompt response:", res);
     set({ promptError: res.error })
+    return res
   },
   onNewClientId: (id) => {
     set({ clientId: id })

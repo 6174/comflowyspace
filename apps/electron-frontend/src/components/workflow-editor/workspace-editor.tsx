@@ -5,7 +5,7 @@ import ReactFlow, { Background, BackgroundVariant, Controls, Panel, useStore } f
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
-import { Input } from '@comflowy/common/comfui-interfaces';
+import { Input, Widget } from '@comflowy/common/comfui-interfaces';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
@@ -68,13 +68,12 @@ export default function WorkflowEditor() {
   const onDrop = React.useCallback(
     async (event) => {
       event.preventDefault();
-
-      const widgetType = event.dataTransfer.getData('application/reactflow');
-
+      const rawWidgetInfo = event.dataTransfer.getData('application/reactflow');
+      const widgetInfo = JSON.parse(rawWidgetInfo) as Widget;
+      const widgetType = widgetInfo.name;
       if (typeof widgetType === 'undefined' || !widgetType) {
         return;
       }
-
       // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
       // and you don't need to subtract the reactFlowBounds.left/top anymore
       // details: https://reactflow.dev/whats-new/2023-11-10
@@ -82,13 +81,7 @@ export default function WorkflowEditor() {
         x: event.clientX,
         y: event.clientY,
       });
-
-      const widget = widgets[widgetType];
-      if (widget) {
-        await onAddNode(widget, position);
-      } else {
-        console.log('widget not found', widgetType);
-      }
+      await onAddNode(widgetInfo, position);
     },
     [reactFlowInstance, widgets],
   );

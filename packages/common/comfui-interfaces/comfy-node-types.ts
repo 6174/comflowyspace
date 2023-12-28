@@ -12,7 +12,7 @@ export interface SDNode {
   inputs: ComfyUIWorkflowNodeInput[]
   outputs: ComfyUIWorkflowNodeOutput[]
   images?: PreviewImage[]
-  color?: string;
+color?: string;
   bgcolor?: string;
   title?: string;
 }
@@ -35,6 +35,7 @@ export const SDNode = {
 }
 
 export interface NodeInProgress {
-    id: NodeId
-    progress: number
-  }
+  id: NodeId
+  progress: number
+}
+

@@ -12,7 +12,7 @@ interface ExtraData {
   extra_pnginfo?: Record<string, any>
 }
 
-interface PromptResponse {
+export interface PromptResponse {
   error?: string
 }
 

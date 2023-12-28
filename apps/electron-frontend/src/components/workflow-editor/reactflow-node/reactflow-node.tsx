@@ -28,12 +28,13 @@ function NodeComponent({
   onDuplicateNode,
   onNodesDelete,
 }: Props): JSX.Element {
-  const params = []
+  const params: {property: string, input: Input}[] = []
   const widget = node.data.widget;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];
   const nodeTitle = node.data.value.title || widget.name;
   const inputKeys = inputs.map(input => input.name);
+
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
     widget.input.required.upload = ["IMAGEUPLOAD"];
   }
@@ -42,6 +43,21 @@ function NodeComponent({
     if (!inputKeys.includes(property)) {
       params.push({ property, input })
     }
+  }
+
+  // If it is a primitive node , add according primitive type params
+  if (widget.name === "PrimitiveNode") {
+    const paramType = node.data.value.outputs[0].type;
+    const extraInfo: any = {};
+    if (paramType === "STRING") {
+      extraInfo.multiline = true;
+    } else if (paramType === "BOOLEAN") {
+      extraInfo.default = true;
+    }
+    params.push({
+      property: paramType,
+      input: [paramType as any, extraInfo]
+    })
   }
 
   const isInProgress = progressBar !== undefined

@@ -93,7 +93,12 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         const key = params[index];
         fields[key] = value;
       });
+
     } else {
+      if (node.type === "PrimitiveNode") {
+        const fieldName = node.outputs[0].name;
+        fields[fieldName] = node.widgets_values[0];
+      }
       missed_widget.push(node.type);
     }
 
