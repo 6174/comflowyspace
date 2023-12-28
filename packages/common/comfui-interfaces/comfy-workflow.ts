@@ -5,9 +5,9 @@ interface Flags {
 }
 
 export type ComfyUIWorkflowNodeInput = {
-  link: number;
+  link?: number;
   name: string;
-  type: string;
+  type: FlowPropsKey | "*";
 }
 
 export type ComfyUIWorkflowNodeOutput = {
@@ -15,7 +15,7 @@ export type ComfyUIWorkflowNodeOutput = {
   name: string;
   slot_index: number;
   type: string;
-  shape: number;
+  shape?: number;
 }
 
 export type ComfyUIWorkflowNode = {

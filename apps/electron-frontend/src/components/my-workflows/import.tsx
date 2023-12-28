@@ -11,7 +11,6 @@ export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const {widgets} = useAppStore();
-  const router = useRouter();
 
   const onFileSelected = async (file: File) => {
     console.log(selectedFile);

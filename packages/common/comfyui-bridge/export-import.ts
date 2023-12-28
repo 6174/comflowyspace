@@ -114,6 +114,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         title: node.title,
         bgcolor: node.bgcolor,
         color: node.color,
+        properties: node.properties
       },
       dimensions: {
         width: node.size[0],

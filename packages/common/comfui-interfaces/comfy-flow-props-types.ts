@@ -47,6 +47,8 @@ export type FlowProps = [FlowPropsKey];
 
 type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
+export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING';
+
 export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload: boolean}] | FlowProps
 
 export const Input = {
