@@ -1,6 +1,6 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
 import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
-import { PersistedWorkflowDocument, PersistedWorkflowNode } from '../local-storage'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../local-storage'
 
 interface PromptRequest {
   client_id?: string
@@ -164,23 +164,12 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   }
 
   for (const edge of workflow.connections) {
-    const source = workflow.nodes[edge.source!]
-    if (source === undefined) {
-      continue
-    }
-    if (prompt[edge.target!] !== undefined) {
-      const sourceWidget = widgets[source.value.widget]; 
-      let value;
-      if (sourceWidget) {
-        const outputIndex = sourceWidget.output.findIndex((f) => f === edge.sourceHandle)
-        value = [edge.source, outputIndex];
-      } else {
-        // special widget such as primitiveNode & reroute node & combo 
-        if (source.value.widget === "PrimitiveNode") {
-          value = source.value.fields[source.value.outputs[0].name];
-        }
+    const target = prompt[edge.target!]
+    if (target) {
+      const value = findEdgeSourceValue(edge);
+      if (value) {
+        target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
       }
-      prompt[edge.target!].inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
     }
   }
 
@@ -189,4 +178,39 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     client_id: clientId,
     extra_data: { extra_pnginfo: { workflow: { connections: workflow.connections, data } } },
   }
+  
+  function findEdgeSourceValue(edge: PersistedWorkflowConnection) {
+    const source = workflow.nodes[edge.source!]
+    if (source === undefined) {
+      return undefined
+    }
+    const sourceWidget = widgets[source.value.widget]; 
+    let value;
+    // source
+    if (sourceWidget) {
+      const outputIndex = sourceWidget.output.findIndex((f) => f === edge.sourceHandle)
+      value = [edge.source, outputIndex];
+    } else {
+      // special widget such as primitiveNode & reroute node & combo 
+      if (source.value.widget === "PrimitiveNode") {
+        value = source.value.fields[source.value.outputs[0].name];
+      }
+      if (source.value.widget === "Reroute") {
+        value = findRerouteNodeInputValue(source);
+      }
+    }
+    return value;
+  }
+
+  function findRerouteNodeInputValue(source: PersistedWorkflowNode): any {
+    const inputLinkId = source.value.inputs[0].link + "";
+    const edge = workflow.connections.find((connection) => connection.id === inputLinkId);
+    if (edge) {
+      return findEdgeSourceValue(edge);
+    }
+  }
+
 }
+
+
+

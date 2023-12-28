@@ -79,8 +79,10 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
     const fields: any = {};
     if (widget && node.widgets_values) {
       const params: string[] = [];
+      const inputs = node.inputs || [];
+      const inputKeys = inputs.map(input => input.name);
       for (const [property, input] of Object.entries(widget.input.required)) {
-        if (Input.isParameterOrList(input)) {
+        if (!inputKeys.includes(property)) {
           params.push(property)
         }
       }
