@@ -1,5 +1,5 @@
 import * as React from 'react'
-import styles from "./workspace-editor.style.module.scss";
+import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
 import ReactFlow, { Background, BackgroundVariant, Controls, Panel, useStore } from 'reactflow';
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
@@ -17,10 +17,13 @@ import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-p
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
+    onEdgesUpdate: st.onEdgeUpdate,
+    onEdgeUpdateStart: st.onEdgeUpdateStart,
+    onEdgeUpdateEnd: st.onEdgeUpdateEnd,
     onNodesDelete: st.onNodesDelete,
     onAddNode: st.onAddNode,
     onEdgesDelete: st.onEdgesDelete,
@@ -85,7 +88,7 @@ export default function WorkflowEditor() {
     },
     [reactFlowInstance, widgets],
   );
-
+  
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -100,6 +103,9 @@ export default function WorkflowEditor() {
         onEdgesChange={onEdgesChange}
         onNodesDelete={onNodesDelete}
         onEdgesDelete={onEdgesDelete}
+        onEdgeUpdate={onEdgesUpdate}
+        onEdgeUpdateStart={onEdgeUpdateStart}
+        onEdgeUpdateEnd={onEdgeUpdateEnd}
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}

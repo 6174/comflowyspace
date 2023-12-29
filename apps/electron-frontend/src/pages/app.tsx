@@ -1,5 +1,4 @@
-import ComfyUIProcessManager from '@/components/comfyui-process-manager/comfyui-process-manager'
-import WorkflowEditor from '@/components/workflow-editor/workspace-editor'
+import WorkflowEditor from '@/components/workflow-editor/workflow-editor'
 import * as React from 'react'
 import { ReactFlowProvider } from 'reactflow'
 

@@ -2,7 +2,7 @@
  * workflow document
  */
 import { uuid } from "../utils";
-import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions} from "reactflow";
+import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions, Edge} from "reactflow";
 import * as Y from "yjs";
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../local-storage";
 import { NodeId, PreviewImage } from "../comfui-interfaces";
@@ -183,14 +183,33 @@ const WorkflowDocumentUtils = {
                 let index: number;
                 switch (change.type) {
                     case "select":
+                        // index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
+                        // const connection = connectionsArray.get(index)!;
+                        // if (connection) {
+                        //     connection.selected = change.selected;
+                        // }
+                        break;
+                    case "remove":
                         index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
-                        const connection = connectionsArray.get(index)!;
-                        connection.selected = change.selected;
+                        connectionsArray.delete(index);
                         break;
                     default:
                         break;
                 }
             })
+        });
+    },
+    onEdgeUpdate: (doc: Y.Doc, oldEdge: Edge, newConnection: FlowConnecton) => {
+        const connectionsArray = (doc.getMap("workflow").get("connections") as Y.Array<PersistedWorkflowConnection>);
+        doc.transact(() => {
+            const index = connectionsArray.toArray().findIndex(conn => conn.id === oldEdge.id);
+            const connection = connectionsArray.get(index)!;
+            if (connection) {
+                connection.source = newConnection.source;
+                connection.sourceHandle = newConnection.sourceHandle;
+                connection.target = newConnection.target;
+                connection.targetHandle = newConnection.targetHandle;
+            }
         });
     },
     onEdgesDelete: (doc: Y.Doc, ids: string[]) => {

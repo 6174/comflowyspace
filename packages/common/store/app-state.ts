@@ -11,6 +11,8 @@ import {
   OnNodesDelete,
   OnEdgesDelete,
   applyEdgeChanges,
+  updateEdge,
+  OnEdgeUpdateFunc,
 } from 'reactflow';
 import {
   type QueueItem,
@@ -62,6 +64,7 @@ export interface AppState {
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
   draggingAndResizing: boolean;
+  updatingEdge: boolean;
 
   // document mutation handler
   onSyncFromYjsDoc: () => void;
@@ -70,6 +73,9 @@ export interface AppState {
   onNodesDelete: OnNodesDelete
   onEdgesDelete: OnEdgesDelete
   onPropChange: OnPropChange
+  onEdgeUpdate: OnEdgeUpdateFunc;
+  onEdgeUpdateStart: () => void;
+  onEdgeUpdateEnd: (ev: any, edge: Edge) => void;
   onAddNode: (widget: Widget, pos: XYPosition) => void
   onDuplicateNode: (id: NodeId) => void
 
@@ -131,11 +137,21 @@ export const AppState = {
     }
   },
   addConnection(state: AppState, connection: PersistedWorkflowConnection): AppState {
+    const stateConnection = state.edges.find(edge => edge.id === connection.id);
     return { ...state, edges: addEdge(connection, state.edges) }
   },
   toPersisted(state: AppState): PersistedWorkflowDocument {
     const { doc } = state;
     return WorkflowDocumentUtils.toJson(doc);
+  },
+  persistUpdateDoc: (state: AppState, doc: Y.Doc) => {
+    const workflowMap = doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    throttledUpdateDocument({
+      ...state.persistedWorkflow!,
+      last_edit_time: +new Date(),
+      snapshot: workflow
+    });
   }
 }
 
@@ -150,6 +166,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   nodeSelection: [],
   edgeSelection: [],
   draggingAndResizing: false,
+  updatingEdge: false,
 
   // properties
   counter: 0,
@@ -206,49 +223,66 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param changes 
    */
   onNodesChange: (changes) => {
-    const st = get();
     set((st) => {
       return {
         nodes: applyNodeChanges(changes, st.nodes)
       }
     })
-
-    // if (!st.draggingAndResizing) {
-      const { doc} = get();
-      WorkflowDocumentUtils.onNodesChange(doc, changes);
-      const workflowMap = doc.getMap("workflow");
-      const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-      throttledUpdateDocument({
-        ...st.persistedWorkflow!,
-        last_edit_time: +new Date(),
-        snapshot: workflow
-      });
-    // }
+    const st = get();
+    const {doc} = st;
+    WorkflowDocumentUtils.onNodesChange(doc, changes);
+    AppState.persistUpdateDoc(st, doc)
   },
   onChangeDragingAndResizingState: (value: boolean) => {
     set({ draggingAndResizing: value })
   },
+  onConnect: (connection: FlowConnecton) => {
+    console.log("on connect");
+    set((st) => ({edges: addEdge(connection, st.edges)}))
+    const st = get();
+    const { doc } = st;
+    WorkflowDocumentUtils.addConnection(doc, connection);
+    AppState.persistUpdateDoc(st, doc)
+  },
   onEdgesChange: (changes) => {
+    console.log("on edge change", changes);
     set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    const { doc } = get();
+    const st = get();
+    const { doc } = st;
     WorkflowDocumentUtils.onEdgesChange(doc, changes);
+    AppState.persistUpdateDoc(st, doc)
+  },
+  onEdgeUpdateStart: ()=> {
+    console.log("on Edge Update Start");
+    set({
+      updatingEdge: true
+    })
+  },
+  onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
+    console.log("on Edge Update");
+    set((st) => ({ edges: updateEdge(oldEdge, newConnection, st.edges)}))
+    const st = get();
+    const { doc } = st;
+    WorkflowDocumentUtils.onEdgeUpdate(doc, oldEdge, newConnection);
+    AppState.persistUpdateDoc(st, doc)
+  },
+  onEdgeUpdateEnd: (ev: any, edge: Edge) => {
+    console.log("on Edge Update End");
+    set({
+      updatingEdge: false
+    })
   },
   onNodesDelete: (changes: Node[]) => {
+    console.log("on Node Delete");
     const { doc, onSyncFromYjsDoc, } = get();
     WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));
     onSyncFromYjsDoc();
   },
   onEdgesDelete: (changes: Edge[]) => {
+    console.log("on Edge Delete");
     const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
     onSyncFromYjsDoc();
-  },
-  onConnect: (connection: FlowConnecton) => {
-    // console.log("on connet");
-    const { doc, onSyncFromYjsDoc } = get();
-    WorkflowDocumentUtils.addConnection(doc, connection);
-    onSyncFromYjsDoc();
-    // set((st) => AppState.addConnection(st, connection))
   },
   onPropChange: (id, key, value) => {
     console.log("change prop", id, key, value);
@@ -261,6 +295,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     onSyncFromYjsDoc();
   },
   onAddNode: (widget: Widget, position: XYPosition) => {
+    console.log("on Add Node");
     const node = SDNode.fromWidget(widget);
     console.log("add node")
     const { doc, onSyncFromYjsDoc } = get();
@@ -272,7 +307,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     onSyncFromYjsDoc();
   },
   onDuplicateNode: (id) => {
-    console.log("duplicated node")
+    console.log("on duplicated node")
     const st = get();
     const item = st.graph[id]
     const node = st.nodes.find((n) => n.id === id)
@@ -367,16 +402,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       ],
       snapshot: workflow
     });
-    /**
-     * Save image will save image to output directory
-     * So this is the output image to save
-    */
-    // const node = st.graph[id];
-    // if (node.widget === "SaveImage") {
-    //   // 
-    // } else {
-    //   // 
-    // }
   },
   onLoadImageWorkflow: (image) => {
     void exifr.parse(getBackendUrl(`/view/${image}`)).then((res) => {
