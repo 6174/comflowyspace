@@ -45,6 +45,7 @@ import { getBackendUrl } from '../config'
 import exifr from 'exifr'
 
 import { uuid } from '../utils';
+import { validate } from 'uuid';
 
 export interface AppState {
   counter: number
@@ -238,6 +239,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onConnect: (connection: FlowConnecton) => {
     console.log("on connect");
+    const [validate, message] = validateEdge(get(), connection);
+    if (!validate) {
+      console.log("validate failed", message);
+      return;
+    }
     set((st) => ({edges: addEdge(connection, st.edges)}))
     const st = get();
     const { doc } = st;
@@ -260,6 +266,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
     console.log("on Edge Update");
+    const [validate, message] = validateEdge(get(), newConnection);
+    if (!validate) {
+      console.log("validate failed", message);
+      return;
+    }
+
     set((st) => ({ edges: updateEdge(oldEdge, newConnection, st.edges)}))
     const st = get();
     const { doc } = st;
@@ -440,3 +452,29 @@ function generateWidgetCategories(widgets: Record<string, Widget>) {
 
   return categories;
 };
+
+export function validateEdge(st: AppState, connection: FlowConnecton): [boolean, string] {
+  const { source, sourceHandle, target, targetHandle} = connection;
+  if (!source || !target) {
+    return [false, "source or target is null"];
+  }
+
+  const sourceNode = st.graph[source];
+  const targetNode = st.graph[target];
+  const sourceOutputs = sourceNode.outputs;
+  const targetInputs = targetNode.inputs;
+
+  const output = sourceOutputs.find(output => output.name === sourceHandle);
+  const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);
+  // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
+  
+  if (!output || !input) {
+    return [false, "output or input is null"];
+  }
+
+  if (output.type !== input.type) {
+    return [false, "output type and input type not match"];
+  }
+
+  return [true, "success"];
+}

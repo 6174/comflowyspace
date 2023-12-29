@@ -7,6 +7,8 @@ import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ResizeIcon } from 'ui/icons';
+import { useAppStore } from '@comflowy/common/store';
+import { validateEdge } from '@comflowy/common/store/app-state';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -202,10 +204,21 @@ function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   }));
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
-      <Handle id={id.toUpperCase()} type={type} position={position} className="node-slot-handle" style={{
-        backgroundColor: color,
-        transform: `scale(${Math.max(1, 1/transform)})`
-      }}/>
+      <Handle 
+        id={id.toUpperCase()} 
+        isConnectable={true}
+        isValidConnection={(connection) => {
+          const st = useAppStore.getState();
+          const [validate, message] = validateEdge(st, connection);
+          return validate
+        }}
+        type={type} 
+        position={position} 
+        className="node-slot-handle" 
+        style={{
+          backgroundColor: color,
+          transform: `scale(${Math.max(1, 1/transform)})`
+        }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {label.toUpperCase()}
       </div>
