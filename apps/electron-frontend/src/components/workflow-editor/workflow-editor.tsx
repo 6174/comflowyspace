@@ -17,7 +17,7 @@ import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-p
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, onConnectStart, onConnectEnd, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, inprogressNodeId, onConnectStart, onConnectEnd, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
@@ -33,6 +33,7 @@ export default function WorkflowEditor() {
     onEdgesChange: st.onEdgesChange,
     onLoadWorkflow: st.onLoadWorkflow,
     onConnect: st.onConnect,
+    inprogressNodeId: st.nodeInProgress?.id,
     onInit: st.onInit,
     onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
   }), shallow)
@@ -44,6 +45,7 @@ export default function WorkflowEditor() {
   const styledEdges = edges.map(edge => {
     return {
       ...edge,
+      animated: edge.source === inprogressNodeId,
       style: {
         strokeWidth: 2.8 / transform,
         opacity: edge.selected ? 1 : .6,

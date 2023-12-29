@@ -92,3 +92,15 @@ body {
   white-space: nowrap;
   overflow: hidden;
 }
+
+@-webkit-keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}
+
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}

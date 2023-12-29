@@ -242,7 +242,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
           transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
         }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
-        {label.toUpperCase()}
+        {type === "source" ? label.toUpperCase() : label.toLowerCase()}
       </div>
     </div>
   )

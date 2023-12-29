@@ -254,18 +254,6 @@
         color: #999;
       }
     
-      @-webkit-keyframes dashdraw {
-        from {
-          stroke-dashoffset: 10;
-        }
-      }
-    
-      @keyframes dashdraw {
-        from {
-          stroke-dashoffset: 10;
-        }
-      }
-    
       .react-flow__edgelabel-renderer {
         position: absolute;
         width: 100%;
