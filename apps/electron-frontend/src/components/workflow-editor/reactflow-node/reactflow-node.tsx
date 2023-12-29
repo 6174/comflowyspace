@@ -1,5 +1,5 @@
-import { memo, useEffect, useRef, useState } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl} from 'reactflow'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection} from 'reactflow'
 import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
 
 import { Button, Image, Progress, Space } from 'antd';
@@ -199,19 +199,49 @@ interface SlotProps {
  */
 function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   const color = Input.getInputColor([label.toUpperCase()] as any);
+  const isConnecting = useAppStore(st => st.isConnecting);
+  const connectingParams = useAppStore(st => st.connectingStartParams);
+
   const transform  = useStore((st => {
     return st.transform[2]
   }));
+  const [connectingMe, setConnectingMe] = useState(false);
+  const isValidConnection = useCallback((connection: Connection) => {
+    const st = useAppStore.getState();
+    const [validate, message] = validateEdge(st, connection);
+    return validate
+  }, [])
+  useEffect(() => {
+    if (isConnecting && connectingParams) {
+      const st = useAppStore.getState();
+      const node = st.graph[connectingParams.nodeId];
+      if (!node) {
+        console.warn("can't find node " + connectingParams.nodeId);
+      }
+      
+      const sourceType = connectingParams.handleType;
+      const handleId = connectingParams.handleId;
+
+      if (sourceType === type) {
+        setConnectingMe(false);
+      } else {
+         if (handleId === id) {
+          setConnectingMe(true);
+         } else {
+          setConnectingMe(false);
+         }
+      }
+    } else {
+      setConnectingMe(false);
+    }
+  }, [isConnecting, connectingParams])
+
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
         id={id.toUpperCase()} 
         isConnectable={true}
-        isValidConnection={(connection) => {
-          const st = useAppStore.getState();
-          const [validate, message] = validateEdge(st, connection);
-          return validate
-        }}
+        isValidConnection={isValidConnection}
         type={type} 
         position={position} 
         className="node-slot-handle" 

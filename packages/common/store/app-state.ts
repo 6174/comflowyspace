@@ -13,6 +13,9 @@ import {
   applyEdgeChanges,
   updateEdge,
   OnEdgeUpdateFunc,
+  OnConnectStart,
+  OnConnectEnd,
+  OnConnectStartParams,
 } from 'reactflow';
 import {
   type QueueItem,
@@ -65,7 +68,8 @@ export interface AppState {
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
   draggingAndResizing: boolean;
-  updatingEdge: boolean;
+  isConnecting: boolean;
+  connectingStartParams?: OnConnectStartParams;
 
   // document mutation handler
   onSyncFromYjsDoc: () => void;
@@ -74,6 +78,10 @@ export interface AppState {
   onNodesDelete: OnNodesDelete
   onEdgesDelete: OnEdgesDelete
   onPropChange: OnPropChange
+
+  onConnect: OnConnect
+  onConnectStart: OnConnectStart
+  onConnectEnd: OnConnectEnd
   onEdgeUpdate: OnEdgeUpdateFunc;
   onEdgeUpdateStart: () => void;
   onEdgeUpdateEnd: (ev: any, edge: Edge) => void;
@@ -83,7 +91,6 @@ export interface AppState {
   nodeInProgress?: NodeInProgress
   promptError?: string
   previewedImageIndex?: number
-  onConnect: OnConnect
 
   onSubmit: () => Promise<PromptResponse>
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
@@ -167,7 +174,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   nodeSelection: [],
   edgeSelection: [],
   draggingAndResizing: false,
-  updatingEdge: false,
+  isConnecting: false,
 
   // properties
   counter: 0,
@@ -260,9 +267,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onEdgeUpdateStart: ()=> {
     console.log("on Edge Update Start");
-    set({
-      updatingEdge: true
-    })
   },
   onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
     console.log("on Edge Update");
@@ -280,9 +284,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onEdgeUpdateEnd: (ev: any, edge: Edge) => {
     console.log("on Edge Update End");
-    set({
-      updatingEdge: false
-    })
+  },
+  onConnectStart: (ev, params: OnConnectStartParams) => {
+    console.log("on connect start");
+    set({ connectingStartParams: params, isConnecting: true })
+  },
+  onConnectEnd: (ev) => {
+    console.log("on connect end");
+    set({ isConnecting: false, connectingStartParams: undefined })
   },
   onNodesDelete: (changes: Node[]) => {
     console.log("on Node Delete");
@@ -467,7 +476,7 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
   const output = sourceOutputs.find(output => output.name === sourceHandle);
   const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);
   // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
-  
+
   if (!output || !input) {
     return [false, "output or input is null"];
   }
