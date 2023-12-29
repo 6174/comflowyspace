@@ -251,11 +251,22 @@ export const useAppStore = create<AppState>((set, get) => ({
       console.log("validate failed", message);
       return;
     }
-    set((st) => ({edges: addEdge(connection, st.edges)}))
+    // remove old edge if exist
+    // connect new edge
     const st = get();
-    const { doc } = st;
+    const { doc, onSyncFromYjsDoc } = st;
+    const oldEdge = st.edges.find(edge => {
+      return (
+        edge.target === connection.target && 
+        edge.targetHandle === connection.targetHandle
+      )
+    });
+    if (oldEdge) {
+      WorkflowDocumentUtils.onEdgesDelete(doc, [oldEdge.id]);
+    }
     WorkflowDocumentUtils.addConnection(doc, connection);
     AppState.persistUpdateDoc(st, doc)
+    onSyncFromYjsDoc();
   },
   onEdgesChange: (changes) => {
     console.log("on edge change", changes);
@@ -276,11 +287,21 @@ export const useAppStore = create<AppState>((set, get) => ({
       return;
     }
 
-    set((st) => ({ edges: updateEdge(oldEdge, newConnection, st.edges)}))
     const st = get();
-    const { doc } = st;
+    const { doc, onSyncFromYjsDoc } = st;
+
+    const oldConnectEdge = st.edges.find(edge => {
+      return (
+        edge.target === newConnection.target &&
+        edge.targetHandle === newConnection.targetHandle
+      )
+    });
+    if (oldConnectEdge) {
+      WorkflowDocumentUtils.onEdgesDelete(doc, [oldConnectEdge.id]);
+    }
     WorkflowDocumentUtils.onEdgeUpdate(doc, oldEdge, newConnection);
-    AppState.persistUpdateDoc(st, doc)
+
+    onSyncFromYjsDoc();
   },
   onEdgeUpdateEnd: (ev: any, edge: Edge) => {
     console.log("on Edge Update End");
@@ -295,7 +316,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const node = st.graph[params.nodeId];
     let valueType = "";
     if (params.handleType === "source") {
-      const output = node.outputs.find(output => output.name === params.handleId);
+      const output = node.outputs.find(output => output.name.toUpperCase() === params.handleId);
       if (output) {
         valueType = output.type;
       }
@@ -490,12 +511,20 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
     return [false, "source or target is null"];
   }
 
+  if (st.edges.find(edge => 
+    edge.source === source && 
+    edge.sourceHandle === sourceHandle && 
+    edge.target === target && 
+    edge.targetHandle === targetHandle)) {
+    return [false, "edge already exist"];
+  }
+
   const sourceNode = st.graph[source];
   const targetNode = st.graph[target];
   const sourceOutputs = sourceNode.outputs;
   const targetInputs = targetNode.inputs;
 
-  const output = sourceOutputs.find(output => output.name === sourceHandle);
+  const output = sourceOutputs.find(output => output.name.toUpperCase() === sourceHandle);
   const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);
   // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
 

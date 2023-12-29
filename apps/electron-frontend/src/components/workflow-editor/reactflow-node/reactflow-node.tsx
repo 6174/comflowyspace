@@ -210,6 +210,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   const isValidConnection = useCallback((connection: Connection) => {
     const st = useAppStore.getState();
     const [validate, message] = validateEdge(st, connection);
+    !validate && console.log("connect failed", message)
     return validate
   }, [])
   useEffect(() => {
@@ -225,7 +226,8 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
     }
   }, [isConnecting, connectingParams])
 
-  const scaleFactor = (isConnecting && connectingMe) ? 4 : 1;
+  const scaleFactor = (isValidConnection && isConnecting && connectingMe) ? 4 : 1;
+
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
