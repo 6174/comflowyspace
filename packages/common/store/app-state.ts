@@ -69,7 +69,7 @@ export interface AppState {
   widgetCategory: any;
   draggingAndResizing: boolean;
   isConnecting: boolean;
-  connectingStartParams?: OnConnectStartParams;
+  connectingStartParams?: OnConnectStartParams & {valueType: string};
 
   // document mutation handler
   onSyncFromYjsDoc: () => void;
@@ -287,7 +287,29 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onConnectStart: (ev, params: OnConnectStartParams) => {
     console.log("on connect start");
-    set({ connectingStartParams: params, isConnecting: true })
+    const st = get();
+    if (!params.nodeId) {
+      return;
+    }
+
+    const node = st.graph[params.nodeId];
+    let valueType = "";
+    if (params.handleType === "source") {
+      const output = node.outputs.find(output => output.name === params.handleId);
+      if (output) {
+        valueType = output.type;
+      }
+    } else {
+      const input = node.inputs.find(input => input.name.toUpperCase() === params.handleId);
+      if (input) {
+        valueType = input.type;
+      }
+    }
+
+    set({ connectingStartParams: {
+      ...params,
+      valueType
+    }, isConnecting: true })
   },
   onConnectEnd: (ev) => {
     console.log("on connect end");

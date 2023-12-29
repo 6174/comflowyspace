@@ -124,12 +124,12 @@ function NodeComponent({
         <div className="node-slots">
           <div className="node-inputs">
             {inputs.map((input, index) => (
-              <Slot key={input.name + index} id={input.name} label={input.name} type="target" position={Position.Left} />
+              <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
             ))}
           </div>
           <div className="node-outputs">
             {outputs.map((output, index) => (
-              <Slot key={output.name + index} id={output.name} label={output.name} type="source" position={Position.Right} />
+              <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
             ))}
           </div>
         </div>
@@ -190,6 +190,7 @@ interface SlotProps {
   label: string
   type: HandleType
   position: Position
+  valueType: string
 }
 
 /**
@@ -197,7 +198,7 @@ interface SlotProps {
  * @param param0 
  * @returns 
  */
-function Slot({ id, label, type, position }: SlotProps): JSX.Element {
+function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element {
   const color = Input.getInputColor([label.toUpperCase()] as any);
   const isConnecting = useAppStore(st => st.isConnecting);
   const connectingParams = useAppStore(st => st.connectingStartParams);
@@ -213,29 +214,18 @@ function Slot({ id, label, type, position }: SlotProps): JSX.Element {
   }, [])
   useEffect(() => {
     if (isConnecting && connectingParams) {
-      const st = useAppStore.getState();
-      const node = st.graph[connectingParams.nodeId];
-      if (!node) {
-        console.warn("can't find node " + connectingParams.nodeId);
-      }
-      
       const sourceType = connectingParams.handleType;
-      const handleId = connectingParams.handleId;
-
-      if (sourceType === type) {
-        setConnectingMe(false);
+      if (sourceType !== type && connectingParams.valueType === valueType) {
+        setConnectingMe(true);
       } else {
-         if (handleId === id) {
-          setConnectingMe(true);
-         } else {
-          setConnectingMe(false);
-         }
+        setConnectingMe(false);
       }
     } else {
       setConnectingMe(false);
     }
   }, [isConnecting, connectingParams])
 
+  const scaleFactor = (isConnecting && connectingMe) ? 4 : 1;
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -247,7 +237,7 @@ function Slot({ id, label, type, position }: SlotProps): JSX.Element {
         className="node-slot-handle" 
         style={{
           backgroundColor: color,
-          transform: `scale(${Math.max(1, 1/transform)})`
+          transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
         }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {label.toUpperCase()}
