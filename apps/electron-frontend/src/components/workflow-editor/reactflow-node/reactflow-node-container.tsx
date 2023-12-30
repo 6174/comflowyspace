@@ -13,7 +13,7 @@ export function NodeContainer(props: FlowNodeProps): JSX.Element {
       (st) => ({
         progressBar: st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined,
         imagePreviews: st.graph[props.id]?.images || [],
-        onPropChange: st.onPropChange,
+        onNodeFieldChange: st.onNodeFieldChange,
         onDuplicateNode: st.onDuplicateNode,
         onNodesDelete: st.onNodesDelete,
       }),

@@ -1,13 +1,14 @@
 import React, { useCallback, useState } from 'react';
 import { Popover, Input, Space, Button } from 'antd';
 import { NodeMenuProps } from './types';
+import { useAppStore } from '@comflowy/common/store';
 
 
 const ChangeTitleMenuItem = (props: NodeMenuProps) => {
   const [visible, setVisible] = useState(false);
   const { node } = props;
   const [title, setTitle] = useState(node.title || node.widget);
-
+  const onNodeAttributeChange = useAppStore(st => st.onNodeAttributeChange);
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
   };
@@ -20,6 +21,8 @@ const ChangeTitleMenuItem = (props: NodeMenuProps) => {
 
   const handleTitleSubmit = useCallback(() => {
     console.log("change title");
+    onNodeAttributeChange(props.id, {'title': title});
+    props.hide();
   }, [title]);
 
   const content = (

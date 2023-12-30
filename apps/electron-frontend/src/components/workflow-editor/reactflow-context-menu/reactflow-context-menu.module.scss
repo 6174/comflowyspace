@@ -4,7 +4,7 @@
   background-color: var(--backgroundColorL1_5);
   border-radius: var(--borderRadius);
   box-shadow: var(--box-shadow);
-  border: 1px solid var(--borderColor);
+  border: 1px solid #2c2c33;
   :global {
     .node-info {
       padding: 10px 16px;
@@ -23,6 +23,30 @@
       }
       .ant-menu-submenu .ant-menu-submenu-arrow { 
         inset-inline-end: 6px;
+      }
+    }
+  }
+}
+
+.reactflowContextMenuPopover {
+  :global {
+    .ant-popover-inner {
+      background-color: var(--backgroundColorL1_5);
+      border-radius: var(--borderRadius);
+      box-shadow: var(--box-shadow);
+      border: 1px solid #2c2c33;
+      padding: 10px;
+      p {
+        font-size: 12px;
+        margin: 4px 0;
+      }
+    }
+    .change-color {
+      .color-option{
+        transition: var(--transition);
+        &:hover {
+          transform: scale(1.2);
+        }
       }
     }
   }

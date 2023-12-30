@@ -15,11 +15,11 @@ export function InputUploadImage({widget, id}: {
     id: string
 }) {
     const graph = useAppStore(st => st.graph);
-    const onPropChange = useAppStore(st => st.onPropChange);
+    const onNodeFieldChange = useAppStore(st => st.onNodeFieldChange);
     const value = graph[id]?.fields.image;
 
     const onChange = useCallback((val) => {
-        onPropChange(id, 'image', val);
+        onNodeFieldChange(id, 'image', val);
     }, [value]);
 
     const [previewImage, setPreviewImage] = useState(null);

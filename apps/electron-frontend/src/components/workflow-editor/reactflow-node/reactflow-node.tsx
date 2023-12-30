@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection} from 'reactflow'
-import { type Widget, Input, type NodeId, SDNode, PreviewImage } from '@comflowy/common/comfui-interfaces';
+import { type Widget, Input, type NodeId, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/comfui-interfaces';
 
 import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
@@ -9,7 +9,7 @@ import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ResizeIcon } from 'ui/icons';
 import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
-
+import Color from "color";
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -84,7 +84,11 @@ function NodeComponent({
   )
 
   return (
-    <div className={`${nodeStyles.reactFlowNode}  ${(node.selected || isInProgress) ? nodeStyles.reactFlowSelected : ""}`}>
+    <div className={`${nodeStyles.reactFlowNode}  ${(node.selected || isInProgress) ? nodeStyles.reactFlowSelected : ""}`} style={{
+      '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
+      '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
+      '--node-bg-color': node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor,
+    } as React.CSSProperties}>
       <NodeResizeControl
         style={{
           background: "transparent",

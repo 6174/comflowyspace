@@ -232,7 +232,7 @@ const WorkflowDocumentUtils = {
             id: "conn_" + uuid(),
         }])
     },
-    onPropChange: (doc: Y.Doc, change: {
+    onNodeFieldChange: (doc: Y.Doc, change: {
         id: string,
         key: string,
         value: any
@@ -251,6 +251,24 @@ const WorkflowDocumentUtils = {
                         ...fields,
                         [change.key]: change.value,
                     }
+                }
+            })
+        });
+    },
+    onNodeAttributeChange: (doc: Y.Doc, change: {
+        id: string,
+        updates: Record<string, any>
+    }) => {
+        const workflowMap = doc.getMap("workflow");
+        const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>) 
+        doc.transact(() => {
+            const node = nodesMap.get(change.id)!
+            const value = node.value || {} as any;
+            nodesMap.set(change.id, {
+                ...node,
+                value: {
+                    ...value,
+                    ...change.updates
                 }
             })
         });

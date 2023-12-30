@@ -7,6 +7,7 @@ import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import ChangeTitleMenuItem from './context-menu-item-change-title';
 import { NodeMenuProps } from './types';
+import ChangeColorMenuItem from './context-menu-item-change-color';
 
 interface ContextMenuProps {
   id: string;
@@ -39,7 +40,7 @@ export default function ContextMenu({
       className={styles.reactflowContextMenu}
       {...props}
     >
-      {node && <NodeMenu hide={hide} node={node.data.value} widget={node.data.widget} /> }
+      {node && <NodeMenu hide={hide} id={id} node={node.data.value} widget={node.data.widget} /> }
     </div>
   );
 }
@@ -60,7 +61,7 @@ function NodeMenu(props: NodeMenuProps) {
   const items: MenuItem[] = [
     {type: "divider"},
     getItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
-    getItem("Color", 'MENU_ITEM_CHANGE_COLOR', null, null),
+    getItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
     { type: "divider" },
     getItem('Input properties', 'sub1', null, [
       getItem('Item 1', null, null, [getItem('Option 1', '1'), getItem('Option 2', '2')], 'group'),

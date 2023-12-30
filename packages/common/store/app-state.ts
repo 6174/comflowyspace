@@ -77,7 +77,8 @@ export interface AppState {
   onEdgesChange: OnEdgesChange
   onNodesDelete: OnNodesDelete
   onEdgesDelete: OnEdgesDelete
-  onPropChange: OnPropChange
+  onNodeFieldChange: OnPropChange
+  onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
 
   onConnect: OnConnect
   onConnectStart: OnConnectStart
@@ -348,13 +349,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
     onSyncFromYjsDoc();
   },
-  onPropChange: (id, key, value) => {
+  onNodeFieldChange: (id, key, value) => {
     console.log("change prop", id, key, value);
     const { doc, onSyncFromYjsDoc } = get();
-    WorkflowDocumentUtils.onPropChange(doc, {
+    WorkflowDocumentUtils.onNodeFieldChange(doc, {
       id,
       key,
       value
+    });
+    onSyncFromYjsDoc();
+  },
+  onNodeAttributeChange: (id: string, updates) => {
+    const { doc, onSyncFromYjsDoc } = get();
+    WorkflowDocumentUtils.onNodeAttributeChange(doc, {
+      id,
+      updates
     });
     onSyncFromYjsDoc();
   },

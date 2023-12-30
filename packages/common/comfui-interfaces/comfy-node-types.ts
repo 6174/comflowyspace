@@ -19,6 +19,31 @@ export interface SDNode {
   properties?: any
 }
 
+
+export type SDNodeColorOption = {
+  color: string,
+  bgcolor: string,
+  label?: string,
+}
+
+export const SDNODE_COLORS: SDNodeColorOption[] = [
+{
+  color: "#35374B",
+  bgcolor: "#262837",
+  label: 'Default',
+},
+{
+  color: '#5B4B2D',
+  bgcolor: '#473A23',
+  label: 'Brown',
+}, {
+  color: '#4B2D4B',
+  bgcolor: '#2D1F2D',
+  label: 'Red',
+}]
+
+export const SDNODE_DEFAULT_COLOR = SDNODE_COLORS[0];
+
 export interface PreviewImage {
   filename: string;
   subfolder? : string;

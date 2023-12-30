@@ -15,8 +15,8 @@
     flex-direction: column;
     height: 100%;
     border-radius: 8px;
-    border: 1px solid #3F4468;
-    background-color: var(--backgroundColorL1);
+    border: 1px solid var(--node-border-color);
+    background-color: var(--node-bg-color);
     position: relative;
     min-width: 190px;
     box-sizing: border-box;
@@ -32,7 +32,7 @@
         right: $size;
         bottom: $size;
         z-index: -1;
-        background-color: var(--backgroundColorL1);
+        background-color: var(--node-bg-color);
         border-radius: 8px;
         visibility: hidden;
         opacity: 0;
@@ -75,7 +75,7 @@
             display: flex;
             align-items: center;
             padding: 5px 7px 5px 12px;
-            background: #35374B;
+            background: var(--node-color);;
             padding: 4px 6px;;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;

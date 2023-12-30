@@ -13,11 +13,11 @@ interface InputContainerProps {
 
 function _InputContainer({ id, name, input, widget }: InputContainerProps): JSX.Element {
     const value = useAppStore((st) => st.graph[id]?.fields[name]);
-    const onPropChange = useAppStore((st) => st.onPropChange);
+    const onNodeFieldChange = useAppStore((st) => st.onNodeFieldChange);
     const isImageUpload = Input.isImageUpload(input);
     return (
         <div className="node-input-container nodrag nopan">
-            <InputComponent value={value} name={name} input={input} onChange={(val) => onPropChange(id, name, val)} />
+            <InputComponent value={value} name={name} input={input} onChange={(val) => onNodeFieldChange(id, name, val)} />
             {isImageUpload && <InputUploadImage widget={widget} id={id}/>}
         </div>
     )
