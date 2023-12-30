@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
+import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -92,11 +93,36 @@ export default function WorkflowEditor() {
     },
     [reactFlowInstance, widgets],
   );
+
+  const ref = React.useRef(null);
+  const [menu, setMenu] = React.useState(null);
+  const onNodeContextMenu = React.useCallback(
+    (event, node) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const pane = ref.current.getBoundingClientRect();
+      setMenu({
+        id: node.id,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX,
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu],
+  );
+
+  const onPaneClick = React.useCallback(() => setMenu(null), [setMenu]);
   
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
       <ReactFlow
+        ref={ref}
         nodes={nodes}
         edges={styledEdges}
         fitView
@@ -115,6 +141,9 @@ export default function WorkflowEditor() {
         onConnectEnd={onConnectEnd}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onPaneClick={onPaneClick}
+        onNodeContextMenu={onNodeContextMenu}
+        onPaneContextMenu={onPaneClick}
         onNodeDragStart={ev => {
           console.log("drag start");
           onChangeDragingAndResizingState(true);
@@ -140,6 +169,7 @@ export default function WorkflowEditor() {
         <Panel position="top-right">
           <ReactflowTopRightPanel/>
         </Panel>
+        {menu && <ContextMenu hide={onPaneClick} {...menu} />}
       </ReactFlow>
       <AsyncComfyUIProcessManager/>
     </div>

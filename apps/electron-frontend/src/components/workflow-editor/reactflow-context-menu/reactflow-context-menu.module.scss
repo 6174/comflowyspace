@@ -1,0 +1,29 @@
+.reactflowContextMenu {
+  position: absolute;
+  z-index: 10;
+  background-color: var(--backgroundColorL1_5);
+  border-radius: var(--borderRadius);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--borderColor);
+  :global {
+    .node-info {
+      padding: 10px 16px;
+    }
+    .ant-menu {
+      background-color: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      border: none;
+      border-inline-end: none !important;
+      .ant-menu-item, .ant-menu-submenu .ant-menu-submenu-title{
+        padding: 0 10px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 12px;
+      }
+      .ant-menu-submenu .ant-menu-submenu-arrow { 
+        inset-inline-end: 6px;
+      }
+    }
+  }
+}
