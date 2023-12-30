@@ -75,7 +75,7 @@ export interface AppState {
   onSyncFromYjsDoc: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
-  onNodesDelete: OnNodesDelete
+  onNodesDelete: (changes: (Node | { id: string })[]) => void
   onEdgesDelete: OnEdgesDelete
   onNodeFieldChange: OnPropChange
   onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
@@ -327,7 +327,6 @@ export const useAppStore = create<AppState>((set, get) => ({
         valueType = input.type;
       }
     }
-
     set({ connectingStartParams: {
       ...params,
       valueType
@@ -337,7 +336,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     console.log("on connect end");
     set({ isConnecting: false, connectingStartParams: undefined })
   },
-  onNodesDelete: (changes: Node[]) => {
+  onNodesDelete: (changes: (Node | {id: string})[]) => {
     console.log("on Node Delete");
     const { doc, onSyncFromYjsDoc, } = get();
     WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));

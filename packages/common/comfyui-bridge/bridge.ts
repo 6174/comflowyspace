@@ -180,10 +180,20 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   }
   
   function findEdgeSourceValue(edge: PersistedWorkflowConnection) {
+    const target = workflow.nodes[edge.target!]
+    if (!target) {
+      return undefined
+    }
+    // This is for some case the edge exist ,but port connection is not exist
+    if (!target.value.inputs.hasOwnProperty(edge.targetHandle!.toLocaleLowerCase())) {
+      return undefined;
+    }
+
     const source = workflow.nodes[edge.source!]
     if (source === undefined) {
       return undefined
     }
+
     const sourceWidget = widgets[source.value.widget]; 
     let value;
     // source

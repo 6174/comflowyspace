@@ -8,6 +8,8 @@ import { Menu } from 'antd';
 import ChangeTitleMenuItem from './context-menu-item-change-title';
 import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
+import ChangeInputMenuItem from './context-menu-item-change-input';
+import { useAppStore } from '@comflowy/common/store';
 
 interface ContextMenuProps {
   id: string;
@@ -47,14 +49,36 @@ export default function ContextMenu({
 
 function NodeMenu(props: NodeMenuProps) {
   const {widget, node} = props;
+  const {id} = props;
+  const onDuplicateNode = useAppStore(st => st.onDuplicateNode);
+  const onNodesDelete = useAppStore(st => st.onNodesDelete);
+
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
     e.domEvent.stopPropagation();
     console.log('click', e);
-    if (e.key === 'MENU_ITEM_CHANGE_TITLE') {
-      console.log("click me ")
-    } else {
-      // props.hide();
+    switch (e.key) {
+      case 'MENU_ITEM_CHANGE_TITLE':
+        console.log("change title")
+        break;
+      case 'MENU_ITEM_CHANGE_COLOR':
+        console.log("change color")
+        break;
+      case 'MENU_ITEM_CHANGE_INPUT':
+        console.log("change input")
+        break;
+      case 'MENU_ITEM_DUPLICATE_NODE':
+        onDuplicateNode(id);
+        props.hide();
+        console.log("duplicate node")
+        break;
+      case 'MENU_ITEM_DELETE_NODE':
+        onNodesDelete([{id}]);
+        props.hide();
+        console.log("delete node")
+        break;
+      default:
+        break;
     }
   };
 
@@ -63,10 +87,7 @@ function NodeMenu(props: NodeMenuProps) {
     getItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
     getItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
     { type: "divider" },
-    getItem('Input properties', 'sub1', null, [
-      getItem('Item 1', null, null, [getItem('Option 1', '1'), getItem('Option 2', '2')], 'group'),
-      getItem('Item 2', null, null, [getItem('Option 3', '3'), getItem('Option 4', '4')], 'group'),
-    ]),
+    getItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null),
     { type: "divider" },
     getItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
     getItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),

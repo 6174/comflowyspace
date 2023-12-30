@@ -65,7 +65,7 @@ const ChangeColorMenuItem = (props: NodeMenuProps) => {
       placement='right'
       onOpenChange={handleVisibleChange}
     >
-      <div>Colors</div>
+      <div>Change Color</div>
     </Popover>
   );
 };

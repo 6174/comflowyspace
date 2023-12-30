@@ -52,6 +52,12 @@ export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING';
 export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload: boolean}] | FlowProps
 
 export const Input = {
+  getTypeName(i: Input): string {
+    if (Input.isList(i)) {
+      return 'LIST'
+    }
+    return i[0] as string;
+  },
   isBool(i: Input): i is Parameter<'BOOL'> {
     return i[0] === 'BOOL'
   },

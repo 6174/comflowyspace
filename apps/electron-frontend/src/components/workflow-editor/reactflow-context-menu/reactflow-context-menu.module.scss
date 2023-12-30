@@ -49,5 +49,27 @@
         }
       }
     }
+    .change-input {
+      p {
+        opacity: .6;
+      }
+      .input-item {
+        display: flex;
+        .name {
+          flex: 1;
+          font-size: 12px;
+          margin: 4px 0;
+          .type {
+            opacity: .5;
+            font-size: 10px;
+            margin-left: 4px;
+          }
+        }
+        .switch {
+          margin-left: 8px;
+          width: 40px;
+        }
+      }
+    }
   }
 }
