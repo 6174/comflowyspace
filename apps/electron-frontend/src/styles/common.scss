@@ -60,3 +60,26 @@
         }
     }
 }
+
+.ant-menu-submenu .ant-menu.ant-menu.ant-menu.ant-menu.ant-menu.ant-menu {
+    background-color: var(--backgroundColorL1_5);
+    border-radius: var(--borderRadius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--borderColor);
+
+    .ant-menu-item-group-title {
+        font-size: 11px;
+        user-select: none;
+    }
+    .ant-menu-item,
+    .ant-menu-submenu .ant-menu-submenu-title {
+        padding: 0 10px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 12px;
+    }
+
+    .ant-menu-submenu .ant-menu-submenu-arrow {
+        inset-inline-end: 6px;
+    }
+}
