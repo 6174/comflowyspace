@@ -4,6 +4,8 @@
   selectDirectory: () => Promise<any>;
   selectHomeDir:() => Promise<string>;
   receiveFromMain:(channel: string, func: any) => () => void;
+  openURL: (url: string) => Promise<any>;
+  openDirectory: (directoryPath: string) => Promise<any>;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {
@@ -59,11 +61,23 @@ export function listenElectron(channel: string, func: any) {
   }
 }
 
-
 export function openExternalURL(url: string) {
   if (comfyElectronApi) {
-    // comfyElectronApi.windowTabManager.openNewTab(tab);
+    comfyElectronApi.openURL(url);
   } else {
     window.open(url, '_blank');
   }
+}
+
+export function openDirectory(path: string) {
+  if (comfyElectronApi) {
+    comfyElectronApi.openDirectory(path);
+  }
+}
+
+export function isElectron() {
+  if (comfyElectronApi && comfyElectronApi.version) {
+    return true
+  }
+  return false;
 }

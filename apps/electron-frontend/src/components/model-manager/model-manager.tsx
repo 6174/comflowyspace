@@ -7,9 +7,11 @@ import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon } from 'ui/icons';
+import { comfyElectronApi, isElectron, openDirectory } from '@/lib/electron-bridge';
 
 const ModelManagement = () => {
-  const { onInit} = useModelState();
+  const { onInit, modelPath, loading} = useModelState();
+  const isElectronEnv = isElectron();
   useEffect(() => {
       onInit();
   }, []);
@@ -17,10 +19,21 @@ const ModelManagement = () => {
     <div className={styles.modelManagement}>
       <h2>
         Model Management
-        <div className="open-button">
-          <Button onClick={() => {
+
+        {isElectronEnv  && 
+          <div className="open-button">
+            <Button size='small' onClick={() => {
+              openDirectory(modelPath);
+            }}> 
+              <FolderIcon/> Model Folder
+            </Button>
+          </div>
+        }
+        <div className="refresh-button">
+          <Button size='small' loading={loading} disabled={loading} onClick={() => {
+            onInit();
           }}> 
-            <FolderIcon/> Model Folder
+            Refresh
           </Button>
         </div>
       </h2>

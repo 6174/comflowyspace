@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { installModel } from '../../modules/model-manager/install-model';
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { MarketModel } from '../../modules/model-manager/types';
+import { getFolderNamesAndPaths, getModelDir } from '../../modules/model-manager/model-paths';
 
 /**
  * fetch all extensions
@@ -14,11 +15,14 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
     try {
         const installedModels = await modelManager.getAllInstalledModels();
         const marketModels = await modelManager.getAllUninstalledModels();
+        const paths = getFolderNamesAndPaths();
         res.send({
             success: true,
             data: {
                 installedModels,
-                marketModels
+                marketModels,
+                modelPath: paths.MODELS_DIR,
+                paths
             }
         });
     } catch (err) {

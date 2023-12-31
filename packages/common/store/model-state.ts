@@ -19,8 +19,10 @@ export type MarketModel = {
 }
   
 export type ModelState = {
+    loading: boolean;
   installedModels: AllInstalledModels,
-  marketModels: MarketModel[]
+  marketModels: MarketModel[],
+  modelPath: string;
 }
 
 export type ModelAction = {
@@ -30,12 +32,16 @@ export type ModelAction = {
 export const useModelState = create<ModelState & ModelAction>((set, get) => ({
     installedModels: {},
     marketModels: [],
+    modelPath: "",
+    loading: true,
     onInit: async () => {
+        set({loading: true})
         const ret = await getModelInfos();
         if (ret.success) {
-            const {installedModels, marketModels} = ret.data;
-            set({installedModels, marketModels});
+            const { installedModels, marketModels, modelPath } = ret.data;
+            set({ installedModels, marketModels, modelPath });
             console.log("model infos", ret);
         }
+        set({ loading: false })
     },
 }));
