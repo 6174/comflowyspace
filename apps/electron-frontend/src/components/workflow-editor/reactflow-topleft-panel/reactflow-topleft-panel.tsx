@@ -1,7 +1,8 @@
 import { useAppStore } from "@comflowy/common/store";
-import { Space } from "antd"
+import { Button, Input, Popover, Space } from "antd"
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-topleft-panel.style.module.scss";
+import { useCallback, useEffect, useState } from "react";
 export default function ReactflowTopLeftPanel() {
     return (
         <div className={styles.topLeftPanel}>
@@ -18,13 +19,59 @@ export default function ReactflowTopLeftPanel() {
                     </Space>
                 </div>
                 <div className="spliter"></div>
-                <div className="action action-file-name">
-                    File name
-                </div>
+                <ChangeTitle/>
                 <UndoRedo/>
             </Space>
         </div>
     )
+}
+
+function ChangeTitle() {
+    const initialTitle = useAppStore(st => st.persistedWorkflow?.title);
+    const onDocAttributeChange = useAppStore(st => st.onDocAttributeChange);
+    const [visible, setVisible] = useState(false);
+    const [title, setTitle] = useState(initialTitle);
+    const handleVisibleChange = (visible: boolean) => {
+        setVisible(visible);
+    };
+    useEffect(() => {
+        setTitle(initialTitle);
+    }, [initialTitle])
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
+        console.log("change title");
+        // onTitleChange(e.target.value);
+    };
+    const handleTitleSubmit = useCallback(() => {
+        console.log("change title");
+        onDocAttributeChange({ 'title': title });
+        handleVisibleChange(false);
+    }, [title]);
+    
+    const content = (
+        <div className="content">
+            <Space>
+                <Input value={title} onChange={handleTitleChange} />
+                <Button type="primary" size="small" onClick={handleTitleSubmit}>Save</Button>
+            </Space>
+        </div>
+    )
+
+    return (
+        <Popover
+            content={content}
+            title={null}
+            trigger="click"
+            open={visible}
+            placement='bottom'
+            onOpenChange={handleVisibleChange}
+        >
+            <div className="action action-file-name">
+                {title || "Untitled"}
+            </div>
+        </Popover>
+    );
+
 }
 
 export function UndoRedo() {

@@ -76,6 +76,7 @@ export interface AppState {
   onEdgesDelete: OnEdgesDelete
   onNodeFieldChange: OnPropChange
   onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
+  onDocAttributeChange: (updates: Record<string, any>) => void
 
   onConnect: OnConnect
   onConnectStart: OnConnectStart
@@ -453,11 +454,12 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ nodeInProgress: { id, progress } })
   },
   onImageSave: (id, images) => {
+    const last_edit_time = +new Date();
     // sync to state
     set((st) => ({
-      ...st,
       persistedWorkflow: {
         ...st.persistedWorkflow!,
+        last_edit_time,
         gallery: [
           ...st.persistedWorkflow?.gallery || [],
           ...images || []
@@ -476,7 +478,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     throttledUpdateDocument({
       ...st.persistedWorkflow!,
-      last_edit_time: +new Date(),
+      last_edit_time,
       gallery: [
         ...st.persistedWorkflow?.gallery || [],
         ...images || []
@@ -491,6 +493,22 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onChangeSelectMode: (mode: SelectionMode) => {
     set({ slectionMode: mode })
+  },
+  onDocAttributeChange: (updates: any) => {
+    const last_edit_time = +new Date();
+    set((st) => ({
+      persistedWorkflow: {
+        ...st.persistedWorkflow,
+        ...updates,
+        last_edit_time: +new Date(),
+      }
+    }));
+    const st = get();
+    throttledUpdateDocument({
+      ...st.persistedWorkflow!,
+      ...updates,
+      last_edit_time,
+    });
   }
 }));
 

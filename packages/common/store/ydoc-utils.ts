@@ -272,6 +272,16 @@ const WorkflowDocumentUtils = {
                 }
             })
         });
+    },
+    onAttributeChange: (doc: Y.Doc, changes: Record<string, any>) => {
+        const workflowMap = doc.getMap("workflow");
+        doc.transact(() => {
+            Object.entries(changes).forEach(([key, value]) => {
+                if (["title", "id", "last_edit_time", "create_time"].includes(key)) {
+                    workflowMap.set(key, value);
+                }
+            })
+        })
     }
 }
 
