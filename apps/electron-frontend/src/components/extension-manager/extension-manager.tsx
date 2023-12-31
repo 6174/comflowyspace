@@ -7,6 +7,7 @@ import { CloseIcon, ExtensionIcon, MoreIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
 import { UpdateExtensionButton } from "./update-extension-button";
 import { DisableExtensionButton } from "./disable-extension-button";
+import { openExternalURL } from "@/lib/electron-bridge";
 
 function ExtensionManager() {
   const {onInit, extensions, extensionNodeMap, loading} = useExtensionsState();
@@ -133,7 +134,9 @@ export function ExtensionModal(props: {
       <div className="text">
         <div className="name" title={extension.title}>{extension.title}</div>
         <div className="author" title={extension.author}>
-        <a target="__blank" href={extension.reference}>Reference</a>, Created by {extension.author}
+        <a onClick={ev => {
+          openExternalURL(extension.reference)
+        }}>Reference</a>, Created by {extension.author}
         </div>
       </div>
       <Space className="actions">
