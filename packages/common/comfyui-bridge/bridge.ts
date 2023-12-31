@@ -184,8 +184,9 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     if (!target) {
       return undefined
     }
+    const inputKeys = (target.value.inputs || []).map((input) => input.name.toUpperCase());
     // This is for some case the edge exist ,but port connection is not exist
-    if (!target.value.inputs.hasOwnProperty(edge.targetHandle!.toLocaleLowerCase())) {
+    if (!inputKeys.includes(edge.targetHandle!)) {
       return undefined;
     }
 
