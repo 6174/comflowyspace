@@ -59,16 +59,23 @@ function WorkflowCreateBox() {
   )
 }
 
+import { Carousel } from 'antd';
+import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
+import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
+
 function WorkflowList() {
   const docs = useLiveQuery(async () => {
     return await documentDatabaseInstance.getDoclistFromLocal();
   }) || [];
+
   return (
     <div className="workflow-list">
-      {docs.map(doc => {
+      {docs.map((doc) => {
+        const galleryImages = (doc.gallery || []).slice(0, 3).map((image: PreviewImage) => {
+          return getImagePreviewUrl(image.filename, image.type, image.subfolder);
+        });
         return (
-          <div key={doc.id} className='workflow-list-item' onClick={ev => {
-            // router.push(`/app/${doc.id}`)
+          <div key={doc.id} className="workflow-list-item" onClick={(ev) => {
             openTabPage({
               name: doc.title,
               pageName: "app",
@@ -76,17 +83,38 @@ function WorkflowList() {
               id: 0,
               type: "DOC"
             });
-          }} >
-            <div className="gallery-card">
+          }}>
+            <div className="carousel-wrapper" onClick={ev => {
+              ev.stopPropagation();
+            }} style={{
+              height: 200,
+            }}>
+              <Carousel>
+                {galleryImages.map((image, index) => (
+                  <div key={index} className='carousel-item'>
+                    <div className="image-wrapper" style={{
+                      display: "flex",
+                      width: "100%",
+                      height: 200,
+                      borderRadius: 4,
+                      backgroundImage: `url(${image})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center"
+                    }}>
+                    </div>
+                  </div>
+                ))}
+              </Carousel>
             </div>
-            <div className='title'>
+            <div className="title">
               {doc.title || "untitled"}
             </div>
           </div>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
+
 
 export default MyWorkflowsPage;
