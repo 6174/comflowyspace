@@ -139,7 +139,7 @@ export default function WorkflowEditor() {
         disableKeyboardA11y={true}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onDeleteNodes={onDeleteNodes}
+        onNodesDelete={onDeleteNodes}
         onEdgesDelete={onEdgesDelete}
         onEdgeUpdate={onEdgesUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}

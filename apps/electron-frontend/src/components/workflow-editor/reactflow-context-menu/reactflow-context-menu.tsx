@@ -39,7 +39,7 @@ export default function ContextMenu({
     >
       {singleNode 
         ? <NodeMenu hide={hide} id={node.id} node={node.data.value} widget={node.data.widget} /> 
-        : <NodesMenu nodes={nodes}/> }
+        : <NodesMenu hide={hide} nodes={nodes}/> }
 
     </div>
   );
@@ -47,30 +47,36 @@ export default function ContextMenu({
 
 function NodesMenu(props: {
   nodes: Node[];
+  hide: () => void;
 }) {
-  // const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
-  // const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
+  const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
+  const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
+  const ids = props.nodes.map(node => node.id);
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
     e.domEvent.stopPropagation();
-    // switch (e.key) {
-    //   case 'MENU_ITEM_DUPLICATE_NODE':
-    //     onDuplicateNodes(id);
-    //     props.hide();
-    //     console.log("duplicate node")
-    //     break;
-    //   case 'MENU_ITEM_DELETE_NODE':
-    //     onDeleteNodes([{ id }]);
-    //     props.hide();
-    //     console.log("delete node")
-    //     break;
-    //   default:
-    //     break;
-    // }
+    switch (e.key) {
+      case 'MENU_ITEM_DUPLICATE_NODE':
+        onDuplicateNodes(ids);
+        props.hide();
+        console.log("duplicate node")
+        break;
+      case 'MENU_ITEM_DELETE_NODE':
+        onDeleteNodes(ids.map(id => ({id})));
+        props.hide();
+        console.log("delete node")
+        break;
+      default:
+        break;
+    }
   };
+  const items: MenuItem[] = [
+    getItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
+    getItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
+  ];
   return (
     <div className='node-menu'>
-      {/* <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} /> */}
+      <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} />
     </div>
   )
 }

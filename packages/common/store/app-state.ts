@@ -14,6 +14,7 @@ import {
   OnConnectStart,
   OnConnectEnd,
   OnConnectStartParams,
+  NodeChange,
 } from 'reactflow';
 import {
   type NodeId,
@@ -85,6 +86,7 @@ export interface AppState {
   onAddNode: (widget: Widget, pos: XYPosition) => void
   onDuplicateNodes: (ids: NodeId[]) => void
   onChangeSelectMode: (mode: SelectionMode) => void;
+  onSelectNodes: (ids: string[]) => void;
 
   nodeInProgress?: NodeInProgress
   promptError?: string
@@ -386,6 +388,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const moved = position !== undefined ? { ...position, y: position.y + 100 } : { x: 0, y: 0 }
       return {
         id: "node-" + uuid(),
+        selected: true,
         position: moved,
         value: item
       }
@@ -393,6 +396,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     const doc = st.doc;
     WorkflowDocumentUtils.onNodesAdd(doc, newItems);
     st.onSyncFromYjsDoc();
+    st.onSelectNodes(newItems.map(item => item.id));
+  },
+  onSelectNodes: (ids: string[]) => {
+    const changes: NodeChange[] = ids.map((id) => ({ id, selected: true , type: "select"}));
+    get().onNodesChange(changes);
   },
   /**
    * Workflow load & persisted
