@@ -1,6 +1,17 @@
 .topLeftPanel {
     position: relative;
     :global {
+        .action-file-dropdown {
+            .icon {
+                transition: var(--transition);
+                transform: scale(.8);
+            }
+            &:hover {
+                .icon {
+                    transform: translateY(3px) scale(.8);
+                }
+            }
+        }
         .icon {
             svg {
                 * {

@@ -6,17 +6,15 @@ import { useCallback, useEffect, useState } from "react";
 export default function ReactflowTopLeftPanel() {
     return (
         <div className={styles.topLeftPanel}>
-            <Space>
+            <Space size={2}>
                 <div className="action action-file-dropdown">
-                    <Space>
-                        <span>File</span>
-                        <span className="icon">
-                            <IconDown style={{
-                                transform: "scale(.8)",
-                                opacity: .9
-                            }}/>
-                        </span>
-                    </Space>
+                    <span>File</span>
+                    <span className="icon">
+                        <IconDown style={{
+                            transform: "scale(.8)",
+                            opacity: .9
+                        }}/>
+                    </span>
                 </div>
                 <div className="spliter"></div>
                 <ChangeTitle/>
