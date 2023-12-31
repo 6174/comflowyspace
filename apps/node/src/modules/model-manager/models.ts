@@ -470,7 +470,7 @@ export const models = [
     "reference": "https://civitai.com/models/8765/theovercomer8s-contrast-fix-sd15sd21-768",
     "filename": "theovercomer8sContrastFix_sd21768.safetensors",
     "url": "https://civitai.com/api/download/models/10350",
-    "size": "Unknown size"
+    "size": "164.43MB"
   },
   {
     "name": "Theovercomer8's Contrast Fix (SD1.5)",
@@ -481,7 +481,7 @@ export const models = [
     "reference": "https://civitai.com/models/8765/theovercomer8s-contrast-fix-sd15sd21-768",
     "filename": "theovercomer8sContrastFix_sd15.safetensors",
     "url": "https://civitai.com/api/download/models/10638",
-    "size": "Unknown size"
+    "size": "163.43MB"
   },
   {
     "name": "T2I-Adapter (depth)",

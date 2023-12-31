@@ -6,6 +6,7 @@ import { Tabs, Card} from 'antd';
 import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
+import { FolderIcon } from 'ui/icons';
 
 const ModelManagement = () => {
   const { onInit} = useModelState();
@@ -14,7 +15,15 @@ const ModelManagement = () => {
   }, []);
   return (
     <div className={styles.modelManagement}>
-      <h1>Model Management</h1>
+      <h2>
+        Model Management
+        <div className="open-button">
+          <Button onClick={() => {
+          }}> 
+            <FolderIcon/> Model Folder
+          </Button>
+        </div>
+      </h2>
       <Tabs defaultActiveKey="installed">
         <Tabs.TabPane tab="Installed" key="installed">
           <InstalledModels/>

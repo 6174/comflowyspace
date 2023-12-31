@@ -27,13 +27,13 @@ const InstalledModels = () => {
 
     // Function to get all unique model types
     const getModelTypes = () => {
-        const types = Object.keys(installedModels);
+        const types = Object.keys(installedModels).map((type) => {
+            return {
+                type,
+                count: installedModels[type].length,
+            }
+        }).filter((it) => it.count > 0);
         return types;
-    };
-
-    // Function to get the number of models for a given type
-    const getModelCount = (type) => {
-        return installedModels[type].length;
     };
 
     // Function to get models for the selected type
@@ -43,14 +43,13 @@ const InstalledModels = () => {
 
     return (
         <div className="installed-models">
-            <div>
-                <span>Filter by Type:</span>
-                {getModelTypes().map((type) => (
-                    <Button key={type} onClick={() => handleTypeFilterChange(type)}>
-                        {`${type} (${getModelCount(type)})`}
-                    </Button>
+            <Space>
+                {getModelTypes().map((it) => (
+                    <div className={`${it.type === selectedType && "active"} action filter-type`} key={it.type} onClick={() => handleTypeFilterChange(it.type)}>
+                        {`${it.type} (${it.count})`}
+                    </div>
                 ))}
-            </div>
+            </Space>
             <div>
                 <ModelList models={getModelsForType()} />
             </div>
@@ -60,13 +59,18 @@ const InstalledModels = () => {
 
 const ModelList = ({ models }) => {
     return (
-        <Space direction="vertical" style={{ width: '100%' }}>
-            {models.map((model, index) => (
-                <Card key={index} title={model.name} style={{ width: 300, margin: '16px' }}>
-                    <p>Size: {model.size}GB</p>
-                </Card>
-            ))}
-        </Space>
+        <div className='model-list' style={{ width: '100%' }}>
+            {models.map((model, index) => {
+                return (
+                    <div className="model-list-item" key={index}>
+                        <Space>
+                            <div className="title">{model.name}</div>
+                            <div className="size">{"("}{model.size} GB{")"}</div>
+                        </Space>
+                    </div>
+                )
+            })}
+        </div>
     );
 };
 

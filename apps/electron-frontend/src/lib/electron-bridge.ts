@@ -58,3 +58,12 @@ export function listenElectron(channel: string, func: any) {
     return () => {};
   }
 }
+
+
+export function openExternalURL(url: string) {
+  if (comfyElectronApi) {
+    // comfyElectronApi.windowTabManager.openNewTab(tab);
+  } else {
+    window.open(url, '_blank');
+  }
+}

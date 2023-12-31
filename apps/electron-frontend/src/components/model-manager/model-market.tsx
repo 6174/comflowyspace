@@ -1,6 +1,7 @@
 import { Button, Col, Input, Row, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModelState } from '@comflowy/common/store/model-state';
+import { openExternalURL, openTabPage } from '@/lib/electron-bridge';
 
 const ModelMarket = () => {
     const { marketModels} = useModelState();
@@ -35,16 +36,24 @@ const ModelList = ({ models }) => {
         <div className="model-market">
             <Row>
                 <Col span={18} className="filters">
-                    {Array.from(new Set(models.map((model) => model.type))).map((type: string) => (
-                        <Button key={type} onClick={() => handleTypeFilterChange(type)}>
-                            {type}
-                        </Button>
-                    ))}
+                    <Space wrap>
+                        {Array.from(new Set(models.map((model) => model.type))).map((type: string) => (
+                            <div className={`${type === typeFilter && "active"} action filter-type`} key={type} onClick={() => {
+                                if (type === typeFilter) {
+                                    handleTypeFilterChange("")
+                                } else {
+                                    handleTypeFilterChange(type)
+                                }
+                            }}>
+                                {type}
+                            </div>
+                        ))}
+                    </Space>
                 </Col>
                 <Col span={6}>
                     <Space>
                         <span>Search:</span>
-                        <Input type="text" onChange={handleSearchInputChange} />
+                        <Input type="text" placeholder='Type to search models' onChange={handleSearchInputChange} />
                     </Space>
                 </Col>
             </Row>
@@ -60,9 +69,16 @@ const ModelList = ({ models }) => {
 const ModelListItem = ({ model }) => {
     return (
         <div className="model-list-item">
-            <div className="name">{model.name}</div>
+            <div className="name" onClick={ev => {
+                openExternalURL(model.reference)
+            }}>
+                <a>{model.name}</a>
+            </div>
             <div className="description">{model.description}</div>
-            <div className="type">{model.type}</div>
+            <Space>
+                <div className="type">Type: {model.type}</div>
+                <div className="size">Size: {model.size}</div>
+            </Space>
         </div>
     );
 };
