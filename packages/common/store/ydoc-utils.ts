@@ -141,7 +141,7 @@ const WorkflowDocumentUtils = {
             });
         }); 
     },
-    onNodesDelete: (doc: Y.Doc, ids: string[]) => {
+    onDeleteNodes: (doc: Y.Doc, ids: string[]) => {
         const workflowMap = doc.getMap("workflow");
         doc.transact(() => {
             const nodesMap = (workflowMap.get("nodes") as Y.Map<PersistedWorkflowNode>)

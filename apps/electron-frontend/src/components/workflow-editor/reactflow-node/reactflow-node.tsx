@@ -19,17 +19,13 @@ interface Props {
   }>
   progressBar?: number
   imagePreviews?: PreviewImage[]
-  onDuplicateNode: (id: NodeId) => void
-  onNodesDelete: (nodes: Node[]) => void
 }
 
-function NodeComponent({
+export const NodeComponent = memo(({
   node,
   progressBar,
   imagePreviews,
-  onDuplicateNode,
-  onNodesDelete,
-}: Props): JSX.Element {
+}: Props): JSX.Element => {
   const params: {property: string, input: Input}[] = []
   const widget = node.data.widget;
   const inputs = node.data.value.inputs || [];
@@ -185,9 +181,7 @@ function NodeComponent({
       </div>
     </div>
   )
-}
-
-export default memo(NodeComponent)
+});
 
 interface SlotProps {
   id: string

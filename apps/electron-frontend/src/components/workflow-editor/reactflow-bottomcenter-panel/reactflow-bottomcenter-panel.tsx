@@ -6,11 +6,15 @@ import { useAppStore } from "@comflowy/common/store";
 import { memo } from "react";
 
 function ReactflowBottomCenterPanel() {
+    const selectionMode = useAppStore(st => st.slectionMode);
+    const onChangeSelectMode = useAppStore(st => st.onChangeSelectMode);
     const onSubmit = useAppStore(st => st.onSubmit);
     return (
         <div className={styles.bottomCenterPanel}>
              <Space>
-                <div className="action action-select">
+                <div className={`action action-select ${selectionMode === "figma" && "active"}`} onClick={ev => {
+                    onChangeSelectMode(selectionMode === "figma" ? "default" : "figma");
+                }}>
                     Select
                 </div>
                 <div className="action action-node-picker">

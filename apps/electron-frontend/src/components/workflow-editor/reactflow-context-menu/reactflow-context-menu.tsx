@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { NodeProps, useReactFlow } from 'reactflow';
+import { Node, NodeProps, useReactFlow } from 'reactflow';
 import styles from './reactflow-context-menu.module.scss';
 import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import { FlowNodeProps } from '../reactflow-node/reactflow-node-container';
@@ -12,7 +12,7 @@ import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
 
 interface ContextMenuProps {
-  id: string;
+  nodes: Node[];
   top: number;
   left: number;
   right: number;
@@ -21,7 +21,7 @@ interface ContextMenuProps {
 }
 
 export default function ContextMenu({
-  id,
+  nodes,
   top,
   left,
   right,
@@ -29,29 +29,57 @@ export default function ContextMenu({
   hide,
   ...props
 }: ContextMenuProps) {
-  const { getNode, setNodes, addNodes, setEdges } = useReactFlow();
-  const [node, setNode] = useState<FlowNodeProps>(null);
-  useEffect(() => {
-    const node = getNode(id) as unknown as FlowNodeProps;
-    node && setNode(node);
-  }, [id]);
-
+  const singleNode = nodes.length === 1;
+  const node = nodes[0];
   return (
     <div
       style={{ top, left, right, bottom }}
       className={styles.reactflowContextMenu}
       {...props}
     >
-      {node && <NodeMenu hide={hide} id={id} node={node.data.value} widget={node.data.widget} /> }
+      {singleNode 
+        ? <NodeMenu hide={hide} id={node.id} node={node.data.value} widget={node.data.widget} /> 
+        : <NodesMenu nodes={nodes}/> }
+
     </div>
   );
+}
+
+function NodesMenu(props: {
+  nodes: Node[];
+}) {
+  // const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
+  // const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
+  const onClick: MenuProps['onClick'] = (e) => {
+    e.domEvent.preventDefault();
+    e.domEvent.stopPropagation();
+    // switch (e.key) {
+    //   case 'MENU_ITEM_DUPLICATE_NODE':
+    //     onDuplicateNodes(id);
+    //     props.hide();
+    //     console.log("duplicate node")
+    //     break;
+    //   case 'MENU_ITEM_DELETE_NODE':
+    //     onDeleteNodes([{ id }]);
+    //     props.hide();
+    //     console.log("delete node")
+    //     break;
+    //   default:
+    //     break;
+    // }
+  };
+  return (
+    <div className='node-menu'>
+      {/* <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} /> */}
+    </div>
+  )
 }
 
 function NodeMenu(props: NodeMenuProps) {
   const {widget, node} = props;
   const {id} = props;
-  const onDuplicateNode = useAppStore(st => st.onDuplicateNode);
-  const onNodesDelete = useAppStore(st => st.onNodesDelete);
+  const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
+  const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
 
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
@@ -68,12 +96,12 @@ function NodeMenu(props: NodeMenuProps) {
         console.log("change input")
         break;
       case 'MENU_ITEM_DUPLICATE_NODE':
-        onDuplicateNode(id);
+        onDuplicateNodes([id]);
         props.hide();
         console.log("duplicate node")
         break;
       case 'MENU_ITEM_DELETE_NODE':
-        onNodesDelete([{id}]);
+        onDeleteNodes([{id}]);
         props.hide();
         console.log("delete node")
         break;

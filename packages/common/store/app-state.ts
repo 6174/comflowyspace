@@ -8,17 +8,14 @@ import {
   applyNodeChanges,
   type XYPosition,
   type Connection as FlowConnecton,
-  OnNodesDelete,
   OnEdgesDelete,
   applyEdgeChanges,
-  updateEdge,
   OnEdgeUpdateFunc,
   OnConnectStart,
   OnConnectEnd,
   OnConnectStartParams,
 } from 'reactflow';
 import {
-  type QueueItem,
   type NodeId,
   type NodeInProgress,
   type PropertyKey,
@@ -29,17 +26,16 @@ import {
   Connection,
   PreviewImage,
   UnknownWidget,
-  Queue
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 
 import * as Y from "yjs";
-import { TemporaryNodeState, WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { DocumentDatabase, PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance, retrieveLocalWorkflow, saveLocalWorkflow, throttledUpdateDocument } from "../local-storage";
+import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
+import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, throttledUpdateDocument } from "../local-storage";
 
 import { create } from 'zustand'
-import { PromptResponse, createPrompt, deleteFromQueue, getQueueApi, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
+import { PromptResponse, createPrompt, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';
 import {
   writeWorkflowToFile,
 } from '../comfyui-bridge/export-import';
@@ -48,12 +44,12 @@ import { getBackendUrl } from '../config'
 import exifr from 'exifr'
 
 import { uuid } from '../utils';
-import { validate } from 'uuid';
 
+export type SelectionMode = "figma" | "default";
 export interface AppState {
   counter: number
   clientId?: string
-
+  slectionMode: SelectionMode
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
 
@@ -75,7 +71,7 @@ export interface AppState {
   onSyncFromYjsDoc: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
-  onNodesDelete: (changes: (Node | { id: string })[]) => void
+  onDeleteNodes: (changes: (Node | { id: string })[]) => void
   onEdgesDelete: OnEdgesDelete
   onNodeFieldChange: OnPropChange
   onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
@@ -87,7 +83,8 @@ export interface AppState {
   onEdgeUpdateStart: () => void;
   onEdgeUpdateEnd: (ev: any, edge: Edge) => void;
   onAddNode: (widget: Widget, pos: XYPosition) => void
-  onDuplicateNode: (id: NodeId) => void
+  onDuplicateNodes: (ids: NodeId[]) => void
+  onChangeSelectMode: (mode: SelectionMode) => void;
 
   nodeInProgress?: NodeInProgress
   promptError?: string
@@ -172,6 +169,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   edges: [],
 
   // temporary state
+  slectionMode: "default",
   nodeSelection: [],
   edgeSelection: [],
   draggingAndResizing: false,
@@ -336,10 +334,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     console.log("on connect end");
     set({ isConnecting: false, connectingStartParams: undefined })
   },
-  onNodesDelete: (changes: (Node | {id: string})[]) => {
+  onDeleteNodes: (changes: (Node | {id: string})[]) => {
     console.log("on Node Delete");
     const { doc, onSyncFromYjsDoc, } = get();
-    WorkflowDocumentUtils.onNodesDelete(doc, changes.map(node => node.id));
+    WorkflowDocumentUtils.onDeleteNodes(doc, changes.map(node => node.id));
     onSyncFromYjsDoc();
   },
   onEdgesDelete: (changes: Edge[]) => {
@@ -378,19 +376,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     }]);
     onSyncFromYjsDoc();
   },
-  onDuplicateNode: (id) => {
-    console.log("on duplicated node")
+  onDuplicateNodes: (ids) => {
+    console.log("on duplicated nodes")
     const st = get();
-    const item = st.graph[id]
-    const node = st.nodes.find((n) => n.id === id)
-    const position = node?.position
-    const moved = position !== undefined ? { ...position, y: position.y + 100 } : { x: 0, y: 0 }
+    const newItems = ids.map(id => {
+      const item = st.graph[id]
+      const node = st.nodes.find((n) => n.id === id)
+      const position = node?.position
+      const moved = position !== undefined ? { ...position, y: position.y + 100 } : { x: 0, y: 0 }
+      return {
+        id: "node-" + uuid(),
+        position: moved,
+        value: item
+      }
+    })
     const doc = st.doc;
-    WorkflowDocumentUtils.onNodesAdd(doc, [{
-      id: "node-" + uuid(),
-      position: moved,
-      value: item
-    }])
+    WorkflowDocumentUtils.onNodesAdd(doc, newItems);
     st.onSyncFromYjsDoc();
   },
   /**
@@ -480,6 +481,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().onLoadWorkflow(JSON.parse(res.workflow))
     })
   },
+  onChangeSelectMode: (mode: SelectionMode) => {
+    set({ slectionMode: mode })
+  }
 }));
 
 

@@ -10,7 +10,7 @@ import { ImageIcon } from 'ui/icons';
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const {widgets} = useAppStore();
+  const widgets = useAppStore(st => st.widgets);
 
   const onFileSelected = async (file: File) => {
     console.log(selectedFile);

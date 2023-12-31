@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, useStore } from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore } from 'reactflow';
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -18,14 +18,15 @@ import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, inprogressNodeId, onConnectStart, onConnectEnd, onNodesDelete, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
+    selectionMode: st.slectionMode,
     onEdgesUpdate: st.onEdgeUpdate,
     onEdgeUpdateStart: st.onEdgeUpdateStart,
     onEdgeUpdateEnd: st.onEdgeUpdateEnd,
-    onNodesDelete: st.onNodesDelete,
+    onDeleteNodes: st.onDeleteNodes,
     onConnectStart: st.onConnectStart,
     onConnectEnd: st.onConnectEnd,
     onAddNode: st.onAddNode,
@@ -96,8 +97,8 @@ export default function WorkflowEditor() {
 
   const ref = React.useRef(null);
   const [menu, setMenu] = React.useState(null);
-  const onNodeContextMenu = React.useCallback(
-    (event, node) => {
+  const onSelectionContextMenu = React.useCallback(
+    (event, nodes) => {
       // Prevent native context menu from showing
       event.preventDefault();
 
@@ -105,7 +106,7 @@ export default function WorkflowEditor() {
       // doesn't get positioned off-screen.
       const pane = ref.current.getBoundingClientRect();
       setMenu({
-        id: node.id,
+        nodes,
         top: event.clientY < pane.height - 200 && event.clientY,
         left: event.clientX < pane.width - 200 && event.clientX,
         right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
@@ -118,6 +119,13 @@ export default function WorkflowEditor() {
 
   const onPaneClick = React.useCallback(() => setMenu(null), [setMenu]);
   
+  const selectionModeProps = selectionMode === "figma" ? {
+    selectionOnDrag: true,
+    panOnScroll: true,
+    panOnDrag: [1, 2],
+    selectionMode: SelectionMode.Partial
+  }  : {};
+
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -131,7 +139,7 @@ export default function WorkflowEditor() {
         disableKeyboardA11y={true}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodesDelete={onNodesDelete}
+        onDeleteNodes={onDeleteNodes}
         onEdgesDelete={onEdgesDelete}
         onEdgeUpdate={onEdgesUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
@@ -142,8 +150,12 @@ export default function WorkflowEditor() {
         onDrop={onDrop}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
-        onNodeContextMenu={onNodeContextMenu}
+        onNodeContextMenu={(ev, node) => {
+          onSelectionContextMenu(ev, [node]);
+        }}
+        onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
+        {...selectionModeProps}
         onNodeDragStart={ev => {
           console.log("drag start");
           onChangeDragingAndResizingState(true);

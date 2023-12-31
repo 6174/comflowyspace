@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export default function WorkspaceHome() {
   const {bootstraped} = useDashboardState();
   
-  const {onInit} = useAppStore();
+  const onInit = useAppStore(st => st.onInit);
     useEffect(() => {
     if (typeof window !== 'undefined' && bootstraped) {
       onInit();
