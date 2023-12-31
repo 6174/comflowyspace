@@ -74,33 +74,40 @@ function WorkflowList() {
         const galleryImages = (doc.gallery || []).slice(0, 3).map((image: PreviewImage) => {
           return getImagePreviewUrl(image.filename, image.type, image.subfolder);
         });
+
+        const openPage = () => {
+          openTabPage({
+            name: doc.title,
+            pageName: "app",
+            query: `id=${doc.id}`,
+            id: 0,
+            type: "DOC"
+          });
+        }
+
         return (
-          <div key={doc.id} className="workflow-list-item" onClick={(ev) => {
-            openTabPage({
-              name: doc.title,
-              pageName: "app",
-              query: `id=${doc.id}`,
-              id: 0,
-              type: "DOC"
-            });
-          }}>
+          <div key={doc.id} className="workflow-list-item" onClick={openPage}>
             <div className="carousel-wrapper" onClick={ev => {
-              ev.stopPropagation();
-            }} style={{
-              height: 200,
-            }}>
+              if (galleryImages.length > 0) {
+                ev.stopPropagation();
+              }
+            }} style={{height: 200}}>
               <Carousel>
                 {galleryImages.map((image, index) => (
                   <div key={index} className='carousel-item'>
-                    <div className="image-wrapper" style={{
-                      display: "flex",
-                      width: "100%",
-                      height: 200,
-                      borderRadius: 4,
-                      backgroundImage: `url(${image})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center"
-                    }}>
+                    <div className="image-wrapper" 
+                      onClick={ev => {
+                        openPage();
+                      }}
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        height: 200,
+                        borderRadius: 4,
+                        backgroundImage: `url(${image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center"
+                      }}>
                     </div>
                   </div>
                 ))}
