@@ -10,6 +10,7 @@ import path from 'path';
 import { APP_SERVER_PORT } from './config';
 import { showLoadingScreen } from './loading';
 import { startIPC } from './ipc';
+import { startAutoUpdater } from './auto-update';
 // console.log(GPUFeatureStatus)
 // app.disableHardwareAcceleration();
 
@@ -34,7 +35,7 @@ app.on('ready', async () => {
     // auto update listener
     log.info('start auto update');
 
-    // startAutoUpdater()
+    startAutoUpdater()
   } catch(err: any) {
     log.error(err);
     dialog.showErrorBox('Error', err.message);
