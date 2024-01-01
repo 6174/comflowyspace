@@ -1,11 +1,14 @@
 # Comfyspace 
 
-开源 AI 图像、视频生成工具值得更好的交互体验设计，而不是 webui 和 comfyui 原生的样子，很多人不愿意学习或者参与到 AI 生成这个浪潮的原因
-其实是工具门槛太高，而这正是我们要解决的问题，为此我们觉得应该要创造一个更易用 & 更有用的 AI 图像、视频生成工具 - Comfyspace 
+Comfyspace is an open-source AI imagery and video generation tool committed to providing a better, 
+interactive experience than the standard webui and comfyui.Many people are hesitant to learn about 
+or participate in the wave of AI generation simply because the tools required are often too complex.  
+This is a problem that we're set on solving. We believe that it is crucial to develop an AI imagery 
+and video generation tool that is both easier to use and more useful - Comfyspace
 
-Comfyspace 的目标真正让 ComfyUI & Stable Diffusion 成为普通人都能使用的产品，从下载安装到插件管理、工作流模板、流程编辑，每一个步骤都
-有良好的设计。 
-
+The goal of Comfyspace is to make ComfyUI & Stable Diffusion accessible to all. 
+From downloading and installing to plug-in management, 
+workflow templates, and process editing, every step is well designed.
 
 ![](./assets/editor.jpg)
 ![](./assets/home.jpg)
