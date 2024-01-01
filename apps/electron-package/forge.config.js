@@ -8,7 +8,7 @@ module.exports = {
     "asar": false,
     "dir": "./",
     "icon": './assets/icon',
-    "appBundleId": fromBuildIdentifier({ beta: 'com.beta.app', prod: 'com.app' })
+    "appBundleId": fromBuildIdentifier({ beta: 'com.comflowy.beta.app', prod: 'com.comflowy.app' })
   },
   "makers": [
     // {

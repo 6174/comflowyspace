@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import path from "path"
 import htmlPlugin from '@chialab/esbuild-plugin-html';
-import { sassPlugin, postcssModules } from 'esbuild-sass-plugin';
+import { sassPlugin } from 'esbuild-sass-plugin';
 import * as fs from "fs";
 import process from "process";
 
