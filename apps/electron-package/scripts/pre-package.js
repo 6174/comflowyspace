@@ -30,7 +30,3 @@ async function cleanAndCopy() {
 }
 
 cleanAndCopy();
-
-module.exports = {
-    cleanAndCopy
-}

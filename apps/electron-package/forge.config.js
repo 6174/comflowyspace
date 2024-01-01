@@ -1,6 +1,6 @@
-const packagInfo = require("./package.json");
+// const packagInfo = require("./package.json");
 const { utils: { fromBuildIdentifier } } = require('@electron-forge/core');
-const {cleanAndCopy} = require('./scripts/pre-package');
+// const {cleanAndCopy} = require('./scripts/pre-package');
 
 module.exports = {
   "buildIdentifier": process.env.IS_BETA ? 'beta' : 'prod',
@@ -23,7 +23,7 @@ module.exports = {
       "config": {
         // "background": "",
         "overwrite": true,
-        "debug": true,
+        "debug": false,
         "icon": "./assets/icon.png"
       }
     },
@@ -38,7 +38,7 @@ module.exports = {
   ],
   hooks: {
     packageAfterCopy: async () => {
-      await cleanAndCopy();
+      // await cleanAndCopy();
     }
   }
 }
