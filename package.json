@@ -4,7 +4,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "start": "cd ./apps/web && pnpm start",
+    "install-package-builder": "cd ./apps/electron-package && npm i",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
