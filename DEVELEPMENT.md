@@ -17,5 +17,11 @@ and a electron app.
 
 # Build App
 
-[TODO]
+Considering pnpm's package design, it can't work compatible with electron builders, so I 
+create a new npm based folder to package app
+
+1. Clean node_modules already installed in /apps/electron-package
+2. Install dependencies: `npm i` 
+3. Run package: `npm run compile` 
+
 

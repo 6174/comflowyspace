@@ -5,7 +5,7 @@
   "main": "layers/main/dist/index.js",
   "scripts": {
     "start": "electron ./",
-    "compile": "cd ../electron-backend && npm run compile && cd ../electron-package && npm run package",
+    "compile": "cd ../electron-frontend && pnpm build && cd ../electron-backend && npm run compile && cd ../electron-package && node ./scripts/pre-package.js && npm run package",
     "package": "electron-forge package"
   },
   "dependencies": {
