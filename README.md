@@ -1,5 +1,7 @@
 # Comfyspace 
 
+> Currently comfyspace is still under development
+
 Comfyspace is an open-source AI imagery and video generation tool committed to providing a better, 
 interactive experience than the standard webui and comfyui.Many people are hesitant to learn about 
 or participate in the wave of AI generation simply because the tools required are often too complex.  
