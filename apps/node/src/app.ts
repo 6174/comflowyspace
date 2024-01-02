@@ -5,7 +5,7 @@ import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions } from './routes/api/extension';
-import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig } from './routes/api/bootstrap';
+import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig } from './routes/api/bootstrap';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -42,6 +42,7 @@ export async function startAppServer(params: {
   app.post('/api/install_model', ApiRouteInstallModel)
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/setup_config', ApiSetupConfig);
+  app.post('/api/update_sdwebui', ApiUpdateStableDiffusionConfig);
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });
