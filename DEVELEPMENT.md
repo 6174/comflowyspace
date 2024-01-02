@@ -1,6 +1,6 @@
 # Architecture
 
-Comfyspace is a typical Client-Server app, for long term design, it can work as a cloud web app
+Comflowyspace is a typical Client-Server app, for long term design, it can work as a cloud web app
 and a electron app.
 
 1. /apps/electron-backend: Electron App Related Code
