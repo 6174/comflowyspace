@@ -2,7 +2,7 @@ import * as os from "os";
 import * as path from "path";
 import { isMac } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
-import { getAppDataDir, getAppTmpDir, getComfyUIDir } from "../utils/get-appdata-dir";
+import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
 import { PIP_PATH, PYTHON_PATH, runCommand, runCommandWithPty } from "../utils/run-command";
@@ -10,6 +10,8 @@ import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
 import * as fsExtra from "fs-extra"
+import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
+
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
 const appDir = getAppDataDir();
@@ -243,6 +245,11 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
         await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
             cwd: repoPath
         });
+
+        const sdPath = getStableDiffusionDir()
+        if (sdPath !== "") {
+            createOrUpdateExtraConfigFileFromStableDiffusion(sdPath)
+        }
 
         dispatch({
             message: "clone comfyui success"

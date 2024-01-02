@@ -29,3 +29,17 @@ export function getComfyUIDir(): string {
     }
     return comfyUIDir;
 }
+
+export function getStableDiffusionDir(): string {
+    const configStr = appConfigManager.get(CONFIG_KEYS.appSetupConfig);
+    let stableDiffusionDir = "";
+    if (configStr) {
+        try {
+            const config = JSON.parse(configStr);
+            stableDiffusionDir = config.stableDiffusionDir;
+        } catch(err) {
+            console.log("parse config error", err);
+        }
+    }
+    return stableDiffusionDir;
+}
