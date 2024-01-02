@@ -8,7 +8,6 @@
 Comfyspace 的目标真正让 ComfyUI & Stable Diffusion 成为普通人都能使用的产品，从下载安装到插件管理、工作流模板、流程编辑，每一个步骤都
 有良好的设计。 
 
-
 ![](./assets/editor.jpg)
 ![](./assets/home.jpg)
 ![](./assets/gallery.jpg)

@@ -15,9 +15,12 @@ jobs:
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
-      uses: pnpm/action-setup@v2.2.4
       with:
         node-version: 16
+
+    - name: Install pnpm
+      run: |
+        npm i -g pnpm
 
     - name: Install Dependencies
       run: |
