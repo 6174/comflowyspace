@@ -20,21 +20,25 @@
       }
     }
 
-    .open-button, .refresh-button {
-      float: right;
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex: 1;
+      >div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: 10px;
+      }
       button {
         display: inline-flex;
         justify-content: center;
         align-items: center;
         svg {
-          margin-right: 10px;
+          margin-right: 4px;
         }
       }
-    }
-    .open-button {
-      margin-left: 10px;
-      position: relative;
-      top: 2.5px;
     }
 
     .filter-type {

@@ -1,4 +1,4 @@
-import { comfyElectronApi } from "@/lib/electron-bridge";
+import { comfyElectronApi, isElectron, useIsElectron } from "@/lib/electron-bridge";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { Alert, Button, Input, Space, message } from "antd";
@@ -10,17 +10,20 @@ export function SetupConfig() {
   const [defaultValue, setDefaultValue] = useState("");
   const [value, setValue] = useState("");
   const [sdwebuiPath, setSDWebuiPath] = useState("");
+  const electronEnv = useIsElectron();
 
   useEffect(() => {
-    const promise = comfyElectronApi.selectHomeDir();
-    promise.then((ret: string) => {
-      const value = ret + "/comflowy/ComfyUI";
-      setDefaultValue(value);
-      setValue(value);
-    }).catch(err => {
-      message.error(err);
-    });
-  }, []);
+    if (electronEnv) {
+      const promise = comfyElectronApi.selectHomeDir();
+      promise.then((ret: string) => {
+        const value = ret + "/comflowy/ComfyUI";
+        setDefaultValue(value);
+        setValue(value);
+      }).catch(err => {
+        message.error(err);
+      });
+    }
+  }, [electronEnv]);
 
   const selectFolder = useCallback(async () => {
     try {
@@ -87,8 +90,6 @@ export function SetupConfig() {
     setLoading(false);
   }, [value, sdwebuiPath, bootstrapTasks, task]);
 
-
-
   return (
     <div className="SetupConfig">
       <div className="field">
@@ -98,8 +99,8 @@ export function SetupConfig() {
           marginBottom: "10px"
         }}>ComfyUI Path:</div>
         <Space>
-          <Input disabled value={value} style={{width: 400}}/>
-          <Button type="link" onClick={selectFolder}>Select folder</Button>
+          <Input disabled={electronEnv} value={value} style={{width: 400}}/>
+          { electronEnv && <Button type="link" onClick={selectFolder}>Select folder</Button>}
           <Button type="link" disabled={value === defaultValue} onClick={useDefaultFolder}>Use Default</Button>
         </Space>
       </div>
@@ -112,7 +113,7 @@ export function SetupConfig() {
         }}>SD WebUI Path:</div>
         <Space>
           <Input value={sdwebuiPath} placeholder="Input sd webui path if exists" style={{ width: 400 }} />
-          <Button type="link" onClick={selectSdWebUIFolder}>Select folder</Button>
+          {electronEnv && <Button type="link" onClick={selectSdWebUIFolder}>Select folder</Button>}
         </Space>
       </div>
 
