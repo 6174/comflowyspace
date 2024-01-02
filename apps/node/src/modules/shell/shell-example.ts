@@ -1,5 +1,5 @@
 import * as nodePty from "node-pty"
-import { getAppDataDir } from "../utils/get-appdata-dir";
+import { getAppDataDir, getComfyUIDir } from "../utils/get-appdata-dir";
 import { PYTHON_PATH, SHELL_ENV_PATH } from "../utils/run-command";
 import path from "path";
 
@@ -15,7 +15,7 @@ const pty = nodePty.spawn(shell, [], {
   },
 });
 
-const repoPath = path.resolve(appDir, 'ComfyUI');
+const repoPath = getComfyUIDir();
 pty.write(`echo Hell0; sleep 5; echo END_OF_COMMAND\n`);
 
 const dispose = pty.onData(function (data: string) {

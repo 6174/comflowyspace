@@ -11,8 +11,6 @@ import { StartComfyUI } from './start-comfyui';
 import { SetupConfig } from './setup-config';
 import { InstallComfyUI } from './install-comfyui';
 import LogoSvg from "ui/icons/logo";
-import {useJoin} from "ui/utils/use-join";
-import { Button, Space } from 'antd';
 
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();

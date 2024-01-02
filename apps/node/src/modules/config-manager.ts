@@ -7,7 +7,7 @@ class MyConfigManager {
   private config: Configstore;
 
   constructor(configName: string) {
-    // 设置配置文件的路径，存储在用户目录的 .comflowy 目录下
+    // 设置配置文件的路径，存储在用户目录的 comflowy 目录下
     const configDir = getAppDataDir();
     const configPath = path.join(configDir, `${configName}.json`);
     // 初始化 Configstore 实例
