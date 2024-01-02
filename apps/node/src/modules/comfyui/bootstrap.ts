@@ -2,7 +2,7 @@ import * as os from "os";
 import * as path from "path";
 import { isMac } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
-import { getAppDataDir, getAppTmpDir } from "../utils/get-appdata-dir";
+import { getAppDataDir, getAppTmpDir, getComfyUIDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
 import { PIP_PATH, PYTHON_PATH, runCommand, runCommandWithPty } from "../utils/run-command";
@@ -13,7 +13,6 @@ import * as fsExtra from "fs-extra"
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
 const appDir = getAppDataDir();
-const comfyUIPath = path.resolve(appDir, 'ComfyUI');
 
 export async function checkBasicRequirements() {
     const isSetupedConfig = await checkIsSetupedConfig();
@@ -52,10 +51,13 @@ export async function checkIsSetupedConfig() {
     return !!config;
 }
 
-export async function checkIfInstalledComfyUI(): Promise<boolean> {
+export async function checkIfInstalledComfyUI(comfy_path?: string): Promise<boolean> {
     try {
-        const isExist = fsExtra.exists(path.resolve(comfyUIPath, ".git"));
-        return isExist;
+        const comfyUIPath = comfy_path || getComfyUIDir();
+        const isGitRepo = await fsExtra.exists(path.resolve(comfyUIPath, ".git"));
+        const isExistMain = await fsExtra.exists(path.resolve(comfyUIPath, "main.py"));
+        const isExisComfySrc = await fsExtra.exists(path.resolve(comfyUIPath, "comfy"));
+        return isGitRepo && isExistMain && isExisComfySrc;
     } catch(err) {
         return false;
     }
@@ -236,7 +238,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
             cwd: appDir
         });
 
-        const repoPath = path.resolve(appDir, 'ComfyUI');
+        const repoPath = getComfyUIDir();
 
         await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
             cwd: repoPath
@@ -262,7 +264,7 @@ export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
     try {
         console.log("start comfyUI");
-        const repoPath = path.resolve(appDir, 'ComfyUI');
+        const repoPath = getComfyUIDir();
         await runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
             dispatcher(event);
             const cevent: ComfyUIProgressEventType = {
@@ -294,6 +296,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             type: "ERROR",
             message: err.message
         });
+        console.log("Start ComfyUI Error", err);
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }
     return true;

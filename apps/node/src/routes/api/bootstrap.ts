@@ -3,6 +3,7 @@ import { checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneC
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
+import path from 'path';
 
 
 /**
@@ -105,6 +106,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
     } 
 }
 
+import { DEFAULT_COMFYUI_PATH } from '../../modules/utils/get-appdata-dir';
 /**
  * fetch all extensions
  * @param req 
@@ -113,18 +115,28 @@ export async function ApiBootstrap(req: Request, res: Response) {
 export async function ApiSetupConfig(req: Request, res: Response) {
     try {
         const {data} = req.body;
+        const comfyUIPath = data.comfyUIDir;
+        if (!comfyUIPath) {
+            throw new Error("ComfyUI path is empty");
+        }
+
+        let isComfyUIInstalled = await checkIfInstalledComfyUI(comfyUIPath);
+        console.log("isComfy isntall", isComfyUIInstalled, comfyUIPath, DEFAULT_COMFYUI_PATH);
+        if (comfyUIPath !== DEFAULT_COMFYUI_PATH && !isComfyUIInstalled) {
+            throw new Error("Your custom ComfyUI path is not valid, check if  it's a git repo clone from ComfyUI https://github.com/comfyanonymous/ComfyUI");
+        }
+
         const setupString = JSON.stringify(data);
-        console.log(setupString);
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
-        const isComfyUIInstalled = await checkIfInstalledComfyUI();
+
         res.send({
             success: true,
-            isComfyUIInstalled
+            isComfyUIInstalled,
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({
             success: false,
-            error: err
+            error: err.message
         })
     }
     
