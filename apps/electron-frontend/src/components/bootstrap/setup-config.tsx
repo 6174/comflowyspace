@@ -12,7 +12,7 @@ export function SetupConfig() {
   useEffect(() => {
     const promise = comfyElectronApi.selectHomeDir();
     promise.then((ret: string) => {
-      const value = ret + "/.comflowy/ComfyUI";
+      const value = ret + "/comflowy/ComfyUI";
       setDefaultValue(value);
       setValue(value);
     }).catch(err => {
@@ -60,6 +60,8 @@ export function SetupConfig() {
           installComfyTask.finished = true;
         }
         setBootstrapTasks([...bootstrapTasks]);
+      } else {
+        message.error("Setup failed: " + data.error);
       }
     } catch(err) {
       console.log(err);
@@ -71,7 +73,7 @@ export function SetupConfig() {
   return (
     <div className="SetupConfig">
       <div className="field">
-        <Alert message="If you already installed comfyUI, you can choose the exist comfyUI path" type="info" showIcon />
+        <Alert message="If you already installed ComfyUI, you can choose the exist comfyUI path" type="info" showIcon />
         <br />
         <div className="field-label" style={{
           marginBottom: "10px"
