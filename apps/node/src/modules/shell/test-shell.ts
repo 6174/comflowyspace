@@ -2,11 +2,12 @@ import path from "path";
 import { PYTHON_PATH, SHELL_ENV_PATH, runCommand } from "../utils/run-command";
 import { appDir, isWindows } from "../utils/env";
 import { spawn } from "child_process";
+import { getComfyUIDir } from "../utils/get-appdata-dir";
 
 async function start() {
   try {
     console.log("start ");
-    const repoPath = path.resolve(appDir, 'ComfyUI');
+    const repoPath = getComfyUIDir();
     const shell = isWindows ? 'cmd' : '/bin/bash';
     const command = PYTHON_PATH;
     const args = ['main.py', '--enable-cors-header'];

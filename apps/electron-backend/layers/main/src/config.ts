@@ -9,7 +9,7 @@ class MyConfigManager {
   private config: Configstore;
 
   constructor(configName: string) {
-    // 设置配置文件的路径，存储在用户目录的 .comflowy 目录下
+    // 设置配置文件的路径，存储在用户目录的 comflowy 目录下
     const configDir = this.getConfigDir();
     const configPath = path.join(configDir, `${configName}.json`);
 
@@ -23,7 +23,7 @@ class MyConfigManager {
   }
 
   getConfigDir() {
-    return path.join(os.homedir(), '.comflowy');
+    return path.join(os.homedir(), 'comflowy');
   }
 
   // 获取配置项

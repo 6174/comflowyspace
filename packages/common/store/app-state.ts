@@ -455,6 +455,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onImageSave: (id, images) => {
     const last_edit_time = +new Date();
+
     // sync to state
     set((st) => ({
       persistedWorkflow: {
@@ -463,7 +464,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         gallery: [
           ...st.persistedWorkflow?.gallery || [],
           ...images || []
-        ]
+        ].reverse()
       },
       graph: {
         ...st.graph,
@@ -482,7 +483,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       gallery: [
         ...st.persistedWorkflow?.gallery || [],
         ...images || []
-      ],
+      ].reverse(),
       snapshot: workflow
     });
   },

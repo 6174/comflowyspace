@@ -4,7 +4,7 @@ import * as fsExtra from 'fs-extra';
 import { CONFIG_KEYS, appConfigManager } from '../config-manager';
 
 export function getAppDataDir() {
-    const appDir = path.join(os.homedir(), '.comflowy');
+    const appDir = path.join(os.homedir(), 'comflowy');
     fsExtra.ensureDirSync(appDir)
     return appDir;
 }
@@ -15,6 +15,7 @@ export function getAppTmpDir() {
     return tmpDir;
 }
 
+export const DEFAULT_COMFYUI_PATH = path.join(getAppDataDir(), 'ComfyUI');
 export function getComfyUIDir(): string {
     const configStr = appConfigManager.get(CONFIG_KEYS.appSetupConfig);
     let comfyUIDir = path.join(getAppDataDir(), 'ComfyUI');
