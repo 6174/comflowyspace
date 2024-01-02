@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { isWindow } from "ui/utils/is-window";
+
   export interface ComfyElectronApi {
   name: string;
   version: number;
@@ -80,4 +83,14 @@ export function isElectron() {
     return true
   }
   return false;
+}
+
+export function useIsElectron() {
+  const [electronEnv, setElectronEnv] = useState(false);
+  useEffect(() => {
+    if (isWindow) {
+      setElectronEnv(isElectron());
+    }
+  }, [])
+  return electronEnv;
 }

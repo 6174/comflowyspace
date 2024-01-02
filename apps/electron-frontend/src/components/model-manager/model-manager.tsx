@@ -7,36 +7,41 @@ import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon } from 'ui/icons';
-import { comfyElectronApi, isElectron, openDirectory } from '@/lib/electron-bridge';
+import { comfyElectronApi, isElectron, openDirectory, useIsElectron } from '@/lib/electron-bridge';
+import { ModelSettings } from './model-settings';
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
-  const isElectronEnv = isElectron();
+  const isElectronEnv = useIsElectron();
   useEffect(() => {
-      onInit();
+    onInit();
   }, []);
   return (
     <div className={styles.modelManagement}>
-      <h2>
-        Model Management
-
-        {isElectronEnv  && 
-          <div className="open-button">
-            <Button size='small' onClick={() => {
-              openDirectory(modelPath);
+      <div style={{
+        display: 'flex'
+      }}>
+        <h2> Model Management </h2>
+        <div className="actions">
+          {isElectronEnv  && 
+            <div className="open-button">
+              <Button size='small' onClick={() => {
+                openDirectory(modelPath);
+              }}> 
+                <FolderIcon/> Model Folder
+              </Button>
+            </div>
+          }
+          <ModelSettings />
+          <div className="refresh-button">
+            <Button size='small' loading={loading} disabled={loading} onClick={() => {
+              onInit();
             }}> 
-              <FolderIcon/> Model Folder
+              Refresh
             </Button>
           </div>
-        }
-        <div className="refresh-button">
-          <Button size='small' loading={loading} disabled={loading} onClick={() => {
-            onInit();
-          }}> 
-            Refresh
-          </Button>
         </div>
-      </h2>
+      </div>
       <Tabs defaultActiveKey="installed">
         <Tabs.TabPane tab="Installed" key="installed">
           <InstalledModels/>
