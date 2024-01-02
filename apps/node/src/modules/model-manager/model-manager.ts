@@ -13,7 +13,9 @@ class ModelManager {
                 const supportedExtensions: string[] = extensions; // Remove dot from extensions
                 const files: {
                     name: string,
-                    size: number
+                    size: number,
+                    dir: string,
+                    path: string
                 }[] = [];
                 paths.forEach((dir: string) => {
                     try {
@@ -21,6 +23,8 @@ class ModelManager {
                         dirContents.forEach(file => {
                             if (supportedExtensions.includes(path.extname(file))) {
                                 files.push({
+                                    dir: dir,
+                                    path: file,
                                     name: file,
                                     size: 1
                                 });

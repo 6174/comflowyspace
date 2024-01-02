@@ -1,6 +1,9 @@
 .bootstrap {
   padding: 40px;
   :global {
+      .ant-alert-message {
+        font-size: 12px;
+      }
       h1 {
         display: flex;
         align-items: center;

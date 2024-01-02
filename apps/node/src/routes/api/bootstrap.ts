@@ -107,6 +107,8 @@ export async function ApiBootstrap(req: Request, res: Response) {
 }
 
 import { DEFAULT_COMFYUI_PATH } from '../../modules/utils/get-appdata-dir';
+import * as fsExtra from "fs-extra";
+
 /**
  * fetch all extensions
  * @param req 
@@ -115,7 +117,7 @@ import { DEFAULT_COMFYUI_PATH } from '../../modules/utils/get-appdata-dir';
 export async function ApiSetupConfig(req: Request, res: Response) {
     try {
         const {data} = req.body;
-        const comfyUIPath = data.comfyUIDir;
+        const comfyUIPath = data.comfyUIDir.trim();
         if (!comfyUIPath) {
             throw new Error("ComfyUI path is empty");
         }
@@ -126,7 +128,22 @@ export async function ApiSetupConfig(req: Request, res: Response) {
             throw new Error("Your custom ComfyUI path is not valid, check if  it's a git repo clone from ComfyUI https://github.com/comfyanonymous/ComfyUI");
         }
 
-        const setupString = JSON.stringify(data);
+        const stableDiffusionPath = (data.stableDiffusionDir || "").trim()
+        if (stableDiffusionPath !== "") {
+            if (!fsExtra.existsSync(path.resolve(stableDiffusionPath, "webui.py"))) {
+                throw new Error("Doesn't find webui.py in stable diffusion path, please check if it's a valid diffusion path");
+            }
+
+            if (!fsExtra.existsSync(path.resolve(stableDiffusionPath, "models"))) {
+                throw new Error("Doesn't find models in stable diffusion path, please check if it's a valid diffusion path");
+            }
+        }
+
+        const setupString = JSON.stringify({
+            comfyUIDir: comfyUIPath,
+            stableDiffusionDir: stableDiffusionPath
+        });
+
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
 
         res.send({
