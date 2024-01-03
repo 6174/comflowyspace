@@ -15,6 +15,7 @@ import { Button, Card, Space } from 'antd';
 // };
 
 import { useModelState } from '@comflowy/common/store/model-state';
+import { comfyElectronApi, useIsElectron } from '@/lib/electron-bridge';
 
 const InstalledModels = () => {
     const {installedModels} = useModelState();
@@ -58,13 +59,22 @@ const InstalledModels = () => {
 };
 
 const ModelList = ({ models }) => {
+    const isElectron = useIsElectron();
     return (
         <div className='model-list' style={{ width: '100%' }}>
             {models.map((model, index) => {
                 return (
                     <div className="model-list-item" key={index}>
                         <Space>
-                            <div className="title">{model.name}</div>
+                            {
+                                isElectron ? (
+                                    <a className='title' onClick={ev => {
+                                        comfyElectronApi.openDirectory(model.dir);
+                                    }}>{model.name}</a>
+                                ) : (
+                                    <div className="title">{model.name}</div>
+                                )
+                            }
                             <div className="size">{"("}{model.size} GB{")"}</div>
                         </Space>
                     </div>

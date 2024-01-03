@@ -14,6 +14,7 @@ import { documentDatabaseInstance } from '@comflowy/common/local-storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -43,7 +44,6 @@ export default function WorkflowEditor() {
     return st.transform[2]
   }));
 
-
   const styledEdges = edges.map(edge => {
     return {
       ...edge,
@@ -59,10 +59,17 @@ export default function WorkflowEditor() {
   const router = useRouter();
   const {id} = router.query;
 
+  const watchedDoc = useLiveQuery(async () => {
+    if (!id) {
+      return null;
+    }
+    return await documentDatabaseInstance.getDocFromLocal(id as string)
+  }, [id]);
+
   React.useEffect(() => {
     if (id && inited) {
-      documentDatabaseInstance.getDocFromLocal(id as string).then((doc) => {
-        onLoadWorkflow(doc);
+      documentDatabaseInstance.getDocFromLocal(id as string).then(doc => {
+        doc && !doc.deleted && onLoadWorkflow(doc);
       })
     }
     checkWebGLStatus();
@@ -125,6 +132,10 @@ export default function WorkflowEditor() {
     panOnDrag: [1, 2],
     selectionMode: SelectionMode.Partial
   }  : {};
+
+  if (inited && watchedDoc && watchedDoc.deleted) {
+    return <div>This doc is deleted</div>
+  }
 
   return (
     <div className={styles.workflowEditor}>

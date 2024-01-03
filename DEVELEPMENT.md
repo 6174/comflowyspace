@@ -15,6 +15,12 @@ and a electron app.
 3. Start frontend dev server: `cd apps/electron-frontend` | `pnpm dev`
 4. Start electron dev server: `cd apps/electron-backend` | `pnpm dev`
 
+## node-pty rebuild 
+
+If there are some problems happen related to node-pty, try to rebuild id on `electron-backend` project for your OS 
+1. `cd apps/electron-backend`
+2. `./node_modules/.bin/electron-rebuild --arc=arm64`
+
 # Build App
 
 Considering pnpm's package design, it can't work compatible with electron builders, so I 
