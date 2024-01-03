@@ -56,11 +56,30 @@
                 overflow: hidden;
                 text-wrap: nowrap;
                 text-overflow: ellipsis;
+                flex: 1;
             }
-
+            .action {
+                height: 20px;
+                &:hover {
+                    background-color: var(--backgroundColorL3);
+                }
+            }
             &:hover {
                 background-color: var(--cardHover);
             }
         }
     }   
+}
+
+.popoverActions {
+    :global {
+        .action {
+            svg * {
+                fill: white;
+            }
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.12);
+            }
+        }
+    }
 }
