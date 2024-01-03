@@ -40,6 +40,7 @@ export type PersistedFullWorkflow = {
   create_time: number;
   gallery?: PreviewImage[];
   deleted?: boolean;
+  deleted_time?: number;
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
 }
 
@@ -72,7 +73,10 @@ export class DocumentDatabase extends Dexie {
   }
 
   async removeDocSoft(docId: string) {
-    return this.documents.update(docId, { deleted: true });
+    return this.documents.update(docId, { 
+      deleted: true,
+      deleted_time: +(new Date())
+    });
   }
 
   async deleteDoc(docId: string) {
