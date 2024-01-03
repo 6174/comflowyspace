@@ -39,6 +39,7 @@ export type PersistedFullWorkflow = {
   last_edit_time?: number;
   create_time: number;
   gallery?: PreviewImage[];
+  deleted?: boolean;
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
 }
 
@@ -70,7 +71,11 @@ export class DocumentDatabase extends Dexie {
     return this.documents.put(docMeta);
   }
 
-  async removeDocToLocal(docId: string) {
+  async removeDocSoft(docId: string) {
+    return this.documents.update(docId, { deleted: true });
+  }
+
+  async deleteDoc(docId: string) {
     return this.documents.delete(docId);
   }
 
