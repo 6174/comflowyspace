@@ -1,3 +1,4 @@
+import { openTabPage } from '@/lib/electron-bridge';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
 import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/local-storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
@@ -26,8 +27,14 @@ export const ImportWorkflow = () => {
 
       if (workflow) {
         console.log("workflow: ", workflow);
-        await documentDatabaseInstance.createDocFromData(workflow);
-        message.success("Workflow created");
+        const doc = await documentDatabaseInstance.createDocFromData(workflow);
+        openTabPage({
+          name: doc.title,
+          pageName: "app",
+          query: `id=${doc.id}`,
+          id: 0,
+          type: "DOC"
+        });
       }
 
     } catch(err) {

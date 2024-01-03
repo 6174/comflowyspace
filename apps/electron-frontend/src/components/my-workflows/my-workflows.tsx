@@ -22,7 +22,14 @@ function MyWorkflowsPage() {
 function WorkflowCreateBox() {
   const router = useRouter();
   const createNewDoc = React.useCallback(async () => {
-    const ret = await documentDatabaseInstance.createDocFromTemplate();
+    const doc = await documentDatabaseInstance.createDocFromTemplate();
+    openTabPage({
+      name: doc.title,
+      pageName: "app",
+      query: `id=${doc.id}`,
+      id: 0,
+      type: "DOC"
+    });
     message.success("Workflow created");
   }, [router]);
 
