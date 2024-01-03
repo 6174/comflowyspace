@@ -48,7 +48,8 @@ export async function startAppServer(params: {
     res.json({ message: `Received data: ${data}` });
   });
 
-  const server = setupWebsocketHandler(app);
+  const [server, wss] = setupWebsocketHandler(app);
+  
   server.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
   });

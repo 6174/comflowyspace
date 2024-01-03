@@ -6,7 +6,7 @@ import { TaskEvent, taskQueue } from "../../modules/task-queue/task-queue";
 import { ComfyUIProgressEventType, comfyUIProgressEvent } from "../../modules/comfyui/bootstrap";
 
 // websocket handler
-export function setupWebsocketHandler(app: Express): http.Server {
+export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServer] {
     const server = http.createServer(app);
     const wss = new WebSocketServer({ noServer: true });
 
@@ -70,5 +70,5 @@ export function setupWebsocketHandler(app: Express): http.Server {
     });
 
 
-    return server;
+    return [server, wss];
 }

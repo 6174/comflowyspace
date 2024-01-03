@@ -3,6 +3,7 @@ import {JSONFile} from 'lowdb/node';
 import path from 'path';
 import * as fsExtra from 'fs-extra';
 import { uuid } from '@comflowy/common';
+import { SlotEvent } from '@comflowy/common/utils/slot-event';
 
 export type JSONCollectionMeta = {
   name: string
@@ -17,6 +18,11 @@ export type JSONDocMeta = {
   deleted_at: number
 }
 
+export type JSONDBEvent = {
+  type: "DELETE" | "DELETE_HARD" | "UPDATE" | "CREATE",
+  docId: string
+}
+
 export class JSONDB<DocType extends JSONDocMeta> {
   static DB_PATH: string = "";
   /**
@@ -25,6 +31,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
   private metaDb!: Low<JSONCollectionMeta>;
   private docs: { [id: string]: Low<DocType>} = {};
   private dbName: string;
+  updateEvent = new SlotEvent<JSONDBEvent>();
 
   constructor(dbName: string) {
     this.dbName = dbName;
@@ -54,16 +61,23 @@ export class JSONDB<DocType extends JSONDocMeta> {
     return JSONDB.DB_PATH;
   }
 
+  static exist = async (name: string): Promise<boolean> => {
+    const dbPath = path.join(JSONDB.DB_PATH, name);
+    return await fsExtra.pathExists(dbPath);
+  }
+
   /**
    * init the db
    */
   init = async () => {
+    // Initialize existing docs
+    const docsDir = path.join(__dirname, this.dbName);
+    await fsExtra.ensureDir(docsDir);
+
     const metaAdapter = new JSONFile<JSONCollectionMeta>(this.#docFilePath("meta"));
     this.metaDb = new Low(metaAdapter, { docs: [], name: this.dbName });
     await this.metaDb.read();
 
-    // Initialize existing docs
-    const docsDir = path.join(__dirname, this.dbName);
     const files = await fsExtra.readdir(docsDir);
 
     for (let file in files) {
@@ -128,6 +142,11 @@ export class JSONDB<DocType extends JSONDocMeta> {
 
     await this.metaDb.write();
 
+    this.updateEvent.emit({
+      type: "CREATE",
+      docId
+    });
+
     return newDoc;
   }
 
@@ -143,6 +162,12 @@ export class JSONDB<DocType extends JSONDocMeta> {
       docs.splice(docs.indexOf(docId), 1);
       await this.metaDb.write();
       await fsExtra.remove(this.#docFilePath(docId));
+      this.updateEvent.emit({
+        type: "DELETE_HARD",
+        docId
+      });
+    } else {
+      throw new Error("Doc is not exist")
     }
   }
 
@@ -152,10 +177,14 @@ export class JSONDB<DocType extends JSONDocMeta> {
    * @returns 
    */
   deleteDoc = async (docId: string) => {
-    return await this.updateDoc(docId, {
+    await this.updateDoc(docId, {
       deleted: true,
       deleted_at: +(new Date())
     })
+    this.updateEvent.emit({
+      type: "DELETE",
+      docId
+    });
   }
 
   /**
@@ -172,6 +201,12 @@ export class JSONDB<DocType extends JSONDocMeta> {
       }
       doc.data.update_at = +(new Date());
       await doc.write();
+      this.updateEvent.emit({
+        type: "UPDATE",
+        docId
+      });
+    } else {
+      throw new Error("Doc is not exist")
     }
     return doc;
   }
