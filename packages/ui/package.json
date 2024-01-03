@@ -24,6 +24,7 @@
     "@types/throttle-debounce": "^5.0.0",
     "antd": "5.12.5",
     "react-uid": "^2.3.3",
+    "react-use-websocket": "^4.5.0",
     "throttle-debounce": "^5.0.0"
   }
 }
