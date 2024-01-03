@@ -39,6 +39,8 @@ export type PersistedFullWorkflow = {
   last_edit_time?: number;
   create_time: number;
   gallery?: PreviewImage[];
+  deleted?: boolean;
+  deleted_time?: number;
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
 }
 
@@ -70,7 +72,14 @@ export class DocumentDatabase extends Dexie {
     return this.documents.put(docMeta);
   }
 
-  async removeDocToLocal(docId: string) {
+  async removeDocSoft(docId: string) {
+    return this.documents.update(docId, { 
+      deleted: true,
+      deleted_time: +(new Date())
+    });
+  }
+
+  async deleteDoc(docId: string) {
     return this.documents.delete(docId);
   }
 
@@ -89,7 +98,7 @@ export class DocumentDatabase extends Dexie {
   async createDocFromData(data: PersistedWorkflowDocument): Promise<PersistedFullWorkflow> {
     const doc: PersistedFullWorkflow = {
       id: uuid(),
-      title: "untitled " + data.id,
+      title: "untitled",
       create_time: +(new Date()),
       snapshot: data
     }

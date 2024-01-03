@@ -2,8 +2,8 @@ import * as React from 'react'
 import styles from "./my-workflows.style.module.scss";
 import { useLiveQuery } from "dexie-react-hooks";
 import { documentDatabaseInstance } from '@comflowy/common/local-storage';
-import { Button, Space, message } from 'antd';
-import {PlusIcon, NewIcon, ImageIcon, TemplateIcon} from "ui/icons";
+import { Button, Modal, Popover, Space, message } from 'antd';
+import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
@@ -22,7 +22,14 @@ function MyWorkflowsPage() {
 function WorkflowCreateBox() {
   const router = useRouter();
   const createNewDoc = React.useCallback(async () => {
-    const ret = await documentDatabaseInstance.createDocFromTemplate();
+    const doc = await documentDatabaseInstance.createDocFromTemplate();
+    openTabPage({
+      name: doc.title,
+      pageName: "app",
+      query: `id=${doc.id}`,
+      id: 0,
+      type: "DOC"
+    });
     message.success("Workflow created");
   }, [router]);
 
@@ -62,14 +69,16 @@ function WorkflowCreateBox() {
 import { Carousel } from 'antd';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
+import { EllipsisOutlined } from '@ant-design/icons';
 
 function WorkflowList() {
-  const docs = useLiveQuery(async () => {
+  const docs = (useLiveQuery(async () => {
     return await documentDatabaseInstance.getDoclistFromLocal();
-  }) || [];
-
+  }) || []).filter(doc => !doc.deleted);
+  const [modal, contextHolder] = Modal.useModal();
   return (
     <div className="workflow-list">
+      {contextHolder}
       {docs.map((doc) => {
         const galleryImages = (doc.gallery || []).slice(0, 3).map((image: PreviewImage) => {
           return getImagePreviewUrl(image.filename, image.type, image.subfolder);
@@ -82,6 +91,17 @@ function WorkflowList() {
             query: `id=${doc.id}`,
             id: 0,
             type: "DOC"
+          });
+        }
+
+        const deleteItem = async () => {
+          modal.confirm({
+            title: 'Do you want to delete this item?',
+            content: 'When clicked the OK button, this dialog will be closed after 1 second',
+            onOk: async () => {
+              const ret = await documentDatabaseInstance.removeDocSoft(doc.id); 
+            },
+            onCancel() { },
           });
         }
 
@@ -113,8 +133,26 @@ function WorkflowList() {
                 ))}
               </Carousel>
             </div>
-            <div className="title">
-              {doc.title || "untitled"}
+            <div className="flex">
+              <div className="title">
+                {doc.title || "untitled"} 
+              </div>
+              <div className="action item-menu" onClick={ev => {
+                ev.stopPropagation();
+              }}>
+                <Popover content={(
+                  <div className={styles.popoverActions}>
+                    <div className='action' onClick={ev => {
+                      ev.stopPropagation();
+                      deleteItem();
+                    }}>
+                      <DeleteIcon/> Remove
+                    </div>
+                  </div>
+                )} title={null} >
+                  <EllipsisOutlined/>
+                </Popover>
+              </div>
             </div>
           </div>
         );
