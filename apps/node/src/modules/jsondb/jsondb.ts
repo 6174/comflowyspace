@@ -4,24 +4,7 @@ import path from 'path';
 import * as fsExtra from 'fs-extra';
 import { uuid } from '@comflowy/common';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
-
-export type JSONCollectionMeta = {
-  name: string
-  docs: Record<string, any>
-}
-
-export type JSONDocMeta = {
-  id: string,
-  create_at: number,
-  update_at: number,
-  deleted: boolean,
-  deleted_at: number
-}
-
-export type JSONDBEvent = {
-  type: "DELETE" | "DELETE_HARD" | "UPDATE" | "CREATE",
-  docId: string
-}
+import { JSONCollectionMeta, JSONDBEvent, type JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
 
 export class JSONDB<DocType extends JSONDocMeta> {
   static DB_PATH: string = "";
@@ -144,6 +127,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
 
     this.updateEvent.emit({
       type: "CREATE",
+      db: this.dbName,
       docId
     });
 
@@ -164,6 +148,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
       await fsExtra.remove(this.#docFilePath(docId));
       this.updateEvent.emit({
         type: "DELETE_HARD",
+        db: this.dbName,
         docId
       });
     } else {
@@ -183,6 +168,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
     })
     this.updateEvent.emit({
       type: "DELETE",
+      db: this.dbName,
       docId
     });
   }
@@ -203,6 +189,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
       await doc.write();
       this.updateEvent.emit({
         type: "UPDATE",
+        db: this.dbName,
         docId
       });
     } else {

@@ -1,10 +1,11 @@
 import { Request, Response, Express } from 'express';
 import { WebSocketServer, WebSocket } from 'ws';
-import { JSONDB, JSONDocMeta } from './jsondb'; // Assuming you have exported the class
+import { JSONDB } from './jsondb'; // Assuming you have exported the class
 import * as http from "http";
 import * as url from "url";
 import { getAppDataDir } from '../utils/get-appdata-dir';
 import path from 'path';
+import { JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
 
 export function serve(app: Express, server: http.Server, wss: WebSocketServer) {  
   const dbs: Record<string, JSONDB<JSONDocMeta> > = {};
