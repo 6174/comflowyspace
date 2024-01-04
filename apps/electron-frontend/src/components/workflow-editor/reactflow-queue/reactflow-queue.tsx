@@ -67,7 +67,6 @@ export const QueueEntry = React.memo(() => {
     setVisible(false);
   }, [setVisible]);
 
-  console.log("visible", visible);
   return (
     <div className="action action-queue">
       <div onClick={showModal}>Queue</div>

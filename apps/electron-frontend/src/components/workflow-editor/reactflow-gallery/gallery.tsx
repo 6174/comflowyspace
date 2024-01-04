@@ -51,7 +51,6 @@ export const GalleryEntry = React.memo(() => {
     setVisible(false);
   }, [setVisible]);
 
-  console.log("visible", visible);
   return (
     <div className="action action-gallery">
       <div onClick={showModal}>Gallery</div>
