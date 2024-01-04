@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./my-workflows.style.module.scss";
 import { useLiveQuery } from "dexie-react-hooks";
-import { documentDatabaseInstance } from '@comflowy/common/local-storage';
+import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { Button, Modal, Popover, Space, message } from 'antd';
 import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
 import { useRouter } from 'next/router';

@@ -1,4 +1,4 @@
-import { PersistedWorkflowDocument } from "@comflowy/common/local-storage";
+import { PersistedWorkflowDocument } from "@comflowy/common/storage";
 import { useAppStore } from "@comflowy/common/store";
 import { getWorkflowTemplate } from "@comflowy/common/templates/templates";
 import { Popconfirm, Space } from "antd";

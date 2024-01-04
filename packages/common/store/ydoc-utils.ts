@@ -4,7 +4,7 @@
 import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions, Edge} from "reactflow";
 import * as Y from "yjs";
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../local-storage";
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../storage";
 import { NodeId, PreviewImage } from "../comfui-interfaces";
 
 export const createNodeId = () => `node-${uuid()}`;

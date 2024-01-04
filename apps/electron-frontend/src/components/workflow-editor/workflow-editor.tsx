@@ -10,7 +10,7 @@ import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
-import { documentDatabaseInstance } from '@comflowy/common/local-storage';
+import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
