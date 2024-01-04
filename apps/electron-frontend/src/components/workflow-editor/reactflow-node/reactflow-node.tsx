@@ -17,7 +17,7 @@ interface Props {
     widget: Widget;
     value: SDNode;
   }>
-  progressBar?: number
+  progressBar?: number;
   imagePreviews?: PreviewImage[]
 }
 
