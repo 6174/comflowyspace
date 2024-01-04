@@ -6,6 +6,7 @@
   "scripts": {
     "clear": "rm -rf ./dist",
     "start": "node dist/index.js",
+    "test": "tsx **/*.test.ts ",
     "build": "clear && tsc && node esbuild.config.mjs",
     "dev": "ts-node esbuild.config.mjs"
   },

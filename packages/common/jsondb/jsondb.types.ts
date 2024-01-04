@@ -1,14 +1,15 @@
 export type JSONCollectionMeta = {
   name: string
-  docs: Record<string, any>
+  docs: string[]
+  docsMeta: Record<string, any>
 }
 
 export type JSONDocMeta = {
   id: string,
   create_at: number,
-  update_at: number,
-  deleted: boolean,
-  deleted_at: number
+  update_at?: number,
+  deleted?: boolean,
+  deleted_at?: number
 }
 
 export type JSONDBEvent = {

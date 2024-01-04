@@ -2,7 +2,7 @@
 import { useState, useEffect} from 'react';
 import { JSONDBEvent } from './jsondb.types';
 import { JSONDBClient } from './jsondb.client';
-export function useLiveQuery<T>(options:{
+export function useLiveJSONDB<T>(options:{
   collectionName: string, 
   documentId?: string,
   queryFn: () => Promise<T>

@@ -5,6 +5,7 @@ import * as fsExtra from 'fs-extra';
 import { uuid } from '@comflowy/common';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
 import { JSONCollectionMeta, JSONDBEvent, type JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
+import { serve } from './jsondb.service';
 
 export class JSONDB<DocType extends JSONDocMeta> {
   static DB_PATH: string = "";
@@ -14,19 +15,23 @@ export class JSONDB<DocType extends JSONDocMeta> {
   private metaDb!: Low<JSONCollectionMeta>;
   private docs: { [id: string]: Low<DocType>} = {};
   private dbName: string;
+  private metaKeys: string[];
   updateEvent = new SlotEvent<JSONDBEvent>();
 
-  constructor(dbName: string) {
+  constructor(dbName: string, metaKeys: string[]) {
     this.dbName = dbName;
+    this.metaKeys = metaKeys
   }
+
+  static serve = serve;
 
   /**
    * static method to create a db instance in a async way
    * @param dbName 
    * @returns 
    */
-  static db = async <DocType extends JSONDocMeta>(dbName: string): Promise<JSONDB<DocType>> => {
-    const db = new JSONDB<DocType>(dbName);
+  static db = async <DocType extends JSONDocMeta>(dbName: string, metaKeys: string[]): Promise<JSONDB<DocType>> => {
+    const db = new JSONDB<DocType>(dbName, metaKeys);
     await db.init();
     return db;
   }
@@ -53,28 +58,53 @@ export class JSONDB<DocType extends JSONDocMeta> {
    * init the db
    */
   init = async () => {
-    // Initialize existing docs
-    const docsDir = path.join(__dirname, this.dbName);
-    await fsExtra.ensureDir(docsDir);
+    try {
+      // Initialize existing docs
+      const docsDir = path.join(JSONDB.DB_PATH, this.dbName);
 
-    const metaAdapter = new JSONFile<JSONCollectionMeta>(this.#docFilePath("meta"));
-    this.metaDb = new Low(metaAdapter, { docs: [], name: this.dbName });
-    await this.metaDb.read();
+      console.log("docs-dir: ", docsDir);
+      await fsExtra.ensureDir(docsDir);
+      
+      const filePath = this.#docFilePath("meta");
+      const metaAdapter = new JSONFile<JSONCollectionMeta>(filePath);
+      this.metaDb = new Low(metaAdapter, { docs:[], docsMeta:{}, name: this.dbName });
 
-    const files = await fsExtra.readdir(docsDir);
-
-    for (let file in files) {
-      if (file !== 'meta.json') {
-        const docId = path.basename(file, '.json');
-        const adapter = new JSONFile<DocType>(this.#docFilePath(docId));
-        this.docs[docId] = new Low(adapter, {} as DocType);
-        const docs = this.metaDb.data.docs;
-        // Add docId to metaDb if it's not already there
-        if (!docs[docId]) {
-          docs.push(docId);
+      if (!await fsExtra.exists(filePath)) {
+        await this.metaDb.write();
+      } else {
+        await this.metaDb.read();
+      }
+  
+      const files = await fsExtra.readdir(docsDir);
+  
+      for (let file in files) {
+        if (file !== 'meta.json') {
+          const docId = path.basename(file, '.json');
+          const adapter = new JSONFile<DocType>(this.#docFilePath(docId));
+          const doc = this.docs[docId] = new Low(adapter, {} as DocType);
+          const docs = this.metaDb.data.docs;
+          // Add docId to metaDb if it's not already there
+          if (docs.indexOf(docId) === -1) {
+            docs.push(docId);
+            await doc.read();
+            await this.#setDocMeta(doc.data, false);
+          }
         }
       }
+  
+      await this.metaDb.write();
+    } catch(err) {
+      console.log("db iit error", err);
     }
+  }
+
+  #setDocMeta = async (doc: DocType, write:boolean = true) => {
+    const docsMeta = this.metaDb.data.docsMeta;
+    docsMeta[doc.id] = {};
+    for (let key of this.metaKeys) {
+      docsMeta[doc.id][key] = (doc as any)[key];
+    }
+    write && await this.metaDb.write();
   }
 
   /**
@@ -82,14 +112,11 @@ export class JSONDB<DocType extends JSONDocMeta> {
    * @returns 
    */
   getAllDocs = async (): Promise<DocType[]> => {
-    const ret: DocType[] = [];
-    for (let docId in this.docs) {
-      const doc = await this.getDoc(docId);
-      if (doc) {
-        ret.push(doc);
-      }
-    }
-    return ret;
+    const docs = this.metaDb.data.docs;
+    const docsMeta = this.metaDb.data.docsMeta;
+    return docs.map(id => {
+      return docsMeta[id];
+    })
   }
 
   /**
@@ -112,26 +139,30 @@ export class JSONDB<DocType extends JSONDocMeta> {
    * @returns 
    */
   newDoc = async (doc: DocType): Promise<Low<DocType>> => {
-    const docId = doc.id || uuid();
-    const adapter = new JSONFile<DocType>(this.#docFilePath(docId));
-    const newDoc = new Low(adapter, doc);
+    try {
+      const docId = doc.id || uuid();
+      const filePath = this.#docFilePath(docId);
+      const adapter = new JSONFile<DocType>(filePath);
+      const newDoc = new Low(adapter, doc);
+      this.docs[docId] = newDoc;
+      await newDoc.write();
 
-    await newDoc.write();
+      await this.metaDb.update(({docs}) => {
+        docs.push(docId);
+      });
 
-    this.docs[docId] = newDoc;
-
-    const docs = this.metaDb.data.docs;
-    docs.push(docId);
-
-    await this.metaDb.write();
-
-    this.updateEvent.emit({
-      type: "CREATE",
-      db: this.dbName,
-      docId
-    });
-
-    return newDoc;
+      await this.#setDocMeta(doc);
+  
+      this.updateEvent.emit({
+        type: "CREATE",
+        db: this.dbName,
+        docId
+      });
+      return newDoc;
+    } catch(err: any) {
+      console.log("new doc error:", err);
+      throw new Error("New doc error " + err.message);
+    }
   }
 
   /**
@@ -143,8 +174,11 @@ export class JSONDB<DocType extends JSONDocMeta> {
     const doc = this.docs[docId];
     if (doc) {
       const docs = this.metaDb.data.docs;
+      const docsMeta = this.metaDb.data.docsMeta;
+      delete docsMeta[docId];
       docs.splice(docs.indexOf(docId), 1);
       await this.metaDb.write();
+
       await fsExtra.remove(this.#docFilePath(docId));
       this.updateEvent.emit({
         type: "DELETE_HARD",
@@ -186,6 +220,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
         (doc.data as any)[key] = updates[key];
       }
       doc.data.update_at = +(new Date());
+      await this.#setDocMeta(doc.data);
       await doc.write();
       this.updateEvent.emit({
         type: "UPDATE",
