@@ -93,6 +93,10 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         params.splice(1, 0, "control_after_generate")
       }
 
+      if (node.type === "SamplerCustom") {
+        params.splice(2, 0, "control_after_generate")
+      }
+
       node.widgets_values.forEach((value, index) => {
         const key = params[index];
         fields[key] = value;
