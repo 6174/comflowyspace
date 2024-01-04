@@ -6,7 +6,7 @@ import { DraggableModal } from 'ui/antd/draggable-modal';
 
 const Queue = () => {
   const queue = useQueueState(st => st.queue);
-  const queueRunning = queue.queue_running || [];
+  const queueRunning = queue.queue_running || []; //[{ id: "2" }];
   const queuePending = queue.queue_pending || [];
   const onDeleteFromQueue = useQueueState(st => st.onDeleteFromQueue);
   const onInterruptQueue = useQueueState(st => st.onInterruptQueue);
@@ -19,7 +19,7 @@ const Queue = () => {
           {queueRunning.map((item, index) => {
             return (
               <div className="item" key={index}>
-                <div className="item-title">Running-{index + 1}:</div>
+                <span className="item-title">Running-{index + 1}:</span>
                 <Button size='small' type="default" onClick={onInterruptQueue}>Cancel</Button>
               </div>
             )
@@ -32,7 +32,7 @@ const Queue = () => {
           {queuePending.map((item, index) => {
             return (
               <div className="item" key={index}>
-                <div className="item-title">Pending-{index + 1}:</div>
+                <span className="item-title">Pending-{index + 1}:</span>
                 <Button size='small' type="default" onClick={ev => {
                   onDeleteFromQueue(item.id)
                 }}>Cancel</Button>
