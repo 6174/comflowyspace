@@ -110,6 +110,7 @@ const WorkflowDocumentUtils = {
                 switch (change.type) {
                     // add change is triggered by another method
                     case "dimensions":
+                        // console.log("change dimension", change);
                         if (change.dimensions) {
                             nodesMap.set(change.id, {
                                 ...nodesMap.get(change.id)!,
