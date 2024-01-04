@@ -1,11 +1,13 @@
-import { getBackendUrl } from 'config';
+import { getBackendUrl } from '../config';
 import { SlotEvent } from '../utils/slot-event';
 import { JSONDBEvent, JSONDBReponse, type JSONDocMeta } from './jsondb.types';
+import { useLiveJSONDB } from './use-live-jsondb';
 
 let started = false;
 export class JSONDBClient<T extends JSONDocMeta> {
   static updateEvent = new SlotEvent<JSONDBEvent>();
 
+  static useLiveJSONDB = useLiveJSONDB;
   constructor(
     public collectionName: string
   ) {}

@@ -2,5 +2,5 @@ packages:
   - "apps/electron-backend"
   - "apps/electron-frontend"
   - "apps/node"
-  - "apps/electron-operation"
+  - "apps/operation"
   - "packages/*"

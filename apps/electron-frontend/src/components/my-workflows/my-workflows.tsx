@@ -1,7 +1,6 @@
 import * as React from 'react'
 import styles from "./my-workflows.style.module.scss";
-import { useLiveQuery } from "dexie-react-hooks";
-import { documentDatabaseInstance } from '@comflowy/common/storage';
+import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/common/storage';
 import { Button, Modal, Popover, Space, message } from 'antd';
 import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
 import { useRouter } from 'next/router';
@@ -70,11 +69,22 @@ import { Carousel } from 'antd';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
 import { EllipsisOutlined } from '@ant-design/icons';
+import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 
 function WorkflowList() {
-  const docs = (useLiveQuery(async () => {
-    return await documentDatabaseInstance.getDoclistFromLocal();
+  const docs = (JSONDBClient.useLiveJSONDB<PersistedFullWorkflow[]>({
+    collectionName: "workflows",
+    queryFn: async (): Promise<PersistedFullWorkflow[]> => {
+      try {
+        const docs = await documentDatabaseInstance.getDocs();
+        return docs;
+      } catch (err) {
+        console.log(err);
+      }
+      return [];
+    }
   }) || []).filter(doc => !doc.deleted);
+
   const [modal, contextHolder] = Modal.useModal();
   return (
     <div className="workflow-list">
@@ -99,7 +109,7 @@ function WorkflowList() {
             title: 'Do you want to delete this item?',
             content: 'When clicked the OK button, this dialog will be closed after 1 second',
             onOk: async () => {
-              const ret = await documentDatabaseInstance.removeDocSoft(doc.id); 
+              const ret = await documentDatabaseInstance.deleteDocSoft(doc.id); 
             },
             onCancel() { },
           });

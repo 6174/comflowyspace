@@ -3,7 +3,6 @@ import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comf
 import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
-import { useRouter } from 'next/router';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 

@@ -6,6 +6,7 @@ import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions } from './routes/api/extension';
 import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig } from './routes/api/bootstrap';
+import { JSONDB } from './modules/jsondb/jsondb';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -49,7 +50,9 @@ export async function startAppServer(params: {
   });
 
   const [server, wss] = setupWebsocketHandler(app);
-  
+
+  JSONDB.serve(app, server, wss);
+
   server.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
   });
