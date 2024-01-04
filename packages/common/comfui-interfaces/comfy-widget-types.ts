@@ -61,5 +61,3 @@ export enum ContrlAfterGeneratedValues {
 }
 
 export const ContrlAfterGeneratedValuesOptions = Object.values(ContrlAfterGeneratedValues);
-
-console.log("ContrlAfterGeneratedValuesOptions", ContrlAfterGeneratedValuesOptions);

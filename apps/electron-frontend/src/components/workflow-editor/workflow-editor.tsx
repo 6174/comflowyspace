@@ -45,6 +45,17 @@ export default function WorkflowEditor() {
     return st.transform[2]
   }));
 
+  const nodesWithStyle = nodes.map(node => {
+    return {
+      ...node,
+      style: {
+        ...node.style,
+        width: node.width,
+        height: node.height
+      }
+    }
+  });
+
   const styledEdges = edges.map(edge => {
     return {
       ...edge,
@@ -149,8 +160,10 @@ export default function WorkflowEditor() {
       <WsController/>
       <ReactFlow
         ref={ref}
-        nodes={nodes}
+        nodes={nodesWithStyle}
         edges={styledEdges}
+        maxZoom={10}
+        minZoom={.1}
         fitView
         nodeTypes={nodeTypes}
         deleteKeyCode={['Delete', 'Backspace']}
