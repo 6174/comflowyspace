@@ -32,7 +32,7 @@ export async function startAppServer(params: {
   app.get('/api/env_check', ApiEnvCheck);
   app.get('/api/extension_infos', ApiRouteGetExtensions)
   app.get('/api/model_infos', ApiRouteGetModels);
-  
+
   app.post('/api/add_bootstrap_task', ApiBootstrap);
   app.post('/api/install_extension', ApiRouteInstallExtension)
   app.post('/api/enable_extensions', ApiRouteEnableExtensions)
@@ -52,7 +52,6 @@ export async function startAppServer(params: {
   const [server, wss] = setupWebsocketHandler(app);
 
   JSONDB.serve(app, server, wss);
-
   server.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
   });
