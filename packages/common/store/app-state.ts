@@ -20,13 +20,13 @@ import {
   type NodeId,
   type NodeInProgress,
   type PropertyKey,
-  SDNode,
-  type Widget,
+  SDNode, Widget,
   type WidgetKey,
   NODE_IDENTIFIER,
   Connection,
   PreviewImage,
   UnknownWidget,
+  ContrlAfterGeneratedValues,
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
@@ -120,11 +120,20 @@ export const AppState = {
       .reduce((a, b) => Math.max(a, b))
 
     const stateNode = state.nodes.find(sn => sn.id == node.id);
+    const seedFieldName = Widget.findSeedFieldName(widget);
+    const nodeValue: SDNode = node.value;
+    if (seedFieldName) {
+      nodeValue.fields = {
+        control_after_generated: ContrlAfterGeneratedValues.Incremental,
+        ...nodeValue.fields,
+      }
+    }
+
     const item: Node = {
       id: node.id + "",
       data: {
         widget,
-        value: node.value
+        value: nodeValue
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
