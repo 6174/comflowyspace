@@ -91,13 +91,13 @@ export const NodeComponent = memo(({
       const height = mainRef.current.offsetHeight + 25;
       const width = mainRef.current.offsetWidth + 4;
       setMinHeight(height);
-      const dimensions = node.data.dimensions;
+      const dimensions = node.data.dimensions 
       if (!dimensions || dimensions.height < height) {
         onNodesChange([{
           type: "dimensions",
           id: nodeId,
           dimensions: {
-            width: dimensions.width,
+            width: !!dimensions ? dimensions.width : width,
             height
           }
         }])
