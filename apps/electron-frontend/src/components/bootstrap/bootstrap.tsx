@@ -71,7 +71,7 @@ const Bootstrap = () => {
   return (
     <div className={styles.bootstrap}>
       <h1><LogoSvg/> Comflowy Bootstrap</h1>
-      <p>{currentTask.title}... ({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
+      <p>{currentTask.title} ({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
       {$task}
     </div>
   )

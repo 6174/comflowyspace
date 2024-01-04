@@ -93,11 +93,11 @@ export function SetupConfig() {
   return (
     <div className="SetupConfig">
       <div className="field">
-        <Alert message="If you already installed ComfyUI, you can choose the exist comfyUI path" type="info" showIcon />
-        <br />
         <div className="field-label" style={{
           marginBottom: "10px"
         }}>ComfyUI Path:</div>
+        <Alert message="If you already installed ComfyUI, you can choose the exist comfyUI path" type="info" showIcon />
+        <br />
         <Space>
           <Input disabled={electronEnv} value={value} style={{width: 400}}/>
           { electronEnv && <Button type="link" onClick={selectFolder}>Select folder</Button>}
@@ -106,11 +106,11 @@ export function SetupConfig() {
       </div>
 
       <div className="field">
-        <Alert message="Optional: If you already installed Stable Diffusion WebUI, you can choose the sd path to reuse models" type="info" showIcon />
-        <br />
         <div className="field-label" style={{
           marginBottom: "10px"
         }}>SD WebUI Path:</div>
+        <Alert message="Optional: If you already installed Stable Diffusion WebUI, you can choose the sd path to reuse models" type="info" showIcon />
+        <br />
         <Space>
           <Input value={sdwebuiPath} placeholder="Input sd webui path if exists" style={{ width: 400 }} />
           {electronEnv && <Button type="link" onClick={selectSdWebUIFolder}>Select folder</Button>}
