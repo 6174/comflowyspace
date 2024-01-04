@@ -10,11 +10,12 @@ import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
-import { documentDatabaseInstance } from '@comflowy/common/local-storage';
+import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -59,17 +60,23 @@ export default function WorkflowEditor() {
   const router = useRouter();
   const {id} = router.query;
 
-  const watchedDoc = useLiveQuery(async () => {
-    if (!id) {
-      return null;
+  const watchedDoc = JSONDBClient.useLiveJSONDB<PersistedFullWorkflow | null>({
+    collectionName: "workflows",
+    documentId: id as string,
+    queryFn: async() => {
+      if (!id) {
+        return null;
+      }
+      return await documentDatabaseInstance.getDoc(id as string)
     }
-    return await documentDatabaseInstance.getDocFromLocal(id as string)
-  }, [id]);
+  });
 
   React.useEffect(() => {
     if (id && inited) {
-      documentDatabaseInstance.getDocFromLocal(id as string).then(doc => {
+      documentDatabaseInstance.getDoc(id as string).then(doc => {
         doc && !doc.deleted && onLoadWorkflow(doc);
+      }).catch(err => {
+        console.log(err);
       })
     }
     checkWebGLStatus();

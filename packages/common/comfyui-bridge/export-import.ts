@@ -1,5 +1,5 @@
 import exifr from 'exifr';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../local-storage';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../storage';
 import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
 import { Input, Widget, WidgetKey, Widgets } from '../comfui-interfaces';
 import { uuid } from '../utils';
