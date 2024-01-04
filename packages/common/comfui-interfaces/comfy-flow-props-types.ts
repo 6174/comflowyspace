@@ -18,6 +18,7 @@ export interface BoolProps {
 
 export interface InputType {
   BOOL: [boolean, BoolProps]
+  BOOLEAN: [boolean, BoolProps]
   INT: [number, NumberProps<number>]
   FLOAT: [number, NumberProps<number>]
   STRING: [string, StringProps]
@@ -47,7 +48,7 @@ export type FlowProps = [FlowPropsKey];
 
 type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
-export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING';
+export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
 export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload: boolean}] | FlowProps
 
@@ -58,8 +59,9 @@ export const Input = {
     }
     return i[0] as string;
   },
+
   isBool(i: Input): i is Parameter<'BOOL'> {
-    return i[0] === 'BOOL'
+    return i[0] === 'BOOL' || i[0] === 'BOOLEAN'
   },
 
   isInt(i: Input): i is Parameter<'INT'> {

@@ -41,4 +41,25 @@ export const Widget = {
     }
     return fields
   },
+  findSeedFieldName(widget: Widget): string | undefined {
+    const inputs = widget.input.required;
+    if (inputs.seed) {
+      return 'seed'
+    }
+    if (inputs.noise_seed) {
+      return 'noise_seed'
+    }
+    return
+  }
 }
+
+export enum ContrlAfterGeneratedValues {
+  Randomnized = "randomnized",
+  Fixed = "fixed",
+  Incremental = "incremental",
+  Decremental = "decremental"
+}
+
+export const ContrlAfterGeneratedValuesOptions = Object.values(ContrlAfterGeneratedValues);
+
+console.log("ContrlAfterGeneratedValuesOptions", ContrlAfterGeneratedValuesOptions);
