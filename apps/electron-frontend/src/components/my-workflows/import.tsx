@@ -1,9 +1,8 @@
 import { openTabPage } from '@/lib/electron-bridge';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
-import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/local-storage/document-database';
+import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
-import { useRouter } from 'next/router';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 

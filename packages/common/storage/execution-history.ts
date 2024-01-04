@@ -17,20 +17,20 @@ export class ExecutionHistoryDatabase extends Dexie {
     });
   }
 
-  async getDoclistFromLocal() {
+  async getDocs() {
     return this.documents
       .toArray();
   }
 
-  async getDocFromLocal(id: string) {
+  async getDoc(id: string) {
     return this.documents.get(id);
   }
 
-  async createDocToLocal(doc: ExecutionHistory) {
+  async createDoc(doc: ExecutionHistory) {
     return this.documents.add(doc);
   }
 
-  async updateDocToLocal(doc: ExecutionHistory) {
+  async updateDoc(doc: ExecutionHistory) {
     return this.documents.put(doc);
   }
 

@@ -33,7 +33,7 @@ export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => 
 
 import * as Y from "yjs";
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, throttledUpdateDocument } from "../local-storage";
+import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, throttledUpdateDocument } from "../storage";
 
 import { create } from 'zustand'
 import { PromptResponse, createPrompt, getWidgetLibrary as getWidgets, sendPrompt } from '../comfyui-bridge/bridge';

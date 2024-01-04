@@ -1,6 +1,6 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx"],
+  "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx", "jsondb"],
   "compilerOptions": {
     "baseUrl": "."
   },
