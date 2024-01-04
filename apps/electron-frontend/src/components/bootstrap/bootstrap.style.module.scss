@@ -1,5 +1,7 @@
 .bootstrap {
   padding: 40px;
+  min-width: 600px;
+  overflow: hidden;
   :global {
       .ant-alert-message {
         font-size: 12px;
@@ -7,11 +9,15 @@
       h1 {
         display: flex;
         align-items: center;
-        font-size: 64px;
-        transform: scale(.6);
+        font-size: 34px;
         transform-origin: 0% 0%;
         margin-bottom: -20px;
         margin-left: -6px;
+        > svg {
+          transform: scale(0.55);
+          margin-left: -18px;
+          margin-right: -10px;
+        }
       } 
       .field {
         margin-top: 20px;
