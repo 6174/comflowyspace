@@ -129,6 +129,9 @@ export const AppState = {
       }
     }
 
+    const width = node.dimensions?.width;
+    const height = node.dimensions?.height;
+
     const item: Node = {
       id: node.id + "",
       data: {
@@ -137,8 +140,12 @@ export const AppState = {
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
-      width: node.dimensions?.width,
-      height: node.dimensions?.height,
+      width,
+      height,
+      style: {
+        width,
+        height
+      },
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
     }
@@ -359,7 +366,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     onSyncFromYjsDoc();
   },
   onNodeFieldChange: (id, key, value) => {
-    console.log("change prop", id, key, value);
     const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onNodeFieldChange(doc, {
       id,
@@ -377,9 +383,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     onSyncFromYjsDoc();
   },
   onAddNode: (widget: Widget, position: XYPosition) => {
-    console.log("on Add Node");
     const node = SDNode.fromWidget(widget);
-    console.log("add node")
     const { doc, onSyncFromYjsDoc } = get();
     WorkflowDocumentUtils.onNodesAdd(doc, [{
       id: createNodeId(),
