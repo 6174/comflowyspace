@@ -4,7 +4,6 @@ import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/das
 import { Alert, Button, message } from "antd";
 import { useCallback, useEffect } from "react";
 import {LogViewer} from "ui/log-viewer/log-viewer";
-import useComfyUIProcessManagerState from "../comfyui-process-manager/comfyui-process-manager-state";
 
 export type BootstrapTaskProps = {
   type: BootStrapTaskType,
@@ -55,7 +54,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
           )
         }
       </div>
-      {/* <LogViewer messages={messages}/> */}
+      <LogViewer messages={messages} oneline/>
     </div>
   )
 }
