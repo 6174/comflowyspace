@@ -46,11 +46,9 @@ export async function readWorkflowFromPng(file: File, widgets: Widgets): Promise
     throw new Error('Invalid file type. Only PNG images are supported.');
   }
 
-  const image = new Image();
-  image.src = URL.createObjectURL(file);
-
   return new Promise((resolve, reject) => {
-    image.onload = async () => {
+    const image = new Image();
+    const onloadHandler = async () => {
       try {
         const exifData = await exifr.parse(image);
         const workflow = JSON.parse(exifData.workflow) as ComfyUIWorkflow
@@ -63,9 +61,13 @@ export async function readWorkflowFromPng(file: File, widgets: Widgets): Promise
       }
     };
 
+    image.onload = onloadHandler;
+
     image.onerror = () => {
       reject(new Error('Failed to load image.'));
     };
+
+    image.src = URL.createObjectURL(file);
   });
 }
 
