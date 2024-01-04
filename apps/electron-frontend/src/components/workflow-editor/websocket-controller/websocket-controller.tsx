@@ -20,7 +20,7 @@ export function WsController(): JSX.Element {
     queryParams: clientId ? { clientId } : {},
     onMessage: (ev) => {
       const msg = JSON.parse(ev.data)
-      console.log("msg", msg)
+      // console.log("msg", msg)
       if (Message.isStatus(msg)) {
         if (msg.data.sid !== undefined && msg.data.sid !== clientId) {
           onNewClientId(msg.data.sid)
