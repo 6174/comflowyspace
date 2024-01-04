@@ -68,15 +68,22 @@ export const NodeComponent = memo(({
   }
 
   const isInProgress = progressBar !== undefined
-  const [minHeight, setMinHeight] = useState(100);
+  const [minHeight, setMinHeight] = useState(400);
   const [minWidth, setMinWidth] = useState(180);
   const mainRef = useRef<HTMLDivElement>();
 
-  const updateMinHeight = () => {
+  const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
-      setMinHeight(mainRef.current.clientHeight + 25)
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 200)
+      })
+      const box = mainRef.current.getBoundingClientRect();
+      console.log("height", mainRef.current, box.height);
+      setMinHeight(box.height + 25)
     }
-  }
+  }, [setMinHeight]);
 
   useEffect(() => {
     updateMinHeight();

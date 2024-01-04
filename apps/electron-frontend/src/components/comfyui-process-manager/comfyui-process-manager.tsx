@@ -23,7 +23,7 @@ const ComfyUIProcessManager = () => {
 
   const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
     onMessage,
-    onOpen: () => console.log('opened'),
+    // onOpen: () => console.log('opened'),
     shouldReconnect: (closeEvent) => true,
   });
 
