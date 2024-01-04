@@ -62,7 +62,6 @@ export class JSONDB<DocType extends JSONDocMeta> {
       // Initialize existing docs
       const docsDir = path.join(JSONDB.DB_PATH, this.dbName);
 
-      console.log("docs-dir: ", docsDir);
       await fsExtra.ensureDir(docsDir);
       
       const filePath = this.#docFilePath("meta");
@@ -76,22 +75,21 @@ export class JSONDB<DocType extends JSONDocMeta> {
       }
   
       const files = await fsExtra.readdir(docsDir);
-  
-      for (let file in files) {
+      
+      for (let file of files) {
         if (file !== 'meta.json') {
           const docId = path.basename(file, '.json');
           const adapter = new JSONFile<DocType>(this.#docFilePath(docId));
           const doc = this.docs[docId] = new Low(adapter, {} as DocType);
           const docs = this.metaDb.data.docs;
           // Add docId to metaDb if it's not already there
-          if (docs.indexOf(docId) === -1) {
+          if (!docs.includes(docId)) {
             docs.push(docId);
             await doc.read();
             await this.#setDocMeta(doc.data, false);
           }
         }
       }
-  
       await this.metaDb.write();
     } catch(err) {
       console.log("db iit error", err);
@@ -112,6 +110,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
    * @returns 
    */
   getAllDocs = async (): Promise<DocType[]> => {
+    await this.metaDb.read();
     const docs = this.metaDb.data.docs;
     const docsMeta = this.metaDb.data.docsMeta;
     return docs.map(id => {

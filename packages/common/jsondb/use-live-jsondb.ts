@@ -27,12 +27,14 @@ export function useLiveJSONDB<T>(options:{
   }, [collectionName, documentId]);
 
   useEffect(() => {
+    console.log("updated collection version", collectionVersion);
     const fetchData = async () => {
       const result = await options.queryFn();
+      console.log("updated result", result);
       setData(result);
     }
     fetchData();
-  }, [collectionVersion, docVersion])
+  }, [collectionVersion, docVersion, setData])
 
   return data;
 }
