@@ -13,7 +13,6 @@ export const ImportWorkflow = () => {
   const widgets = useAppStore(st => st.widgets);
 
   const onFileSelected = async (file: File) => {
-    console.log(selectedFile);
     try {
       let workflow: PersistedWorkflowDocument | null = null;
       if (file.type === 'image/png') {
@@ -51,6 +50,7 @@ export const ImportWorkflow = () => {
       setSelectedFile(null);
       onFileSelected(null);
     }
+    event.target.value = null;
   };
 
   const handleButtonClick = () => {
