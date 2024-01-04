@@ -136,16 +136,14 @@ export const AppState = {
       id: node.id + "",
       data: {
         widget,
-        value: nodeValue
+        value: nodeValue,
+        dimensions: node.dimensions,
+        position: node.position
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
       width,
       height,
-      style: {
-        width,
-        height
-      },
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
     }

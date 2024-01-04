@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection} from 'reactflow'
+import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection, Dimensions} from 'reactflow'
 import { Widget, Input, type NodeId, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
 import { Button, Image, Progress, Space } from 'antd';
@@ -16,6 +16,7 @@ interface Props {
   node: NodeProps<{
     widget: Widget;
     value: SDNode;
+    dimensions: Dimensions
   }>
   progressBar?: number;
   imagePreviews?: PreviewImage[]
@@ -28,6 +29,7 @@ export const NodeComponent = memo(({
 }: Props): JSX.Element => {
   const params: {property: string, input: Input}[] = []
   const widget = node.data.widget;
+  const nodeId = node.id;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];
   const nodeTitle = node.data.value.title || widget.name;
@@ -68,22 +70,40 @@ export const NodeComponent = memo(({
   }
 
   const isInProgress = progressBar !== undefined
-  const [minHeight, setMinHeight] = useState(400);
+  const [minHeight, setMinHeight] = useState(100);
   const [minWidth, setMinWidth] = useState(180);
   const mainRef = useRef<HTMLDivElement>();
 
+  const onNodesChange = useAppStore(st => st.onNodesChange);
+  const transform = useStore((st => {
+    return st.transform[2]
+  }));
   const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve(null);
-        }, 200)
-      })
-      const box = mainRef.current.getBoundingClientRect();
-      console.log("height", mainRef.current, box.height);
-      setMinHeight(box.height + 25)
+        }, 100)
+      });
+      if (!mainRef.current) {
+        return
+      }
+      const height = mainRef.current.offsetHeight + 25;
+      const width = mainRef.current.offsetWidth + 4;
+      setMinHeight(height);
+      const dimensions = node.data.dimensions;
+      if (!dimensions || dimensions.height < height) {
+        onNodesChange([{
+          type: "dimensions",
+          id: nodeId,
+          dimensions: {
+            width: dimensions.width,
+            height
+          }
+        }])
+      }
     }
-  }, [setMinHeight]);
+  }, [setMinHeight, nodeId]);
 
   useEffect(() => {
     updateMinHeight();
