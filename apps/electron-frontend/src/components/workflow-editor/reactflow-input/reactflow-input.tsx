@@ -37,6 +37,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
         <div className='switch-label'>{name}</div>
         <div className='switch-input'>
           <Switch
+            size='small'
             checked={value}
             onChange={(ev) => onChange(ev)}
           />

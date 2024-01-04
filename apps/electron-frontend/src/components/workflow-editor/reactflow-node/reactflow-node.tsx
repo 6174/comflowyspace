@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection} from 'reactflow'
-import { type Widget, Input, type NodeId, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/comfui-interfaces';
+import { Widget, Input, type NodeId, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
 import { Button, Image, Progress, Space } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
@@ -55,6 +55,15 @@ export const NodeComponent = memo(({
     params.push({
       property: paramType,
       input: [paramType as any, extraInfo]
+    })
+  }
+
+  // if it has a seed, add seed control_after_generated param
+  const seedFieldName = Widget.findSeedFieldName(widget);
+  if (seedFieldName) {
+    params.push({
+      property: "control_after_generated",
+      input: [ContrlAfterGeneratedValuesOptions]
     })
   }
 
