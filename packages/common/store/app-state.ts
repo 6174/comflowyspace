@@ -20,13 +20,13 @@ import {
   type NodeId,
   type NodeInProgress,
   type PropertyKey,
-  SDNode,
-  type Widget,
+  SDNode, Widget,
   type WidgetKey,
   NODE_IDENTIFIER,
   Connection,
   PreviewImage,
   UnknownWidget,
+  ContrlAfterGeneratedValues,
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
@@ -120,11 +120,20 @@ export const AppState = {
       .reduce((a, b) => Math.max(a, b))
 
     const stateNode = state.nodes.find(sn => sn.id == node.id);
+    const seedFieldName = Widget.findSeedFieldName(widget);
+    const nodeValue: SDNode = node.value;
+    if (seedFieldName) {
+      nodeValue.fields = {
+        control_after_generated: ContrlAfterGeneratedValues.Incremental,
+        ...nodeValue.fields,
+      }
+    }
+
     const item: Node = {
       id: node.id + "",
       data: {
         widget,
-        value: node.value
+        value: nodeValue
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
@@ -443,6 +452,34 @@ export const useAppStore = create<AppState>((set, get) => ({
     const docJson = WorkflowDocumentUtils.toJson(state.doc);
     const prompt = createPrompt(docJson, state.widgets, state.clientId);
     const res = await sendPrompt(prompt);
+
+    // update control_after_generated node
+    const onNodeFieldChange = state.onNodeFieldChange;
+    const MAX_VALUE = 18446744073709551615;
+    state.nodes.forEach(node => {
+      const widget = node.data.widget as Widget;
+      const sdnode = node.data.value as SDNode;
+      const seedFieldName = Widget.findSeedFieldName(widget);
+      if (seedFieldName) {
+        const control_after_generated = sdnode.fields.control_after_generated;
+        const oldSeed = sdnode.fields[seedFieldName];
+        let newSeed = oldSeed;
+        switch (control_after_generated) {
+          case ContrlAfterGeneratedValues.Randomnized:
+            newSeed = Math.random() * MAX_VALUE;
+            break;
+          case ContrlAfterGeneratedValues.Incremental:
+            newSeed = Math.min(MAX_VALUE, oldSeed + 1);
+            break;
+          case ContrlAfterGeneratedValues.Decremental:
+            newSeed = Math.max(-1, oldSeed - 1);
+          default:
+            break;
+        }
+        onNodeFieldChange(node.id, seedFieldName, newSeed);
+      }
+    });
+
     console.log("prompt response:", res);
     set({ promptError: res.error })
     return res
