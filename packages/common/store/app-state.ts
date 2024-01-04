@@ -452,6 +452,34 @@ export const useAppStore = create<AppState>((set, get) => ({
     const docJson = WorkflowDocumentUtils.toJson(state.doc);
     const prompt = createPrompt(docJson, state.widgets, state.clientId);
     const res = await sendPrompt(prompt);
+
+    // update control_after_generated node
+    const onNodeFieldChange = state.onNodeFieldChange;
+    const MAX_VALUE = 18446744073709551615;
+    state.nodes.forEach(node => {
+      const widget = node.data.widget as Widget;
+      const sdnode = node.data.value as SDNode;
+      const seedFieldName = Widget.findSeedFieldName(widget);
+      if (seedFieldName) {
+        const control_after_generated = sdnode.fields.control_after_generated;
+        const oldSeed = sdnode.fields[seedFieldName];
+        let newSeed = oldSeed;
+        switch (control_after_generated) {
+          case ContrlAfterGeneratedValues.Randomnized:
+            newSeed = Math.random() * MAX_VALUE;
+            break;
+          case ContrlAfterGeneratedValues.Incremental:
+            newSeed = Math.min(MAX_VALUE, oldSeed + 1);
+            break;
+          case ContrlAfterGeneratedValues.Decremental:
+            newSeed = Math.max(-1, oldSeed - 1);
+          default:
+            break;
+        }
+        onNodeFieldChange(node.id, seedFieldName, newSeed);
+      }
+    });
+
     console.log("prompt response:", res);
     set({ promptError: res.error })
     return res
