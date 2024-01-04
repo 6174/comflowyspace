@@ -5,6 +5,7 @@ import theme from "../lib/theme-config";
 import "../styles/global.scss";
 import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 import { DraggableModalProvider } from "ui/antd/draggable-modal";
+import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
@@ -12,6 +13,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   useEffect(()=> {
     onInit();
+    JSONDBClient.listen();
   }, [])
 
   return (

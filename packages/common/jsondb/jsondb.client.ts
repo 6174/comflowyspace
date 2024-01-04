@@ -1,4 +1,4 @@
-import { getBackendUrl } from '../config';
+import config, { getBackendUrl } from '../config';
 import { SlotEvent } from '../utils/slot-event';
 import { JSONDBEvent, JSONDBReponse, type JSONDocMeta } from './jsondb.types';
 import { useLiveJSONDB } from './use-live-jsondb';
@@ -14,7 +14,7 @@ export class JSONDBClient<T extends JSONDocMeta> {
   
   static listen() {
     if (!started) {
-      const socket = new WebSocket("wss://ws/db");
+      const socket = new WebSocket(`ws://${config.host}/ws/db`);
       socket.addEventListener("message", (event) => {
         JSONDBClient.updateEvent.emit(JSON.parse(event.data));
       });

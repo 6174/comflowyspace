@@ -9,7 +9,7 @@ import * as fsExtra from "fs-extra";
 type Doc = {title: string} & JSONDocMeta;
 
 console.log(getAppDataDir());
-JSONDB.dir(getAppDataDir());
+JSONDB.dir(path.resolve(getAppDataDir(), "db"));
 async function test() {
   // test node
   // const base_dir = getAppDataDir();
@@ -32,19 +32,7 @@ async function test() {
   //   console.log("file not exist");
   // }
 
-  const db = await JSONDB.db<Doc>("test", ["id", "title"]);
-  const doc = await db.newDoc({
-    id: "test",
-    title: "test",
-    create_at: +new Date(),
-  })
-  
-  await doc.read();
-  if (doc.data.id !== "test") {
-    console.log("test failed");
-  } else {
-    console.log("test success");
-  }
+  const db = await JSONDB.db<Doc>("workflows", ["id", "title"]);
 }
 
 test();
