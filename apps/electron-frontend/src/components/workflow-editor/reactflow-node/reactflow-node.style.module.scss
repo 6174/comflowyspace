@@ -123,6 +123,12 @@
         .node-input-container {
             position: relative;
             padding: 4px 10px;
+            .ant-input-number-affix-wrapper {
+                width: 100%;
+                .ant-input-number {
+                    padding-right: 30px;
+                }
+            }
             input {
                 text-align: right;
                 font-family: JetBrains Mono, monospace;
