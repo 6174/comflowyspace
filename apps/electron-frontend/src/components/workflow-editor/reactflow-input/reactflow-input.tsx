@@ -1,6 +1,6 @@
 import { Input } from '@comflowy/common/comfui-interfaces'
 import { memo, useState, useEffect } from 'react'
-import {Input as AntInput, Select, Switch} from "antd";
+import {Input as AntInput, InputNumber, Select, Switch} from "antd";
 const MAX_SELECT_NAME = 36
 
 interface InputProps {
@@ -46,20 +46,19 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
     )
   }
 
-  if (Input.isInt(input)) {
+  if (Input.isInt(input) || Input.isFloat(input)) {
+    const numberProps = input[1];
+    const isInt = Input.isInt(input) ;
     return (
-      <IntInput prefix={name} value={value || 0} onChange={onChange} />
-    )
-  }
-
-  if (Input.isFloat(input)) {
-    return (
-      <AntInput
+      <InputNumber
+        defaultValue={numberProps.default}
+        min={numberProps.min || null}
+        max={numberProps.max || null}
         prefix={name}
-        type="number"
-        className="px-1 grow nodrag"
+        className="nodrag"
+        step={isInt ? 1 : 0.01}
         value={value}
-        onChange={(ev) => onChange(ev.target.valueAsNumber)}
+        onChange={(value) => onChange(value)}
       />
     )
   }
@@ -97,15 +96,12 @@ function IntInput({
     setState((st) => ({ ...st, text: value.toString() }))
   }, [value])
 
-  const defaultClasses = ['px-1', 'grow', 'nodrag']
-  const borderClasses = failed ? ['border', 'border-1', 'border-rose-500'] : []
-
   return (
     <AntInput
       type="text"
       prefix={prefix}
-      className={defaultClasses.concat(borderClasses).join(' ')}
       value={text}
+      className='no-drag'
       onChange={(ev) => {
         const parsed = parseInt(ev.target.value)
         const failed = Object.is(NaN, parsed)
