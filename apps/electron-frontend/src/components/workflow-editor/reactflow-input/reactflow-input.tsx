@@ -83,37 +83,6 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
 
 export default memo(InputComponent)
 
-function IntInput({ 
-  value, 
-  onChange,
-  prefix
-}: { value: number; onChange: (num: number) => void; prefix?: any }
-): JSX.Element {
-  const [{ text, failed }, setState] = useState({ text: value.toString(), failed: false })
-
-  // update state on new props
-  useEffect(() => {
-    setState((st) => ({ ...st, text: value.toString() }))
-  }, [value])
-
-  return (
-    <AntInput
-      type="text"
-      prefix={prefix}
-      value={text}
-      className='no-drag'
-      onChange={(ev) => {
-        const parsed = parseInt(ev.target.value)
-        const failed = Object.is(NaN, parsed)
-        setState({ text: ev.target.value, failed })
-        if (!failed) {
-          onChange(parsed)
-        }
-      }}
-    />
-  )
-}
-
 function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
   return (
     <div className="node-input-label-box">

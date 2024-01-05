@@ -1,9 +1,7 @@
-import { PersistedWorkflowDocument } from "@comflowy/common/storage";
 import { useAppStore } from "@comflowy/common/store";
 import { getWorkflowTemplate } from "@comflowy/common/templates/templates";
 import { Popconfirm, Space } from "antd";
 import { useCallback } from "react";
-import IconDown from "ui/icons/icon-down";
 import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 import { ImportWorkflow } from "./import";

@@ -3,7 +3,6 @@ import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/c
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
 import React, { useState, useRef } from 'react';
-import { ImageIcon } from 'ui/icons';
 
 export const ImportWorkflow = () => {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);

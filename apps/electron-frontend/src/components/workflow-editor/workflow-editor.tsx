@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore } from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi } from 'reactflow';
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -20,7 +20,7 @@ import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransform, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
@@ -36,15 +36,19 @@ export default function WorkflowEditor() {
     onNodesChange: st.onNodesChange,
     onEdgesChange: st.onEdgesChange,
     onLoadWorkflow: st.onLoadWorkflow,
+    onTransform: st.onTransform,
+    transform: st.transform,
     onConnect: st.onConnect,
     inprogressNodeId: st.nodeInProgress?.id,
     onInit: st.onInit,
     onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
   }), shallow)
-  const transform  = useStore((st => {
-    return st.transform[2]
-  }));
 
+  // @TODO performance issue when zooming
+  // const transform  = useStore((st => {
+  //   return st.transform[2]
+  // }));
+  
   const nodesWithStyle = nodes.map(node => {
     return {
       ...node,
@@ -155,6 +159,8 @@ export default function WorkflowEditor() {
     return <div>This doc is deleted</div>
   }
 
+  const storeApi = useStoreApi();
+
   return (
     <div className={styles.workflowEditor}>
       <WsController/>
@@ -179,6 +185,10 @@ export default function WorkflowEditor() {
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onDrop={onDrop}
+        onMoveEnd={ev => {
+          const transform = storeApi.getState().transform;
+          onTransform(transform[2]);
+        }}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
         onNodeContextMenu={(ev, node) => {
