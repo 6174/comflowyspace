@@ -75,9 +75,7 @@ export const NodeComponent = memo(({
   const mainRef = useRef<HTMLDivElement>();
 
   const onNodesChange = useAppStore(st => st.onNodesChange);
-  const transform = useStore((st => {
-    return st.transform[2]
-  }));
+
   const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
       await new Promise((resolve) => {
@@ -127,6 +125,9 @@ export const NodeComponent = memo(({
       <ResizeIcon/>
     </div>
   )
+  const transform = useAppStore(st => st.transform);
+
+  const invisible = transform < 0.2;
 
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${(node.selected || isInProgress) ? nodeStyles.reactFlowSelected : ""}`} style={{
@@ -145,89 +146,98 @@ export const NodeComponent = memo(({
         {node.selected && resizeIcon}
       </NodeResizeControl>
 
-      <div className="node-header">
-        <h2 className="node-title">{ nodeTitle }</h2>
+      {!invisible ? (
+        <>
+          <div className="node-header">
+            <h2 className="node-title">{nodeTitle}</h2>
 
-        {isInProgress ? <Progress
-            percent={progressBar * 100} 
-            style={{
-              position: "absolute",
-              top: 14,
-              left: 0,
-              width: "100%",
-              height: 4,
-              zIndex: 1,
-              borderRadius: 0
-            }} 
-            showInfo={false} 
-            size="small" /> : <></>}
-        {node.selected ? (
-          <div className="node-selected-actions">
+            {isInProgress ? <Progress
+              percent={progressBar * 100}
+              style={{
+                position: "absolute",
+                top: 14,
+                left: 0,
+                width: "100%",
+                height: 4,
+                zIndex: 1,
+                borderRadius: 0
+              }}
+              showInfo={false}
+              size="small" /> : <></>}
+            {node.selected ? (
+              <div className="node-selected-actions">
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
-        ) : (
-          <></>
-        )}
-      </div>
-      <div className="node-main" ref={mainRef}>
+          <div className="node-main" ref={mainRef}>
 
-        <div className="node-slots">
-          <div className="node-inputs">
-            {inputs.map((input, index) => (
-              <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
-            ))}
-          </div>
-          <div className="node-outputs">
-            {outputs.map((output, index) => (
-              <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
-            ))}
-          </div>
-        </div>
+            <div className="node-slots">
+              <div className="node-inputs">
+                {inputs.map((input, index) => (
+                  <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                ))}
+              </div>
+              <div className="node-outputs">
+                {outputs.map((output, index) => (
+                  <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                ))}
+              </div>
+            </div>
 
-        <div className="node-params">
-          {params.map(({ property, input }) => (
-            <InputContainer key={property} name={property} id={node.id} input={input} widget={widget}/>
-          ))}
-        </div>
-          
-        <div className="node-images-preview">
-          {
-            imagePreviews && imagePreviews.map((image, index) => {
-              const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-              return (
-                <div className="node-image-preview-container" key={image.filename} style={{
-                  display: "flex",
-                  marginTop: 10,
-                  justifyContent: "center",
-                  alignItems: "center"
-                }}>
-                  <Image
-                    className="node-preview-image"
-                    onLoadCapture={ev => {
-                      console.log("onload capture");
-                      setMinHeight(mainRef.current.clientHeight + 25)
-                    }}
-                    // ref={image => {
-                    //   console.log("find ref image");
-                    //   image && image.complete && updateMinHeight();
-                    // }}
-                    // onLoad={ev => {
-                    //   console.log("onload capture"); 
-                    // }}
-                    src={imageSrc}
-                    style={{
-                      maxWidth: 200,
-                      maxHeight: 200
-                    }}
-                    onClick={ev => {
-                      console.log("preview");
-                    }}
-                  />
-                </div>
-              )
-            })
-          }
-        </div>
-      </div>
+            <div className="node-params">
+              {params.map(({ property, input }) => (
+                <InputContainer key={property} name={property} id={node.id} input={input} widget={widget} />
+              ))}
+            </div>
+
+            <div className="node-images-preview">
+              {
+                imagePreviews && imagePreviews.map((image, index) => {
+                  const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+                  return (
+                    <div className="node-image-preview-container" key={image.filename} style={{
+                      display: "flex",
+                      marginTop: 10,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}>
+                      <Image
+                        className="node-preview-image"
+                        onLoadCapture={ev => {
+                          console.log("onload capture");
+                          setMinHeight(mainRef.current.clientHeight + 25)
+                        }}
+                        // ref={image => {
+                        //   console.log("find ref image");
+                        //   image && image.complete && updateMinHeight();
+                        // }}
+                        // onLoad={ev => {
+                        //   console.log("onload capture"); 
+                        // }}
+                        src={imageSrc}
+                        style={{
+                          maxWidth: 200,
+                          maxHeight: 200
+                        }}
+                        onClick={ev => {
+                          console.log("preview");
+                        }}
+                      />
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="node-header"></div>
+          <div className="node-main"></div>
+        </>
+      )}
     </div>
   )
 });
