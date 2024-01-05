@@ -10,7 +10,7 @@ import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 export default function ReactflowTopRightPanel() {
     const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
     const persistedWorkflow = useAppStore(st => st.persistedWorkflow);
-
+    const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
     const resetDefault = useCallback(() => {
         onResetFromPersistedWorkflow(
             {
@@ -19,6 +19,7 @@ export default function ReactflowTopRightPanel() {
                 title: persistedWorkflow.title
             }
         )
+        resetWorkflowEvent.emit(null)
     }, [onResetFromPersistedWorkflow, persistedWorkflow]);
 
     return (
