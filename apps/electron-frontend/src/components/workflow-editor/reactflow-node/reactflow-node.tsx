@@ -249,10 +249,8 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   const color = Input.getInputColor([label.toUpperCase()] as any);
   const isConnecting = useAppStore(st => st.isConnecting);
   const connectingParams = useAppStore(st => st.connectingStartParams);
+  const transform = useAppStore(st => st.transform);
 
-  const transform  = useStore((st => {
-    return st.transform[2]
-  }));
   const [connectingMe, setConnectingMe] = useState(false);
   const isValidConnection = useCallback((connection: Connection) => {
     const st = useAppStore.getState();
