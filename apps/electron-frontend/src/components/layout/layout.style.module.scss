@@ -3,6 +3,7 @@
     display: flex;
     height: calc(100vh - 1px);
     overflow: hidden;
+    min-width: 900px;
     :global {
         .workspace-nav {
             width: 210px;
