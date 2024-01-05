@@ -20,7 +20,7 @@ import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransform, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
@@ -36,7 +36,8 @@ export default function WorkflowEditor() {
     onNodesChange: st.onNodesChange,
     onEdgesChange: st.onEdgesChange,
     onLoadWorkflow: st.onLoadWorkflow,
-    onTransform: st.onTransform,
+    onTransformEnd: st.onTransformEnd,
+    onTransformStart: st.onTransformStart,
     transform: st.transform,
     onConnect: st.onConnect,
     inprogressNodeId: st.nodeInProgress?.id,
@@ -185,9 +186,12 @@ export default function WorkflowEditor() {
         onConnectStart={onConnectStart}
         onConnectEnd={onConnectEnd}
         onDrop={onDrop}
+        onMoveStart={ev => {
+          onTransformStart();
+        }}
         onMoveEnd={ev => {
           const transform = storeApi.getState().transform;
-          onTransform(transform[2]);
+          onTransformEnd(transform[2]);
         }}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}

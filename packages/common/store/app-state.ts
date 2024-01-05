@@ -53,6 +53,7 @@ export interface AppState {
   clientId?: string
   slectionMode: SelectionMode
   transform: number
+  transforming: boolean
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
 
@@ -97,7 +98,8 @@ export interface AppState {
   previewedImageIndex?: number
 
   onSubmit: () => Promise<PromptResponse>
-  onTransform: (transform: number) => void;
+  onTransformStart: () => void;
+  onTransformEnd: (transform: number) => void;
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
   onInit: () => Promise<void>
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
@@ -184,6 +186,7 @@ export const AppState = {
 
 export const useAppStore = create<AppState>((set, get) => ({
   transform: 1, 
+  transforming: false,
   persistedWorkflow: null,
   doc: new Y.Doc(),
   resetWorkflowEvent: new SlotEvent<any>(),
@@ -203,11 +206,19 @@ export const useAppStore = create<AppState>((set, get) => ({
   widgets: {},
   widgetCategory: {},
 
-  onTransform: (transform:number) => {
+  onTransformStart: () => {
     set({
-      transform
+      transforming: true
     })
   },
+
+  onTransformEnd: (transform:number) => {
+    set({
+      transform,
+      transforming: false
+    })
+  },
+
   /**
    * AppStore Initialization Entry 
    */

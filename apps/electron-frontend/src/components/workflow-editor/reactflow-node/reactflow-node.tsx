@@ -250,6 +250,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   const isConnecting = useAppStore(st => st.isConnecting);
   const connectingParams = useAppStore(st => st.connectingStartParams);
   const transform = useAppStore(st => st.transform);
+  const transforming = useAppStore(st => st.transforming);
 
   const [connectingMe, setConnectingMe] = useState(false);
   const isValidConnection = useCallback((connection: Connection) => {
@@ -273,6 +274,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
 
   const scaleFactor = (isValidConnection && isConnecting && connectingMe) ? 4 : 1;
 
+  const invisible = transform < 0.4;
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -284,6 +286,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
         className="node-slot-handle" 
         style={{
           backgroundColor: color,
+          visibility: (transforming || invisible)? "hidden" : "visible",
           transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
         }}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
