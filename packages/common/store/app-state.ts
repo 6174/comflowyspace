@@ -287,10 +287,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   onEdgesChange: (changes) => {
     console.log("on edge change", changes);
     set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    const st = get();
-    const { doc } = st;
-    WorkflowDocumentUtils.onEdgesChange(doc, changes);
-    AppState.persistUpdateDoc(st, doc)
+    // all edge changes are catched in other methods
+    // const st = get();
+    // const { doc } = st;
+    // WorkflowDocumentUtils.onEdgesChange(doc, changes);
+    // AppState.persistUpdateDoc(st, doc)
   },
   onEdgeUpdateStart: ()=> {
     console.log("on Edge Update Start");
@@ -306,15 +307,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     const st = get();
     const { doc, onSyncFromYjsDoc } = st;
 
-    const oldConnectEdge = st.edges.find(edge => {
-      return (
-        edge.target === newConnection.target &&
-        edge.targetHandle === newConnection.targetHandle
-      )
-    });
-    if (oldConnectEdge) {
-      WorkflowDocumentUtils.onEdgesDelete(doc, [oldConnectEdge.id]);
-    }
     WorkflowDocumentUtils.onEdgeUpdate(doc, oldEdge, newConnection);
 
     onSyncFromYjsDoc();

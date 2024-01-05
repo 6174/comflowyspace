@@ -178,27 +178,23 @@ const WorkflowDocumentUtils = {
     //   | EdgeResetChange
     //   | EdgeSelectionChange;
     onEdgesChange: (doc: Y.Doc, changes: EdgeChange[]) => {
-        const connectionsArray = (doc.getMap("workflow").get("connections") as Y.Array<PersistedWorkflowConnection>);
-        doc.transact(() => {
-            changes.forEach((change: EdgeChange)=> {
-                let index: number;
-                switch (change.type) {
-                    case "select":
-                        // index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
-                        // const connection = connectionsArray.get(index)!;
-                        // if (connection) {
-                        //     connection.selected = change.selected;
-                        // }
-                        break;
-                    case "remove":
-                        index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
-                        connectionsArray.delete(index);
-                        break;
-                    default:
-                        break;
-                }
-            })
-        });
+        // const connectionsArray = (doc.getMap("workflow").get("connections") as Y.Array<PersistedWorkflowConnection>);
+        // doc.transact(() => {
+        //     changes.forEach((change: EdgeChange)=> {
+        //         let index: number;
+        //         switch (change.type) {
+        //             case "select":
+        //                 // index = connectionsArray.toArray().findIndex(conn => conn.id === change.id);
+        //                 // const connection = connectionsArray.get(index)!;
+        //                 // if (connection) {
+        //                 //     connection.selected = change.selected;
+        //                 // }
+        //                 break;
+        //             default:
+        //                 break;
+        //         }
+        //     })
+        // });
     },
     onEdgeUpdate: (doc: Y.Doc, oldEdge: Edge, newConnection: FlowConnecton) => {
         const connectionsArray = (doc.getMap("workflow").get("connections") as Y.Array<PersistedWorkflowConnection>);
@@ -217,12 +213,14 @@ const WorkflowDocumentUtils = {
         const workflowMap = doc.getMap("workflow");
         doc.transact(() => {
             const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
-            const rawArray = connectionsArray.toArray().map(conn => conn.id);
-            const connectionsToDelete = ids.map(id => rawArray.indexOf(id));
-            connectionsToDelete.sort((a, b) => b - a);
-            connectionsToDelete.forEach(index => {
-                connectionsArray.delete(index);
-            });
+            const rawArray = connectionsArray.toArray().slice().reverse();
+            const length = connectionsArray.length;
+            rawArray.forEach((item, index) => {
+                if (ids.includes(item.id)) {
+                    connectionsArray.delete(length - 1 - index);
+                }
+            })
+
         });
     },
     addConnection: (doc: Y.Doc, connection: Connection) => {
