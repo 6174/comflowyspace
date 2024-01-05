@@ -105,8 +105,21 @@ export const NodeComponent = memo(({
     }
   }, [setMinHeight, nodeId]);
 
+  const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
   useEffect(() => {
     updateMinHeight();
+    const disposable = resetWorkflowEvent.on(async () => {
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 10)
+      });
+      console.log("reset workflow event")
+      updateMinHeight();
+    })
+    return () => {
+      disposable.dispose();
+    } 
   }, [mainRef])
 
   const resizeIcon = (

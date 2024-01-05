@@ -45,6 +45,7 @@ import { getBackendUrl } from '../config'
 import exifr from 'exifr'
 
 import { uuid } from '../utils';
+import { SlotEvent } from '../utils/slot-event';
 
 export type SelectionMode = "figma" | "default";
 export interface AppState {
@@ -68,6 +69,7 @@ export interface AppState {
   isConnecting: boolean;
   connectingStartParams?: OnConnectStartParams & {valueType: string};
 
+  resetWorkflowEvent: SlotEvent<any>;
   // document mutation handler
   onSyncFromYjsDoc: () => void;
   onNodesChange: OnNodesChange
@@ -181,6 +183,7 @@ export const AppState = {
 export const useAppStore = create<AppState>((set, get) => ({
   persistedWorkflow: null,
   doc: new Y.Doc(),
+  resetWorkflowEvent: new SlotEvent<any>(),
   graph: {},
   nodes: [],
   edges: [],
