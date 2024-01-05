@@ -75,12 +75,12 @@ function ChangeTitle() {
 export function UndoRedo() {
     const undoManager = useAppStore(st => st.undoManager);
     const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
-    const inActiveColor = '#1c1c1e54';
-    const activeColor = '#1C1C1E';
+    const inActiveColor = '#ababab';
+    const activeColor = 'white';
     const canUndo = undoManager? undoManager.canUndo() : false;
     const canRedo = undoManager? undoManager.canRedo() : false;
     return (
-        <Space>
+        <Space style={{marginLeft: 10}}>
             <div className="action action-undo" onClick={() => {
                undoManager.undo(); 
                onSyncFromYjsDoc();

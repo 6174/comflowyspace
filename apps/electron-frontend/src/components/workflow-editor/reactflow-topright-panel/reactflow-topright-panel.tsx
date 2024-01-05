@@ -6,6 +6,7 @@ import { useCallback } from "react";
 import IconDown from "ui/icons/icon-down";
 import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
+import { ImportWorkflow } from "./import";
 
 export default function ReactflowTopRightPanel() {
     const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
@@ -25,6 +26,7 @@ export default function ReactflowTopRightPanel() {
     return (
         <div className="topRightPannel">
             <Space>
+                <ImportWorkflow/>
                 <Popconfirm
                     title="Reset workflow"
                     description="Are you sure to reset workflow to default?"
