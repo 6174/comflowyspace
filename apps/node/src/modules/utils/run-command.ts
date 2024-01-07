@@ -112,11 +112,11 @@ export function runCommandWithPty(
 
         pty.onExit((e: { exitCode: number }) => {
             console.log("exitcode", e.exitCode);
-            if (e.exitCode !== 0) {
-                reject(e);
-            } else {
-                resolve(pty);
-            }
+            resolve(pty);
+            // if (e.exitCode !== 0) {
+            // } else {
+            //     resolve(pty);
+            // }
         });
         pty.write(fullCommand);
     })

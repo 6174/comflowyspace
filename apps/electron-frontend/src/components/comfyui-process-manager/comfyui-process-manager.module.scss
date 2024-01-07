@@ -1,9 +1,12 @@
 .comfyuiProcessManager {
   :global {
+    .actions {
+      margin: 10px 0;
+    }
     .term {
       color: white;
       border-radius: 10px;
-      height: 100%;
+      height: calc(100% - 40px);
       .message {
         font-size: 12px;
         line-height: 1.4;

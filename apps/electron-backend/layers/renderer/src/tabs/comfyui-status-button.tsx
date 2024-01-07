@@ -16,9 +16,9 @@ export const ComfyUIStatusButton = () => {
           </svg>
         </div>
         ComfyUI
-        <div className="status">
+        {/* <div className="status">
           <div className="span"></div>
-        </div>
+        </div> */}
       </div>
     )
 }
