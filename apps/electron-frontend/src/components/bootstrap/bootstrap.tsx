@@ -11,22 +11,15 @@ import { StartComfyUI } from './start-comfyui';
 import { SetupConfig } from './setup-config';
 import { InstallComfyUI } from './install-comfyui';
 import LogoSvg from "ui/icons/logo";
-
+import BgSVG from "./background.svg";
+import { Spin } from "antd";
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();
   console.log("bootstrap", bootstrapTasks);
   const finisedTasks = bootstrapTasks.filter(task => task.finished);
   const unfinishedTasks = bootstrapTasks.filter(task => !task.finished);
   const currentTask = unfinishedTasks[0];
-  if (!currentTask) {
-    return (
-      <div className={styles.bootstrap}>
-        <h1><LogoSvg/> Comflowy Bootstrap</h1>
-        <p>Preparing....</p>
-      </div>
-    )
-  }
-  
+
   // const seporator = <span>...</span>
   // const titles = useJoin<BootstrapTask>(bootstrapTasks, (task) => {
   //   return (
@@ -35,44 +28,63 @@ const Bootstrap = () => {
   //     </div>
   //   )
   // }, seporator);
-  
+
   let $task = null;
-  switch (currentTask.type) {
-    case BootStrapTaskType.setupConfig:
-      $task = <SetupConfig/>;
-      break;
-    case BootStrapTaskType.installConda:
-      $task = <InstallConda/>;
-      break;
-    case BootStrapTaskType.installPython:
-      $task = <InstallPython/>;
-      break;
-    case BootStrapTaskType.installTorch:
-      $task = <InstallTorch/>;
-      break;
-    case BootStrapTaskType.installGit:
-      $task = <InstallGit/>;
-      break;
-    case BootStrapTaskType.installComfyUI:
-      $task = <InstallComfyUI/>;
-      break;
-    case BootStrapTaskType.installBasicModel:
-      $task = <InstallModels/>;
-      break;
-    case BootStrapTaskType.installBasicExtension:
-      $task = <InstallExtensions/>;
-      break;
-    case BootStrapTaskType.startComfyUI:
-      $task = <StartComfyUI/>;
-      break;
-    default:
-      break;
+  let isSetup = false;
+  if (currentTask) {
+    switch (currentTask.type) {
+      case BootStrapTaskType.setupConfig:
+        $task = <SetupConfig/>;
+        isSetup = true;
+        break;
+      case BootStrapTaskType.installConda:
+        $task = <InstallConda/>;
+        break;
+      case BootStrapTaskType.installPython:
+        $task = <InstallPython/>;
+        break;
+      case BootStrapTaskType.installTorch:
+        $task = <InstallTorch/>;
+        break;
+      case BootStrapTaskType.installGit:
+        $task = <InstallGit/>;
+        break;
+      case BootStrapTaskType.installComfyUI:
+        $task = <InstallComfyUI/>;
+        break;
+      case BootStrapTaskType.installBasicModel:
+        $task = <InstallModels/>;
+        break;
+      case BootStrapTaskType.installBasicExtension:
+        $task = <InstallExtensions/>;
+        break;
+      case BootStrapTaskType.startComfyUI:
+        $task = <StartComfyUI/>;
+        break;
+      default:
+        break;
+    }
   }
+
   return (
-    <div className={styles.bootstrap}>
-      <h1><LogoSvg/> Comflowy Bootstrap</h1>
-      <p>{currentTask.title} ({finisedTasks.length + 1} / {bootstrapTasks.length})</p>
-      {$task}
+    <div className={styles.bootstrap} style={{
+      backgroundImage: `url(${BgSVG.src})`
+    }}>
+      <div className={`inner ${isSetup ? "setup-task" : ""}`}>
+        <div className="logo">
+          <h1><LogoSvg /> Comflowy</h1>
+        </div>
+        {currentTask ? (
+          <>
+            {!isSetup && <div><Spin /> {currentTask.title} ({finisedTasks.length + 1} / {bootstrapTasks.length})</div>}
+            {$task}
+          </>
+        ) : (
+          <>
+            <Spin/> Preparing
+          </>
+        )}
+      </div>
     </div>
   )
 }

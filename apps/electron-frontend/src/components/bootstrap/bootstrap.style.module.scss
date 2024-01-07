@@ -1,10 +1,41 @@
 .bootstrap {
   padding: 40px;
   min-width: 600px;
+  height: 100vh;
+  width: 100vw;
   overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   :global {
       .ant-alert-message {
         font-size: 12px;
+      }
+      .description {
+        opacity: .5;
+      }
+      .inner {
+        width: 600px;
+        padding: 24px;
+        min-height: 200px;
+        border-radius: 8px;
+        background: rgba(34, 35, 44, 0.75);
+        backdrop-filter: blur(10px);
+        &.setup-task {
+          min-height: 420px;
+        }
+        .logo {
+          position: absolute;
+          top: -130px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          left: -10px;
+          width: 100%;
+        }
       }
       h1 {
         display: flex;
@@ -20,12 +51,26 @@
         }
       } 
       .field {
-        margin-top: 20px;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
         .field-label {
           font-weight: bold;
+          font-size: 18px;
         }
-        input {
-          font-size: 12px;
+        .input-wrapper {
+          margin-bottom: 14px;
+          input {
+            font-size: 14px;
+            padding: 6px 12px;
+          }
+        }
+        
+        &:first-child {
+          border-bottom: solid 1px #2B3240;
+        }
+        &:last-child {
+          margin-bottom: 0;
+          padding-bottom: 0;
         }
       }
       .description {

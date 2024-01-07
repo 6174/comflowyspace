@@ -1,15 +1,15 @@
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
-import { Alert, Button, message } from "antd";
+import {message} from "antd";
 import { useCallback, useEffect } from "react";
 import {LogViewer} from "ui/log-viewer/log-viewer";
-
 export type BootstrapTaskProps = {
   type: BootStrapTaskType,
 }
 
 export function BootstrapTask(props: BootstrapTaskProps) {
+  // const [messageApi, contextHolder] = message.useMessage();
   const {bootstrapTasks, setBootstrapTasks} = useDashboardState();
   const task = bootstrapTasks.find(task => task.type === props.type);
   const {startTask, error, success, running, messages} = useRemoteTask({
@@ -17,6 +17,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
       onMessage: (msg) => {
         if (msg.type === "SUCCESS") {
           if (task) {
+            console.log("task success", task);
             message.success(task.title + " success");
             task.finished = true;
             setBootstrapTasks([...bootstrapTasks]);
@@ -40,17 +41,13 @@ export function BootstrapTask(props: BootstrapTaskProps) {
 
   return (
     <div className={props.type}>
-      {/* <div className="description">
-        <Alert message={task.description} type="info"/>
-      </div> */}
+      {/* {contextHolder} */}
       <div className="actions">
         {success ? 
           (
             <div>{task.title} success</div>
           ) : (
-            <Button loading={running} disabled={running} type="primary" onClick={ev => {
-              startTaskAction();
-            }}>{task.title}</Button>
+            null
           )
         }
       </div>

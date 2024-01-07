@@ -91,15 +91,24 @@
 .ant-btn.ant-btn-default {
     box-shadow: none;
     font-size: 14px;
-    background-color: var(--backgroundColor);
+    background-color:  transparent; //var(--backgroundColor);
     border-color: var(--actionBorderColor);
-    svg * {
-        transition: var(--transition);
-    }
     &:hover {
         svg * {
             fill: var(--primaryColor)
         }
+    }
+}
+
+.ant-btn {
+    display: flex;
+    align-items: center;  
+    padding: 3px 8px;  
+    svg {
+        margin-right: 4px;
+    }
+    svg * {
+        transition: var(--transition);
     }
 }
 
