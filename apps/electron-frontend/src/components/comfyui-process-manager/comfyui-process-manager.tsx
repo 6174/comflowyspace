@@ -2,11 +2,12 @@ import config, { getBackendUrl } from "@comflowy/common/config";
 import useWebSocket from "react-use-websocket";
 import useComfyUIProcessManagerState, { Message } from "./comfyui-process-manager-state";
 import { memo, use, useCallback, useEffect, useRef, useState } from "react";
-import { Modal } from "antd";
+import { Button, Modal, Space, message } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
 import {DraggableModal, DraggableModalProvider} from "ui/antd/draggable-modal";
 import { comfyElectronApi, listenElectron } from "@/lib/electron-bridge";
 import {isWindow} from "ui/utils/is-window";
+import { resolve } from "path";
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -84,6 +85,49 @@ const ComfyUIProcessManager = () => {
     }
   }, [])
 
+  const [restarting, setRestarting] = useState(false);
+  const restart = useCallback(async () => {
+    const api = getBackendUrl("/api/restart_comfy");
+    setRestarting(true);
+    try {
+      const ret = await fetch(api, {
+        method: "POST",
+      });
+      const data = await ret.json();
+      if (data.success) {
+        message.success("Restart success");
+      } else {
+        message.error("Restart faild: " + data.error);
+      }
+    } catch (err) {
+      console.log(err);
+      message.error("Failed to restart comfyui: " + err.message)
+    }
+    setRestarting(false);
+  }, []);
+
+  const [updating, setUpdating] = useState(false);
+  const update = useCallback(async () => {
+    setUpdating(true);
+    const api = getBackendUrl("/api/update_comfy");
+    try {
+      const ret = await fetch(api, {
+        method: "POST",
+      });
+      const data = await ret.json();
+      if (data.success) {
+        message.success("Update success");
+      } else {
+        message.error("Update faild: " + data.error);
+      }
+    } catch (err) {
+      console.log(err);
+      message.error("Failed to update comfyui: " + err.message)
+    }
+    // await comfyElectronApi.update();
+    setUpdating(false);
+  }, []);
+
   return (
     <div>
       <DraggableModal
@@ -101,6 +145,12 @@ const ComfyUIProcessManager = () => {
               <div className="message" key={index}>{msg.message}</div>
             )
           })} */}
+        </div>
+        <div className="actions">
+          <Space>
+            <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
+            <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+          </Space>
         </div>
       </DraggableModal>
     </div>

@@ -1,5 +1,5 @@
 import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI } from '../../modules/comfyui/bootstrap';
+import { updateComfyUI, checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI, restartComfyUI } from '../../modules/comfyui/bootstrap';
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
@@ -186,6 +186,34 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
 
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
         createOrUpdateExtraConfigFileFromStableDiffusion(stableDiffusionPath)
+        res.send({
+            success: true,
+        });
+    } catch (err: any) {
+        res.send({
+            success: false,
+            error: err.message
+        });
+    }
+}
+
+export async function ApiRestartComfyUI(req: Request, res: Response) {
+    try {
+        await restartComfyUI((ev) => {});
+        res.send({
+            success: true,
+        });
+    } catch(err: any) {
+        res.send({
+            success: false,
+            error: err.message
+        });
+    }
+}
+
+export async function ApiUpdateComfyUIAndRestart(req: Request, res: Response) {
+    try {
+        await updateComfyUI((ev) => { });
         res.send({
             success: true,
         });

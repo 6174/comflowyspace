@@ -262,41 +262,46 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 
 import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
-let comfyuiProcess: nodePty.IPty;
+let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
     type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
+    if (comfyuiProcess) {
+        return true;
+    }
     try {
         console.log("start comfyUI");
         const repoPath = getComfyUIDir();
-        await runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
-            dispatcher(event);
-            const cevent: ComfyUIProgressEventType = {
-                type: "INFO",
-                message: event.message
-            };
+        await new Promise((resolve, reject) => {
+            runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
+                dispatcher(event);
+                const cevent: ComfyUIProgressEventType = {
+                    type: "INFO",
+                    message: event.message
+                };
 
-            if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
-                dispatcher({
-                    type: "SUCCESS",
-                    message: "Comfy UI started success"
-                })
-                cevent.type = "START"
-                cevent.message = "Comfy UI started success"
-            }
-
-            if (event.message?.includes("ERROR")) {
-                cevent.type = "ERROR"
-            }
-
-            comfyUIProgressEvent.emit(cevent);
-        }), {
-            cwd: repoPath
-        }, (process: nodePty.IPty) => {
-            comfyuiProcess = process;
+                if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
+                    dispatcher({
+                        type: "SUCCESS",
+                        message: "Comfy UI started success"
+                    })
+                    cevent.type = "START"
+                    cevent.message = "Comfy UI started success"
+                    resolve(null);
+                }
+                if (event.message?.includes("ERROR")) {
+                    cevent.type = "ERROR"
+                }
+    
+                comfyUIProgressEvent.emit(cevent);
+            }), {
+                cwd: repoPath
+            }, (process: nodePty.IPty) => {
+                comfyuiProcess = process;
+            });
         });
     } catch (err: any) {
         comfyUIProgressEvent.emit({
@@ -312,7 +317,8 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
 export async function stopComfyUI(): Promise<boolean> {
     try {
         if (comfyuiProcess) {
-            comfyuiProcess.kill(); 
+            await comfyuiProcess.kill(); 
+            comfyuiProcess = null;
         }
         comfyUIProgressEvent.emit({
             type: "STOP",
@@ -336,9 +342,39 @@ export async function isComfyUIAlive(): Promise<boolean> {
 
 export async function restartComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean>  {
     try {
+        comfyUIProgressEvent.emit({
+            type: "RESTART",
+            message: "Restart ComfyUI"
+        });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
         await startComfyUI(dispatcher); // 启动新的 ComfyUI
     } catch (err: any) {
+        throw new Error(`Error restarting comfyui: ${err.message}`);
+    }
+    return true;
+}
+
+export async function updateComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
+    try {
+        comfyUIProgressEvent.emit({
+            type: "RESTART",
+            message: "Try Update ComfyUI"
+        });
+        const repoPath = getComfyUIDir();
+        await runCommandWithPty(`git pull`, (event => {
+            dispatcher(event);
+            const cevent: ComfyUIProgressEventType = {
+                type: "INFO",
+                message: event.message
+            };
+            comfyUIProgressEvent.emit(cevent);
+        }), {
+            cwd: repoPath
+        });
+        await restartComfyUI(dispatcher);
+        console.log("updateComfyUI: stopped");
+    } catch (err: any) {
+        console.log(err);
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }
     return true;
