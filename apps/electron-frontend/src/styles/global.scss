@@ -1,5 +1,5 @@
 html, body {
-  --backgroundColor: #1B1B1F;
+  --backgroundColor: #19191D;
   --backgroundColorL1: #262837;
   --backgroundColorL1_5: #212126;
   --backgroundColorL2: #35374B;
@@ -15,9 +15,9 @@ html, body {
   --cardHover: #34374b;
   --transition: all ease .2s;
   -webkit-font-smoothing: antialiased;
-  background-color: white;
+  background-color: #141417;
   color: var(--fontColor);
-  background-color: var(--backgroundColor);
+  // background-color: var(--backgroundColor);
   height: 100%;
   * {
     box-sizing: border-box;

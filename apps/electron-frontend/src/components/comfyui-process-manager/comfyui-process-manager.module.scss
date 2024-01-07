@@ -1,5 +1,8 @@
 .comfyuiProcessManager {
   :global {
+    .ant-modal-body {
+      overflow-y: hidden;
+    }
     .actions {
       margin: 10px 0;
     }
