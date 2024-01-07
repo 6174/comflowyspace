@@ -168,4 +168,20 @@ body, html {
     border-right: transparent;
   }
 
+  .status {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    .span {
+      border-radius: 12px;
+      width: 6px;
+      height: 6px;
+      box-sizing: content-box;
+      border: 2px solid rgb(44 44 44 / 54%);
+      background: #2ABDAE;
+    }
+  }
+
 }
