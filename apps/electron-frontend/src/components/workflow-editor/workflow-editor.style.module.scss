@@ -1,11 +1,12 @@
 .workflowEditor {
   position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  top: 0px;
+  left: 8px;
+  bottom: 8px;
+  right: 8px;
   background-color: var(--backgroundColor);
-  border-top: solid 1px var(--borderColor);
+  border: solid 1px var(--borderColor);
+  border-radius: 12px;
   :global {
     .react-flow__panel {
       .ant-space-item {
