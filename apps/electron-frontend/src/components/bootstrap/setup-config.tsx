@@ -3,6 +3,7 @@ import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { Alert, Button, Input, Space, message } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { FolderIcon, SaveIcon } from "ui/icons";
 
 export function SetupConfig() {
   const {bootstrapTasks, setBootstrapTasks} = useDashboardState();
@@ -96,12 +97,15 @@ export function SetupConfig() {
         <div className="field-label" style={{
           marginBottom: "10px"
         }}>ComfyUI Path:</div>
-        <Alert message="If you already installed ComfyUI, you can choose the exist comfyUI path" type="info" showIcon />
-        <br />
+        <div className="description">
+          If you have already installed ComfyUI, you can select from the existing ComfyUI paths.
+        </div>
+        <div className="input-wrapper">
+          <Input disabled={electronEnv} value={value} />
+        </div>
         <Space>
-          <Input disabled={electronEnv} value={value} style={{width: 400}}/>
-          { electronEnv && <Button type="link" onClick={selectFolder}>Select folder</Button>}
-          <Button type="link" disabled={value === defaultValue} onClick={useDefaultFolder}>Use Default</Button>
+          { electronEnv && <Button onClick={selectFolder}> <FolderIcon/> Select folder</Button>}
+          <Button disabled={value === defaultValue} onClick={useDefaultFolder}>Use Default</Button>
         </Space>
       </div>
 
@@ -109,16 +113,23 @@ export function SetupConfig() {
         <div className="field-label" style={{
           marginBottom: "10px"
         }}>SD WebUI Path:</div>
-        <Alert message="Optional: If you already installed Stable Diffusion WebUI, you can choose the sd path to reuse models" type="info" showIcon />
-        <br />
+        <div className="description">
+          If Stable Diffusion WebUI is already installed, you can opt for the SD path to utilize existing models
+        </div>
+        <div className="input-wrapper">
+          <Input value={sdwebuiPath} placeholder="Input sd webui path if exists"/>
+        </div>
         <Space>
-          <Input value={sdwebuiPath} placeholder="Input sd webui path if exists" style={{ width: 400 }} />
-          {electronEnv && <Button type="link" onClick={selectSdWebUIFolder}>Select folder</Button>}
+          {electronEnv && <Button onClick={selectSdWebUIFolder}><FolderIcon /> Select folder</Button>}
         </Space>
       </div>
 
       <div className="field">
-        <Button onClick={saveValue} type="primary" loading={loading} disabled={loading}>Save</Button>
+        <Button onClick={saveValue} style={{
+          float: "right"
+        }} type="primary" loading={loading} disabled={loading}>
+          <SaveIcon/> Save
+        </Button>
       </div>
     </div>
   )
