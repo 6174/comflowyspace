@@ -102,7 +102,6 @@ export const NodeComponent = memo(({
         }])
       }
       setMinHeight(height);
-      setMinWidth(width);
     }
   }, [setMinHeight, nodeId]);
 
@@ -225,7 +224,7 @@ export const NodeComponent = memo(({
               ))}
             </div>
 
-            <div className="node-images-preview">
+            <div className="node-images-preview" >
               {
                 imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
@@ -263,6 +262,8 @@ export const NodeComponent = memo(({
                 })
               }
             </div>
+            
+            <div style={{height: 10}}></div>
           </div>
         </>
       ) : (
