@@ -4,6 +4,7 @@ import { Message } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 import { useEffect, useState } from 'react';
 import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
+import { SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 export function WsController(): JSX.Element {
   const clientId = useAppStore((st) => st.clientId);
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
@@ -41,6 +42,11 @@ export function WsController(): JSX.Element {
         if (Array.isArray(images)) {
           onImageSave(msg.data.node, images)
         }
+      } else if (Message.isExecutingInterrupted) {
+        SlotGlobalEvent.emit({
+          type: "execution_interrupted",
+          data: null
+        });
       }
     },
   });

@@ -1,8 +1,9 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Modal, Space } from "antd";
 import { useQueueState } from '@comflowy/common/store/comfyui-queue-state';
 import styles from "./reactflow-queue.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
+import { SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 const Queue = () => {
   const queue = useQueueState(st => st.queue);
@@ -11,6 +12,22 @@ const Queue = () => {
   const onDeleteFromQueue = useQueueState(st => st.onDeleteFromQueue);
   const onInterruptQueue = useQueueState(st => st.onInterruptQueue);
   const loading = useQueueState(st => st.loading);
+
+  const [cancleing, setCanclecing] = useState(false);
+  const onCancel = useCallback(() => {
+    setCanclecing(true);
+    onInterruptQueue();
+  }, []);
+  useEffect(() => {
+    const disposable = SlotGlobalEvent.on((ev) => {
+      if (ev.type === "execution_interrupted") {
+        setCanclecing(false);
+      }
+    })
+    return () => {
+      disposable.dispose();
+    }
+  }, []);
   return (
     <div style={{minHeight: 200}}>
       <div className="section queue">
@@ -20,7 +37,7 @@ const Queue = () => {
             return (
               <div className="item" key={index}>
                 <span className="item-title">Running-{index + 1}:</span>
-                <Button size='small' type="default" onClick={onInterruptQueue}>Cancel</Button>
+                <Button size='small' loading={cancleing} disabled={cancleing} type="default" onClick={onCancel}>Cancel</Button>
               </div>
             )
           })}
