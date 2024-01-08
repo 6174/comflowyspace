@@ -175,8 +175,7 @@
         min-height: 5px;
         width: 6px;
         height: 6px;
-        background: #1a192b;
-        border: 1px solid white;
+        background: #92939B;
         border-radius: 100%;
       }
     
@@ -199,14 +198,14 @@
       }
     
       .react-flow__handle-left {
-        top: 50%;
-        left: -4px;
+        top: 36%;
+        left: 3px;
         transform: translate(0, -50%);
       }
     
       .react-flow__handle-right {
-        right: -4px;
-        top: 50%;
+        right: 4px;
+        top: 36%;
         transform: translate(0, -50%);
       }
     
@@ -411,9 +410,8 @@
       .react-flow__resize-control.handle {
         width: 4px;
         height: 4px;
-        border: 1px solid #fff;
-        border-radius: 1px;
-        background-color: #3367d9;
+        border-radius: 10px;
+        background-color: #92939B;;
         transform: translate(-50%, -50%);
       }
     
