@@ -80,7 +80,7 @@ function App() {
         })}
         <div className="blank"/>
         <div className="actions">
-          <ComfyUIQueueButton />
+          {/* <ComfyUIQueueButton /> */}
           <ComfyUIStatusButton/>
         </div>
       </div>

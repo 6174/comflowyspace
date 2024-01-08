@@ -4,6 +4,7 @@ import { useQueueState } from '@comflowy/common/store/comfyui-queue-state';
 import styles from "./reactflow-queue.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
 import { SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { QueueIcon } from 'ui/icons';
 
 const Queue = () => {
   const queue = useQueueState(st => st.queue);
@@ -86,7 +87,13 @@ export const QueueEntry = React.memo(() => {
 
   return (
     <div className="action action-queue">
-      <div onClick={showModal}>Queue</div>
+      <div onClick={showModal} style={{
+        display: "flex",
+        alignItems: "center"
+      }}>
+        <QueueIcon/>
+        Queue
+      </div>
       <DraggableModal
         title="Queue"
         open={visible}
