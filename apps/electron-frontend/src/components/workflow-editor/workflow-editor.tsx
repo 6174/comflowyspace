@@ -156,11 +156,11 @@ export default function WorkflowEditor() {
     selectionMode: SelectionMode.Partial
   }  : {};
 
+  const storeApi = useStoreApi();
+
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
-
-  const storeApi = useStoreApi();
 
   return (
     <div className={styles.workflowEditor}>
