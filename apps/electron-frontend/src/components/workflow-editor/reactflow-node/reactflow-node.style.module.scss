@@ -38,6 +38,13 @@
     }
 
     :global {
+        .connectionindicator {
+            transform-origin: 50% 80%;
+            transition: var(--transition);
+        }
+        .connectionindicator:hover {
+            transform: scale(var(--hover-transform));
+        }
         .resize-icon {
             width: 20px;
             height: 20px;
@@ -118,31 +125,50 @@
         .node-input-container {
             position: relative;
             padding: 4px 10px;
-            .ant-input-number-affix-wrapper {
-                width: 100%;
-                .ant-input-number-prefix {
+            .node-input-label-box {
+                display: flex;
+                align-items: center;
+                .node-input-label-name {
+                    flex: 1
+                }
+                .ant-input-number-input-wrap, .ant-input {
+                    padding: 0 10px;
+                    flex: 0;
+                }
+                .ant-input-number-input-wrap {
+                    padding-right: 25px;
+                }
+                .ant-input-number, .ant-select-selector, .ant-input  {
+                    min-width: 100px;
+                    border-color: #414356;
+                    height: 30px;
+                    background-color: transparent;
+                    &-focused {
+                        border-color: var(--primaryColor);
+                    }
+                    .ant-input-number-handler-wrap {
+                        background-color: transparent;
+                    }
+                }
+                input {
                     font-family: JetBrains Mono, monospace;
-                    font-size: 10px;
-                }
-                .ant-input-number {
-                    padding-right: 30px;
+                    font-size: 12px;
+                    line-height: 10px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    color: white;
+                    background-color: transparent;
+                    padding: 0;
                 }
             }
-            input {
-                text-align: right;
-                font-family: JetBrains Mono, monospace;
-                font-size: 10px;
-                line-height: 24px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                overflow: hidden;
-                color: #666;
-                padding: 0;
-            }
+
+
             .ant-upload-wrapper, .ant-upload {
                 width: 100%;
                 display: block;
             }
+
             .switch-wrapper {
                 display: flex;
                 .switch-label {
@@ -159,15 +185,6 @@
             .ant-select-selection-item {
                 font-family: JetBrains Mono, monospace;
                 font-size: 10px;
-            }
-            .node-input-label-box {
-                position: relative;
-                .node-input-label-name {
-                    position: absolute;
-                    z-index: 1;
-                    left: 8px;
-                    top: 6px;
-                }
             }
         }
         .progress-bar {
@@ -186,7 +203,6 @@
             top: -3em;
             left: 0.5em;
         }
-
     }
 }
 
