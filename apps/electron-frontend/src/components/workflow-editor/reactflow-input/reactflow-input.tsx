@@ -63,7 +63,7 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
       return (
         <AntInput.TextArea
           autoSize
-          style={{ minHeight: 128, width: "100%" }}
+          style={{ minHeight: 128, width: "100%", marginBottom: 10 }}
           value={value}
           onChange={(ev) => onChange(ev.target.value)}
         />

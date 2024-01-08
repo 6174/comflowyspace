@@ -10,8 +10,7 @@ import { ResizeIcon } from 'ui/icons';
 import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
-import { debug } from 'console';
-import { getIcon } from './reactflow-node-icons';
+import { getWidgetIcon } from './reactflow-node-icons';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -182,7 +181,7 @@ export const NodeComponent = memo(({
         <>
           <div className="node-header">
             <h2 className="node-title">
-              {getIcon(widget)} {nodeTitle}
+              {getWidgetIcon(widget)} {nodeTitle}
             </h2>
 
             {isInProgress ? <Progress
