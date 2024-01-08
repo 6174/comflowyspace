@@ -1,27 +1,63 @@
 import { useAppStore } from "@comflowy/common/store";
-import { Button, Input, Popover, Space } from "antd"
+import { Button, Input, Menu, Popover, Space } from "antd"
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-topleft-panel.style.module.scss";
 import { useCallback, useEffect, useState } from "react";
+import { MenuItem, getMenuItem } from "../reactflow-context-menu/reactflow-context-menu";
 export default function ReactflowTopLeftPanel() {
     return (
         <div className={styles.topLeftPanel}>
             <Space size={2}>
-                <div className="action action-file-dropdown">
-                    <span>File</span>
-                    <span className="icon">
-                        <IconDown style={{
-                            transform: "scale(.8)",
-                            opacity: .9
-                        }}/>
-                    </span>
-                </div>
+                <FileMenu/>
                 <div className="spliter"></div>
                 <ChangeTitle/>
                 <UndoRedo/>
             </Space>
         </div>
     )
+}
+
+import MenuStyles from "../reactflow-context-menu/reactflow-context-menu.module.scss";
+import { ImportWorkflow } from "./action-import";
+import ResetDefault from "./action-reset-default";
+
+function FileMenu() {
+    const [visible, setVisible] = useState(false);
+    const handleVisibleChange = (visible: boolean) => {
+        setVisible(visible);
+    };
+
+    const items: MenuItem[] = [
+        getMenuItem(<ImportWorkflow/>, 'MENU_ITEM_IMPORT_WORKFLOW', null, null),
+        getMenuItem(<ResetDefault/>, 'MENU_ITEM_RESET_DEFAULT', null, null),
+    ];
+    const content = (
+        <div>
+            <Menu activeKey="null" selectedKeys={[]} items={items} />
+        </div>
+    );
+
+    return (
+        <Popover
+            content={content}
+            title={null}
+            trigger="click"
+            open={visible}
+            placement='bottomLeft'
+            overlayClassName={MenuStyles.reactflowContextMenu + " " + MenuStyles.reactflowPopoverMenuNoPadding}
+            onOpenChange={handleVisibleChange}
+        >
+            <div className="action action-file-dropdown">
+                <span>File</span>
+                <span className="icon">
+                    <IconDown style={{
+                        transform: "scale(.8)",
+                        opacity: .9
+                    }}/>
+                </span>
+            </div>
+        </Popover>
+    );
 }
 
 function ChangeTitle() {

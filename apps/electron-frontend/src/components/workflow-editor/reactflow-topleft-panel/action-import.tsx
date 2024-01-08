@@ -60,11 +60,11 @@ export const ImportWorkflow = () => {
   };
 
   return (
-    <div className='action action-reload' onClick={handleButtonClick}>
+    <div onClick={handleButtonClick}>
       <div style={{ display: 'none' }}>
         <input ref={fileInputRef} type="file" accept="image/png,application/json" onChange={handleFileChange} />
       </div>
-      <div className="name">Load Workflow</div>
+      <div className="name">Reset via file</div>
     </div>
   );
 }

@@ -73,3 +73,11 @@
     }
   }
 }
+
+.reactflowPopoverMenuNoPadding {
+  :global {
+    .ant-popover-inner {
+      padding: 0;
+    }
+  }
+}

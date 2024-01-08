@@ -15,6 +15,12 @@
       }
     }
 
+    .react-flow__background {
+      circle {
+        fill: #060607;
+        transform: scale(1.6);
+      }
+    }
     /* this gets exported as style.css and can be used for the default theming */
       /* these are the necessary styles for React Flow, they get used by base.css and style.css */
       .react-flow__container {
