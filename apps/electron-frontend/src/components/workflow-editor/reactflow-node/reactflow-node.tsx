@@ -10,6 +10,7 @@ import { ResizeIcon } from 'ui/icons';
 import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
+import { debug } from 'console';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -88,8 +89,9 @@ export const NodeComponent = memo(({
       }
       const height = mainRef.current.offsetHeight + 25;
       const width = mainRef.current.offsetWidth + 4;
-      const dimensions = node.data.dimensions 
-      if (!dimensions || dimensions.height < height) {
+      const dimensions = node.data.dimensions
+      // console.log("dimensions", height, dimensions);
+      if (!dimensions || dimensions.height < height - 2) {
         onNodesChange([{
           type: "dimensions",
           id: nodeId,
@@ -104,6 +106,7 @@ export const NodeComponent = memo(({
   }, [setMinHeight, nodeId]);
 
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
+  const [resizing, setResizing] = useState(false);
   useEffect(() => {
     updateMinHeight();
     const disposable = resetWorkflowEvent.on(async () => {
@@ -119,7 +122,7 @@ export const NodeComponent = memo(({
     if (mainRef.current) {
       const resizeObserver = new ResizeObserver(entries => {
         entries.forEach(entry => {
-          if(entry.target === mainRef.current) {
+          if(entry.target === mainRef.current && !resizing) {
             updateMinHeight(); 
           }
         });
@@ -135,7 +138,7 @@ export const NodeComponent = memo(({
         disposable.dispose();
       };
     }
-    
+
     return () => {
       disposable.dispose();
     } 
@@ -160,6 +163,12 @@ export const NodeComponent = memo(({
         style={{
           background: "transparent",
           border: "none"
+        }}
+        onResizeStart={() => {
+          setResizing(true);
+        }}
+        onResizeEnd={() => {
+          setResizing(false);
         }}
         minWidth={minWidth}
         minHeight={minHeight} 

@@ -270,8 +270,18 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onNodesChange: (changes) => {
     set((st) => {
+      const nodes = applyNodeChanges(changes, st.nodes)
+      changes.forEach(change => {
+        if (change.type === "dimensions") {
+          const node = nodes.find(node => node.id === change.id);
+          const {dimensions} = change
+          if (node && dimensions) {
+            node.data.dimensions = dimensions
+          }
+        }
+      });
       return {
-        nodes: applyNodeChanges(changes, st.nodes)
+        nodes
       }
     })
     const st = get();
@@ -457,16 +467,18 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onResetFromPersistedWorkflow: async (workflow: PersistedWorkflowDocument): Promise<void> => {
     console.log("Reset workflow", workflow);
-    const st = get();
-
+    
     set({
       nodes: [],
       edges: [],
       graph: {},
     });
-    
-    WorkflowDocumentUtils.updateByJson(st.doc, workflow)
-    st.onSyncFromYjsDoc();
+
+    setTimeout(() => {
+      const st = get();
+      WorkflowDocumentUtils.updateByJson(st.doc, workflow)
+      st.onSyncFromYjsDoc();
+    }, 10);
   },
   onExportWorkflow: () => {
     writeWorkflowToFile(AppState.toPersisted(get()))

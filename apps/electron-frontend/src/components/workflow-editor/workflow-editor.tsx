@@ -207,11 +207,9 @@ export default function WorkflowEditor() {
         onPaneContextMenu={onPaneClick}
         {...selectionModeProps}
         onNodeDragStart={ev => {
-          console.log("drag start");
           onChangeDragingAndResizingState(true);
         }}
         onNodeDragStop={ev => {
-          console.log("drag end");
           onChangeDragingAndResizingState(false);
         }}
         onInit={async (instance) => {
