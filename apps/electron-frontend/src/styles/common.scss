@@ -166,6 +166,18 @@
 }
 
 .ant-modal-root {
-    z-index: 15;
+    z-index: 20;
     position: absolute;
+}
+
+.ant-image-preview-root {
+    position: absolute;
+    z-index: 100;
+}
+.ant-image-preview-operations-wrapper {
+    position: absolute;
+    z-index: 101 !important;
+    .ant-image-preview-operations {
+        background-color: var(--backgroundColorL1) !important;
+    }
 }
