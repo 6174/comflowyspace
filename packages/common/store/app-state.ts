@@ -456,7 +456,15 @@ export const useAppStore = create<AppState>((set, get) => ({
    * @param workflow 
    */
   onResetFromPersistedWorkflow: async (workflow: PersistedWorkflowDocument): Promise<void> => {
+    console.log("Reset workflow", workflow);
     const st = get();
+
+    set({
+      nodes: [],
+      edges: [],
+      graph: {},
+    });
+    
     WorkflowDocumentUtils.updateByJson(st.doc, workflow)
     st.onSyncFromYjsDoc();
   },
