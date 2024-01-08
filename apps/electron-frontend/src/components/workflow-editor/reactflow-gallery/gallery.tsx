@@ -4,6 +4,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import styles from "./gallery.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
+import { GalleryIcon } from 'ui/icons';
 
 const Gallery = () => {
   let images = useAppStore(st => st.persistedWorkflow.gallery || []);
@@ -53,7 +54,18 @@ export const GalleryEntry = React.memo(() => {
 
   return (
     <div className="action action-gallery">
-      <div onClick={showModal}>Gallery</div>
+      <div onClick={showModal} style={{
+        display: "flex",
+        alignItems: "center",
+        height: 24
+      }}>
+        <div style={{
+          marginRight: 2,
+          transform: "scale(.8) translate(0, 4px)",
+          transformOrigin: "center"
+        }}><GalleryIcon /> </div>
+        Gallery
+      </div>
       <DraggableModal
         title="Gallery"
         open={visible}
