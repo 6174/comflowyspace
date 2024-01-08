@@ -4,6 +4,8 @@ import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
 import { memo } from "react";
+import { PlusIcon, SelectionIcon, StartIcon } from "ui/icons";
+import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
@@ -15,23 +17,27 @@ function ReactflowBottomCenterPanel() {
                 <div className={`action action-select ${selectionMode === "figma" && "active"}`} onClick={ev => {
                     onChangeSelectMode(selectionMode === "figma" ? "default" : "figma");
                 }}>
-                    Select
+                    <SelectionIcon/>
                 </div>
                 <div className="action action-node-picker">
                     <WidgetPopover>
                         <Space>
-                            <span>Nodes</span>
-                            <span className="icon">
-                                <IconDown/>
-                            </span>
+                            <PlusIcon/>
                         </Space>
                     </WidgetPopover>
                 </div>
-                <div className="action action-add-text">
-                    Text
+                <div className="spliter"></div>
+                <div className="action action-add-model">
+                    {ModelIcon}
                 </div>
-                <div className="action action-add-group">
-                    Group
+                <div className="action action-add-prompt">
+                    {PromptIcon}
+                </div>
+                <div className="action action-add-model">
+                    {SamplerIcon}
+                </div>
+                <div className="action action-add-prompt">
+                    {ImageIcon}
                 </div>
                 <div className="spliter"></div>
                 <div className="action action-Run" onClick={async ev => {
@@ -42,7 +48,7 @@ function ReactflowBottomCenterPanel() {
                         message.info("Add task to queue");
                     }
                 }}>
-                    Run
+                    <StartIcon/>
                 </div>
             </Space>
         </div>
