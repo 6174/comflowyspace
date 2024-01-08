@@ -88,7 +88,6 @@ export const NodeComponent = memo(({
       }
       const height = mainRef.current.offsetHeight + 25;
       const width = mainRef.current.offsetWidth + 4;
-      setMinHeight(height);
       const dimensions = node.data.dimensions 
       if (!dimensions || dimensions.height < height) {
         onNodesChange([{
@@ -100,6 +99,7 @@ export const NodeComponent = memo(({
           }
         }])
       }
+      setMinHeight(height);
     }
   }, [setMinHeight, nodeId]);
 
@@ -110,11 +110,32 @@ export const NodeComponent = memo(({
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve(null);
-        }, 10)
+        }, 100)
       });
       console.log("reset workflow event")
       updateMinHeight();
     })
+
+    if (mainRef.current) {
+      const resizeObserver = new ResizeObserver(entries => {
+        entries.forEach(entry => {
+          if(entry.target === mainRef.current) {
+            updateMinHeight(); 
+          }
+        });
+      });
+
+      resizeObserver.observe(mainRef.current);
+
+      // Cleanup
+      return () => {
+        if (resizeObserver && mainRef.current) {
+          resizeObserver.unobserve(mainRef.current);
+        }
+        disposable.dispose();
+      };
+    }
+    
     return () => {
       disposable.dispose();
     } 
