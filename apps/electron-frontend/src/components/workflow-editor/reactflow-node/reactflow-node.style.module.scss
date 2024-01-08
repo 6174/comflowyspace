@@ -1,16 +1,7 @@
-.reactFlowSelected {
-    // border: 2px solid !important;
-    // border-image: linear-gradient(to right, var(--primaryColor), var(--secondaryColor)) 1 !important;
-    // border-image-slice: 1;
-    // clip-path: inset(0 round 8px);
-    &::before, &::after {
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-}
 
 .reactFlowNode {
+    border: solid 2px transparent;
+    box-sizing: content-box;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -20,7 +11,6 @@
     position: relative;
     min-width: 190px;
     box-sizing: border-box;
-    transition: var(--transition);
     width: 100%;
     $size: -4px;
     &::after, &::before {
@@ -197,5 +187,17 @@
             left: 0.5em;
         }
 
+    }
+}
+
+.reactFlowSelected {
+    border: 2px solid var(--primaryColor);
+}
+
+.reactFlowProgress {
+    &::before,
+    &::after {
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 }
