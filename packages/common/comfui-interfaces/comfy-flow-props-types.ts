@@ -121,19 +121,23 @@ export const Input = {
   },
   getInputColor(i: Input): string {
     // GREEN
-    if (Input.isModel(i) || Input.isVae(i)) {
-      return '#77C781'
+    if (Input.isModel(i)) {
+      return '#F4BD50'
     }
     // PURPLE
     if (Input.isClip(i) || Input.isString(i)) {
-      return '#B35CC2'
+      return '#6F62FA'
     }
     // BLUE
     if (Input.isLatent(i) || Input.isImage(i)) {
-      return '#67BCBE'
+      return '#7BD77A'
     }
-  
+
+    if (Input.isVae(i)) {
+      return '#ED6A5E'
+    }
+
     // YELLOW
-    return '#C28161'
+    return '#92939B'
   }
 }

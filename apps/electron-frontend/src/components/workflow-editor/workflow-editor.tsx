@@ -66,7 +66,7 @@ export default function WorkflowEditor() {
       ...edge,
       animated: edge.source === inprogressNodeId,
       style: {
-        strokeWidth: 2.8 / transform,
+        strokeWidth: 2.0 / transform,
         opacity: edge.selected ? 1 : .6,
         stroke: Input.getInputColor([edge.sourceHandle] as any),
       },
