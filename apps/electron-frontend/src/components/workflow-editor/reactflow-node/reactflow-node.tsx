@@ -157,7 +157,7 @@ export const NodeComponent = memo(({
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected && !isInProgress ? nodeStyles.reactFlowSelected : ""} ${isInProgress ? nodeStyles.reactFlowProgress : ""}`} style={{
       '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
       '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor,
+      '--node-bg-color': Color(node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor).alpha(.6).hexa(),
     } as React.CSSProperties}>
       <NodeResizeControl
         style={{
