@@ -44,13 +44,13 @@ const InstalledModels = () => {
 
     return (
         <div className="installed-models">
-            <Space>
+            <div className="filters">
                 {getModelTypes().map((it) => (
                     <div className={`${it.type === selectedType && "active"} action filter-type`} key={it.type} onClick={() => handleTypeFilterChange(it.type)}>
                         {`${it.type} (${it.count})`}
                     </div>
                 ))}
-            </Space>
+            </div>
             <div>
                 <ModelList models={getModelsForType()} />
             </div>
