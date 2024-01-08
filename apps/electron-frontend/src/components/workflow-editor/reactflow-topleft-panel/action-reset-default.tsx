@@ -1,36 +1,35 @@
 import { useAppStore } from "@comflowy/common/store";
 import { getWorkflowTemplate } from "@comflowy/common/templates/templates";
-import { Popconfirm } from "antd";
+import { Modal, Popconfirm } from "antd";
 import { useCallback } from "react";
 
 export default function ResetDefault() {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
   const persistedWorkflow = useAppStore(st => st.persistedWorkflow);
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
+  const [modal, contextHolder] = Modal.useModal();
   const resetDefault = useCallback(() => {
-    onResetFromPersistedWorkflow(
-      {
-        ...getWorkflowTemplate("default"),
-        id: persistedWorkflow.id,
-        title: persistedWorkflow.title
-      }
-    )
-    resetWorkflowEvent.emit(null)
+    modal.confirm({
+      title: 'Reset workflow',
+      content: 'Are you sure to reset workflow to default?',
+      onOk: async () => {
+        onResetFromPersistedWorkflow(
+          {
+            ...getWorkflowTemplate("default"),
+            id: persistedWorkflow.id,
+            title: persistedWorkflow.title
+          }
+        )
+        resetWorkflowEvent.emit(null)
+      },
+      onCancel() { },
+    });
   }, [onResetFromPersistedWorkflow, persistedWorkflow]);
 
   return (
     <div>
-      <Popconfirm
-        title="Reset workflow"
-        description="Are you sure to reset workflow to default?"
-        onConfirm={resetDefault}
-        onCancel={() => null}
-        placement="right"
-        okText="Yes"
-        cancelText="No"
-      >
-        Reset via default
-      </Popconfirm>
+      {contextHolder}
+      <span onClick={resetDefault}>Reset via default</span>
     </div>
   )
 }
