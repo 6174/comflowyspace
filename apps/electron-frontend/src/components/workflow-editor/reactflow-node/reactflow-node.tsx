@@ -316,10 +316,18 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
     }
   }, [isConnecting, connectingParams])
 
-  const scaleFactor = (isValidConnection && isConnecting && connectingMe) ? 4 : 1;
+  let transformFactor = 1;
+  const [hover, setHover] = useState(false);
+  if (hover) {
+    transformFactor = Math.max(1, (1 / transform)) * 2.2;
+  }
 
-  const invisible = transform < 0.4;
-  const hoverTransform = Math.max(1, (1 / transform) * scaleFactor) * 2.2;
+  if (isValidConnection && isConnecting && connectingMe) {
+    transformFactor = Math.max(1, (1 / transform)) * 4;
+    console.log(transformFactor);
+  };
+
+
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -328,12 +336,17 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
         isValidConnection={isValidConnection}
         type={type} 
         position={position} 
+        onMouseMove={ev => {
+          setHover(true);
+        }}
+        onMouseOut={ev => {
+          setHover(false);
+        }}
         className="node-slot-handle" 
         style={{
           backgroundColor: color,
-          '--hover-transform': hoverTransform,
           // visibility: (transforming || invisible)? "hidden" : "visible",
-          // transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
+          transform: `scale(${transformFactor})`
         } as React.CSSProperties}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {type === "source" ? label.toUpperCase() : label.toLowerCase()}
