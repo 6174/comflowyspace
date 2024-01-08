@@ -42,9 +42,6 @@
             transform-origin: 50% 80%;
             transition: var(--transition);
         }
-        .connectionindicator:hover {
-            transform: scale(var(--hover-transform));
-        }
         .resize-icon {
             width: 20px;
             height: 20px;
