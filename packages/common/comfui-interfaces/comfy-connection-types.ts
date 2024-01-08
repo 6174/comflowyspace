@@ -5,6 +5,7 @@ export interface MessageType {
     executing: { node?: NodeId }
     progress: { value: number; max: number }
     executed: { node: NodeId; output: Record<string, any> }
+    execution_interrupted: { data: any }
   }
   
   export interface Message<K extends keyof MessageType> {
@@ -15,6 +16,10 @@ export interface MessageType {
   export const Message = {
     isStatus(m: Message<keyof MessageType>): m is Message<'status'> {
       return m.type === 'status'
+    },
+
+    isExecutingInterrupted(m: Message<keyof MessageType>): m is Message<'execution_interrupted'> {
+      return m.type === "execution_interrupted"
     },
   
     isExecuting(m: Message<keyof MessageType>): m is Message<'executing'> {
