@@ -86,7 +86,7 @@ function Labelled({ name, children }: { name: string; children: JSX.Element }): 
     <div className="node-input-label-box">
       <div className="node-input-label-name">
         <div className="label" style={{
-          maxWidth: 100
+          maxWidth: 10
         }}>{name}</div>
       </div>
       {children}
