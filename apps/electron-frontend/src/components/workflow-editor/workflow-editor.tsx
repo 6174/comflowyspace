@@ -147,7 +147,15 @@ export default function WorkflowEditor() {
     [setMenu],
   );
 
-  const onPaneClick = React.useCallback(() => setMenu(null), [setMenu]);
+  const tranformEnd = () => {
+    const transform = storeApi.getState().transform;
+    onTransformEnd(transform[2]);
+  }
+
+  const onPaneClick = React.useCallback(() => {
+    tranformEnd();
+    setMenu(null)
+  }, [setMenu]);
   
   const selectionModeProps = selectionMode === "figma" ? {
     selectionOnDrag: true,
@@ -189,10 +197,7 @@ export default function WorkflowEditor() {
         onMoveStart={ev => {
           onTransformStart();
         }}
-        onMoveEnd={ev => {
-          const transform = storeApi.getState().transform;
-          onTransformEnd(transform[2]);
-        }}
+        onMoveEnd={tranformEnd}
         onDragOver={onDragOver}
         onPaneClick={onPaneClick}
         onNodeContextMenu={(ev, node) => {
