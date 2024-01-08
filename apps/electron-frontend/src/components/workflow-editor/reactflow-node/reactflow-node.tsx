@@ -11,6 +11,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { debug } from 'console';
+import { getIcon } from './reactflow-node-icons';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -179,7 +180,9 @@ export const NodeComponent = memo(({
       {!invisible ? (
         <>
           <div className="node-header">
-            <h2 className="node-title">{nodeTitle}</h2>
+            <h2 className="node-title">
+              {getIcon(widget)} {nodeTitle}
+            </h2>
 
             {isInProgress ? <Progress
               percent={progressBar * 100}
