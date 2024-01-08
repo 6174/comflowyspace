@@ -103,6 +103,7 @@ export const NodeComponent = memo(({
         }])
       }
       setMinHeight(height);
+      setMinWidth(width);
     }
   }, [setMinHeight, nodeId]);
 
@@ -318,6 +319,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   const scaleFactor = (isValidConnection && isConnecting && connectingMe) ? 4 : 1;
 
   const invisible = transform < 0.4;
+  const hoverTransform = Math.max(1, (1 / transform) * scaleFactor) * 2.2;
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -329,9 +331,10 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
         className="node-slot-handle" 
         style={{
           backgroundColor: color,
-          visibility: (transforming || invisible)? "hidden" : "visible",
-          transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
-        }}/>
+          '--hover-transform': hoverTransform,
+          // visibility: (transforming || invisible)? "hidden" : "visible",
+          // transform: `scale(${Math.max(1, (1/transform) * scaleFactor)})`
+        } as React.CSSProperties}/>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {type === "source" ? label.toUpperCase() : label.toLowerCase()}
       </div>

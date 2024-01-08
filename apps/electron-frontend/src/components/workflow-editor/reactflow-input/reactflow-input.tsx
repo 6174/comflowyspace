@@ -15,12 +15,9 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
     return (
       <Labelled name={name}>
         <Select
-          style={{
-            width: "100%",
-            textAlign: "right"
-          }}
           value={value} 
           onChange={(value) => onChange(value)}
+          popupMatchSelectWidth={false}
           options={input[0].map((k) => {
             return {
               value: k,
@@ -33,16 +30,13 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
   }
   if (Input.isBool(input)) {
     return (
-      <div className='switch-wrapper'>
-        <div className='switch-label'>{name}</div>
-        <div className='switch-input'>
-          <Switch
-            size='small'
-            checked={value}
-            onChange={(ev) => onChange(ev)}
-          />
-        </div>
-      </div>
+      <Labelled name={name}>
+        <Switch
+          size='small'
+          checked={value}
+          onChange={(ev) => onChange(ev)}
+        />
+      </Labelled>
     )
   }
 
@@ -50,16 +44,17 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
     const numberProps = input[1];
     const isInt = Input.isInt(input) ;
     return (
-      <InputNumber
-        defaultValue={numberProps.default}
-        min={numberProps.min || null}
-        max={numberProps.max || null}
-        prefix={name}
-        className="nodrag"
-        step={isInt ? 1 : 0.01}
-        value={value}
-        onChange={(value) => onChange(value)}
-      />
+      <Labelled name={name}>
+        <InputNumber
+          defaultValue={numberProps.default}
+          min={numberProps.min || null}
+          max={numberProps.max || null}
+          className="nodrag"
+          step={isInt ? 1 : 0.01}
+          value={value}
+          onChange={(value) => onChange(value)}
+        />
+      </Labelled>
     )
   }
   if (Input.isString(input)) {
@@ -75,7 +70,9 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
       )
     }
     return (
-      <AntInput prefix={name} type="text" className="px-1 grow nodrag" value={value} onChange={(ev) => onChange(ev.target.value)} />
+      <Labelled name={name}>
+        <AntInput type="text" value={value} onChange={(ev) => onChange(ev.target.value)} />
+      </Labelled>
     )
   }
 
@@ -87,7 +84,9 @@ export default memo(InputComponent)
 function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
   return (
     <div className="node-input-label-box">
-      <div className="node-input-label-name">{name}</div>
+      <div className="node-input-label-name">
+        <div className="label">{name}</div>
+      </div>
       {children}
     </div>
   )
