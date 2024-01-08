@@ -71,8 +71,8 @@ function NodesMenu(props: {
     }
   };
   const items: MenuItem[] = [
-    getItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
-    getItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
+    getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
+    getMenuItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
   ];
   return (
     <div className='node-menu'>
@@ -118,13 +118,13 @@ function NodeMenu(props: NodeMenuProps) {
 
   const items: MenuItem[] = [
     {type: "divider"},
-    getItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
-    getItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
+    getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
+    getMenuItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
     { type: "divider" },
-    getItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null),
+    getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null),
     { type: "divider" },
-    getItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
-    getItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
+    getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
+    getMenuItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
   ];
 
   return (
@@ -137,8 +137,8 @@ function NodeMenu(props: NodeMenuProps) {
   )
 }
 
-type MenuItem = Required<MenuProps>['items'][number];
-function getItem(
+export type MenuItem = Required<MenuProps>['items'][number];
+export function getMenuItem(
   label: React.ReactNode,
   key?: React.Key | null,
   icon?: React.ReactNode,
