@@ -11,6 +11,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
+import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -240,7 +241,7 @@ export const NodeComponent = memo(({
                 imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
                   return (
-                    <Image
+                    <ImageWithDownload
                       key={imageSrc + index}
                       className="node-preview-image"
                       src={imageSrc}

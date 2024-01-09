@@ -73,9 +73,9 @@ class WindowManager {
 
     this.mainWindow = window;
 
-    // if (isDev) {
+    if (isDev) {
       this.mainWindow.webContents.openDevTools({ mode: 'detach' })
-    // }
+    }
     
     window.on('closed', () => {
       // @ts-ignore
@@ -113,13 +113,16 @@ class WindowManager {
         enableWebSQL: false,
       },
     });
-    contextMenu({ window });
+    contextMenu({ 
+      window,
+      showSaveImageAs: true
+    });
     const url = this.#getRealUrl(tabData);
     window.webContents.frameRate = 60;
     window.webContents.loadURL(url);
-    // if (isDev) {
+    if (isDev) {
       window.webContents.openDevTools({ mode: 'detach' })
-    // }
+    }
     window.webContents.on("did-finish-load", () => {
       // window.webContents.send("set-socket", {});
     });
