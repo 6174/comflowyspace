@@ -7,7 +7,7 @@ import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon } from 'ui/icons';
-import { comfyElectronApi, isElectron, openDirectory, useIsElectron } from '@/lib/electron-bridge';
+import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
 import { ModelSettings } from './model-settings';
 
 const ModelManagement = () => {

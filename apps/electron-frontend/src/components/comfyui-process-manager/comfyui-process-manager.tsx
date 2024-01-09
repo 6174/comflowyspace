@@ -1,13 +1,12 @@
 import config, { getBackendUrl } from "@comflowy/common/config";
 import useWebSocket from "react-use-websocket";
 import useComfyUIProcessManagerState, { Message } from "./comfyui-process-manager-state";
-import { memo, use, useCallback, useEffect, useRef, useState } from "react";
-import { Button, Modal, Space, message } from "antd";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { Button, Space, message } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
-import {DraggableModal, DraggableModalProvider} from "ui/antd/draggable-modal";
-import { comfyElectronApi, listenElectron } from "@/lib/electron-bridge";
-import {isWindow} from "ui/utils/is-window";
-import { resolve } from "path";
+import {DraggableModal} from "ui/antd/draggable-modal";
+import { listenElectron } from "@/lib/electron-bridge";
+import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -73,17 +72,6 @@ const ComfyUIProcessManager = () => {
     }
   }, [visible]);
 
-  useEffect(() => {
-    // onInit();
-    const dispose = listenElectron("action", (data) => {
-      if (data.type === "open-comfyui-process-manager") {
-        showModal();
-      }
-    });
-    return () => {
-      dispose();
-    }
-  }, [])
 
   const [restarting, setRestarting] = useState(false);
   const restart = useCallback(async () => {
@@ -127,6 +115,27 @@ const ComfyUIProcessManager = () => {
     // await comfyElectronApi.update();
     setUpdating(false);
   }, []);
+
+  useEffect(() => {
+    // onInit();
+    const dispose = listenElectron("action", (data) => {
+      if (data.type === "open-comfyui-process-manager") {
+        showModal();
+      }
+    });
+
+    const dispose2 = SlotGlobalEvent.on((ev) => {
+      if (ev.type === GlobalEvents.restart_comfyui) {
+        showModal();
+        restart();
+      }
+    });
+    
+    return () => {
+      dispose();
+      dispose2.dispose();
+    }
+  }, [])
 
   return (
     <div>
