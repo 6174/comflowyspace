@@ -11,6 +11,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
+import galleryStyles from "../reactflow-gallery/gallery.module.scss";
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -227,40 +228,16 @@ export const NodeComponent = memo(({
               ))}
             </div>
 
-            <div className="node-images-preview" >
+            <div className={`node-images-preview`} >
               {
                 imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
                   return (
-                    <div className="node-image-preview-container" key={image.filename} style={{
-                      display: "flex",
-                      marginTop: 10,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}>
                       <Image
+                        key={imageSrc + index}
                         className="node-preview-image"
-                        onLoadCapture={ev => {
-                          console.log("onload capture");
-                          setMinHeight(mainRef.current.clientHeight + 25)
-                        }}
-                        // ref={image => {
-                        //   console.log("find ref image");
-                        //   image && image.complete && updateMinHeight();
-                        // }}
-                        // onLoad={ev => {
-                        //   console.log("onload capture"); 
-                        // }}
                         src={imageSrc}
-                        style={{
-                          maxWidth: 200,
-                          maxHeight: 200
-                        }}
-                        onClick={ev => {
-                          console.log("preview");
-                        }}
                       />
-                    </div>
                   )
                 })
               }

@@ -43,6 +43,28 @@
             transform-origin: 50% 80%;
             transition: var(--transition);
         }
+
+        .node-images-preview {
+            padding: 10px;
+            .ant-image {
+                width: 140px;
+                height: 140px;
+                margin-right: 4px;
+                margin-bottom: 4px;
+                overflow: hidden;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                background-color: var(--backgroundColor);
+                border-radius: 4px;
+                img {
+                    border-radius: 8px;
+                    max-width: 96%;
+                    max-height: 96%;
+                }
+            }
+        }
+
         .resize-icon {
             width: 20px;
             height: 20px;
