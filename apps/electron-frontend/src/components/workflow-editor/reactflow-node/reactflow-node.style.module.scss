@@ -136,8 +136,12 @@
                 .ant-input-number-input-wrap {
                     padding-right: 25px;
                 }
-                .ant-input-number, .ant-select-selector, .ant-input  {
+                .ant-select-selector {
+                    background-color: transparent;
+                }
+                .ant-input-number, .ant-select, .ant-input  {
                     min-width: 100px;
+                    max-width: calc(100% - 40px);
                     border-color: #414356;
                     height: 30px;
                     background-color: transparent;

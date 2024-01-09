@@ -65,15 +65,16 @@ export const NodeComponent = memo(({
   // if it has a seed, add seed control_after_generated param
   const seedFieldName = Widget.findSeedFieldName(widget);
   if (seedFieldName) {
-    params.push({
+    const index = params.findIndex(param => param.property === seedFieldName);
+    params.splice(index + 1, 0, {
       property: "control_after_generated",
       input: [ContrlAfterGeneratedValuesOptions]
-    })
+    });
   }
 
   const isInProgress = progressBar !== undefined
   const [minHeight, setMinHeight] = useState(100);
-  const [minWidth, setMinWidth] = useState(180);
+  const [minWidth, setMinWidth] = useState(240);
   const mainRef = useRef<HTMLDivElement>();
 
   const onNodesChange = useAppStore(st => st.onNodesChange);
