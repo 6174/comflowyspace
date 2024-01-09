@@ -1,8 +1,8 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, Node, useStore, NodeResizer, NodeResizeControl, Connection, Dimensions} from 'reactflow'
-import { Widget, Input, type NodeId, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
+import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
+import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
-import { Button, Image, Progress, Space } from 'antd';
+import { Image, Progress } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
@@ -11,7 +11,6 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
-import galleryStyles from "../reactflow-gallery/gallery.module.scss";
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {

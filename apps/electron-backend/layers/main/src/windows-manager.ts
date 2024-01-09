@@ -196,7 +196,20 @@ class WindowManager {
         return window.webContents.id;
       }
     });
-    
+
+    ipcMain.handle("change-tab", async (_event, tabData: WindowTab) => {
+      const tab = this.listWindow.find(instance => {
+        return instance.tabData.query === tabData.query && instance.tabData.pageName === tabData.pageName
+      });
+      if (tab) {
+        tab.tabData = {
+          ...tab.tabData,
+          ...tabData
+        };
+        this.dispatchChangeEvent();
+      }
+    })
+
     ipcMain.handle("close-tab", async (_event, id: number) => {
       let tabIndex = 0;
       this.listWindow.forEach((win, index) => {

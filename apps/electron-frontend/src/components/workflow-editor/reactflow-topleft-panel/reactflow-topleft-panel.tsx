@@ -100,6 +100,7 @@ import MenuStyles from "../reactflow-context-menu/reactflow-context-menu.module.
 import { ImportWorkflow } from "./action-import";
 import ResetDefault from "./action-reset-default";
 import { ReloadIcon } from "ui/icons";
+import { comfyElectronApi, useIsElectron } from "@/lib/electron-bridge";
 
 function FileMenu() {
     const [visible, setVisible] = useState(false);
@@ -151,15 +152,33 @@ function ChangeTitle() {
     useEffect(() => {
         setTitle(initialTitle);
     }, [initialTitle])
+    
+    const isElectron = useIsElectron();
+    const updateTabTitle = useCallback(async (title: string) => {
+        if (isElectron) {
+            const tabData = await comfyElectronApi.windowTabManager.getTabsData();
+            const activeTab = tabData.tabs.find(tab => {
+                return tab.id === tabData.active;
+            });
+            if (activeTab) {
+                await comfyElectronApi.windowTabManager.changeTab({
+                    ...activeTab,
+                    name: title
+                });
+            }
+        }
+    }, [isElectron]);
+
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
         console.log("change title");
         // onTitleChange(e.target.value);
     };
-    const handleTitleSubmit = useCallback(() => {
+    const handleTitleSubmit = useCallback(async () => {
         console.log("change title");
         onDocAttributeChange({ 'title': title });
         handleVisibleChange(false);
+        await updateTabTitle(title);
     }, [title]);
     
     const content = (
