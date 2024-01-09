@@ -20,16 +20,17 @@ interface Props {
     dimensions: Dimensions
   }>
   progressBar?: number;
+  widget: Widget;
   imagePreviews?: PreviewImage[]
 }
 
 export const NodeComponent = memo(({
   node,
   progressBar,
+  widget,
   imagePreviews,
 }: Props): JSX.Element => {
   const params: {property: string, input: Input}[] = []
-  const widget = node.data.widget;
   const nodeId = node.id;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];

@@ -13,9 +13,11 @@ export type  FlowNodeProps = NodeProps<{
 export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
   const progressBar = useAppStore(st => st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined);
   const imagePreviews = useAppStore(st => st.graph[props.id]?.images || []);
+  const widget = useAppStore(st => st.widgets[props.data.widget.name]);
   return (
     <NodeComponent
       node={props}
+      widget={widget}
       progressBar={progressBar}
       imagePreviews={imagePreviews}
     />
