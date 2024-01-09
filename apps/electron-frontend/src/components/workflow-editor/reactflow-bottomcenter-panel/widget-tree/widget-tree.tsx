@@ -9,7 +9,7 @@ export const WidgetTree = (props: {
     showCategory?: boolean;
     filter?: (widget: Widget) => boolean;
 }) => {
-    const filter = props.filter || (() => true);
+    const filter = props.filter || ((w: Widget) => true);
     const widgets = useAppStore(st => st.widgets);
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
@@ -26,10 +26,46 @@ export const WidgetTree = (props: {
         setSearchResult(findedWidgets.map(key => widgets[key]));
     };
 
-    console.log("categories", widgetCategory);
-
-    const [currentCategory, setCurrentCategory] = useState(widgetCategory[0]);
     const firstLevelCatogories = Object.keys(widgetCategory);
+    const [currentCategory, setCurrentCategory] = useState("");
+    const [widgetToRender, setWidgetToRender] = useState<{ cagetory: string, items: Widget[] }[]>([]);
+    
+    useEffect(() => {
+        const keys = Object.keys(widgetCategory);
+        if (keys.length > 0) {
+            setCurrentCategory(keys[0]);
+        }
+    }, [widgetCategory])
+
+    useEffect(() => {
+        const widgetList = Object.keys(widgets).filter(
+            (key) => {
+                const widget = widgets[key];
+                return widget.category.indexOf(currentCategory) >= 0  && filter(widget);
+            }
+        );
+        const ret = groupByCategory(widgetList.map(key => widgets[key]));
+        const subcagetories = Object.keys(ret);
+        const widgetToRender = subcagetories.map((cagetory) => {
+            return {
+                cagetory,
+                items: ret[cagetory]
+            }
+        });
+        setWidgetToRender(widgetToRender);
+
+        function groupByCategory(widgets: Widget[]): Record<string, Widget[]> {
+            return widgets.reduce((acc, widget) => {
+                const category = widget.category;
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                acc[category].push(widget);
+                return acc;
+            }, {} as Record<string, Widget[]>);
+        }
+    }, [currentCategory, widgets]);
+
     const widgetCategoryPanel = (
         <div className="widget-category-panel">
             <div className="category">
@@ -44,7 +80,20 @@ export const WidgetTree = (props: {
                 })}
             </div>
             <div className="widget-list">
-
+                {widgetToRender.map((item) => {
+                    return (
+                        <div className="widget-category-section" key={item.cagetory}>
+                            <div className="widget-category-section-title">{item.cagetory}</div>
+                            <div className="widget-category-section-content">
+                                {item.items.map((widget) => {
+                                    return (
+                                        <WidgetNode widget={widget} key={widget.name} />
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    )
+                })}
             </div>
         </div>
     );
@@ -72,7 +121,7 @@ export const WidgetTree = (props: {
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
  **/ 
-function WidgetTreeNodeTitle({widget}: {widget: Widget}) {
+function WidgetNode({widget}: {widget: Widget}) {
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         const widgetInfo = JSON.stringify(widget);
         event.dataTransfer.setData('application/reactflow', widgetInfo);
@@ -81,7 +130,7 @@ function WidgetTreeNodeTitle({widget}: {widget: Widget}) {
     const ref = useRef<HTMLDivElement>();
 
     return (
-        <div className='widget-title dndnode' 
+        <div className='widget-node action dndnode' 
             draggable 
             ref={ref}
             onDragStart={onDragStart} 
@@ -97,7 +146,7 @@ function SearchList({ items }: { items: Widget[] }) {
             {items.map((item, index) => {
                 return (
                     <div className='search-result-item' key={item.name + index}>
-                        <WidgetTreeNodeTitle widget={item}/>
+                        <WidgetNode widget={item}/>
                     </div>
                 )
             })}
