@@ -6,7 +6,7 @@ import { Tabs, Card} from 'antd';
 import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
-import { FolderIcon } from 'ui/icons';
+import { FolderIcon, ReloadIcon } from 'ui/icons';
 import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
 import { ModelSettings } from './model-settings';
 
@@ -37,7 +37,7 @@ const ModelManagement = () => {
             <Button size='small' loading={loading} disabled={loading} onClick={() => {
               onInit();
             }}> 
-              Refresh
+              <ReloadIcon /> Refresh
             </Button>
           </div>
         </div>
