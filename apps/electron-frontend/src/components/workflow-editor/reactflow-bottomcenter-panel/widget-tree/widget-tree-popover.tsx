@@ -4,7 +4,7 @@ import { WidgetTree } from "./widget-tree";
 export const WidgetPopover = ({ children }) => {
     return (
         <Popover
-            title="Widget Tree"
+            title={null}
             content={<WidgetTree />}
             trigger="click"
             placement="top"

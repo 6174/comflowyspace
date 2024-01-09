@@ -8,7 +8,8 @@
     transition: var(--transition);
     user-select: none;
     &:hover {
-        background-color: var(--backgroundColorL2);
+        // background-color: var(--backgroundColorL2);
+        background-color: var(--actionHoverColor);
     }
     .icon {
         display: flex;
@@ -140,8 +141,9 @@
 }
 
 .ant-popover {
+    --antd-arrow-background-color: #23242C;
     .ant-popover-inner {
-        background-color: var(--backgroundColorL1_5);
+        background-color: #23242C;
         border-radius: var(--borderRadius);
         box-shadow: var(--box-shadow);
         // border: 1px solid #2c2c33;
