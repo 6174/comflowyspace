@@ -208,3 +208,37 @@
         }
     }
 }
+
+
+.ant-image {
+    img.ant-image-img {
+        /* Same as first example */
+        min-height: 50px;
+        &:before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0px;
+            left: 0;
+            height: calc(100%);
+            width: 100%;
+            background-color: var(--backgroundColor);
+            border-radius: 4px;
+        }
+
+        &:after {
+            content: "\f127" " Broken image ";
+            display: block;
+            font-size: 11px;
+            font-style: normal;
+            font-family: FontAwesome;
+            color: rgb(100, 100, 100);
+            position: absolute;
+            top: 16px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+        }
+    }
+    
+}
