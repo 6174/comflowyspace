@@ -185,6 +185,9 @@ importers:
       '@types/color':
         specifier: ^3.0.6
         version: 3.0.6
+      '@types/lodash':
+        specifier: ^4.14.202
+        version: 4.14.202
       antd:
         specifier: 5.12.5
         version: 5.12.5(react-dom@18.2.0)(react@18.2.0)
@@ -212,6 +215,9 @@ importers:
       https-proxy-agent:
         specifier: ^7.0.2
         version: 7.0.2
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       react:
         specifier: ^18.2.0
         version: 18.2.0

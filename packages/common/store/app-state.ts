@@ -104,6 +104,7 @@ export interface AppState {
   onTransformEnd: (transform: number) => void;
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
   onInit: (editorInstance?: ReactFlowInstance<any, any>) => Promise<void>
+  onPasteNodes: (nodes: PersistedWorkflowNode[]) => void;
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
   onExportWorkflow: () => void
   onNewClientId: (id: string) => void
@@ -439,6 +440,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     WorkflowDocumentUtils.onNodesAdd(doc, newItems);
     st.onSyncFromYjsDoc();
     st.onSelectNodes(newItems.map(item => item.id));
+  },
+  onPasteNodes: (nodes: PersistedWorkflowNode[]) => {
+    const st = get();
+    const doc = st.doc;
+    WorkflowDocumentUtils.onNodesAdd(doc, nodes);
+    st.onSyncFromYjsDoc();
+    st.onSelectNodes(nodes.map(item => item.id));
   },
   onSelectNodes: (ids: string[]) => {
     const changes: NodeChange[] = ids.map((id) => ({ id, selected: true , type: "select"}));
