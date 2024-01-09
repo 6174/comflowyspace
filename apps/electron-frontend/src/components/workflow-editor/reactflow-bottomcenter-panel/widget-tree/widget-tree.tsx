@@ -4,6 +4,7 @@ import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon } from 'ui/icons';
+import { useStoreApi } from 'reactflow';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -136,12 +137,23 @@ function WidgetNode({widget}: {widget: Widget}) {
     }, [widget]);
     const ref = useRef<HTMLDivElement>();
 
+    const editorInstance = useAppStore(st => st.editorInstance)
+    const onAddNode = useAppStore(st => st.onAddNode);
+    const createNewNode = useCallback(async (ev: React.MouseEvent) => {
+        const rect = ref.current.getBoundingClientRect();
+        const pos = editorInstance.screenToFlowPosition({
+            x: rect.left + rect.width + 40,
+            y: ev.clientY - 100
+        });
+        await onAddNode(widget, pos); 
+    }, [widget, ref]);
+
     return (
         <div className='widget-node action dndnode' 
             draggable 
             ref={ref}
             onClick={ev => {
-
+                createNewNode(ev);
             }}
             onDragStart={onDragStart} 
             title={widget.name}>

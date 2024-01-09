@@ -15,6 +15,7 @@ import {
   OnConnectEnd,
   OnConnectStartParams,
   NodeChange,
+  ReactFlowInstance,
 } from 'reactflow';
 import {
   type NodeId,
@@ -49,6 +50,7 @@ import { SlotEvent } from '../utils/slot-event';
 
 export type SelectionMode = "figma" | "default";
 export interface AppState {
+  editorInstance?: ReactFlowInstance<any, any>,
   counter: number
   clientId?: string
   slectionMode: SelectionMode
@@ -101,7 +103,7 @@ export interface AppState {
   onTransformStart: () => void;
   onTransformEnd: (transform: number) => void;
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
-  onInit: () => Promise<void>
+  onInit: (editorInstance?: ReactFlowInstance<any, any>) => Promise<void>
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
   onExportWorkflow: () => void
   onNewClientId: (id: string) => void
@@ -222,11 +224,15 @@ export const useAppStore = create<AppState>((set, get) => ({
   /**
    * AppStore Initialization Entry 
    */
-  onInit: async () => {
+  onInit: async (editorInstance?: ReactFlowInstance<any, any>) => {
     const widgets = await getWidgets()
     const widgetCategory = generateWidgetCategories(widgets);
     console.log("widgets", widgets);
-    set({ widgets, widgetCategory })
+    set({ 
+      widgets, 
+      widgetCategory,
+      editorInstance
+    })
   },
   /**
    * Sync nodes and edges state from YJS Doc

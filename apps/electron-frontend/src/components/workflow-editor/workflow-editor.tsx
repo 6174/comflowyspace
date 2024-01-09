@@ -14,7 +14,6 @@ import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/commo
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
@@ -214,7 +213,7 @@ export default function WorkflowEditor() {
         }}
         onInit={async (instance) => {
           setReactFlowInstance(instance);
-          await onInit();
+          await onInit(instance);
           setInited(true);
         }}
       >
