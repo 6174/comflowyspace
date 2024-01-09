@@ -7,6 +7,8 @@ export const WidgetPopover = ({ children }) => {
             title={null}
             content={<WidgetTree />}
             trigger="click"
+            arrow={false}
+            align={{offset: [0, -26]}}
             placement="top"
         >
             {children}
