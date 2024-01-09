@@ -327,8 +327,8 @@
     
       .react-flow__nodesselection-rect,
       .react-flow__selection {
-        background: rgba(0, 89, 220, 0.08);
-        border: 1px dotted rgba(0, 89, 220, 0.8);
+        background: rgb(0 163 220 / 8%);
+        border: 1px dotted var(--primaryColor);
       }
     
       .react-flow__nodesselection-rect:focus,
