@@ -16,17 +16,13 @@ const Gallery = () => {
           hmmm, nothing here
         </div>
       )}
-      <div className="gallery">
+      <div className={styles.imageGallery}>
         {images.map((image, index) => {
           const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
           return (
             <Image
               key={imageSrc + index}
               src={imageSrc}
-              style={{
-                maxWidth: 200,
-                maxHeight: 200
-              }}
             />
           )
         })}
