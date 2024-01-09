@@ -231,9 +231,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     console.log("widgets", widgets);
     set({ 
       widgets, 
-      widgetCategory,
-      editorInstance
+      widgetCategory
     })
+    if (editorInstance) {
+      set({
+        editorInstance
+      })
+    }
   },
   /**
    * Sync nodes and edges state from YJS Doc

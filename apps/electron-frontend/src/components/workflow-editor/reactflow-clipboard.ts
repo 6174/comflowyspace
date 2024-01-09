@@ -1,5 +1,4 @@
 import { uuid } from "@comflowy/common";
-import { SDNode, Widget } from "@comflowy/common/comfui-interfaces"
 import { useAppStore } from "@comflowy/common/store";
 import { ReactFlowInstance, XYPosition } from "reactflow";
 import cloneDeep from "lodash";
