@@ -18,6 +18,10 @@
             }
         }
 
+        .action:hover {
+            background-color: var(--backgroundColorL2);
+        }
+        
         .action.active {
             background-color: var(--backgroundColorL2);
             color: var(--primaryColor);

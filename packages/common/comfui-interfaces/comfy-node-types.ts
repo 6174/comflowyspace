@@ -28,8 +28,8 @@ export type SDNodeColorOption = {
 
 export const SDNODE_COLORS: SDNodeColorOption[] = [
 {
-  color: "#35374B",
-  bgcolor: "#262837",
+  color: "#2E303B",
+  bgcolor: "#26272F",
   label: 'Default',
 },
 {

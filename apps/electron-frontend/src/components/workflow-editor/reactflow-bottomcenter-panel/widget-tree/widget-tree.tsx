@@ -1,35 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Tree, Input } from 'antd';
+import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
-
-const { TreeNode } = Tree;
-const { Search } = Input;
 import styles from "./widget-tree.style.module.scss";
 import { Widget } from '@comflowy/common/comfui-interfaces';
-export const WidgetTree = () => {
+import { SearchIcon } from 'ui/icons';
+
+export const WidgetTree = (props: {
+    showCategory?: boolean;
+    filter?: (widget: Widget) => boolean;
+}) => {
+    const filter = props.filter || (() => true);
     const widgets = useAppStore(st => st.widgets);
     const widgetCategory = useAppStore(st => st.widgetCategory);
-    const [expandedKeys, setExpandedKeys] = useState([]);
     const [searchValue, setSearchValue] = useState('');
-    const [autoExpandParent, setAutoExpandParent] = useState(true);
     const [searchResult, setSearchResult] = useState([]);
-
-    const generateTreeNodes = (data, parentKey = '') => {
-        return Object.keys(data).map((key) => {
-            const nodeKey = parentKey ? `${parentKey}-${key}` : key;
-            const node = data[key];
-
-            if (node && !node.input) {
-                return (
-                    <TreeNode key={nodeKey} title={key}>
-                        {generateTreeNodes(node, nodeKey)}
-                    </TreeNode>
-                );
-            }
-            return <TreeNode key={nodeKey} title={<WidgetTreeNodeTitle widget={node}/>} />;
-        });
-    };;
-
     const handleSearch = (value) => {
         setSearchValue(value);
         const findedWidgets = Object.keys(widgets).filter(
@@ -40,51 +24,43 @@ export const WidgetTree = () => {
             }
         );
         setSearchResult(findedWidgets.map(key => widgets[key]));
-        // const categories = findedWidgets.map((key) => widgets[key].category);
-        // const expandedKeys = [];
-        // categories.forEach((category) => {
-        //     const categoryKey = generatePaths(category);
-        //     expandedKeys.push(...categoryKey);
-        // });
-
-        // setExpandedKeys(expandedKeys);
-        // setSearchValue(value);
-        // function generatePaths(input) {
-        //     const segments = input.split('/');
-        //     const result = [];
-
-        //     for (let i = 0; i < segments.length; i++) {
-        //         const path = segments.slice(0, i + 1).join('-');
-        //         result.push(path);
-        //     }
-
-        //     return result;
-        // }
     };
 
-    const onExpand = (expandedKeys) => {
-        setExpandedKeys(expandedKeys);
-        setAutoExpandParent(false);
-    };
+    console.log("categories", widgetCategory);
+
+    const [currentCategory, setCurrentCategory] = useState(widgetCategory[0]);
+    const firstLevelCatogories = Object.keys(widgetCategory);
+    const widgetCategoryPanel = (
+        <div className="widget-category-panel">
+            <div className="category">
+                {firstLevelCatogories.map((name) => {
+                    return (
+                        <div className={`category-item ${currentCategory === name ? "active" : ""}`} key={name} onClick={() => {
+                            setCurrentCategory(name);
+                        }}>
+                            {name}
+                        </div>
+                    )
+                })}
+            </div>
+            <div className="widget-list">
+
+            </div>
+        </div>
+    );
 
     return (
         <div className={styles.widgetTree}>
-            <Search
-                placeholder="Search widgets"
-                onChange={(e) => handleSearch(e.target.value)}
-                value={searchValue}
-            />
+            <div className="search-box">
+                <Input
+                    prefix={<SearchIcon/>}
+                    placeholder="Search widgets"
+                    onChange={(e) => handleSearch(e.target.value)}
+                    value={searchValue}
+                />
+            </div>
             {
-                searchValue == "" ? (
-                    <Tree
-                        showLine
-                        onExpand={onExpand}
-                        expandedKeys={expandedKeys}
-                        autoExpandParent={autoExpandParent}
-                    >
-                        {generateTreeNodes(widgetCategory)}
-                    </Tree>
-                ) : (
+                searchValue == "" ? widgetCategoryPanel : (
                     <SearchList items={searchResult} />
                 )
             }

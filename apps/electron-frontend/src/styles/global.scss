@@ -8,9 +8,12 @@ html, body {
   --secondaryColor: #2BAFF7;
   --borderColor: #262837;
   --actionBorderColor: #4A4A4D;
+  --actionHoverColor: #353640;
+  --popupBorderColor: #34353D;
   --fontColor: white;
   --borderRadius: 8px;
-  --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
+  // --box-shadow: 0 8px 18px 0 rgb(11 11 77 / 4%), 0 0 2px 0 rgb(16 16 83 / 16%);
+  --box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.15), 0px 0px 2px 0px rgba(0, 0, 0, 0.30);
   --cardBackground: #262837;
   --cardHover: #34374b;
   --transition: all ease .2s;
