@@ -24,3 +24,19 @@
     }
   }
 }
+
+.previewToolbar {
+  padding: 4px 14px;
+  :global {
+    .action {
+      padding: 10px 12px;
+      border-radius: 8px;
+      &:hover {
+        background-color: var(--backgroundColorL2);
+      }
+      svg {
+        transform: scale(1.3);
+      }
+    }
+  }
+}

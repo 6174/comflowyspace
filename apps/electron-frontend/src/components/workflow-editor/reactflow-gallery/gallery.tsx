@@ -5,6 +5,7 @@ import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import styles from "./gallery.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
 import { GalleryIcon } from 'ui/icons';
+import { ImageWithDownload } from './image-with-download';
 
 const Gallery = () => {
   let images = useAppStore(st => st.persistedWorkflow.gallery || []);
@@ -20,7 +21,7 @@ const Gallery = () => {
         {images.map((image, index) => {
           const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
           return (
-            <Image
+            <ImageWithDownload
               key={imageSrc + index}
               src={imageSrc}
             />
