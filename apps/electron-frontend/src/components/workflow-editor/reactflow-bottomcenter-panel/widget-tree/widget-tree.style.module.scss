@@ -65,10 +65,14 @@
                 overflow-x: hidden;
                 .widget-category-section {
                     padding: 10px 0;
+                    &:first-child {
+                        padding-top: 0;
+                    }
                     &-title {
                         font-size: 10px;
                         opacity: .2;
                         margin-bottom: 10px;
+                        padding-left: 6px;
                     }
                     border-bottom: solid 1px var(--popupBorderColor);
                 }
@@ -88,6 +92,12 @@
             margin-bottom: 4px;
             font-size: 12px;
             justify-content: flex-start;
+            .class_name {
+                font-size: 10px;
+                display: inline-block;
+                opacity: .2;
+                margin-left: 4px;
+            }
         }
 
         .search-result {

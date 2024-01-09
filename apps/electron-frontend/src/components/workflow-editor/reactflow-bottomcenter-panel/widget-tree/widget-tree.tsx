@@ -9,6 +9,7 @@ export const WidgetTree = (props: {
     showCategory?: boolean;
     filter?: (widget: Widget) => boolean;
 }) => {
+    const showCategory = props.showCategory;
     const filter = props.filter || ((w: Widget) => true);
     const widgets = useAppStore(st => st.widgets);
     const widgetCategory = useAppStore(st => st.widgetCategory);
@@ -20,7 +21,7 @@ export const WidgetTree = (props: {
             (key) => {
                 const widget = widgets[key];
                 const search_string = `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`
-                return search_string.toLowerCase().includes(value.toLowerCase());
+                return filter(widget) && search_string.toLowerCase().includes(value.toLowerCase());
             }
         );
         setSearchResult(findedWidgets.map(key => widgets[key]));
@@ -41,7 +42,10 @@ export const WidgetTree = (props: {
         const widgetList = Object.keys(widgets).filter(
             (key) => {
                 const widget = widgets[key];
-                return widget.category.indexOf(currentCategory) >= 0  && filter(widget);
+                if (showCategory) {
+                    return widget.category.indexOf(currentCategory) >= 0  && filter(widget);
+                }
+                return filter(widget);
             }
         );
         const ret = groupByCategory(widgetList.map(key => widgets[key]));
@@ -68,17 +72,20 @@ export const WidgetTree = (props: {
 
     const widgetCategoryPanel = (
         <div className="widget-category-panel">
-            <div className="category">
-                {firstLevelCatogories.map((name) => {
-                    return (
-                        <div className={`category-item ${currentCategory === name ? "active" : ""}`} key={name} onClick={() => {
-                            setCurrentCategory(name);
-                        }}>
-                            {name}
-                        </div>
-                    )
-                })}
-            </div>
+            {showCategory && (
+                <div className="category">
+                    {firstLevelCatogories.map((name) => {
+                        return (
+                            <div className={`category-item ${currentCategory === name ? "active" : ""}`} key={name} onClick={() => {
+                                setCurrentCategory(name);
+                            }}>
+                                {name}
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
+            
             <div className="widget-list">
                 {widgetToRender.map((item) => {
                     return (
@@ -133,9 +140,15 @@ function WidgetNode({widget}: {widget: Widget}) {
         <div className='widget-node action dndnode' 
             draggable 
             ref={ref}
+            onClick={ev => {
+
+            }}
             onDragStart={onDragStart} 
             title={widget.name}>
-            {widget.display_name || widget.name}
+            {widget.display_name}
+            <span className='class_name'>
+                {"("}{widget.name}{")"}
+            </span>
         </div>
     )
 }
