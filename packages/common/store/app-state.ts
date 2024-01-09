@@ -421,6 +421,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     WorkflowDocumentUtils.onNodesAdd(doc, [{
       id: createNodeId(),
       position,
+      dimensions: {
+        width: 240,
+        height: 200
+      },
       value: node
     }]);
     onSyncFromYjsDoc();
