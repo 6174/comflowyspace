@@ -90,7 +90,7 @@ export const NodeComponent = memo(({
       if (!mainRef.current) {
         return
       }
-      const height = mainRef.current.offsetHeight + 25;
+      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
       const width = mainRef.current.offsetWidth + 4;
       const dimensions = node.data.dimensions
       // console.log("dimensions", height, dimensions);
@@ -106,7 +106,7 @@ export const NodeComponent = memo(({
       }
       setMinHeight(height);
     }
-  }, [setMinHeight, nodeId]);
+  }, [setMinHeight, nodeId, imagePreviews]);
 
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
   const [resizing, setResizing] = useState(false);
@@ -146,6 +146,12 @@ export const NodeComponent = memo(({
       disposable.dispose();
     } 
   }, [mainRef])
+
+  useEffect(() => {
+    if (imagePreviews.length > 0) {
+      updateMinHeight();
+    }
+  }, [imagePreviews])
 
   const resizeIcon = (
     <div className="resize-icon">
@@ -227,23 +233,23 @@ export const NodeComponent = memo(({
                 <InputContainer key={property} name={property} id={node.id} input={input} widget={widget} />
               ))}
             </div>
-
-            <div className={`node-images-preview`} >
+            <div style={{ height: 10 }}></div>
+          </div>
+          <div className={`node-images-preview`} >
+            <div className="inner">
               {
                 imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
                   return (
-                      <Image
-                        key={imageSrc + index}
-                        className="node-preview-image"
-                        src={imageSrc}
-                      />
+                    <Image
+                      key={imageSrc + index}
+                      className="node-preview-image"
+                      src={imageSrc}
+                    />
                   )
                 })
               }
             </div>
-            
-            <div style={{height: 10}}></div>
           </div>
         </>
       ) : (
