@@ -166,17 +166,34 @@ export default function WorkflowEditor() {
 
   const storeApi = useStoreApi();
 
-
   const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
-    // console.log("key press");
     const metaKey = ev.metaKey;
     switch (ev.code) {
       case "KeyC": 
         break;
       case "KeyV":
         break;
+      case "KeyZ":
+        if (metaKey && !ev.shiftKey) {
+          undo();
+        }
+        if (metaKey && ev.shiftKey) {
+          redo();
+        }
+        break;
       default: 
         break;
+    }
+
+    function undo() {
+      const undo = useAppStore.getState().undo;
+      undo();
+    }
+
+    function redo() {
+      console.log("redo");
+      const redo = useAppStore.getState().redo;
+      redo();
     }
   }, []);
 

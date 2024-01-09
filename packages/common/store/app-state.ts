@@ -100,6 +100,8 @@ export interface AppState {
   previewedImageIndex?: number
 
   onSubmit: () => Promise<PromptResponse>
+  undo: () => void;
+  redo: () => void;
   onTransformStart: () => void;
   onTransformEnd: (transform: number) => void;
   onResetFromPersistedWorkflow: (workflow: PersistedWorkflowDocument) => Promise<void>
@@ -220,6 +222,23 @@ export const useAppStore = create<AppState>((set, get) => ({
       transform,
       transforming: false
     })
+  },
+
+  undo: () => {
+    const st = get();
+    const { undoManager } = st;
+    if (undoManager && undoManager.canUndo()) {
+      undoManager.undo();
+      st.onSyncFromYjsDoc();
+    }
+  },
+  redo: () => {
+    const st = get();
+    const { undoManager } = st;
+    if (undoManager && undoManager.canRedo()) {
+      undoManager.redo();
+      st.onSyncFromYjsDoc();
+    }
   },
 
   /**
