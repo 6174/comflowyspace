@@ -5,16 +5,17 @@ import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParam
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
-import { Input, Widget } from '@comflowy/common/comfui-interfaces';
+import { Input, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
-import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/common/storage';
+import { PersistedFullWorkflow, PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
+import { copyNodes, pasteNodes } from './reactflow-clipboard';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -164,6 +165,53 @@ export default function WorkflowEditor() {
   }  : {};
 
   const storeApi = useStoreApi();
+
+
+  const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
+    // console.log("key press");
+    const metaKey = ev.metaKey;
+    switch (ev.code) {
+      case "KeyC": 
+        break;
+      case "KeyV":
+        break;
+      default: 
+        break;
+    }
+  }, []);
+
+  const onCopy = React.useCallback((ev: ClipboardEvent) => {
+    const state = useAppStore.getState();
+    const selectedNodes = state.nodes.filter(node => node.selected);
+    const workflowMap = state.doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    copyNodes(selectedNodes.map((node) => {
+      const id = node.id;
+      return workflow.nodes[id];
+    }), ev);
+
+    if (ev.type === "cut") {
+      // do something with cut
+    }
+  }, [])
+
+  const onPaste = React.useCallback((ev: ClipboardEvent) => {
+    pasteNodes(ev);
+  }, [reactFlowInstance])
+
+  React.useEffect(() => {
+    document.addEventListener('copy', onCopy);
+    document.addEventListener('cut', onCopy);
+    document.addEventListener('paste', onPaste);
+    document.addEventListener('keydown', onKeyPresshandler);
+    return () => {
+      document.removeEventListener('keydown', onKeyPresshandler);
+      document.removeEventListener('copy', onCopy);
+      document.removeEventListener('cut', onCopy);
+      document.removeEventListener('paste', onPaste);
+    }
+  }, [ref])
+
 
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>

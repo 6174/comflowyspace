@@ -71,7 +71,6 @@ export async function readWorkflowFromPng(file: File, widgets: Widgets): Promise
   });
 }
 
-
 export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: ComfyUIWorkflow, widgets: Widgets): PersistedWorkflowDocument {
   const { nodes, links } = comfyUIWorkflow;
   const nodesMap: Record<string, PersistedWorkflowNode> = {};
