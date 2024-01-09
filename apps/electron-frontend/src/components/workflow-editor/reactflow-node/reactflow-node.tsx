@@ -154,11 +154,12 @@ export const NodeComponent = memo(({
 
   const invisible = transform < 0.2;
 
+  const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
   return (
     <div className={`${nodeStyles.reactFlowNode}  ${node.selected && !isInProgress ? nodeStyles.reactFlowSelected : ""} ${isInProgress ? nodeStyles.reactFlowProgress : ""}`} style={{
       '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
       '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': Color(node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor).alpha(.6).hexa(),
+      '--node-bg-color': isInProgress ? nodeBgColor : Color(nodeBgColor).alpha(.6).hexa(),
     } as React.CSSProperties}>
       <NodeResizeControl
         style={{

@@ -3,7 +3,7 @@ import { Button, Modal, Space } from "antd";
 import { useQueueState } from '@comflowy/common/store/comfyui-queue-state';
 import styles from "./reactflow-queue.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
-import { SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { QueueIcon } from 'ui/icons';
 
 const Queue = () => {
@@ -21,7 +21,7 @@ const Queue = () => {
   }, []);
   useEffect(() => {
     const disposable = SlotGlobalEvent.on((ev) => {
-      if (ev.type === "execution_interrupted") {
+      if (ev.type === GlobalEvents.execution_interrupted) {
         setCanclecing(false);
       }
     })
