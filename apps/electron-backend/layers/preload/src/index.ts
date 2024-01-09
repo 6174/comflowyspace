@@ -54,6 +54,9 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
             const ret = await ipcRenderer.invoke('open-new-tab', config);
             return ret;
         },
+        changeTab: async (config: Partial<WindowTab>) => {
+            await ipcRenderer.invoke('change-tab', config);
+        },
         closeTab: async (id: number) => {
             await ipcRenderer.invoke('close-tab', id);
         },

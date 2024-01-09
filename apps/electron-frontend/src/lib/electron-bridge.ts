@@ -16,6 +16,7 @@ import { isWindow } from "ui/utils/is-window";
         active: number;
       }) => void
     ) => () => void;
+    changeTab: (tabData: WindowTab) => Promise<void>;
     openNewTab: (config: Partial<WindowTab>) => Promise<any>;
     closeTab: (id: number) => Promise<void>;
     swtichTab: (id: number) => Promise<void>;
