@@ -3,24 +3,44 @@ import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
 import { Button, Col, Input, Modal, Row, Space } from "antd";
 import { InstallExtensionButton } from "./install-extension-button";
-import { CloseIcon, ExtensionIcon, MoreIcon } from "ui/icons";
+import { CloseIcon, ExtensionIcon, MoreIcon, ReloadIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
 import { UpdateExtensionButton } from "./update-extension-button";
 import { DisableExtensionButton } from "./disable-extension-button";
 import { openExternalURL } from "@/lib/electron-bridge";
+import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 function ExtensionManager() {
-  const {onInit, extensions, extensionNodeMap, loading} = useExtensionsState();
+  const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
     onInit();
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);
-  console.log("installed", installedExtensions);
+
+  const restartComfyUI = useCallback(() => {
+    SlotGlobalEvent.emit({
+      type: GlobalEvents.restart_comfyui,
+      data: null
+    })
+  }, []);
   return (
     <div className={styles.extensionManager}>
       <div className="my-extensions">
-        <h2>My Extensions</h2>
+        <div style={{
+          display: 'flex'
+        }}>
+          <h2> Installed Extensions </h2>
+          <div className="actions">
+            <div className="refresh-button">
+              <Button size='small' loading={loading} disabled={loading} onClick={() => {
+                restartComfyUI();
+              }}>
+                <ReloadIcon /> Restart ComfyUI
+              </Button>
+            </div>
+          </div>
+        </div>
         <p className="sub">Extensions already installed on your device</p>
         <ExtensionList extensions={installedExtensions} showFilter={false}/>
       </div>
