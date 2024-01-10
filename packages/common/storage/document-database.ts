@@ -1,6 +1,5 @@
 import { PreviewImage, SDNode } from '../comfui-interfaces';
 import defaultWorkflow from '../templates/default-workflow';
-import Dexie, { Table } from 'dexie';
 import { XYPosition, Connection } from 'reactflow';
 import { getWorkflowTemplate } from '../templates/templates';
 import { uuid } from '../utils';
@@ -142,68 +141,68 @@ export class JSONDBDatabase {
   }
 }
 
-export class DexieDatabase extends Dexie {
-  documents!: Table<PersistedFullWorkflow>;
-  constructor() {
-    super("DocumentDB");
+// export class DexieDatabase extends Dexie {
+//   documents!: Table<PersistedFullWorkflow>;
+//   constructor() {
+//     super("DocumentDB");
 
-    this.version(1).stores({
-      documents: "id, title, last_edit_time",
-    });
-  }
+//     this.version(1).stores({
+//       documents: "id, title, last_edit_time",
+//     });
+//   }
 
-  async getDocs() {
-    return this.documents
-      .toArray();
-  }
+//   async getDocs() {
+//     return this.documents
+//       .toArray();
+//   }
 
-  async getDoc(id: string) {
-    return this.documents.get(id);
-  }
+//   async getDoc(id: string) {
+//     return this.documents.get(id);
+//   }
 
-  async createDoc(docMeta: PersistedFullWorkflow) {
-    return this.documents.add(docMeta);
-  }
+//   async createDoc(docMeta: PersistedFullWorkflow) {
+//     return this.documents.add(docMeta);
+//   }
 
-  async updateDoc(docMeta: PersistedFullWorkflow) {
-    // console.log("save to local", docMeta);
-    return this.documents.put(docMeta);
-  }
+//   async updateDoc(docMeta: PersistedFullWorkflow) {
+//     // console.log("save to local", docMeta);
+//     return this.documents.put(docMeta);
+//   }
 
-  async deleteDocSoft(docId: string) {
-    return this.documents.update(docId, { 
-      deleted: true,
-      deleted_time: +(new Date())
-    });
-  }
+//   async deleteDocSoft(docId: string) {
+//     return this.documents.update(docId, { 
+//       deleted: true,
+//       deleted_time: +(new Date())
+//     });
+//   }
 
-  async deleteDoc(docId: string) {
-    return this.documents.delete(docId);
-  }
+//   async deleteDoc(docId: string) {
+//     return this.documents.delete(docId);
+//   }
 
-  async createDocFromTemplate(key: string = "default"): Promise<PersistedFullWorkflow> {
-    const template = getWorkflowTemplate(key);
-    const doc: PersistedFullWorkflow = {
-      id: uuid(),
-      title: "untitled",
-      create_at: +(new Date()),
-      snapshot: template
-    }
-    await this.documents.add(doc);
-    return doc;
-  }
+//   async createDocFromTemplate(key: string = "default"): Promise<PersistedFullWorkflow> {
+//     const template = getWorkflowTemplate(key);
+//     const doc: PersistedFullWorkflow = {
+//       id: uuid(),
+//       title: "untitled",
+//       create_at: +(new Date()),
+//       snapshot: template
+//     }
+//     await this.documents.add(doc);
+//     return doc;
+//   }
 
-  async createDocFromData(data: PersistedWorkflowDocument): Promise<PersistedFullWorkflow> {
-    const doc: PersistedFullWorkflow = {
-      id: uuid(),
-      title: "untitled",
-      create_at: +(new Date()),
-      snapshot: data
-    }
-    await this.documents.add(doc);
-    return doc;
-  }
-}
+//   async createDocFromData(data: PersistedWorkflowDocument): Promise<PersistedFullWorkflow> {
+//     const doc: PersistedFullWorkflow = {
+//       id: uuid(),
+//       title: "untitled",
+//       create_at: +(new Date()),
+//       snapshot: data
+//     }
+//     await this.documents.add(doc);
+//     return doc;
+//   }
+// }
 
 export const documentDatabaseInstance = new JSONDBDatabase() // new DexieDatabase();
 

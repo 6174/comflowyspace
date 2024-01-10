@@ -8,7 +8,6 @@ import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
 
 function MyWorkflowsPage() {
-
   return (
     <div className={styles.myWorkflows}>
       <WorkflowCreateBox/>
