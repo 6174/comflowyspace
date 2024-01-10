@@ -1,6 +1,7 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
 import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../storage'
+import { ComfyUIError, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types'
 
 interface PromptRequest {
   client_id?: string
@@ -13,7 +14,7 @@ interface ExtraData {
 }
 
 export interface PromptResponse {
-  error?: string
+  error: ComfyUIExecuteError;
 }
 
 interface Node {
@@ -125,7 +126,7 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
     method: 'POST',
     body: JSON.stringify(prompt),
   })
-  const error = resp.status !== 200 ? await resp.text() : undefined
+  const error = resp.status !== 200 ? await resp.json() : undefined
   return { error }
 }
 

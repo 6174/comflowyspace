@@ -1,5 +1,4 @@
 import { Space, message } from "antd";
-import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
@@ -88,7 +87,7 @@ function ReactflowBottomCenterPanel() {
                 <div className="action action-Run" onClick={async ev => {
                     const ret = await onSubmit();
                     if (ret.error) {
-                        message.error(ret.error, 3)
+                        message.error(ret.error.error.message , 3)
                     } else {
                         message.info("Add task to queue");
                     }
