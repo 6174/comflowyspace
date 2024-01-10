@@ -87,7 +87,7 @@ function ReactflowBottomCenterPanel() {
                 <div className="action action-Run" onClick={async ev => {
                     const ret = await onSubmit();
                     if (ret.error) {
-                        message.error(ret.error.error.message , 3)
+                        message.error(ret.error.error.message + " " + ret.error.error.details , 3)
                     } else {
                         message.info("Add task to queue");
                     }
