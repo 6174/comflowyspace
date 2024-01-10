@@ -249,3 +249,37 @@
         opacity: 1 !important;
     }
 }
+
+.reactFlowError {
+    &::before,
+    &::after {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    &::before {
+        background-image: linear-gradient(to right, #CB2C95, #F75C2B);
+    }
+}
+
+.nodeErrors {
+    width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    :global {
+        .node-error {
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+    }
+}
+
+.nodeErrorWrapper {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 0 2px;
+    line-height: 16px;
+    background: var(--Linear, linear-gradient(90deg, #CB2B95 5.47%, #F75B2A 95.2%, #F92525 95.2%));
+    font-family: JetBrains Mono, monospace;
+}

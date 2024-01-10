@@ -68,11 +68,13 @@ export interface ComfyUIError {
   } | any;
 };
 
+export interface ComfyUINodeError {
+  errors: ComfyUIError[];
+  dependent_outputs: string[];
+  class_type: string;
+}
+
 export interface ComfyUIExecuteError {
   error: ComfyUIError;
-  node_errors: Record<string, {
-    errors: ComfyUIError[];
-    dependent_outputs: string[];
-    class_type: string;
-  }>;
+  node_errors: Record<string, ComfyUINodeError>;
 }

@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
 import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
-import { Image, Progress } from 'antd';
+import { Image, Popover, Progress } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
@@ -12,6 +12,8 @@ import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
+import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -21,12 +23,14 @@ interface Props {
     dimensions: Dimensions
   }>
   progressBar?: number;
+  nodeError?: ComfyUINodeError;
   widget: Widget;
   imagePreviews?: PreviewImage[]
 }
 
 export const NodeComponent = memo(({
   node,
+  nodeError,
   progressBar,
   widget,
   imagePreviews,
@@ -35,7 +39,7 @@ export const NodeComponent = memo(({
   const nodeId = node.id;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];
-  const nodeTitle = node.data.value.title || widget.name;
+  const nodeTitle = node.data.value.title || widget?.name;
   const inputKeys = inputs.map(input => input.name);
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
@@ -163,11 +167,21 @@ export const NodeComponent = memo(({
   const invisible = transform < 0.2;
 
   const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+
+  if (nodeError) {
+    console.log("Node error:", nodeError);
+  }
   return (
-    <div className={`${nodeStyles.reactFlowNode}  ${node.selected && !isInProgress ? nodeStyles.reactFlowSelected : ""} ${isInProgress ? nodeStyles.reactFlowProgress : ""}`} style={{
+    <div className={`
+      ${nodeStyles.reactFlowNode} 
+      ${node.selected && !isInProgress ? nodeStyles.reactFlowSelected : ""} 
+      ${isInProgress ? nodeStyles.reactFlowProgress : ""}
+      ${isInProgress ? nodeStyles.reactFlowProgress : ""}
+      ${nodeError ? nodeStyles.reactFlowError : ""}
+      `} style={{
       '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
       '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': isInProgress ? nodeBgColor : Color(nodeBgColor).alpha(.6).hexa(),
+      '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.6).hexa(),
     } as React.CSSProperties}>
       <NodeResizeControl
         style={{
@@ -190,7 +204,7 @@ export const NodeComponent = memo(({
         <>
           <div className="node-header">
             <h2 className="node-title">
-              {getWidgetIcon(widget)} {nodeTitle}
+              {getWidgetIcon(widget)} {nodeTitle} <NodeError nodeError={nodeError}/>
             </h2>
 
             {isInProgress ? <Progress
@@ -337,6 +351,39 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {type === "source" ? label.toUpperCase() : label.toLowerCase()}
       </div>
+    </div>
+  )
+}
+
+function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
+  const [visible, setVisible] = useState(false);
+  const handleVisibleChange = (visible: boolean) => {
+    setVisible(visible);
+  };
+
+  if (!nodeError) {
+    return null
+  }
+
+  const errorsEl = (
+    <div className={nodeStyles.nodeErrors}>
+      {nodeError.errors.map((error, index) => (
+        <div key={index} className="node-error">
+          {error.message + ":" + error.details}
+        </div>
+      ))}
+    </div>
+  )
+
+  return (
+    <div className={nodeStyles.nodeErrorWrapper}>
+      <Popover
+        title={null}
+        content={errorsEl}
+        trigger="hover"
+      >
+        Errors
+      </Popover>
     </div>
   )
 }
