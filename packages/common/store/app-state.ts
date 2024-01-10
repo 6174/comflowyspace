@@ -173,7 +173,6 @@ export const AppState = {
     }
   },
   addConnection(state: AppState, connection: PersistedWorkflowConnection): AppState {
-    const stateConnection = state.edges.find(edge => edge.id === connection.id);
     return { ...state, edges: addEdge(connection, state.edges) }
   },
   toPersisted(state: AppState): PersistedWorkflowDocument {
@@ -188,6 +187,30 @@ export const AppState = {
       last_edit_time: +new Date(),
       snapshot: workflow
     });
+  },
+  staticCheckErrors(state: AppState): AppState {
+    // check all nodes are valid;
+    const flowError: ComfyUIExecuteError = {
+      error: {
+        message: ""
+      },
+      node_errors: {}
+    }
+    let flowErrorMessage = "";
+    const workflowMap = state.doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    const widgets = state.widgets;
+    Object.keys(workflow.nodes).forEach(id => {
+      const node = workflow.nodes[id];
+      const sdnode = node.value;
+      const widget = widgets[sdnode.widget];
+      // check widget exist
+      if (!widget) {
+      }
+    });
+    return  {
+      ...state
+    }
   }
 }
 
@@ -283,7 +306,8 @@ export const useAppStore = create<AppState>((set, get) => ({
         } else {
           state = AppState.addNode(state, {
             ...UnknownWidget,
-            name: node.value.widget
+            name: node.value.widget,
+            display_name: node.value.widget
           }, node);
           console.log(`Unknown widget ${node.value.widget}`)
         }
