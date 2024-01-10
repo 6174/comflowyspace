@@ -174,14 +174,14 @@ export const NodeComponent = memo(({
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
-      ${node.selected && !isInProgress ? nodeStyles.reactFlowSelected : ""} 
+      ${node.selected && !isInProgress && !nodeError ? nodeStyles.reactFlowSelected : ""} 
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${nodeError ? nodeStyles.reactFlowError : ""}
       `} style={{
       '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
       '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.6).hexa(),
+      '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
       <NodeResizeControl
         style={{

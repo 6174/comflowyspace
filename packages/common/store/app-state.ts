@@ -188,15 +188,15 @@ export const AppState = {
       snapshot: workflow
     });
   },
-  staticCheckErrors(state: AppState): AppState {
+  attatchStaticCheckErrors(state: AppState, error?: ComfyUIExecuteError): AppState {
     // check all nodes are valid;
-    const flowError: ComfyUIExecuteError = {
+    let flowError: ComfyUIExecuteError | undefined = error || {
       error: {
         message: ""
       },
       node_errors: {}
     }
-    let flowErrorMessage = "";
+    let findError = !!error;
     const workflowMap = state.doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     const widgets = state.widgets;
@@ -204,12 +204,47 @@ export const AppState = {
       const node = workflow.nodes[id];
       const sdnode = node.value;
       const widget = widgets[sdnode.widget];
+      const error = flowError!.node_errors[id] || { errors: [] };
+      if (["Reroute", "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
+        return;
+      }
       // check widget exist
       if (!widget) {
+        error.errors.push({
+          type: "widget_not_found",
+          message: `Widget ${sdnode.widget} not found`,
+          details: `${sdnode.widget}`
+        });
+        findError = true;
+        flowError!.node_errors[id] = error;
+      }
+
+      if (widget && widget.name === "LoadImage") {
+        const image = sdnode.fields.image;
+        const options = widget.input.required.image[0] as [string];
+        if (options.indexOf(image) < 0) {
+          error.errors.push({
+            type: "value_not_in_list",
+            message: `Image ${image} not in list`,
+            details: `[ ${options.join(", ")} ]`,
+          });
+          findError = true;
+          flowError!.node_errors[id] = error;
+        }
       }
     });
+
+    if (!findError) {
+      flowError = undefined;
+    }
+
+
+
+    console.log("final Error", flowError);
+
     return  {
-      ...state
+      ...state,
+      promptError: flowError
     }
   }
 }
@@ -527,6 +562,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     });
     st.onSyncFromYjsDoc();
+
+    set(AppState.attatchStaticCheckErrors(get()));
   },
   /**
    * reset workflow from another document
@@ -584,7 +621,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     console.log("prompt response:", res);
-    set({ promptError: res.error })
+    set(AppState.attatchStaticCheckErrors(get(), res.error));
     return res
   },
   onNewClientId: (id) => {
