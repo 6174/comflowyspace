@@ -6,7 +6,7 @@ import HomeIcon from './home.icon';
 import DocIcon from './doc.icon';
 import CloseIcon from './close.icon';
 import {ComfyUIStatusButton} from "./comfyui-status-button";
-import { ComfyUIQueueButton } from './comfyui-queue-button';
+import { ComfyUIHelpButton } from './comfyui-help-button';
 
 function App() {
   const {active, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
@@ -80,7 +80,7 @@ function App() {
         })}
         <div className="blank"/>
         <div className="actions">
-          {/* <ComfyUIQueueButton /> */}
+          <ComfyUIHelpButton/>
           <ComfyUIStatusButton/>
         </div>
       </div>

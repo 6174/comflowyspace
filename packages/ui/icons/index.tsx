@@ -9,6 +9,7 @@ import TemplateIcon from "./template-icon";
 import NewIcon from "./new-icon";
 import MoreIcon from "./more-icon";
 import ResizeIcon from "./resize-icon";
+import HelpIcon from "./help-icon";
 
 export {
   WorkflowIcon,
@@ -21,7 +22,8 @@ export {
   ImageIcon,
   TemplateIcon,
   MoreIcon,
-  ResizeIcon
+  ResizeIcon,
+  HelpIcon
 }
 
 export function ReloadIcon() {
