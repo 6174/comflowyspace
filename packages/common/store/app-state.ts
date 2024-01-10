@@ -582,6 +582,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const st = get();
       WorkflowDocumentUtils.updateByJson(st.doc, workflow)
       st.onSyncFromYjsDoc();
+      set(AppState.attatchStaticCheckErrors(get()));
     }, 10);
   },
   onExportWorkflow: () => {
