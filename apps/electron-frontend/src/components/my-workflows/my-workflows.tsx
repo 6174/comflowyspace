@@ -20,24 +20,39 @@ function MyWorkflowsPage() {
 
 function WorkflowCreateBox() {
   const router = useRouter();
-  const createNewDoc = React.useCallback(async () => {
+  const createNewDoc = React.useCallback(async (open: boolean = true) => {
     const doc = await documentDatabaseInstance.createDocFromTemplate();
-    openTabPage({
-      name: doc.title,
-      pageName: "app",
-      query: `id=${doc.id}`,
-      id: 0,
-      type: "DOC"
-    });
-    message.success("Workflow created");
+    if (open) {
+      openTabPage({
+        name: doc.title,
+        pageName: "app",
+        query: `id=${doc.id}`,
+        id: 0,
+        type: "DOC"
+      });
+      message.success("Workflow created");
+    }
   }, [router]);
+
+  React.useEffect(() => {
+    const disposable = SlotGlobalEvent.on((ev) => {
+      if (ev.type === GlobalEvents.initial_launch) {
+        createNewDoc(false);
+      }
+    });
+    return () => {
+      disposable.dispose();
+    }
+  }, []);
 
   return (
     <div className="workflow-create-box">
       <h2>Create New Workflow</h2>
       <p className="sub">Choose the method for creating your worklow</p>
       <Space>
-        <div className="create-button" onClick={createNewDoc}>
+        <div className="create-button" onClick={ev => {
+          createNewDoc();
+        }}>
           <div className="icon">
             <NewIcon/>
           </div>
@@ -70,6 +85,7 @@ import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 function WorkflowList() {
   const docs = (JSONDBClient.useLiveJSONDB<PersistedFullWorkflow[]>({
@@ -79,7 +95,15 @@ function WorkflowList() {
         const docs = await documentDatabaseInstance.getDocs();
         return docs;
       } catch (err) {
-        console.log(err);
+        const message = err.message;
+        if (message.includes("Collection not found")) {   
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.initial_launch,
+            data: null
+          })
+        } else {
+          console.log(err);
+        }
       }
       return [];
     }

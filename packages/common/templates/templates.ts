@@ -1,7 +1,7 @@
 import { PersistedWorkflowDocument } from "../storage";
 import defaultWorkflow from "./default-workflow";
 
-export type WorkflowTemplate = Pick<PersistedWorkflowDocument, 'nodes' | 'connections'>;
+export type WorkflowTemplate = Pick<PersistedWorkflowDocument, 'nodes' | 'connections' | "title">;
 
 export const WORKFLOW_TEMPLATE_MAP: Record<string, WorkflowTemplate> = {
     "default": defaultWorkflow as any
