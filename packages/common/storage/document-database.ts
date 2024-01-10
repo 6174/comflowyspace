@@ -7,6 +7,9 @@ import { uuid } from '../utils';
 import { throttle } from 'lodash';
 import { JSONDBClient } from '../jsondb/jsondb.client';
 import { JSONDocMeta } from '../jsondb/jsondb.types';
+import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
+import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
+import { useAppStore } from '../store/app-state';
 
 export type PersistedWorkflowNode = {
   id: string;
@@ -117,6 +120,22 @@ export class JSONDBDatabase {
       title: "untitled",
       create_at: +(new Date()),
       snapshot: data
+    }
+    await this.createDoc(doc);
+    return doc;
+  }
+
+  async createDocFromComfyUIData(data: {
+    name: string;
+    data: ComfyUIWorkflow;
+  }): Promise<PersistedFullWorkflow> {
+    const widgets = useAppStore.getState().widgets;
+    const snapshot = comfyUIWorkflowToPersistedWorkflowDocument(data.data, widgets);
+    const doc: PersistedFullWorkflow = {
+      id: uuid(),
+      title: data.name || "untitled",
+      create_at: +(new Date()),
+      snapshot
     }
     await this.createDoc(doc);
     return doc;
