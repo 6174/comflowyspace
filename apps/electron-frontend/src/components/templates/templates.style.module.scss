@@ -10,16 +10,12 @@
     .template-card {
       height: 180px;
       .image {
+        width: 100%;
+        height: 140px;
+        border: solid 1px var(--borderColor);
         border-radius: var(--borderRadius);
         transition: var(--transition);
         background-color: var(--backgroundColorL1);
-        width: 100%;
-        height: 140px;
-        border-top-left-radius: var(--borderRadius);
-        border-top-right-radius: var(--borderRadius);
-        background-size: cover;
-        background-position: center;
-        border: solid 1px var(--borderColor);
         margin-bottom: 10px;
         background-size: contain;
         background-position: center;
@@ -37,7 +33,22 @@
         text-overflow: ellipsis;
         text-wrap: nowrap;
       }
+    }
+  }
+}
 
+.templateModal {
+  :global {
+    .image {
+      width: 100%;
+      height: 140px;
+      border: solid 1px var(--borderColor);
+      border-radius: var(--borderRadius);
+      transition: var(--transition);
+      background-color: var(--backgroundColorL1);
+      margin-bottom: 10px;
+      background-size: contain;
+      background-position: center;
     }
   }
 }

@@ -4,6 +4,7 @@ import styles from './templates.style.module.scss';
 import { Modal, message } from 'antd';
 import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { openTabPage } from '@/lib/electron-bridge';
+import { useAppStore } from '@comflowy/common/store';
 
 const Templates = () => {
   const {templates, onInit} = useTemplatesState();
@@ -32,6 +33,8 @@ function TemplateCard(props: {
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
   };
+  const widgets = useAppStore(st => st.widgets);
+  console.log("widgets: ", widgets);
 
   const handleOk = async () => {
     const {template} = props;
