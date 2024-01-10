@@ -125,7 +125,7 @@ body, html {
 .actions {
   display: flex;
   border-radius: 8px;
-  // border: solid 1px #454758;
+  border: solid 1px #454758;
   margin-right: 10px;
   .action {
     border-radius: 4px;
@@ -161,13 +161,11 @@ body, html {
   .action-comfyui-queue {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    opacity: .4;
-    cursor: not-allowed;
   }
 
   .action-comfyui-status {
-    // border-top-left-radius: 0;
-    // border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     border-right: transparent;
   }
 

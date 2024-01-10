@@ -1,6 +1,7 @@
 export interface ComfyElectronApi {
   name: string;
   version: number;
+  openURL: (url: string) => Promise<any>;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {
