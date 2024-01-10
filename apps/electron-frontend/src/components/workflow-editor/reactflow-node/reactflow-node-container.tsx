@@ -1,4 +1,4 @@
-import { SDNode, Widget } from "@comflowy/common/comfui-interfaces"
+import { SDNode, UnknownWidget, Widget } from "@comflowy/common/comfui-interfaces"
 import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
 import {shallow} from "zustand/shallow";
@@ -13,7 +13,11 @@ export type  FlowNodeProps = NodeProps<{
 export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
   const progressBar = useAppStore(st => st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined);
   const imagePreviews = useAppStore(st => st.graph[props.id]?.images || []);
-  const widget = useAppStore(st => st.widgets[props.data.widget.name]);
+  const widget = useAppStore(st => st.widgets[props.data.widget.name]) || {
+    ...UnknownWidget,
+    name: props.data.value.widget,
+    display_name: props.data.value.widget
+  };
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
   return (
     <NodeComponent

@@ -58,10 +58,10 @@
 // }
 
 export interface ComfyUIError {
-  type: string;
+  type?: string;
   message: string;
-  details: string;
-  extra_info: {
+  details?: string;
+  extra_info?: {
     input_name: string;
     input_config: string[][] | any;
     received_value: string;
