@@ -13,6 +13,7 @@ const Templates = () => {
   return (
     <div className={styles.templates}>
       <h2>Templates</h2>
+      <p className="sub">Choose a template for creating your worklow</p>
       <div className="template-card-list">
         {templates.map((template) => {
           return <TemplateCard key={template.name} template={template} />
@@ -28,8 +29,9 @@ function TemplateCard(props: {
   const {template} = props;
   return (
     <div className="template-card">
-      <div className="image">
-        {template.thumbnail && <img src={template.thumbnail} />}
+      <div className="image" style={{
+        backgroundImage: `url(${template.thumbnail})`
+      }}>
       </div>
       <div className="name">{template.name}</div>
     </div>

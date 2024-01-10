@@ -22,6 +22,10 @@ import batchImageWorkflow from "./data/Batch-image-workflow.json";
 import scribbleControlNetWorkflow from "./data/Scribble-ControlNet-workflow.json";
 import poseControlNetWorkflow from "./data/Pose-ControlNet-workflow.json";
 import cannyWorkflow from "./data/Canny-ControlNet-workflow.json";
+import upscaleThumbnail from "./thumbnails/upscale.png";
+import poseThumbnail from "./thumbnails/pose.png";
+import defaultThumbnail from "./thumbnails/default.png";
+import loraThumbnail from "./thumbnails/lora.png";
 
 import { ComfyUIWorkflow } from "@comflowy/common/comfui-interfaces/comfy-workflow";
 function getHardCodedTemplates(): Template[] {
@@ -29,11 +33,13 @@ function getHardCodedTemplates(): Template[] {
         {
             name: "Default Workflow",
             description: "A basic workflow contain primary nodes",
+            thumbnail: defaultThumbnail.src,
             data: defaltTemlate as unknown as ComfyUIWorkflow
         },
         {
             name: "LoRA workflow",
-            data: loraTemplate as unknown as ComfyUIWorkflow
+            data: loraTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: loraThumbnail.src
         },
         {
             name: "LCM LoRA workflow",
@@ -53,6 +59,7 @@ function getHardCodedTemplates(): Template[] {
         },
         {
             name: "Upscale pixel by algorithm workflow",
+            thumbnail: upscaleThumbnail.src,
             data: upscalePixelByAlgorithmWorkflow as unknown as ComfyUIWorkflow
         },
         {
@@ -89,6 +96,7 @@ function getHardCodedTemplates(): Template[] {
         },
         {
             name: "Pose ControlNet workflow",
+            thumbnail: poseThumbnail.src,
             data: poseControlNetWorkflow as unknown as ComfyUIWorkflow
         },
         {
