@@ -212,7 +212,7 @@ export const AppState = {
       if (!widget) {
         error.errors.push({
           type: "widget_not_found",
-          message: `Widget ${sdnode.widget} not found`,
+          message: `Widget \`${sdnode.widget}\` not found`,
           details: `${sdnode.widget}`
         });
         findError = true;

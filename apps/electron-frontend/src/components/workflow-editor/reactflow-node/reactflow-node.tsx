@@ -168,9 +168,6 @@ export const NodeComponent = memo(({
 
   const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
-  if (nodeError) {
-    console.log("Node error:", nodeError);
-  }
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
