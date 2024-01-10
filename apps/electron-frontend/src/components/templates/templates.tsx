@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Template, useTemplatesState } from './template-state';
 import styles from './templates.style.module.scss';
+
 const Templates = () => {
   const {templates, onInit} = useTemplatesState();
   
@@ -8,6 +9,7 @@ const Templates = () => {
     onInit();
   }, []);
 
+  console.log(templates);
   return (
     <div className={styles.templates}>
       <h2>Templates</h2>

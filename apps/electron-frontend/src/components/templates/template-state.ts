@@ -5,13 +5,95 @@ import { create } from "zustand";
  * Hard coded template list
  * @returns 
  */
-import defaltTemlate from "./data/default.json";
+import defaltTemlate from "./data/default-workflow.json";
+import loraTemplate from "./data/LoRA-workflow.json";
+import lcmLoraTemplate from "./data/LCM-LoRA-workflow.json";
+import img2imgTemplate from "./data/Simple-img2img-workflow.json";
+import unclipModelTemplate from "./data/unCLIP-model-workflow.json";
+import styleModelWorkflow from "./data/Style-model-workflow.json";
+import upscalePixelByAlgorithmWorkflow from "./data/Upscale-pixel-by-algorithm-workflow.json";
+import upscalePixelByModelWorkflow from "./data/Upscale-pixel-by-model-workflow.json"
+import hiResFixLatentUpscaleWorkflow from "./data/Hi-res-fix-latent-upscale-workflow.json";
+import upscalePixelAndHiResFixLatentWorkflow from "./data/Upscale-pixel-and-Hi-res-fix-workflow.json";
+import inpaintingTemplate from "./data/Inpainting-workflow.json";
+import outpaintingTemplate from "./data/Outpainting-workflow.json";
+import sdxlPromptStylerWorkflow from "./data/SDXL-prompt-styler-workflow.json";
+import batchImageWorkflow from "./data/Batch-image-workflow.json";
+import scribbleControlNetWorkflow from "./data/Scribble-ControlNet-workflow.json";
+import poseControlNetWorkflow from "./data/Pose-ControlNet-workflow.json";
+import cannyWorkflow from "./data/Canny-ControlNet-workflow.json";
+
+import { ComfyUIWorkflow } from "@comflowy/common/comfui-interfaces/comfy-workflow";
 function getHardCodedTemplates(): Template[] {
     return [
         {
             name: "Default Workflow",
             description: "A basic workflow contain primary nodes",
-            data: defaltTemlate as unknown as WorkflowTemplate
+            data: defaltTemlate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "LoRA workflow",
+            data: loraTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "LCM LoRA workflow",
+            data: lcmLoraTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Simple img2img workflow",
+            data: img2imgTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "unCLIP model workflow",
+            data: unclipModelTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Style model workflow",
+            data: styleModelWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Upscale pixel by algorithm workflow",
+            data: upscalePixelByAlgorithmWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Upscale pixel by model workflow",
+            data: upscalePixelByModelWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Hi-res fix latent upscale workflow",
+            data: hiResFixLatentUpscaleWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Upscale pixel and hi-res fix latent workflow",
+            data: upscalePixelAndHiResFixLatentWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Inpainting workflow",
+            data: inpaintingTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Outpainting workflow",
+            data: outpaintingTemplate as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "SDXL prompt styler workflow",
+            data: sdxlPromptStylerWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Batch image workflow",
+            data: batchImageWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Scribble ControlNet workflow",
+            data: scribbleControlNetWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Pose ControlNet workflow",
+            data: poseControlNetWorkflow as unknown as ComfyUIWorkflow
+        },
+        {
+            name: "Canny ControlNet workflow",
+            data: cannyWorkflow as unknown as ComfyUIWorkflow
         }
     ]
 }
@@ -19,10 +101,10 @@ function getHardCodedTemplates(): Template[] {
 export type Template = {
     name: string;
     tags?: string[];
-    description: string;
+    description?: string;
     created_by?: string;
     thumbnail? : string;
-    data: WorkflowTemplate;
+    data: ComfyUIWorkflow;
 }
 
 type TemplatesState = {
@@ -42,7 +124,7 @@ export const useTemplatesState = create<TemplatesState & TemplatesAction>((set) 
         try {
             // set local templates first for fast loading
             const hardCodedTemplates = getHardCodedTemplates();
-             set({
+            set({
                 templates: hardCodedTemplates,
             });
 
