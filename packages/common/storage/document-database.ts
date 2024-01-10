@@ -103,7 +103,7 @@ export class JSONDBDatabase {
     const template = getWorkflowTemplate(key);
     const doc: PersistedFullWorkflow = {
       id: uuid(),
-      title: "untitled",
+      title: template.title || "untitled",
       create_at: +(new Date()),
       snapshot: template
     }
