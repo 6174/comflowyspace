@@ -47,8 +47,10 @@ import exifr from 'exifr'
 
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
+import { ComfyUIExecuteErrror } from 'comfui-interfaces/comfy-error-types';
 
 export type SelectionMode = "figma" | "default";
+
 export interface AppState {
   editorInstance?: ReactFlowInstance<any, any>,
   counter: number
@@ -96,7 +98,7 @@ export interface AppState {
   onSelectNodes: (ids: string[]) => void;
 
   nodeInProgress?: NodeInProgress
-  promptError?: string
+  promptError?: ComfyUIExecuteErrror
   previewedImageIndex?: number
 
   onSubmit: () => Promise<PromptResponse>
@@ -558,7 +560,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
 
     console.log("prompt response:", res);
-    set({ promptError: res.error })
+    if (res.error) {
+      set({ promptError: res.error })
+    }
     return res
   },
   onNewClientId: (id) => {
