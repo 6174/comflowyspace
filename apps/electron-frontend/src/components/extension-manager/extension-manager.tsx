@@ -17,6 +17,7 @@ function ExtensionManager() {
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);
+  const communityExtensions = extensions.filter(ext => !ext.installed);
 
   const restartComfyUI = useCallback(() => {
     SlotGlobalEvent.emit({
@@ -47,7 +48,7 @@ function ExtensionManager() {
       <div className="extension-market">
         <h2>Community Extensions</h2>
         <p className="sub">Install extensions from the community</p>
-        <ExtensionList extensions={extensions}/>
+        <ExtensionList extensions={communityExtensions}/>
       </div>
     </div>
   )
