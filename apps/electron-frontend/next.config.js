@@ -9,6 +9,19 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.module.rules.push({
+        test: /\.worker\.ts$/,
+        loader: 'worker-loader',
+        options: {
+          filename: 'static/[hash].worker.js',
+          publicPath: '/_next/',
+        },
+      });
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig
