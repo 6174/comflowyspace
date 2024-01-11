@@ -1,5 +1,6 @@
 let figma = null;
 self.onmessage = (event: MessageEvent) => {
+  console.log("receive from main", event);
   handleRequest(event.data)
 };
 
