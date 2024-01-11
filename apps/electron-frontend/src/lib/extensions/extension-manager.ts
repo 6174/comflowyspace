@@ -1,7 +1,7 @@
 import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest } from './extension.types';
 import { getBackendUrl } from '@comflowy/common/config';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
-import { ExtensionApi, ExtensionApiBridge } from "./extension-api-bridge";
+import { ExtensionMainApi } from "./extension-api-main";
 
 /**
  * Manages front extentions extensions
@@ -9,24 +9,23 @@ import { ExtensionApi, ExtensionApiBridge } from "./extension-api-bridge";
 export class ExtensionManager {
   worker: Worker;
   extensionEvent = new SlotEvent<ExtensionManagerEvent>();
-  extensionApiBridge: ExtensionApiBridge;
   /**
    * Constructor
    * @param params 
    */
   constructor(
     public extensions: ExtensionManifest[], 
-    public api: ExtensionApi
+    public api: ExtensionMainApi
   ) { }
 
   /**
    * initialize extensions
    */
   public async init() {
-    const worker = new Worker(new URL('./extension.worker.ts', import.meta.url));
+    const worker = new Worker(new URL('./worker/extension.worker.ts', import.meta.url));
     this.worker = worker;
-    this.extensionApiBridge = new ExtensionApiBridge(worker, this.api);
     this.listenWorker();
+    this.api.listenWorker(worker);
 
     // load all extensions
     for (const extensionManifest of this.extensions) {
@@ -36,7 +35,7 @@ export class ExtensionManager {
 
   private listenWorker() {
     this.worker.onmessage = (event: MessageEvent<ExtensionManagerEvent>) => {
-      const { type, data } = event.data;
+      const { type } = event.data;
       switch (type) {
         case ExtensionEventTypes.executeError:
           this.handleExtensionExecuteError(event.data);
