@@ -34,7 +34,6 @@ function TemplateCard(props: {
     setVisible(visible);
   };
   const widgets = useAppStore(st => st.widgets);
-  console.log("widgets: ", widgets);
 
   const handleOk = async () => {
     const {template} = props;

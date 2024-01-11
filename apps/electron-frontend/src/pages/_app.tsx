@@ -7,6 +7,9 @@ import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 import { DraggableModalProvider } from "ui/antd/draggable-modal";
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
 
+import worker from '@/lib/extensions/extension-manager';
+console.log("worker", worker);
+
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
   const {onInit} = useDashboardState();
