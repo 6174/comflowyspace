@@ -1,5 +1,6 @@
-import { ExtensionEventTypes, ExtensionManifest } from "./extension.types";
-import comflowy from "./worker/extension-api";
+import { ExtensionEventTypes, ExtensionManifest } from "../extension.types";
+import comflowy from "./extension-api-worker";
+import { workerEventHandler } from "./extension-worker-event-handler";
 
 class ExtensionWorker {
   /**
@@ -8,6 +9,7 @@ class ExtensionWorker {
   start() {
     self.onmessage = (event: MessageEvent) => {
       this.handleRequest(event.data)
+      workerEventHandler.onMessageEvent.emit(event.data);
     };
     (window as any).comflowy = comflowy;
   }
