@@ -1,6 +1,6 @@
 import { useAppStore } from "@comflowy/common/store";
 import { useExtensionsState } from "./extension.state";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ExtensionManager } from "./extension.manager";
 import { ExtensionManifest } from "./extension.types";
 
@@ -11,7 +11,8 @@ import { ExtensionManifest } from "./extension.types";
 export function ReactflowExtensionController() {
   const onInit = useExtensionsState((st) => st.onInit);
   const extensions = useExtensionsState((st) => st.extensions);
-  // const edditorEvent = useAppStore((st) => st.editorEvent);
+  const editorEvent = useAppStore(st => st.editorEvent);
+  const [manager, setManager] = useState<ExtensionManager>();
   useEffect(() => {
     onInit();
   }, []);
@@ -20,9 +21,26 @@ export function ReactflowExtensionController() {
     if (extensions.length > 0) {
       // do mount extensions
       const manager = createExtensionManager(extensions);
-      manager.init();
+      manager.init().then(() => {
+        setManager(manager);
+      });
+      return () => {
+        manager.destroy();
+      }
     }
   }, [extensions])
+
+  useEffect(() => {
+    if (editorEvent && manager) {
+      const disposable = editorEvent.on((event) => {
+        manager.onEditorEvent(event);
+      })
+      return () => {
+        disposable.dispose();
+      }
+    }
+  }, [manager, editorEvent]);
+
   return <></>;
 }
 

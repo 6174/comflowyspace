@@ -22,6 +22,13 @@ export async function findAllFrontendExtensions<T = any>(): Promise<T[]> {
         if (await fsExtra.exists(manifestPath)) {
           const manifestData = await fsExtra.readFile(manifestPath, 'utf8');
           const manifest = JSON.parse(manifestData);
+          if (!manifest.main) {
+            continue
+          }
+          manifest.main = path.join("custom_nodes", file, manifest.main);
+          if (manifest.ui) {
+            manifest.ui = path.join("custom_nodes", file, manifest.ui);
+          }
           extensions.push(manifest);
         }
       }
