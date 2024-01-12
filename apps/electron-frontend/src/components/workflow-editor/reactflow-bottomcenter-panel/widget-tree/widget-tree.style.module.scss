@@ -75,6 +75,9 @@
                         padding-left: 6px;
                     }
                     border-bottom: solid 1px var(--popupBorderColor);
+                    &:last-child {
+                        border-bottom: transparent;
+                    }
                 }
             }
         }
@@ -92,11 +95,16 @@
             margin-bottom: 4px;
             font-size: 12px;
             justify-content: flex-start;
+            text-overflow: ellipsis;
+            text-wrap: nowrap;
+            overflow: hidden;
             .class_name {
                 font-size: 10px;
                 display: inline-block;
                 opacity: .2;
                 margin-left: 4px;
+                text-overflow: ellipsis;
+                text-wrap: nowrap;
             }
         }
 

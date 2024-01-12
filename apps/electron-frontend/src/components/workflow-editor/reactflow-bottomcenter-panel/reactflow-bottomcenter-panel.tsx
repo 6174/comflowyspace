@@ -3,9 +3,10 @@ import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
 import { memo } from "react";
-import { PlusIcon, SelectionIcon, StartIcon } from "ui/icons";
+import { ExtensionIcon, PlusIcon, SelectionIcon, StartIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { Widget } from "@comflowy/common/comfui-interfaces";
+import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
@@ -84,6 +85,13 @@ function ReactflowBottomCenterPanel() {
                     </WidgetPopover>
                 </div>
                 <div className="spliter"></div>
+                <div className="action action-open-extension">
+                    <ExtensionListPopover>
+                        <Space style={{transform: "scale(1.2)"}}>
+                            <ExtensionIcon/>
+                        </Space>
+                    </ExtensionListPopover>
+                </div>
                 <div className="action action-Run" onClick={async ev => {
                     const ret = await onSubmit();
                     if (ret.error) {

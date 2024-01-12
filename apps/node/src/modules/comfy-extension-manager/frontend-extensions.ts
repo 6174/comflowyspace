@@ -1,3 +1,4 @@
+import { uuid } from "@comflowy/common";
 import { getExtensionDir } from "./types";
 import * as fsExtra from 'fs-extra';
 import path from 'path';
@@ -29,6 +30,7 @@ export async function findAllFrontendExtensions<T = any>(): Promise<T[]> {
           if (manifest.ui) {
             manifest.ui = path.join("custom_nodes", file, manifest.ui);
           }
+          manifest.id = filePath + "-" + manifest.name + "-" + uuid();
           extensions.push(manifest);
         }
       }
