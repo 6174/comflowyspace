@@ -16,7 +16,6 @@ class ExtensionWorker {
    * @param data 
    */
   handleRequest = (ev: any) => {
-    console.log("receive from main", ev);
     switch (ev.type) {
       case ExtensionEventTypes.uiMessage:
         comflowy.onUIMessage.emit(ev.data);
@@ -35,7 +34,6 @@ class ExtensionWorker {
    * @param data 
    */
   executeExtension(data) {
-    console.log("executeExtension", data);
     const { extension, content } = data;
     try {
       eval(extesionMainTemplate(extension, content));
@@ -83,6 +81,12 @@ function extesionMainTemplate(extension: ExtensionManifest, content: string) {
       onmessage: () => {},
       showUI: () => {
         self.__comflowy__.showUI(__EXTENSION__);
+      },
+      postMessage: (message) => {
+        self.__comflowy__.postMessageToUI({
+          extensionId: __EXTENSION__.id,
+          srcEvent: message
+        });
       }
     },
     editor: {

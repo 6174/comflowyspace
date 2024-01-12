@@ -15,10 +15,7 @@ export interface ExtensionManifest {
 
 export type ExtensionManagerEvent = {
   type: string;
-  data: {
-    extension?: ExtensionManifest;
-    [_: string]: any
-  }
+  data: any
 }
 
 export type ExtensionUIEvent = {
@@ -34,6 +31,7 @@ export type ExtensionEditorEvent = {
   data: any;
 }
 
+
 export enum ExtensionEventTypes {
   execute = "execute",
   executeError = "executeError",
@@ -42,7 +40,8 @@ export enum ExtensionEventTypes {
   editorMessage = "editorMessage",
   rpcCall = "rpcCall",
   rpcCallResult = "rpcCallResult",
-  rpcCallError = "rpcCallError"
+  rpcCallError = "rpcCallError",
+  mainToUIMessage = "mainToUIMessage"
 }
 
 export interface ExtensionCustomRenderElement {

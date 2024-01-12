@@ -2,7 +2,7 @@ import { useAppStore } from "@comflowy/common/store";
 import { useExtensionsState } from "./extension.state";
 import { useEffect, useRef, useState } from "react";
 import { ExtensionManager } from "./extension.manager";
-import { ExtensionEventTypes, ExtensionManifest } from "./extension.types";
+import { ExtensionEventTypes, ExtensionManifest, ExtensionUIEvent } from "./extension.types";
 import { DraggableModal } from "ui/antd/draggable-modal";
 import { getBackendUrl } from "@comflowy/common/config";
 import styles from "./extension.style.module.scss";
@@ -39,6 +39,7 @@ export function ReactflowExtensionController() {
       const disposable = editorEvent.on((event) => {
         manager.onEditorEvent(event);
       });
+
       return () => {
         disposable.dispose();
       }
@@ -50,13 +51,12 @@ export function ReactflowExtensionController() {
 
   return (
     <div className="controller">
-      {visibleModals.map(ext => {
-        return <ExtensionModal key={ext.extension.id} extension={ext.extension} visible={ext.visible} postMessage={(ev) => {
+      {manager && visibleModals.map(ext => {
+        return <ExtensionModal manager={manager} key={ext.extension.id} extension={ext.extension} visible={ext.visible} postMessage={(ev) => {
           manager?.onUIEvent({
             extensionId: ext.extension.id,
             srcEvent: ev
           })
-          console.log('postMessage from ui', ev);
         }}/>
       })}
     </div>
@@ -66,28 +66,41 @@ export function ReactflowExtensionController() {
 function ExtensionModal(props: {
   extension: ExtensionManifest;
   visible: boolean;
+  manager: ExtensionManager;
   postMessage: (message: any) => void;
 }) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const closeModal = useExtensionsState(st => st.closeModal);
   useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
-        console.log('Received message from iframe:', event);
-        props.postMessage(event);
+    // ui to main
+    window.addEventListener('message', handleMessage);
+    // main to ui
+    const disposable = props.manager.mainToUIEvent.on(handleMainToUIEvent);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      disposable.dispose();
+    }
+
+    function handleMainToUIEvent(event: ExtensionUIEvent) {
+      console.log("received main to ui", event);
+      if (iframeRef.current && event.extensionId === props.extension.id) {
+        iframeRef.current.contentWindow?.postMessage(event.srcEvent, "*");
       }
     }
 
-    window.addEventListener('message', handleMessage);
-
-    return () => {
-      window.removeEventListener('message', handleMessage);
+    function handleMessage(event: MessageEvent) {
+      if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
+        props.postMessage(event.data);
+      }
     }
+
   }, []);
+
+
   if (!props.extension.ui) {
     return null;
   }
-  const src = getBackendUrl("/static/" + props.extension.ui);
+  const src = document.location.origin + "/static/" + props.extension.ui;
   return (
     <DraggableModal 
       open={props.visible}
