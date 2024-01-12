@@ -1,6 +1,7 @@
-import { ExtensionEventTypes, ExtensionManagerEvent } from "./extension.types";
+import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest, ExtensionNodeCustomContextMenuConfig, ExtensionNodeCustomRenderConfig } from "./extension.types";
 
-export interface ExtensionApis {
+export interface ExtensionApiHooks {
+  
 }
 
 /**
@@ -8,9 +9,24 @@ export interface ExtensionApis {
  */
 export class ExtensionMainApi {
   worker?: Worker
+  /**
+   * Extensions can register node context menu hooks at here
+   */
+  nodeContextMenuRegistry: Record<string, ExtensionNodeCustomContextMenuConfig[]> = {};
+  /**
+   * node custom renderer registry
+   * @param apis 
+   */
+  nodeRendererRegistry: Record<string, ExtensionNodeCustomRenderConfig[]> = {};
+  
+  /**
+   * Constructor
+   * @param apis 
+   */
   constructor(
-    public apis: ExtensionApis
+    public apis: ExtensionApiHooks
   ) {
+
   }
 
   listenWorker(worker: Worker) {
@@ -18,9 +34,6 @@ export class ExtensionMainApi {
     worker.onmessage = (event: MessageEvent<ExtensionManagerEvent>) => {
       const { type, data } = event.data;
       switch (type) {
-        case ExtensionEventTypes.executeError:
-          // this.handleExtensionExecuteError(event.data);
-          break;
         case ExtensionEventTypes.rpcCall:
           this.handleRpcCall(data);
           break;
@@ -49,9 +62,10 @@ export class ExtensionMainApi {
       });
     }
   }
-
   /**
    * showUI(__EXTENSION__)
    */
-
+  showUI(extension: ExtensionManifest) {
+    // create ui in a modal and listen its message   
+  }
 }

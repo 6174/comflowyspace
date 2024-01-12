@@ -26,5 +26,30 @@ export enum ExtensionEventTypes {
   executeError = "executeError",
   showUI = "showUI",
   uiMessage = "uiMessage",
-  editorMessage = "editorMessage"
+  editorMessage = "editorMessage",
+  rpcCall = "rpcCall",
+  rpcCallResult = "rpcCallResult",
+  rpcCallError = "rpcCallError"
+}
+
+export interface ExtensionCustomRenderElement {
+  id: string;
+  name: string;
+  type: "button";
+  icon?: string;
+}
+
+export interface ExtensionNodeCustomRenderConfig {
+  extensionId: string;
+  elements: {
+  }[]
+}
+
+export interface ExtensionNodeCustomContextMenuConfig {
+  extensionId: string;
+  menuItems: {
+    id: string;
+    name: string;
+    icon?: string;
+  }[]
 }
