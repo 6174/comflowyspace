@@ -1,16 +1,13 @@
 import { ExtensionEventTypes, ExtensionManifest } from "../extension.types";
-import comflowy from "./extension-api-worker";
-import { workerEventHandler } from "./extension-worker-event-handler";
+import comflowy from "./extension.api";
+import { workerEvent } from "./extension.event";
 
 class ExtensionWorker {
   /**
    * start extension worker
    */
   start() {
-    self.onmessage = (event: MessageEvent) => {
-      this.handleRequest(event.data)
-      workerEventHandler.onMessageEvent.emit(event.data);
-    };
+    workerEvent.onMessageEvent.on(this.handleRequest);
     (window as any).comflowy = comflowy;
   }
 
@@ -18,7 +15,7 @@ class ExtensionWorker {
    * handle request
    * @param data 
    */
-  handleRequest(data: any) {
+  handleRequest = (data: any) => {
     console.log("receive from main", data);
     switch (data.type) {
       case ExtensionEventTypes.uiMessage:

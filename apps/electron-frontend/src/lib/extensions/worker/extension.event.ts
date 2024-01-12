@@ -1,8 +1,13 @@
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import { ExtensionManagerEvent } from "../extension.types";
 
-class WorkerEventHandler {
+class WorkerEvent {
   onMessageEvent = new SlotEvent<ExtensionManagerEvent>();
+  constructor() {
+    self.onmessage = (event: MessageEvent) => {
+      this.onMessageEvent.emit(event.data);
+    };
+  }
 }
 
-export const workerEventHandler = new WorkerEventHandler();
+export const workerEvent = new WorkerEvent();
