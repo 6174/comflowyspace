@@ -21,6 +21,19 @@ export type ExtensionManagerEvent = {
   }
 }
 
+export type ExtensionUIEvent = {
+  extensionId: string;
+  srcEvent: {
+    type: string,
+    data: any
+  }
+}
+
+export type ExtensionEditorEvent = {
+  type: string;
+  data: any;
+}
+
 export enum ExtensionEventTypes {
   execute = "execute",
   executeError = "executeError",

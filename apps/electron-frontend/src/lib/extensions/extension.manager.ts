@@ -1,4 +1,4 @@
-import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest, ExtensionNodeCustomContextMenuConfig, ExtensionNodeCustomRenderConfig } from './extension.types';
+import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest, ExtensionNodeCustomContextMenuConfig, ExtensionNodeCustomRenderConfig, ExtensionUIEvent } from './extension.types';
 import { getBackendUrl } from '@comflowy/common/config';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
 
@@ -144,7 +144,7 @@ export class ExtensionManager {
    * Send ui event to worker
    * @param event 
    */
-  onUIEvent(event: any) {
+  onUIEvent(event: ExtensionUIEvent) {
     this.worker.postMessage({
       type: ExtensionEventTypes.uiMessage,
       data: event

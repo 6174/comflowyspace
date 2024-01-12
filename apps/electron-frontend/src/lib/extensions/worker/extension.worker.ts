@@ -1,4 +1,4 @@
-import { ExtensionEventTypes, ExtensionManifest } from "../extension.types";
+import { ExtensionEventTypes, ExtensionManifest, ExtensionUIEvent } from "../extension.types";
 import comflowy from "./extension.api";
 import { workerEvent } from "./extension.event";
 
@@ -8,24 +8,24 @@ class ExtensionWorker {
    */
   start() {
     workerEvent.onMessageEvent.on(this.handleRequest);
-    (self as any).comflowy = comflowy;
+    setAndProtectGlobalObject();
   }
 
   /**
    * handle request
    * @param data 
    */
-  handleRequest = (data: any) => {
-    console.log("receive from main", data);
-    switch (data.type) {
+  handleRequest = (ev: any) => {
+    console.log("receive from main", ev);
+    switch (ev.type) {
       case ExtensionEventTypes.uiMessage:
-        comflowy.ui.onmessage(data.msg);
+        comflowy.onUIMessage.emit(ev.data);
         break;
       case ExtensionEventTypes.editorMessage:
-        comflowy.editor.onmessage(data.msg);
+        comflowy.editor.onmessage(ev.data);
         break;
       case ExtensionEventTypes.execute:
-        this.executeExtension(data.data);
+        this.executeExtension(ev.data);
         break;
     }
   }
@@ -52,6 +52,22 @@ class ExtensionWorker {
   }
 }
 
+function setAndProtectGlobalObject() {
+  (self as any).__comflowy__ = comflowy;
+  Object.defineProperty(self, "__comflowy__", {
+    writable: false,
+    configurable: false
+  });
+  let properties = Object.keys(comflowy);
+
+  for (let property of properties) {
+    Object.defineProperty(comflowy, property, {
+      writable: false,  
+      configurable: false
+    });
+  }
+}
+
 /**
  * Register static vars to extension main code
  * @param extension 
@@ -60,11 +76,31 @@ class ExtensionWorker {
  */
 function extesionMainTemplate(extension: ExtensionManifest, content: string) {
   return `
-  (function() {
-    var __EXTENSION__ = ${JSON.stringify(extension)};
-    ${content}
-  })();
-  `
+(function() {
+  var __EXTENSION__ = ${JSON.stringify(extension)};
+
+  var comflowy = {
+    ui: {
+      onmessage: () => {},
+    },
+    editor: {
+      onmessage: () => {},
+    }
+  };
+
+  self.__comflowy__.onUIMessage.on((event) => {
+    if (event.extensionId === "${extension.id}") {
+      comflowy.ui.onmessage(event.srcEvent);
+    }
+  });
+
+  self.__comflowy__.onEditorMessage.on((event) => {
+    comflowy.ui.onmessage(event);
+  });
+
+  ${content}
+})();
+`
 }
 
 const extensionWorker = new ExtensionWorker();
