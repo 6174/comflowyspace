@@ -4,9 +4,10 @@ import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
 import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
-import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions } from './routes/api/extension';
+import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions } from './routes/api/extension';
 import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig, ApiRestartComfyUI, ApiUpdateComfyUIAndRestart } from './routes/api/bootstrap';
 import { JSONDB } from './modules/jsondb/jsondb';
+import { getComfyUIDir } from './modules/utils/get-appdata-dir';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -23,6 +24,13 @@ export async function startAppServer(params: {
     credentials: true,
   }));
 
+  app.use('/static', (req, res, next) => {
+    const comfyDir = getComfyUIDir(); // 获取用户设置
+    if (comfyDir) {
+      express.static(comfyDir)(req, res, next); // 使用 express.static 服务
+    }
+  });
+
   setupComfyUIProxy(app);
   
   app.get('/', (req: Request, res: Response) => {
@@ -31,6 +39,7 @@ export async function startAppServer(params: {
 
   app.get('/api/env_check', ApiEnvCheck);
   app.get('/api/extension_infos', ApiRouteGetExtensions)
+  app.get('/api/frontend_extension', ApiRouteGetFrontendExtensions);
   app.get('/api/model_infos', ApiRouteGetModels);
 
   app.post('/api/add_bootstrap_task', ApiBootstrap);

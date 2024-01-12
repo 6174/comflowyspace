@@ -5,6 +5,7 @@ import { Extension, ExtensionNodeMap } from './types';
 import { removeExtension } from './remove-extension';
 import { disableExtension, enableExtension } from './disable-extension';
 import { updateExtension } from './update-extension';
+import { findAllFrontendExtensions } from './frontend-extensions';
 
 class ComfyExtensionManager {
 
@@ -55,6 +56,10 @@ class ComfyExtensionManager {
       'http://127.0.0.1:8188/object_info'
     )).json();
     return ret;
+  }
+
+  async getFrontendExtensions(): Promise<any[]> {
+    return await findAllFrontendExtensions();
   }
 }
 
