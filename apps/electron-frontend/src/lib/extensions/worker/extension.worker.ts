@@ -22,7 +22,7 @@ class ExtensionWorker {
         comflowy.onUIMessage.emit(ev.data);
         break;
       case ExtensionEventTypes.editorMessage:
-        comflowy.editor.onmessage(ev.data);
+        comflowy.onEditorMessage.emit(ev.data);
         break;
       case ExtensionEventTypes.execute:
         this.executeExtension(ev.data);
@@ -59,7 +59,6 @@ function setAndProtectGlobalObject() {
     configurable: false
   });
   let properties = Object.keys(comflowy);
-
   for (let property of properties) {
     Object.defineProperty(comflowy, property, {
       writable: false,  
@@ -82,10 +81,16 @@ function extesionMainTemplate(extension: ExtensionManifest, content: string) {
   var comflowy = {
     ui: {
       onmessage: () => {},
+      showUI: () => {
+        self.__comflowy__.showUI(__EXTENSION__);
+      }
     },
     editor: {
       onmessage: () => {},
-    }
+      getNodes: async () => {
+        await self.__comflowy__.createRpcCall("getNodes");
+      }
+    },
   };
 
   self.__comflowy__.onUIMessage.on((event) => {
