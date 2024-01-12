@@ -1,29 +1,16 @@
 import { uuid } from "@comflowy/common";
-import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest } from "../extension.types";
+import { ExtensionEditorEvent, ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest, ExtensionUIEvent } from "../extension.types";
 import { workerEvent } from "./extension.event";
+import { SlotEvent } from "@comflowy/common/utils/slot-event";
 
 /**
  * Expose worker api directly to extensions in extension main.js
  */
 class ExtensionWorkerApi {
-  ui: any;
+  onUIMessage = new SlotEvent<ExtensionUIEvent>();
+  onEditorMessage = new SlotEvent<ExtensionEditorEvent>();
   editor: any;
   constructor() {
-    this.ui = {
-      onmessage: null,
-      postMessage: msg => {
-        postMessage({ type: 'uiMessage', msg });
-      },
-    }
-    this.editor = {
-      onmessage: null,
-      getNode: async (nodeId: string) => {
-        return createRpcCall('getNode', [nodeId]);
-      },
-      getSelectNodes: async () => {
-        return createRpcCall('getNode');
-      },
-    }
   }
 
   /**

@@ -53,11 +53,8 @@ export function ReactflowExtensionController() {
       {visibleModals.map(ext => {
         return <ExtensionModal key={ext.extension.id} extension={ext.extension} visible={ext.visible} postMessage={(ev) => {
           manager?.onUIEvent({
-            type: ExtensionEventTypes.uiMessage,
-            data: {
-              extensionId: ext.extension.id,
-              event: ev
-            }
+            extensionId: ext.extension.id,
+            srcEvent: ev
           })
           console.log('postMessage from ui', ev);
         }}/>
@@ -76,7 +73,8 @@ function ExtensionModal(props: {
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
-        console.log('Received message from iframe:', event.data);
+        console.log('Received message from iframe:', event);
+        props.postMessage(event);
       }
     }
 
