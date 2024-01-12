@@ -3,7 +3,6 @@ import { getBackendUrl } from '@comflowy/common/config';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
 
 export interface ExtensionApiHooks {
-
 }
 
 /**
@@ -116,7 +115,7 @@ export class ExtensionManager {
   }
 
   async fetchExtensionFileContent(extensionManifest: ExtensionManifest, filePath: string): Promise<string> {
-    const url = getBackendUrl("/extensions/" + extensionManifest.id + "/" + filePath);
+    const url = getBackendUrl("/static/" + filePath);
     return await fetch(url).then((res) => res.text());
   }
 
@@ -140,5 +139,10 @@ export class ExtensionManager {
       type: ExtensionEventTypes.uiMessage,
       data: event
     });
+  }
+
+  destroy() {
+    this.extensionEvent.dispose();
+    this.worker.terminate();
   }
 }

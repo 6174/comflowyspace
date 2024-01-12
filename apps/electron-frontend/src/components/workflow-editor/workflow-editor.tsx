@@ -16,6 +16,7 @@ import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-p
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
+import { ReactflowExtensionController } from '@/lib/extensions/extensions.controller';
 
 const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
 export default function WorkflowEditor() {
@@ -296,6 +297,7 @@ export default function WorkflowEditor() {
         {menu && <ContextMenu hide={onPaneClick} {...menu} />}
       </ReactFlow>
       <AsyncComfyUIProcessManager/>
+      <ReactflowExtensionController/>
     </div>
   )
 }

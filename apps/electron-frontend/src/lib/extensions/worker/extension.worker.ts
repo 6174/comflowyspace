@@ -8,7 +8,7 @@ class ExtensionWorker {
    */
   start() {
     workerEvent.onMessageEvent.on(this.handleRequest);
-    (window as any).comflowy = comflowy;
+    (self as any).comflowy = comflowy;
   }
 
   /**
@@ -19,16 +19,14 @@ class ExtensionWorker {
     console.log("receive from main", data);
     switch (data.type) {
       case ExtensionEventTypes.uiMessage:
-        if (comflowy.ui.onmessage) {
-          comflowy.ui.onmessage(data.msg);
-        }
+        comflowy.ui.onmessage(data.msg);
         break;
       case ExtensionEventTypes.editorMessage:
-        if (comflowy.editor.onmessage) {
-          comflowy.editor.onmessage(data.msg);
-        }
+        comflowy.editor.onmessage(data.msg);
         break;
       case ExtensionEventTypes.execute:
+        this.executeExtension(data.data);
+        break;
     }
   }
 
@@ -37,6 +35,7 @@ class ExtensionWorker {
    * @param data 
    */
   executeExtension(data) {
+    console.log("executeExtension", data);
     const { extension, content } = data;
     try {
       eval(extesionMainTemplate(extension, content));
