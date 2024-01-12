@@ -1,6 +1,6 @@
 import { uuid } from "@comflowy/common";
 import { ExtensionEventTypes, ExtensionManagerEvent, ExtensionManifest } from "../extension.types";
-import { workerEventHandler } from "./extension-worker-event-handler";
+import { workerEvent } from "./extension.event";
 
 /**
  * Expose worker api directly to extensions in extension main.js
@@ -63,7 +63,7 @@ async function createRpcCall<T = any>(method: string, args?: any[]): Promise<T> 
         disposable.dispose();
       }
     }
-    disposable = workerEventHandler.onMessageEvent.on(listener)
+    disposable = workerEvent.onMessageEvent.on(listener)
     setTimeout(() => {
       reject(new Error("timeout"));
     }, 10000)
