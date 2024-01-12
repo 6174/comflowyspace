@@ -9,9 +9,6 @@ import { SlotEvent } from "@comflowy/common/utils/slot-event";
 class ExtensionWorkerApi {
   onUIMessage = new SlotEvent<ExtensionUIEvent>();
   onEditorMessage = new SlotEvent<ExtensionEditorEvent>();
-  editor: any;
-  constructor() {
-  }
 
   /**
    * showUI(__EXTENSION__)
@@ -21,41 +18,42 @@ class ExtensionWorkerApi {
       extension: extension
     }});
   }
+
+  /**
+   * Create A wrapper to make rpc call easier
+   * @param method 
+   * @param args 
+   * @returns 
+   */
+  async createRpcCall<T = any>(method: string, args?: any[]): Promise<T> {
+    const callID = uuid();
+    postMessage({ type: ExtensionEventTypes.rpcCall, data: {
+      callID,
+      method,
+      args
+    }});
+  
+    return new Promise((resolve, reject) => {
+      let disposable;
+      const listener = (event: ExtensionManagerEvent) => {
+        const { type, data } = event.data;
+        if (type === ExtensionEventTypes.rpcCallResult && data.callID === callID) {
+          resolve(data as T);
+          disposable.dispose();
+        }
+        if (type === ExtensionEventTypes.rpcCallError && data.callID === callID) {
+          reject(data as T);
+          disposable.dispose();
+        }
+      }
+      disposable = workerEvent.onMessageEvent.on(listener)
+      setTimeout(() => {
+        reject(new Error("timeout"));
+      }, 10000)
+    });
+  }
 }
 
-/**
- * Create A wrapper to make rpc call easier
- * @param method 
- * @param args 
- * @returns 
- */
-async function createRpcCall<T = any>(method: string, args?: any[]): Promise<T> {
-  const callID = uuid();
-  postMessage({ type: ExtensionEventTypes.rpcCall, data: {
-    callID,
-    method,
-    args
-  }});
-
-  return new Promise((resolve, reject) => {
-    let disposable;
-    const listener = (event: ExtensionManagerEvent) => {
-      const { type, data } = event.data;
-      if (type === ExtensionEventTypes.rpcCallResult && data.callID === callID) {
-        resolve(data as T);
-        disposable.dispose();
-      }
-      if (type === ExtensionEventTypes.rpcCallError && data.callID === callID) {
-        reject(data as T);
-        disposable.dispose();
-      }
-    }
-    disposable = workerEvent.onMessageEvent.on(listener)
-    setTimeout(() => {
-      reject(new Error("timeout"));
-    }, 10000)
-  });
-}
 
 const comflowy = new ExtensionWorkerApi();
 
