@@ -14,9 +14,13 @@ class ExtensionWorkerApi {
    * showUI(__EXTENSION__)
    */
   showUI(extension: ExtensionManifest) {
-    postMessage({ type: ExtensionEventTypes.showUI, data: {
+    self.postMessage({ type: ExtensionEventTypes.showUI, data: {
       extension: extension
     }});
+  }
+
+  postMessageToUI(ev: ExtensionUIEvent) {
+    self.postMessage({ type: ExtensionEventTypes.mainToUIMessage, data: ev});
   }
 
   /**

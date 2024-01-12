@@ -11,6 +11,7 @@ export interface ExtensionApiHooks {
 export class ExtensionManager {
   worker: Worker;
   extensionEvent = new SlotEvent<ExtensionManagerEvent>();
+  mainToUIEvent = new SlotEvent<ExtensionUIEvent>();
   /**
   * Extensions can register node context menu hooks at here
   */
@@ -50,6 +51,9 @@ export class ExtensionManager {
       switch (type) {
         case ExtensionEventTypes.executeError:
           this.handleExtensionExecuteError(event.data);
+          break;
+        case ExtensionEventTypes.mainToUIMessage:
+          this.mainToUIEvent.emit(data);
           break;
         case ExtensionEventTypes.rpcCall:
           this.handleRpcCall(data);
