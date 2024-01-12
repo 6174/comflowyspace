@@ -1,8 +1,11 @@
 import { useAppStore } from "@comflowy/common/store";
 import { useExtensionsState } from "./extension.state";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ExtensionManager } from "./extension.manager";
-import { ExtensionManifest } from "./extension.types";
+import { ExtensionEventTypes, ExtensionManifest } from "./extension.types";
+import { DraggableModal } from "ui/antd/draggable-modal";
+import { getBackendUrl } from "@comflowy/common/config";
+import styles from "./extension.style.module.scss";
 
 /**
  * Controller 
@@ -13,6 +16,7 @@ export function ReactflowExtensionController() {
   const extensions = useExtensionsState((st) => st.extensions);
   const editorEvent = useAppStore(st => st.editorEvent);
   const [manager, setManager] = useState<ExtensionManager>();
+
   useEffect(() => {
     onInit();
   }, []);
@@ -34,14 +38,72 @@ export function ReactflowExtensionController() {
     if (editorEvent && manager) {
       const disposable = editorEvent.on((event) => {
         manager.onEditorEvent(event);
-      })
+      });
       return () => {
         disposable.dispose();
       }
     }
   }, [manager, editorEvent]);
 
-  return <></>;
+  const extensionModals = useExtensionsState(st => st.extensionModals);
+  const visibleModals = Object.keys(extensionModals).map(id => extensionModals[id]).filter(modal => modal.visible);
+
+  return (
+    <div className="controller">
+      {visibleModals.map(ext => {
+        return <ExtensionModal key={ext.extension.id} extension={ext.extension} visible={ext.visible} postMessage={(ev) => {
+          manager?.onUIEvent({
+            type: ExtensionEventTypes.uiMessage,
+            data: {
+              extensionId: ext.extension.id,
+              event: ev
+            }
+          })
+          console.log('postMessage from ui', ev);
+        }}/>
+      })}
+    </div>
+  );
+}
+
+function ExtensionModal(props: {
+  extension: ExtensionManifest;
+  visible: boolean;
+  postMessage: (message: any) => void;
+}) {
+  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const closeModal = useExtensionsState(st => st.closeModal);
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
+        console.log('Received message from iframe:', event.data);
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    }
+  }, []);
+  if (!props.extension.ui) {
+    return null;
+  }
+  const src = getBackendUrl("/static/" + props.extension.ui);
+  return (
+    <DraggableModal 
+      open={props.visible}
+      title={props.extension.name}
+      footer={null}
+      initialWidth={400}
+      initialHeight={450}
+      rootClassName={styles.extensionUIModal}
+      onCancel={ev => {
+        closeModal(props.extension);
+      }}>
+      <iframe id={"iframe-" + props.extension.id } ref={iframeRef} src={src} />;
+    </DraggableModal>
+  )
 }
 
 function createExtensionManager(extensions: ExtensionManifest[]): ExtensionManager {

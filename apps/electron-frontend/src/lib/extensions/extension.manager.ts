@@ -59,6 +59,16 @@ export class ExtensionManager {
   }
 
   /**
+   * show UI of the extension
+   * @param extension 
+   */
+  showUI(extension: ExtensionManifest) {
+    const uipath = getBackendUrl("/static/" + extension.ui);
+    const iframe = document.createElement("iframe");
+    iframe.src = uipath;
+  }
+
+  /**
    * Rpc call from worker to main
    * @param data 
    */
