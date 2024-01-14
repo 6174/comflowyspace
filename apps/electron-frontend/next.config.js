@@ -8,7 +8,7 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
-  },
+  }
 }
 
 module.exports = nextConfig
