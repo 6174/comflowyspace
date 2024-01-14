@@ -50,9 +50,14 @@ import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIExecuteError } from 'comfui-interfaces/comfy-error-types';
 
 export type SelectionMode = "figma" | "default";
+export interface EditorEvent {
+  type: string;
+  data: any
+}
 
 export interface AppState {
   editorInstance?: ReactFlowInstance<any, any>,
+  editorEvent: SlotEvent<EditorEvent>,
   counter: number
   clientId?: string
   slectionMode: SelectionMode
@@ -236,11 +241,9 @@ export const AppState = {
 
     if (!findError) {
       flowError = undefined;
+    } else {
+      console.log("final Error", flowError);
     }
-
-
-
-    console.log("final Error", flowError);
 
     return  {
       ...state,
@@ -254,6 +257,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   transforming: false,
   persistedWorkflow: null,
   doc: new Y.Doc(),
+  editorEvent: new SlotEvent<EditorEvent>(),
   resetWorkflowEvent: new SlotEvent<any>(),
   graph: {},
   nodes: [],

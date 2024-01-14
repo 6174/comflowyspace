@@ -65,6 +65,21 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
     } 
 }
 
+export async function ApiRouteGetFrontendExtensions(req: Request, res: Response) {
+    try {
+        const extensions = await comfyExtensionManager.getFrontendExtensions();
+        res.send({
+            success: true,
+            data: extensions
+        });
+    } catch(err: any) {
+        res.send({
+            success: false,
+            error: err.message
+        })
+    }
+}
+
 export async function ApiRouteDisableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
