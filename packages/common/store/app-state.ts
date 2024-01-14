@@ -47,7 +47,7 @@ import exifr from 'exifr'
 
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
-import { ComfyUIExecuteError } from 'comfui-interfaces/comfy-error-types';
+import { ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
 
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
@@ -221,7 +221,7 @@ export const AppState = {
           details: `${sdnode.widget}`
         });
         findError = true;
-        flowError!.node_errors[id] = error;
+        flowError!.node_errors[id] = error as any;
       }
 
       if (widget && widget.name === "LoadImage") {

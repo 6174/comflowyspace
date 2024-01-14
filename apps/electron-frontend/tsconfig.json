@@ -31,8 +31,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "custom.d.ts",
     ".next/types/**/*.ts",
-    "../electron/layers/preload/exposedInMainWorld.d.ts"
   ],
   "exclude": [
     "node_modules"

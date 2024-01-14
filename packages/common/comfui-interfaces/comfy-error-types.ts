@@ -70,8 +70,8 @@ export interface ComfyUIError {
 
 export interface ComfyUINodeError {
   errors: ComfyUIError[];
-  dependent_outputs: string[];
-  class_type: string;
+  dependent_outputs?: string[];
+  class_type?: string;
 }
 
 export interface ComfyUIExecuteError {
