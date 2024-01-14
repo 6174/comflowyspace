@@ -30,8 +30,9 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
-    , "components/workflow-editor/workspace-editor.style.module.scss", "components/workflow-editor/reactflow-topleft-panel/reactflow-topleft-panel.style.module.scss", "../../../packages/common/store/comfyui-queue-state.ts"  ],
+    "**/*.tsx",
+    "../custom.d.ts"
+, "../custom.d.ts"  ],
   "exclude": [
     "node_modules"
   ]
