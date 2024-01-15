@@ -7,7 +7,7 @@ import { memo } from "react";
 interface InputContainerProps {
     id: NodeId
     name: string
-    input: Input,
+    input: Input
     widget: Widget
 }
 
