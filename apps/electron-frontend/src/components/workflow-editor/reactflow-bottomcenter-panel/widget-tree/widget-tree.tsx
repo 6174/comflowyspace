@@ -157,10 +157,10 @@ function WidgetNode({widget}: {widget: Widget}) {
             }}
             onDragStart={onDragStart} 
             title={widget.name}>
-            {widget.display_name}
-            <span className='class_name'>
-                {"("}{widget.name}{")"}
-            </span>
+            <div className="display-name">{widget.display_name}</div>
+            <div className='class_name'>
+                Type: {widget.name}
+            </div>
         </div>
     )
 }
