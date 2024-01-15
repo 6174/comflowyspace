@@ -51,9 +51,11 @@ export const Widget = {
     }
     return
   },
-  isPrimitive(widget: Widget): boolean {
+  isPrimitive(name: string): boolean {
+    if (name === "PrimitiveNode") {
+      return true;
+    }
     const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];
-    const name = widget.name;
     const type = name.split("_")[1];
     return types.indexOf(type) >= 0;
   }
