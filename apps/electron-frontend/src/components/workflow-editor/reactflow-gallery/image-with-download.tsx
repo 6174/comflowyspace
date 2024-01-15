@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import styles from "./gallery.module.scss";
 
-export function ImageWithDownload(props: ImageProps) {
+export function ImageWithDownload(props: ImageProps & {fileName: string}) {
   const src = props.src;
   const onDownload = () => {
     fetch(src)
@@ -18,7 +18,7 @@ export function ImageWithDownload(props: ImageProps) {
         const url = URL.createObjectURL(new Blob([blob]));
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'image.png';
+        link.download = props.fileName;
         document.body.appendChild(link);
         link.click();
         URL.revokeObjectURL(url);

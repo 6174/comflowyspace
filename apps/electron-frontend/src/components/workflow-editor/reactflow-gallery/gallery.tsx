@@ -22,6 +22,7 @@ const Gallery = () => {
           const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
           return (
             <ImageWithDownload
+              fileName={image.filename}
               key={imageSrc + index}
               src={imageSrc}
             />

@@ -253,6 +253,7 @@ export const NodeComponent = memo(({
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
                   return (
                     <ImageWithDownload
+                      fileName={image.filename}
                       key={imageSrc + index}
                       className="node-preview-image"
                       src={imageSrc}
