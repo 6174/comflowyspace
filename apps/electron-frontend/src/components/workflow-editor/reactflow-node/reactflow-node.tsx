@@ -13,6 +13,7 @@ import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+import { isPrimitive } from 'util';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -53,7 +54,7 @@ export const NodeComponent = memo(({
   }
 
   // If it is a primitive node , add according primitive type params
-  if (widget.name === "PrimitiveNode") {
+  if (Widget.isPrimitive(widget)) {
     const paramType = node.data.value.outputs[0].type;
     const extraInfo: any = {};
     if (paramType === "STRING") {
