@@ -19,7 +19,6 @@ export interface SDNode {
   properties?: any
 }
 
-
 export type SDNodeColorOption = {
   color: string,
   bgcolor: string,

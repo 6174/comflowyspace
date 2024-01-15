@@ -507,7 +507,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       position,
       dimensions: {
         width: 240,
-        height: 200
+        height: 80
       },
       value: node
     }]);
