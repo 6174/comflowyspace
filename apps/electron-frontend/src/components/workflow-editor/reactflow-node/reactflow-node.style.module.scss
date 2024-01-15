@@ -43,11 +43,18 @@
             height: 100%;
             overflow-y: hidden;
         }
+
         .connectionindicator {
-            transform-origin: 50% 80%;
             transition: var(--transition);
         }
+        .node-slot-left .connectionindicator {
+            transform-origin: 10% 50%;
+        }
 
+        .node-slot-right .connectionindicator {
+            transform-origin: 90% 50%;
+        }
+        
         .node-images-preview {
             padding: 10px;
             flex: 1;
@@ -59,6 +66,7 @@
                 grid-gap: 10px;
                 padding: 10px;
             }
+
             .ant-image {
                 margin-right: 4px;
                 margin-bottom: 4px;
@@ -232,7 +240,7 @@
                     }
                 }
                 .image-preview img {
-                   border-radius: 4px; 
+                   border-radius: 8px; 
                    width: 100%;
                    display: inline-block;
                 }
