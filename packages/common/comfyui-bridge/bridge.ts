@@ -212,7 +212,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const widget = widgets[node.value.widget];
-    if (!widget || widget.name === "Note" || widget.name === "Group") {
+    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isPrimitive(widget.name) || widget.name === "Reroute") {
       continue
     }
 
