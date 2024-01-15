@@ -99,6 +99,16 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
       "output": [],
       "category": "utils",
     },
+    Group: {
+      "name": "Group",
+      "display_name": "Group",
+      "description": "Group",
+      "input": {
+        "required": {}
+      },
+      "output": [],
+      "category": "utils"
+    },
     Primitive_STRING: createPrimitiveWidget("STRING"),
     Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
     Primitive_INT: createPrimitiveWidget("INT"),

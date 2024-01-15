@@ -28,6 +28,7 @@ import {
   PreviewImage,
   UnknownWidget,
   ContrlAfterGeneratedValues,
+  NODE_GROUP,
 } from '../comfui-interfaces'
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
@@ -165,6 +166,12 @@ export const AppState = {
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
     }
+
+    if (widget.name === NODE_GROUP) {
+      item.zIndex = -1;
+      item.type = NODE_GROUP;
+    }
+
     return {
       ...state,
       nodes: applyNodeChanges([{ type: 'add', item }], state.nodes),

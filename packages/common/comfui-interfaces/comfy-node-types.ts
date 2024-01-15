@@ -2,6 +2,7 @@ import { FlowPrimitiveType, Input } from "./comfy-flow-props-types";
 import { Widget, WidgetKey } from "./comfy-widget-types"
 import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-workflow";
 export const NODE_IDENTIFIER = 'sdNode';
+export const NODE_GROUP = 'Group';
 export type NodeId = string
 
 /**

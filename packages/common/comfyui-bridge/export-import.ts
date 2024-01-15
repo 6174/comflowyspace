@@ -72,7 +72,7 @@ export async function readWorkflowFromPng(file: File, widgets: Widgets): Promise
 }
 
 export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: ComfyUIWorkflow, widgets: Widgets): PersistedWorkflowDocument {
-  const { nodes, links } = comfyUIWorkflow;
+  const { nodes, links, groups } = comfyUIWorkflow;
   const nodesMap: Record<string, PersistedWorkflowNode> = {};
   const missed_widget = [];
   nodes.forEach((node) => {
@@ -185,6 +185,30 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       targetHandle,
       handleType: connectionType,
     }
+  });
+
+  groups.forEach((group) => {
+    const groupId = uuid();
+    const groupNode: PersistedWorkflowNode = {
+      id: groupId,
+      value: {
+        widget: "Group",
+        fields: {},
+        inputs: [],
+        outputs: [],
+        title: group.title,
+        color: group.color,
+      },
+      dimensions: {
+        width: group.bounding[2],
+        height: group.bounding[3]
+      },
+      position: {
+        x: group.bounding[0],
+        y: group.bounding[1]
+      }
+    }
+    nodesMap[groupId] = groupNode;
   });
 
   return {

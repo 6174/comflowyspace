@@ -116,16 +116,21 @@ function NodeMenu(props: NodeMenuProps) {
     }
   };
 
+  const hasInputs = node.inputs && node.inputs.length > 0;
   const items: MenuItem[] = [
     {type: "divider"},
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
     getMenuItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
     { type: "divider" },
-    getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null),
-    { type: "divider" },
-    getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
-    getMenuItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
   ];
+
+  if (hasInputs) {
+    items.push(getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null))
+    items.push({ type: "divider" })
+  }
+
+  items.push(getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null));
+  items.push(getMenuItem("Delete", 'MENU_ITEM_DELETE_NODE', null, null));
 
   return (
     <div className='node-menu'>

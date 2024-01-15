@@ -5,7 +5,7 @@ import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParam
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
-import { Input, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
+import { Input, NODE_GROUP, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
@@ -18,7 +18,10 @@ import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
 import { ReactflowExtensionController } from '@/lib/extensions/extensions.controller';
 
-const nodeTypes = { [NODE_IDENTIFIER]: NodeContainer }
+const nodeTypes = { 
+  [NODE_IDENTIFIER]: NodeContainer,
+  [NODE_GROUP]: NodeContainer
+}
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
   const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
