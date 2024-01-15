@@ -12,7 +12,6 @@ export default function ReactflowTopLeftPanel() {
                 <div className="spliter"></div>
                 <ChangeTitle/>
                 <UndoRedo/>
-                <RefreshPageButton />
             </Space>
         </div>
     )
@@ -64,7 +63,7 @@ export function UndoRedo() {
 }
 
 let triggered = false;
-function RefreshPageButton() {
+export function RefreshPageButton() {
     const [visible, setVisible] = useState(false);
     const handleVisibleChange = (visible: boolean) => {
         setVisible(visible);
