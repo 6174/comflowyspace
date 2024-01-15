@@ -7,6 +7,7 @@
     align-items: center;
     transition: var(--transition);
     user-select: none;
+    cursor: pointer;
     &:hover {
         // background-color: var(--backgroundColorL2);
         background-color: var(--actionHoverColor);
