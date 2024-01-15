@@ -12,7 +12,6 @@ import {ExtensionManager} from '@/lib/extensions/extension.manager';
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
   const {onInit} = useDashboardState();
-
   useEffect(()=> {
     onInit();
     JSONDBClient.listen();
