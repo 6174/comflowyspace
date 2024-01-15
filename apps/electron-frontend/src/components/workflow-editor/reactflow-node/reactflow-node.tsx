@@ -204,19 +204,14 @@ export const NodeComponent = memo(({
               {getWidgetIcon(widget)} {nodeTitle} <NodeError nodeError={nodeError}/>
             </h2>
 
-            {isInProgress ? <Progress
-              percent={progressBar * 100}
-              style={{
-                position: "absolute",
-                top: 14,
-                left: 0,
-                width: "100%",
-                height: 4,
-                zIndex: 1,
-                borderRadius: 0
-              }}
-              showInfo={false}
-              size="small" /> : <></>}
+            {isInProgress? 
+              <div className="progress-bar">
+                <div className="progress-indicator" style={{
+                  width: `${progressBar * 100}%`
+                }}></div>
+              </div>
+              : null}
+            
             {node.selected ? (
               <div className="node-selected-actions">
               </div>

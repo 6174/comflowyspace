@@ -122,6 +122,31 @@
                     margin-right: 4px;
                 }
             }
+            .progress-bar {
+                position: absolute;
+                width: 100%;
+                left: 0;
+                top: 0px;
+                height: 36px;
+                z-index: 1;
+                border-top-left-radius: 8px;
+                border-top-right-radius: 8px;
+                overflow: hidden;
+                .progress-indicator {
+                    transition: var(--transition);
+                    height: 100%;
+                    background-color: var(--primaryColor);
+                    background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 10%, transparent 10%, transparent 20%, rgba(255, 255, 255, .2) 20%, rgba(255, 255, 255, .2) 30%, transparent 30%, transparent 40%, rgba(255, 255, 255, .2) 40%, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent 60%, rgba(255, 255, 255, .2) 60%, rgba(255, 255, 255, .2) 70%, transparent 70%, transparent 80%, rgba(255, 255, 255, .2) 80%, rgba(255, 255, 255, .2) 90%, transparent 90%, transparent 100%);
+                }
+            }
+            .ant-progress {
+                .ant-progress-inner {
+                    border-radius: 0;
+                    .ant-progress-bg {
+                        border-radius: 0;
+                    }
+                }
+            }
         }
         .node-main {
             position: relative;
