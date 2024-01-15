@@ -15,6 +15,9 @@
       }
     }
 
+    .react-flow__node-Group {
+      z-index: -1 !important;
+    }
     .react-flow__background {
       circle {
         fill: #060607;

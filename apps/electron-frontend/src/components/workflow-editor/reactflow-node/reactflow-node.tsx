@@ -13,7 +13,6 @@ import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
-import { isPrimitive } from 'util';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
