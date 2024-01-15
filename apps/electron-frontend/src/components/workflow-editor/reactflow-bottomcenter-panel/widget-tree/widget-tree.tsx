@@ -4,11 +4,15 @@ import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon } from 'ui/icons';
+import { XYPosition } from 'reactflow';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
     id: number;
     filter?: (widget: Widget) => boolean;
+    position?: XYPosition;
+    autoFocus?: boolean;
+    onNodeCreated?: () => void
 }) => {
     const showCategory = props.showCategory;
     const filter = props.filter || ((w: Widget) => true);
@@ -16,7 +20,7 @@ export const WidgetTree = (props: {
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-useEffect(() => {
+    useEffect(() => {
         setSearchValue('');
     }, [props.id]);
     const handleSearch = (value) => {
@@ -44,7 +48,7 @@ useEffect(() => {
     const firstLevelCatogories = Object.keys(widgetCategory);
     const [currentCategory, setCurrentCategory] = useState("");
     const [widgetToRender, setWidgetToRender] = useState<{ cagetory: string, items: Widget[] }[]>([]);
-    
+
     useEffect(() => {
         const keys = Object.keys(widgetCategory);
         if (keys.length > 0) {
@@ -57,7 +61,7 @@ useEffect(() => {
             (key) => {
                 const widget = widgets[key];
                 if (showCategory) {
-                    return widget.category.indexOf(currentCategory) >= 0  && filter(widget);
+                    return widget.category.indexOf(currentCategory) >= 0 && filter(widget);
                 }
                 return filter(widget);
             }
@@ -99,7 +103,7 @@ useEffect(() => {
                     })}
                 </div>
             )}
-            
+
             <div className="widget-list">
                 {widgetToRender.map((item) => {
                     return (
@@ -108,7 +112,12 @@ useEffect(() => {
                             <div className="widget-category-section-content">
                                 {item.items.map((widget) => {
                                     return (
-                                        <WidgetNode widget={widget} key={widget.name} />
+                                        <WidgetNode 
+                                            widget={widget} 
+                                            key={widget.name} 
+                                            position={props.position}
+                                            onNodeCreated={props.onNodeCreated}
+                                        />
                                     )
                                 })}
                             </div>
@@ -123,7 +132,8 @@ useEffect(() => {
         <div className={styles.widgetTree}>
             <div className="search-box">
                 <Input
-                    prefix={<SearchIcon/>}
+                    autoFocus={props.autoFocus}
+                    prefix={<SearchIcon />}
                     placeholder="Search widgets"
                     onChange={(e) => handleSearch(e.target.value)}
                     value={searchValue}
@@ -131,7 +141,19 @@ useEffect(() => {
             </div>
             {
                 searchValue == "" ? widgetCategoryPanel : (
-                    <SearchList items={searchResult} />
+                    <div className='search-result'>
+                        {searchResult.map((item, index) => {
+                            return (
+                                <div className='search-result-item' key={item.name + index}>
+                                    <WidgetNode
+                                        widget={item} 
+                                        position={props.position}
+                                        onNodeCreated={props.onNodeCreated}
+                                        />
+                                </div>
+                            )
+                        })}
+                    </div>
                 )
             }
 
@@ -141,8 +163,12 @@ useEffect(() => {
 
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
- **/ 
-function WidgetNode({widget}: {widget: Widget}) {
+ **/
+function WidgetNode({ widget, onNodeCreated, position }: { 
+    widget: Widget,
+    position?: XYPosition,
+    onNodeCreated?: () => void  
+}) {
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         const widgetInfo = JSON.stringify(widget);
         event.dataTransfer.setData('application/reactflow', widgetInfo);
@@ -154,21 +180,22 @@ function WidgetNode({widget}: {widget: Widget}) {
     const onAddNode = useAppStore(st => st.onAddNode);
     const createNewNode = useCallback(async (ev: React.MouseEvent) => {
         const rect = ref.current.getBoundingClientRect();
-        const pos = editorInstance.screenToFlowPosition({
+        const pos = editorInstance.screenToFlowPosition(position || {
             x: rect.left + rect.width + 40,
             y: ev.clientY - 100
         });
-        await onAddNode(widget, pos); 
+        await onAddNode(widget, pos);
+        onNodeCreated?.();
     }, [widget, ref]);
 
     return (
-        <div className='widget-node action dndnode' 
-            draggable 
+        <div className='widget-node action dndnode'
+            draggable
             ref={ref}
             onClick={ev => {
                 createNewNode(ev);
             }}
-            onDragStart={onDragStart} 
+            onDragStart={onDragStart}
             title={widget.name}>
             <div className="display-name">{widget.display_name}</div>
             <div className='class_name'>
@@ -178,19 +205,6 @@ function WidgetNode({widget}: {widget: Widget}) {
     )
 }
 
-function SearchList({ items }: { items: Widget[] }) {
-    return (
-        <div className='search-result'>
-            {items.map((item, index) => {
-                return (
-                    <div className='search-result-item' key={item.name + index}>
-                        <WidgetNode widget={item}/>
-                    </div>
-                )
-            })}
-        </div>
-    )
-}
 
 function maxMatchLength(searchTerm: string, sourceString: string): number {
     let maxMatch = 0;

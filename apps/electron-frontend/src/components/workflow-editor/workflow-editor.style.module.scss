@@ -6,8 +6,16 @@
   right: 8px;
   background-color: var(--backgroundColor);
   border: solid 1px var(--borderColor);
+  overflow: hidden;
   border-radius: 12px;
   :global {
+    .react-flow {
+      position: absolute !important;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
     .react-flow__panel {
       .ant-space-item {
         display: flex;
