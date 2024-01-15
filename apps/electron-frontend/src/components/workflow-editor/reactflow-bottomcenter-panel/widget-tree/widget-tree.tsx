@@ -4,10 +4,10 @@ import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon } from 'ui/icons';
-import { useStoreApi } from 'reactflow';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
+    id: number;
     filter?: (widget: Widget) => boolean;
 }) => {
     const showCategory = props.showCategory;
@@ -16,6 +16,9 @@ export const WidgetTree = (props: {
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
+    useEffect(() => {
+        setSearchValue('');
+    }, [props.id]);
     const handleSearch = (value) => {
         setSearchValue(value);
         const searchWords = value.toLowerCase().split(' ');
