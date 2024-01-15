@@ -50,5 +50,21 @@ export function getWidgetIcon(widget: Widget) {
   if (icon) {
     return icon 
   }
+  const name = (widget.name + "_" + widget.display_name).toLowerCase();
+  if (name.indexOf("checkpoint") >= 0) {
+    return ModelIcon
+  }
+  if (name.indexOf("sampler") >= 0) {
+    return SamplerIcon
+  }
+  if (name.indexOf('clip') >= 0 || name.indexOf('text') >= 0) {
+    return PromptIcon
+  }
+  if (name.indexOf("image") >= 0) {
+    return ImageIcon
+  }
+  if (name.indexOf('vae') >= 0) {
+    return VaeIcon
+  }
   return null // @TODO default
 }
