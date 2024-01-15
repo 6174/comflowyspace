@@ -1,5 +1,5 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
-import { Input, type NodeId, type PropertyKey, type Widget, type WidgetKey } from '../comfui-interfaces'
+import { Input, Widget, type NodeId, type PropertyKey, type WidgetKey } from '../comfui-interfaces'
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../storage'
 import { ComfyUIError, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types'
 
@@ -255,7 +255,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       value = [edge.source, outputIndex];
     } else {
       // special widget such as primitiveNode & reroute node & combo 
-      if (source.value.widget === "PrimitiveNode") {
+      if (Widget.isPrimitive(source.value.widget)) {
         value = source.value.fields[source.value.outputs[0].name];
       }
       if (source.value.widget === "Reroute") {

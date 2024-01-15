@@ -54,7 +54,7 @@ export const NodeComponent = memo(({
   }
 
   // If it is a primitive node , add according primitive type params
-  if (Widget.isPrimitive(widget)) {
+  if (Widget.isPrimitive(widget.name)) {
     const paramType = node.data.value.outputs[0].type;
     const extraInfo: any = {};
     if (paramType === "STRING") {
