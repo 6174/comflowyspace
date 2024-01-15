@@ -1,4 +1,7 @@
 .templates {
+  overflow-y: auto;
+  padding-top: 14px;
+  height: 100%;
   :global {
     .template-card-list {
       display: grid;
