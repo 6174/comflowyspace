@@ -79,7 +79,8 @@ export const NodeComponent = memo(({
 
   const isInProgress = progressBar !== undefined
   const [minHeight, setMinHeight] = useState(100);
-  const [minWidth, setMinWidth] = useState(240);
+  const [minWidth] = useState(240);
+
   const mainRef = useRef<HTMLDivElement>();
 
   const onNodesChange = useAppStore(st => st.onNodesChange);
@@ -111,7 +112,7 @@ export const NodeComponent = memo(({
       setMinHeight(height);
     }
   }, [setMinHeight, nodeId, imagePreviews]);
-
+  
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
   const [resizing, setResizing] = useState(false);
   useEffect(() => {
@@ -180,6 +181,7 @@ export const NodeComponent = memo(({
       '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
       '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
+
       <NodeResizeControl
         style={{
           background: "transparent",
@@ -219,8 +221,8 @@ export const NodeComponent = memo(({
               <></>
             )}
           </div>
-          <div className="node-main" ref={mainRef}>
 
+          <div className="node-main" ref={mainRef}>
             <div className="node-slots">
               <div className="node-inputs">
                 {inputs.map((input, index) => (
@@ -241,6 +243,7 @@ export const NodeComponent = memo(({
             </div>
             <div style={{ height: 10 }}></div>
           </div>
+
           <div className={`node-images-preview`} >
             <div className="inner">
               {
