@@ -92,7 +92,11 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         params.splice(1, 0, "control_after_generate")
       }
 
-      if (node.type === "SamplerCustom") {
+      if (node.type === "KSamplerAdvanced" || 
+        node.type === "ImpactKSamplerBasicPipe" || 
+        node.type === "SamplerCustom" || 
+        node.type === "ImpactKSamplerAdvancedBasicPipe"
+        ) {
         params.splice(2, 0, "control_after_generate")
       }
 
