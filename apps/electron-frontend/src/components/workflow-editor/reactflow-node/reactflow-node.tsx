@@ -244,7 +244,7 @@ export const NodeComponent = memo(({
             <div style={{ height: 10 }}></div>
           </div>
 
-          <div className={`node-images-preview`} >
+          <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
             <div className="inner">
               {
                 imagePreviews && imagePreviews.map((image, index) => {

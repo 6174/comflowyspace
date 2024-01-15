@@ -59,29 +59,38 @@
             padding: 10px;
             flex: 1;
             overflow: hidden;
-            .inner {
-                margin-bottom: 20px;
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                grid-gap: 10px;
-                padding: 10px;
-            }
-
-            .ant-image {
-                margin-right: 4px;
-                margin-bottom: 4px;
-                min-height: 200px;
-                min-width: 200px;
-                overflow: hidden;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                background-color: var(--backgroundColor);
-                border-radius: 4px;
-                img {
-                    border-radius: 8px;
+            &.multiple {
+                .inner {
+                    margin-bottom: 20px;
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, 200px);
+                    grid-gap: 10px;
+                    padding: 10px;
+                }
+                .ant-image {
+                    margin-right: 4px;
+                    margin-bottom: 4px;
+                    min-height: 200px;
+                    min-width: 200px;
+                    overflow: hidden;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: var(--backgroundColor);
+                    border-radius: 4px;
                 }
             }
+            
+            &.single {
+                .ant-image {
+                    width: 100%;
+                }
+            }
+            
+            img {
+                border-radius: 8px;
+            }
+
         }
 
         .resize-icon {
@@ -145,6 +154,7 @@
                     height: 100%;
                     background-color: var(--primaryColor);
                     background-image: linear-gradient(45deg, rgba(255, 255, 255, .2) 10%, transparent 10%, transparent 20%, rgba(255, 255, 255, .2) 20%, rgba(255, 255, 255, .2) 30%, transparent 30%, transparent 40%, rgba(255, 255, 255, .2) 40%, rgba(255, 255, 255, .2) 50%, transparent 50%, transparent 60%, rgba(255, 255, 255, .2) 60%, rgba(255, 255, 255, .2) 70%, transparent 70%, transparent 80%, rgba(255, 255, 255, .2) 80%, rgba(255, 255, 255, .2) 90%, transparent 90%, transparent 100%);
+                    background-size: 86px 57.5px;
                 }
             }
             .ant-progress {
