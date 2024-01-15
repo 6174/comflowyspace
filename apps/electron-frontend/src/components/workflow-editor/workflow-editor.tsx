@@ -348,6 +348,7 @@ export default function WorkflowEditor() {
           setTimeout(() => {
             edgeConnectingParams.current = null;
             edgetConnectSuccessful.current = true;
+            edgeUpdating.current = false;
           }, 100)
         }}
         onDrop={onDrop}
