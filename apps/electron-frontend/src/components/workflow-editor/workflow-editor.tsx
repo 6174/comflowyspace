@@ -18,6 +18,7 @@ import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
 import { ReactflowExtensionController } from '@/lib/extensions/extensions.controller';
 import { WidgetTreeOnPanel, WidgetTreeOnPanelContext } from './reactflow-bottomcenter-panel/widget-tree/widget-tree-on-panel-click';
+import { onEdgeUpdateFailed } from './reactflow-connecting';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeContainer,
@@ -259,6 +260,7 @@ export default function WorkflowEditor() {
   }, [setWidgetTreeContext]);
 
   const edgeUpdateSuccessful = React.useRef(true);
+  const edgetConnectSuccessful = React.useRef(true);
   const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
   const edgeUpdating = React.useRef(false);
 
@@ -307,90 +309,45 @@ export default function WorkflowEditor() {
             onEdgesDelete([edge]);
             const connectingParams = edgeConnectingParams.current;
             if (connectingParams) {
-              try {
-                const node = nodes.find(node => {
-                  return node.id === connectingParams.nodeId;
-                });
-                const nodeWidget = node.data.widget;
-                let handleValueType = connectingParams.handleId;
-                if (connectingParams.handleType !== "source") { 
-                  const handleInput = nodeWidget.input.required[handleValueType.toLowerCase()];
-                  handleValueType = handleInput[0];
-                }
-                // If connection params handle type is source, then search from widget inputs by edge handle id
-                setWidgetTreeContext({
-                  position: {
-                    x: event.clientX,
-                    y: event.clientY
-                  },
-                  filter: (widget: Widget) => {
-                    if (connectingParams.handleType === "source") {
-                      // search from widget outputs 
-                      const inputs = Object.keys(widget.input.required);
-                      return inputs.some(inputKey => {
-                        const input = widget.input.required[inputKey];
-                        return input[0] === connectingParams.handleId;
-                      });
-                    } else {
-                      const output = (widget.output || []) as string[];
-                      if (output.indexOf(handleValueType) >= 0) {
-                        return true;
-                      }
-                    }
-                    return false;
-                  },
-                  showCategory: false,
-                  onNodeCreated: (node: PersistedWorkflowNode) => {
-                    const widget = widgets[node.value.widget];
-                    setWidgetTreeContext(null);
-                    try {
-                      if (connectingParams.handleType === "source") {
-                        const inputs = widget.input.required;
-                        const inputKey = Object.keys(inputs).find(inputKey => {
-                          const input = inputs[inputKey];
-                          return input[0] === connectingParams.handleId;
-                        });
-                        if (inputKey) {
-                          onConnect({
-                            source: connectingParams.nodeId,
-                            sourceHandle: connectingParams.handleId,
-                            target: node.id,
-                            targetHandle: inputKey.toUpperCase()
-                          })
-                        }
-                      } else {
-                        if (widget.output?.indexOf(handleValueType as any) >= 0) {
-                          onConnect({
-                            target: connectingParams.nodeId,
-                            targetHandle: connectingParams.handleId,
-                            source: node.id,
-                            sourceHandle: handleValueType
-                          })
-                        }
-                      }
-                    } catch(err) {
-                      console.log("auto connect error", err);
-                    }
-                  }
-                })
-              } catch(err) {
-                console.log("show create modal error", err);
-              }
+              onEdgeUpdateFailed({
+                event,
+                nodes,
+                onConnect,
+                widgets,
+                setWidgetTreeContext,
+                connectingParams
+              })
             }
           }
           setTimeout(() => {
             edgeUpdating.current = false;
           }, 100)
         }}
-        onConnect={onConnect}
         onConnectStart={(ev, params)=> {
           edgeConnectingParams.current = params;
+          edgeUpdating.current = true;
+          edgetConnectSuccessful.current = false;
           onConnectStart(ev, params); 
         }}
-        onConnectEnd={(ev) => {
+        onConnect={(connection) => {
+          edgetConnectSuccessful.current = true;
+          onConnect(connection);
+        }}
+        onConnectEnd={(ev: MouseEvent) => {
           onConnectEnd(ev);
+          if (!edgetConnectSuccessful.current) {
+            onEdgeUpdateFailed({
+              event: ev,
+              nodes,
+              onConnect,
+              widgets,
+              setWidgetTreeContext,
+              connectingParams: edgeConnectingParams.current
+            })
+          }
           setTimeout(() => {
             edgeConnectingParams.current = null;
+            edgetConnectSuccessful.current = true;
           }, 100)
         }}
         onDrop={onDrop}
