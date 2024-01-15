@@ -50,6 +50,12 @@ export const Widget = {
       return 'noise_seed'
     }
     return
+  },
+  isPrimitive(widget: Widget): boolean {
+    const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];
+    const name = widget.name;
+    const type = name.split("_")[1];
+    return types.indexOf(type) >= 0;
   }
 }
 

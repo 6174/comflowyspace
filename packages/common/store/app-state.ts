@@ -309,7 +309,7 @@ export const useAppStore = create<AppState>((set, get) => ({
    * AppStore Initialization Entry 
    */
   onInit: async (editorInstance?: ReactFlowInstance<any, any>) => {
-    const widgets = await getWidgets()
+    const widgets = await getWidgets();
     const widgetCategory = generateWidgetCategories(widgets);
     console.log("widgets", widgets);
     set({ 
