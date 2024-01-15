@@ -44,8 +44,21 @@ export async function checkBasicRequirements() {
         isComfyUIStarted,
         isSetupedConfig,
         isBasicModelInstalled: true,
-        isBasicExtensionInstalled: true
+        isBasicExtensionInstalled: true,
+        comfyUIVersion: await checkComfyUIVersion()
     }
+}
+
+export async function checkComfyUIVersion() {
+    try {
+        const ret = await runCommand('git rev-parse HEAD', (event) => { }, {
+            cwd: getComfyUIDir()
+        });
+        return ret.stdout;
+    } catch(err) {
+        console.log(err);
+    }
+    return ""
 }
 
 export async function checkIsSetupedConfig() {

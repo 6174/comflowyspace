@@ -11,6 +11,7 @@ export type EnvRequirements = {
     isBasicExtensionInstalled: boolean;
     isComfyUIStarted: boolean;
     isSetupedConfig: boolean;
+    comfyUIVersion: string;
 }
 
 type DashboardState = {

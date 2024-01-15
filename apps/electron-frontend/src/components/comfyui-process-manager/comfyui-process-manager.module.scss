@@ -1,10 +1,23 @@
 .comfyuiProcessManager {
   :global {
+    .title {
+      display: inline-block;
+      width: 250px;
+      .sub {
+        font-size: 11px;
+        opacity: .6;
+      }
+    }
     .ant-modal-body {
       overflow-y: hidden;
     }
     .actions {
       margin: 10px 0;
+      .info {
+        flex: 1;
+        font-size: 11px;
+        justify-content: flex-start;
+      }
     }
     .term {
       color: white;
