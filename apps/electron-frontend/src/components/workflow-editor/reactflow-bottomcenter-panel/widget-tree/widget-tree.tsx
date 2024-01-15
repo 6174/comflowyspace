@@ -16,7 +16,7 @@ export const WidgetTree = (props: {
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-    useEffect(() => {
+useEffect(() => {
         setSearchValue('');
     }, [props.id]);
     const handleSearch = (value) => {

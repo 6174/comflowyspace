@@ -37,47 +37,54 @@ function App() {
 
   const homeTab = tabs.find(tab => tab.name === "Home") || {} as any;
   const otherTabs = tabs.filter(tab => tab.name !== "Home");
+  const totalTabs = tabs.length;
   return (
     <div className="tabManager">
       <div className="drag-area"></div>
       <div className="tab-list">
-        <div className={`tab ${homeTab.id === active ? "active" : ""}`} key="home" onClick={() => {
+        <div className="tabs">
+          <div className={`tab ${homeTab.id === active ? "active" : ""} ${otherTabs[0]?.id === active ? "before-active" : ""}`} key="home" onClick={() => {
             onChangeTab(homeTab.id);
           }} style={{
             flex: 0
           }}>
             <div className="tab-inner">
               <div className="icon">
-                <HomeIcon/>
+                <HomeIcon />
               </div>
               <div className="title">
                 Home
               </div>
             </div>
-        </div>
-        {otherTabs.map(tab => {
-          return (
-            <div className={`tab ${tab.id === active ? "active" : ""}`} key={tab.id} onClick={() => {
-              onChangeTab(tab.id);
-            }}>
-              <div className="tab-inner">
-                <div className="icon">
-                  <DocIcon/>
-                </div>
-                <div className="title">
-                  {tab.name}
-                </div>
-                <div className="close">
-                  <div className="closeIcon" onClick={ev => {
-                    closeTab(tab.id);
-                  }}>
-                    <CloseIcon/>
+          </div>
+          {otherTabs.map((tab, index) => {
+            let afterIsActiveTab = false;
+            if (index < totalTabs - 1 && otherTabs[index + 1]?.id === active) {
+              afterIsActiveTab = true;
+            }
+            return (
+              <div className={`tab ${tab.id === active ? "active" : ""} ${afterIsActiveTab ? "before-active" : ""}`} key={tab.id} onClick={() => {
+                onChangeTab(tab.id);
+              }}>
+                <div className="tab-inner">
+                  <div className="icon">
+                    <DocIcon />
+                  </div>
+                  <div className="title">
+                    {tab.name}
+                  </div>
+                  <div className="close">
+                    <div className="closeIcon" onClick={ev => {
+                      closeTab(tab.id);
+                    }}>
+                      <CloseIcon />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
+        </div>
         <div className="blank"/>
         <div className="actions">
           <ComfyUIHelpButton/>

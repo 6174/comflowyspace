@@ -47,10 +47,31 @@ body, html {
   .tab-list {
     user-select: none;
     display: flex;
+    .tabs {
+      display: flex;
+      flex: 1;
+    }
     .tab {
       flex: 1;
       max-width: 130px;
-      padding: 0 6px;
+      padding: 0 8px 0 6px;
+      position: relative;
+      &::after {
+        content: "";
+        width: 2px;
+        height: 16px;
+        position: absolute;
+        right: 0px;
+        top: 5px;
+        background-color: #454758;
+        border-radius: 4px;
+      }
+
+      &:last-of-type, &.before-active, &.active{
+        &::after {
+          display: none;
+        }
+      }
       .tab-inner {
         display: flex;
         border-radius: 4px;
@@ -94,6 +115,7 @@ body, html {
           }
         }
       }
+
       &:hover {
         .tab-inner {
           background-color: var(--hover-bg);
