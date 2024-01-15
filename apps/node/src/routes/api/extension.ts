@@ -3,6 +3,7 @@ import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
+import { restartComfyUI } from 'src/modules/comfyui/bootstrap';
 
 /**
  * fetch all extensions
@@ -18,7 +19,9 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
             name: taskParams.name,
             params: taskParams.params,
             executor: async (dispatcher) => {
-                return  await installExtension(dispatcher, taskParams.params);
+                await installExtension(dispatcher, taskParams.params);
+                await restartComfyUI(dispatcher);
+                return true;
             }
         };
         taskQueue.addTask(task);

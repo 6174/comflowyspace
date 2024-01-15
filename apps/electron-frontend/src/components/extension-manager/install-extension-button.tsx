@@ -1,5 +1,5 @@
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
-import config, { getBackendUrl } from "@comflowy/common/config";
+import { getBackendUrl } from "@comflowy/common/config";
 import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { Button, message } from "antd";
 import { useCallback } from "react";
