@@ -18,11 +18,21 @@ export const WidgetTree = (props: {
     const [searchResult, setSearchResult] = useState([]);
     const handleSearch = (value) => {
         setSearchValue(value);
+        const searchWords = value.toLowerCase().split(' ');
         const findedWidgets = Object.keys(widgets).filter(
             (key) => {
                 const widget = widgets[key];
-                const search_string = `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`
-                return filter(widget) && search_string.toLowerCase().includes(value.toLowerCase());
+                const search_string = `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
+                if (!filter(widget)) {
+                    return false;
+                }
+                if (searchWords.every(word => search_string.includes(word))) {
+                    return true;
+                }
+                const maxMatch = maxMatchLength(value.toLowerCase(), search_string);
+                if (maxMatch >= 4) {
+                    return true;
+                }
             }
         );
         setSearchResult(findedWidgets.map(key => widgets[key]));
@@ -177,4 +187,17 @@ function SearchList({ items }: { items: Widget[] }) {
             })}
         </div>
     )
+}
+
+function maxMatchLength(searchTerm: string, sourceString: string): number {
+    let maxMatch = 0;
+    for (let i = 0; i < sourceString.length; i++) {
+        for (let j = i + 1; j <= sourceString.length; j++) {
+            const subStr = sourceString.slice(i, j);
+            if (searchTerm.includes(subStr) && subStr.length > maxMatch) {
+                maxMatch = subStr.length;
+            }
+        }
+    }
+    return maxMatch;
 }
