@@ -174,7 +174,7 @@
                     max-width: calc(100% - 40px);
                     border-color: #414356;
                     height: 30px;
-                    background-color: transparent;
+                    background-color: var(--node-bg-color);;
                     &-focused {
                         border-color: var(--primaryColor);
                     }
