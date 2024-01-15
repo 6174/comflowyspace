@@ -26,6 +26,17 @@ import upscaleThumbnail from "./thumbnails/upscale.png";
 import poseThumbnail from "./thumbnails/pose.png";
 import defaultThumbnail from "./thumbnails/default.png";
 import loraThumbnail from "./thumbnails/lora.png";
+import lcmLoraThumbnail from "./thumbnails/lcm-lora.png";
+import simpleImage2ImageThumbnail from "./thumbnails/simple-image2image.png";
+import unclipThumbnail from "./thumbnails/unclip.png";
+import styleModelThumbnail from "./thumbnails/style-model.png";
+import hiResUpscale from "./thumbnails/hi-res-upscale.png";
+import inpaintingThumbnail from "./thumbnails/inpainting.png";
+import outpaintingThumbnail from "./thumbnails/outpainting.png";
+import scribbleThumbnail from "./thumbnails/scribble.png";
+import cannyThumbnail from "./thumbnails/canny.png";
+import batchThumbnail from "./thumbnails/batch.png";
+import sdxlThumbnail from "./thumbnails/sdxl.png";
 
 import { ComfyUIWorkflow } from "@comflowy/common/comfui-interfaces/comfy-workflow";
 function getHardCodedTemplates(): Template[] {
@@ -43,65 +54,78 @@ function getHardCodedTemplates(): Template[] {
         },
         {
             name: "LCM LoRA workflow",
-            data: lcmLoraTemplate as unknown as ComfyUIWorkflow
+            data: lcmLoraTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: lcmLoraThumbnail.src
         },
         {
             name: "Simple img2img workflow",
-            data: img2imgTemplate as unknown as ComfyUIWorkflow
+            data: img2imgTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: simpleImage2ImageThumbnail.src
         },
         {
             name: "unCLIP model workflow",
-            data: unclipModelTemplate as unknown as ComfyUIWorkflow
+            data: unclipModelTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: unclipThumbnail.src
         },
         {
             name: "Style model workflow",
-            data: styleModelWorkflow as unknown as ComfyUIWorkflow
+            data: styleModelWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: styleModelThumbnail.src
         },
         {
             name: "Upscale pixel by algorithm workflow",
-            thumbnail: upscaleThumbnail.src,
-            data: upscalePixelByAlgorithmWorkflow as unknown as ComfyUIWorkflow
+            data: upscalePixelByAlgorithmWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: upscaleThumbnail.src
         },
         {
             name: "Upscale pixel by model workflow",
-            data: upscalePixelByModelWorkflow as unknown as ComfyUIWorkflow
+            data: upscalePixelByModelWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: upscaleThumbnail.src
         },
         {
             name: "Hi-res fix latent upscale workflow",
-            data: hiResFixLatentUpscaleWorkflow as unknown as ComfyUIWorkflow
+            data: hiResFixLatentUpscaleWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: hiResUpscale.src
         },
         {
             name: "Upscale pixel and hi-res fix latent workflow",
-            data: upscalePixelAndHiResFixLatentWorkflow as unknown as ComfyUIWorkflow
+            data: upscalePixelAndHiResFixLatentWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: hiResUpscale.src
         },
         {
             name: "Inpainting workflow",
-            data: inpaintingTemplate as unknown as ComfyUIWorkflow
+            data: inpaintingTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: inpaintingThumbnail.src
         },
         {
             name: "Outpainting workflow",
-            data: outpaintingTemplate as unknown as ComfyUIWorkflow
+            data: outpaintingTemplate as unknown as ComfyUIWorkflow,
+            thumbnail: outpaintingThumbnail.src
         },
         {
             name: "SDXL prompt styler workflow",
-            data: sdxlPromptStylerWorkflow as unknown as ComfyUIWorkflow
+            data: sdxlPromptStylerWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: sdxlThumbnail.src
         },
         {
             name: "Batch image workflow",
-            data: batchImageWorkflow as unknown as ComfyUIWorkflow
+            data: batchImageWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: batchThumbnail.src
         },
         {
             name: "Scribble ControlNet workflow",
-            data: scribbleControlNetWorkflow as unknown as ComfyUIWorkflow
+            data: scribbleControlNetWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: scribbleThumbnail.src
         },
         {
             name: "Pose ControlNet workflow",
+            data: poseControlNetWorkflow as unknown as ComfyUIWorkflow,
             thumbnail: poseThumbnail.src,
-            data: poseControlNetWorkflow as unknown as ComfyUIWorkflow
         },
         {
             name: "Canny ControlNet workflow",
-            data: cannyWorkflow as unknown as ComfyUIWorkflow
+            data: cannyWorkflow as unknown as ComfyUIWorkflow,
+            thumbnail: cannyThumbnail.src
         }
     ]
 }
