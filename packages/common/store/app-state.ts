@@ -97,8 +97,8 @@ export interface AppState {
   onConnectEnd: OnConnectEnd
   onEdgeUpdate: OnEdgeUpdateFunc;
   onEdgeUpdateStart: () => void;
-  onEdgeUpdateEnd: (ev: any, edge: Edge) => void;
-  onAddNode: (widget: Widget, pos: XYPosition) => void
+  onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => void;
+  onAddNode: (widget: Widget, pos: XYPosition) => PersistedWorkflowNode
   onDuplicateNodes: (ids: NodeId[]) => void
   onChangeSelectMode: (mode: SelectionMode) => void;
   onSelectNodes: (ids: string[]) => void;
@@ -395,7 +395,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ draggingAndResizing: value })
   },
   onConnect: (connection: FlowConnecton) => {
-    console.log("on connect");
+    console.log("on connect", connection);
     const [validate, message] = validateEdge(get(), connection);
     if (!validate) {
       console.log("validate failed", message);
@@ -431,7 +431,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     console.log("on Edge Update Start");
   },
   onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
-    console.log("on Edge Update");
+    console.log("on Edge Update", oldEdge, newConnection);
     const [validate, message] = validateEdge(get(), newConnection);
     if (!validate) {
       console.log("validate failed", message);
@@ -445,11 +445,11 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     onSyncFromYjsDoc();
   },
-  onEdgeUpdateEnd: (ev: any, edge: Edge) => {
-    console.log("on Edge Update End");
+  onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => {
+    console.log("on Edge Update End", edge);
   },
   onConnectStart: (ev, params: OnConnectStartParams) => {
-    console.log("on connect start");
+    console.log("on connect start", params);
     const st = get();
     if (!params.nodeId) {
       return;
@@ -509,7 +509,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   onAddNode: (widget: Widget, position: XYPosition) => {
     const node = SDNode.fromWidget(widget);
     const { doc, onSyncFromYjsDoc } = get();
-    WorkflowDocumentUtils.onNodesAdd(doc, [{
+    const persistNode = {
       id: createNodeId(),
       position,
       dimensions: {
@@ -517,8 +517,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         height: 80
       },
       value: node
-    }]);
+    }
+
+    WorkflowDocumentUtils.onNodesAdd(doc, [persistNode]);
     onSyncFromYjsDoc();
+    return persistNode
   },
   onDuplicateNodes: (ids) => {
     console.log("on duplicated nodes")

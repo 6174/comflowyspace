@@ -10,7 +10,7 @@ import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
-import { PersistedFullWorkflow, PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage';
+import { PersistedFullWorkflow, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
 import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
@@ -257,8 +257,13 @@ export default function WorkflowEditor() {
       })
     }
   }, [setWidgetTreeContext]);
+
+  const edgeUpdateSuccessful = React.useRef(true);
+  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
+  const edgeUpdating = React.useRef(false);
+
   const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
-    setWidgetTreeContext(null)
+    !edgeUpdating.current && setWidgetTreeContext(null)
   }, []);
 
 
@@ -286,12 +291,108 @@ export default function WorkflowEditor() {
         onEdgesChange={onEdgesChange}
         onNodesDelete={onDeleteNodes}
         onEdgesDelete={onEdgesDelete}
-        onEdgeUpdate={onEdgesUpdate}
-        onEdgeUpdateStart={onEdgeUpdateStart}
-        onEdgeUpdateEnd={onEdgeUpdateEnd}
+
+        onEdgeUpdateStart={() => {
+          edgeUpdateSuccessful.current = false;
+          edgeUpdating.current = true;
+          onEdgeUpdateStart();
+        }}
+        onEdgeUpdate={(oldEdge, newConnection) => {
+          edgeUpdateSuccessful.current = true;
+          onEdgesUpdate(oldEdge, newConnection);
+        }}
+        onEdgeUpdateEnd={(event: MouseEvent, edge) => {
+          onEdgeUpdateEnd(event, edge, edgeUpdateSuccessful.current);
+          if (!edgeUpdateSuccessful.current) {
+            onEdgesDelete([edge]);
+            const connectingParams = edgeConnectingParams.current;
+            if (connectingParams) {
+              try {
+                const node = nodes.find(node => {
+                  return node.id === connectingParams.nodeId;
+                });
+                const nodeWidget = node.data.widget;
+                let handleValueType = connectingParams.handleId;
+                if (connectingParams.handleType !== "source") { 
+                  const handleInput = nodeWidget.input.required[handleValueType.toLowerCase()];
+                  handleValueType = handleInput[0];
+                }
+                // If connection params handle type is source, then search from widget inputs by edge handle id
+                setWidgetTreeContext({
+                  position: {
+                    x: event.clientX,
+                    y: event.clientY
+                  },
+                  filter: (widget: Widget) => {
+                    if (connectingParams.handleType === "source") {
+                      // search from widget outputs 
+                      const inputs = Object.keys(widget.input.required);
+                      return inputs.some(inputKey => {
+                        const input = widget.input.required[inputKey];
+                        return input[0] === connectingParams.handleId;
+                      });
+                    } else {
+                      const output = (widget.output || []) as string[];
+                      if (output.indexOf(handleValueType) >= 0) {
+                        return true;
+                      }
+                    }
+                    return false;
+                  },
+                  showCategory: false,
+                  onNodeCreated: (node: PersistedWorkflowNode) => {
+                    const widget = widgets[node.value.widget];
+                    setWidgetTreeContext(null);
+                    try {
+                      if (connectingParams.handleType === "source") {
+                        const inputs = widget.input.required;
+                        const inputKey = Object.keys(inputs).find(inputKey => {
+                          const input = inputs[inputKey];
+                          return input[0] === connectingParams.handleId;
+                        });
+                        if (inputKey) {
+                          onConnect({
+                            source: connectingParams.nodeId,
+                            sourceHandle: connectingParams.handleId,
+                            target: node.id,
+                            targetHandle: inputKey.toUpperCase()
+                          })
+                        }
+                      } else {
+                        if (widget.output?.indexOf(handleValueType as any) >= 0) {
+                          onConnect({
+                            target: connectingParams.nodeId,
+                            targetHandle: connectingParams.handleId,
+                            source: node.id,
+                            sourceHandle: handleValueType
+                          })
+                        }
+                      }
+                    } catch(err) {
+                      console.log("auto connect error", err);
+                    }
+                  }
+                })
+              } catch(err) {
+                console.log("show create modal error", err);
+              }
+            }
+          }
+          setTimeout(() => {
+            edgeUpdating.current = false;
+          }, 100)
+        }}
         onConnect={onConnect}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
+        onConnectStart={(ev, params)=> {
+          edgeConnectingParams.current = params;
+          onConnectStart(ev, params); 
+        }}
+        onConnectEnd={(ev) => {
+          onConnectEnd(ev);
+          setTimeout(() => {
+            edgeConnectingParams.current = null;
+          }, 100)
+        }}
         onDrop={onDrop}
         onMoveStart={ev => {
           onTransformStart();

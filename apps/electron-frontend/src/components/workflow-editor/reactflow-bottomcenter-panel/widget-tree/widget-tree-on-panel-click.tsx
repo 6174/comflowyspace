@@ -3,12 +3,13 @@ import { XYPosition } from "reactflow";
 import styles from "./widget-tree.style.module.scss";
 import { WidgetTree } from "./widget-tree";
 import { useEffect, useState } from "react";
+import { PersistedWorkflowNode } from "@comflowy/common/storage";
 export interface WidgetTreeOnPanelContext {
   position: XYPosition,
   sourceConnection?: any,
   filter: (widget: Widget) => boolean,
   showCategory: boolean,
-  onNodeCreated?: () => void
+  onNodeCreated?: (node: PersistedWorkflowNode) => void
 }
 
 export const WidgetTreeOnPanel = (props: {
@@ -32,6 +33,7 @@ export const WidgetTreeOnPanel = (props: {
       <div className="ant-popover-inner">
         <WidgetTree 
           autoFocus={true}
+          draggable={false}
           position={{
             x: context.position.x + 20,
             y: context.position.y + 20
