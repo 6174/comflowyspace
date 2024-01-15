@@ -26,9 +26,11 @@ export function ImageWithDownload(props: ImageProps & {fileName: string}) {
       });
   };
 
+  const imageProps = {...props};
+  delete imageProps.fileName
   return (
     <Image 
-      {...props} 
+      {...imageProps} 
       preview={{
         toolbarRender: (
           _,
