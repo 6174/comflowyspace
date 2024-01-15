@@ -5,8 +5,9 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Button, Space, message } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
 import {DraggableModal} from "ui/antd/draggable-modal";
-import { listenElectron } from "@/lib/electron-bridge";
+import { listenElectron, openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
+import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -137,10 +138,16 @@ const ComfyUIProcessManager = () => {
     }
   }, [])
 
+  const env = useDashboardState(state => state.env);
+  const $title = (
+    <div className="title">
+      <div>ComfyUI Process Manager</div>
+    </div>
+  )
   return (
     <div>
       <DraggableModal
-        title="ComfyUI Process Manager"
+        title={$title}
         footer={null}
         className={styles.comfyuiProcessManager}
         onCancel={handleCancel}
@@ -155,7 +162,15 @@ const ComfyUIProcessManager = () => {
             )
           })} */}
         </div>
-        <div className="actions">
+        <div className="actions flex">
+          <div className="info">
+            <Space>
+              <span>ComfyUI@<a onClick={(ev) => {
+                openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
+              }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
+              <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
+            </Space>
+          </div>
           <Space>
             <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
             <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
