@@ -39,7 +39,10 @@ export const WIDGET_ICONS = {
   KSampler: SamplerIcon,
   EmptyLatentImage: ImageIcon,
   VAEDecode: VaeIcon,
-  SaveImage: ImageIcon
+  SaveImage: ImageIcon,
+  LoadImage: ImageIcon,
+  VAEEncode: VaeIcon,
+  PreviewImage: ImageIcon
 }
 
 export function getWidgetIcon(widget: Widget) {
