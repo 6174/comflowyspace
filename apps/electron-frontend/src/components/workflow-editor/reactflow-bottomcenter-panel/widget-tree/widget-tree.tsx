@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
-import { Widget } from '@comflowy/common/comfui-interfaces';
+import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon } from 'ui/icons';
 import { XYPosition } from 'reactflow';
+import { PersistedWorkflowNode } from '@comflowy/common/storage';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -12,7 +13,8 @@ export const WidgetTree = (props: {
     filter?: (widget: Widget) => boolean;
     position?: XYPosition;
     autoFocus?: boolean;
-    onNodeCreated?: () => void
+    draggable?: boolean;
+    onNodeCreated?: (node: PersistedWorkflowNode) => void
 }) => {
     const showCategory = props.showCategory;
     const filter = props.filter || ((w: Widget) => true);
@@ -113,6 +115,7 @@ export const WidgetTree = (props: {
                                 {item.items.map((widget) => {
                                     return (
                                         <WidgetNode 
+                                            draggable={props.draggable}
                                             widget={widget} 
                                             key={widget.name} 
                                             position={props.position}
@@ -148,6 +151,7 @@ export const WidgetTree = (props: {
                             return (
                                 <div className='search-result-item' key={item.name + index}>
                                     <WidgetNode
+                                        draggable={props.draggable}
                                         widget={item} 
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
@@ -166,10 +170,11 @@ export const WidgetTree = (props: {
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
  **/
-function WidgetNode({ widget, onNodeCreated, position }: { 
+function WidgetNode({ widget, onNodeCreated, position, draggable }: { 
     widget: Widget,
+    draggable?: boolean,
     position?: XYPosition,
-    onNodeCreated?: () => void  
+    onNodeCreated?: (node: PersistedWorkflowNode) => void  
 }) {
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         const widgetInfo = JSON.stringify(widget);
@@ -186,18 +191,18 @@ function WidgetNode({ widget, onNodeCreated, position }: {
             x: rect.left + rect.width + 40,
             y: ev.clientY - 100
         });
-        await onAddNode(widget, pos);
-        onNodeCreated?.();
+        const node = onAddNode(widget, pos);
+        onNodeCreated?.(node);
     }, [widget, ref]);
 
     return (
-        <div className='widget-node action dndnode'
-            draggable
+        <div className={`widget-node action ${draggable ? "dndnode" : ""}`}
+            draggable={draggable}
             ref={ref}
             onClick={ev => {
                 createNewNode(ev);
             }}
-            onDragStart={onDragStart}
+            onDragStart={draggable ? onDragStart : null}
             title={widget.name}>
             <div className="display-name">{widget.display_name}</div>
             <div className='class_name'>

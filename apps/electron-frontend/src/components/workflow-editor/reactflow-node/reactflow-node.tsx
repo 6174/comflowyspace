@@ -312,13 +312,12 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
 
   let transformFactor = 1;
   const [hover, setHover] = useState(false);
-  if (hover) {
+  if (hover && !isConnecting) {
     transformFactor = Math.max(1, (1 / transform)) * 2.2;
   }
 
   if (isValidConnection && isConnecting && connectingMe) {
-    transformFactor = Math.max(1, (1 / transform)) * 4;
-    console.log(transformFactor);
+    transformFactor = Math.max(1, (1 / transform)) * 2.8;
   };
 
 
