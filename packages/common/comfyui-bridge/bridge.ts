@@ -183,12 +183,27 @@ export async function getHistory(): Promise<History> {
 }
 
 export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse> {
-  const resp = await fetch(getComfyUIBackendUrl('/prompt'), {
-    method: 'POST',
-    body: JSON.stringify(prompt),
-  })
-  const error = resp.status !== 200 ? await resp.json() : undefined
-  return { error }
+  try {
+    const resp = await fetch(getComfyUIBackendUrl('/prompt'), {
+      method: 'POST',
+      body: JSON.stringify(prompt),
+    })
+    if (resp.status === 500) {
+      throw new Error(await resp.text());
+    }
+    const error = resp.status !== 200 ? await resp.json() : undefined
+    return { error }
+  } catch(err: any) {
+    return { 
+      error: { 
+        error : {
+          type: "server error",
+          message: err.message,
+        },
+        node_errors: {}
+      },
+    }
+  }
 }
 
 export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
@@ -197,7 +212,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const widget = widgets[node.value.widget];
-    if (!widget) {
+    if (!widget || widget.name === "Note" || widget.name === "Group") {
       continue
     }
 
