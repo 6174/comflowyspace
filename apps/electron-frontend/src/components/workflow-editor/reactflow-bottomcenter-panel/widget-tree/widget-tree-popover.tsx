@@ -16,7 +16,7 @@ export const WidgetPopover = (props: {
     return (
         <Popover
             title={null}
-            content={<WidgetTree id={id} filter={props.filter} showCategory={props.showCategory} />}
+            content={<WidgetTree autoFocus={true} id={id} filter={props.filter} showCategory={props.showCategory} />}
             trigger="click"
             arrow={false}
             align={{ offset: [0, -26] }}

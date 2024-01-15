@@ -119,3 +119,13 @@
         }
     }
 }
+
+.widgetTreeOnPanel {
+    position: fixed;
+    bottom: 0;
+    :global {
+        .ant-popover-inner {            
+            padding: 10px;
+        }
+    }
+}

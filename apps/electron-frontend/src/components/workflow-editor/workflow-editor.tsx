@@ -17,6 +17,7 @@ import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
 import { ReactflowExtensionController } from '@/lib/extensions/extensions.controller';
+import { WidgetTreeOnPanel, WidgetTreeOnPanelContext } from './reactflow-bottomcenter-panel/widget-tree/widget-tree-on-panel-click';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeContainer,
@@ -125,6 +126,7 @@ export default function WorkflowEditor() {
         y: event.clientY,
       });
       await onAddNode(widgetInfo, position);
+      setWidgetTreeContext(null);
     },
     [reactFlowInstance, widgets],
   );
@@ -168,8 +170,10 @@ export default function WorkflowEditor() {
     selectionMode: SelectionMode.Partial
   }  : {};
 
+  /**
+   * Keyboard Event handler 
+   */
   const storeApi = useStoreApi();
-
   const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
     const metaKey = ev.metaKey;
     switch (ev.code) {
@@ -195,7 +199,6 @@ export default function WorkflowEditor() {
     }
 
     function redo() {
-      console.log("redo");
       const redo = useAppStore.getState().redo;
       redo();
     }
@@ -234,6 +237,31 @@ export default function WorkflowEditor() {
   }, [ref])
 
 
+  /**
+   * On double click panel to show the widget tree
+   */
+  const [widgetTreeContext, setWidgetTreeContext] = React.useState<WidgetTreeOnPanelContext>();
+  const onPanelDoubleClick = React.useCallback((ev: React.MouseEvent) => {
+    const target = ev.target as HTMLElement;
+    if (target.classList.contains("react-flow__pane")) {
+      setWidgetTreeContext({
+        position: {
+          x: ev.clientX,
+          y: ev.clientY
+        },
+        filter: (widget) => true,
+        showCategory: true,
+        onNodeCreated: () => {
+          setWidgetTreeContext(null);
+        }
+      })
+    }
+  }, [setWidgetTreeContext]);
+  const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
+    setWidgetTreeContext(null)
+  }, []);
+
+
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
@@ -251,6 +279,9 @@ export default function WorkflowEditor() {
         nodeTypes={nodeTypes}
         deleteKeyCode={['Delete', 'Backspace']}
         disableKeyboardA11y={true}
+        zoomOnDoubleClick={false}
+        onDoubleClick={onPanelDoubleClick}
+        onClick={onPanelClick}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodesDelete={onDeleteNodes}
@@ -301,6 +332,7 @@ export default function WorkflowEditor() {
       </ReactFlow>
       <AsyncComfyUIProcessManager/>
       <ReactflowExtensionController/>
+      { widgetTreeContext && <WidgetTreeOnPanel context={widgetTreeContext}/>}
     </div>
   )
 }
