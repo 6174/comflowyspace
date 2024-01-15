@@ -88,10 +88,7 @@ export function InputUploadImage({widget, id}: {
                 justifyContent: "center",
                 marginTop: 10
             }}>
-                {previewImage && <img src={previewImage} style={{
-                    maxWidth: 240,
-                    maxHeight: 240,
-                }}/>}
+                {previewImage && <img src={previewImage}/>}
             </div>
         </div>
     )

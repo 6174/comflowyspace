@@ -39,6 +39,10 @@
     }
 
     :global {
+        .node-inner {
+            height: 100%;
+            overflow-y: hidden;
+        }
         .connectionindicator {
             transform-origin: 50% 80%;
             transition: var(--transition);
@@ -82,8 +86,6 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            top: 4px;
-            left: 4px;
             &:hover {
                 background-color: var(--backgroundColorL2);
             }
@@ -195,11 +197,22 @@
                 }
             }
 
-
-            .ant-upload-wrapper, .ant-upload {
-                width: 100%;
-                display: block;
+            .upload-image-wrapper {
+                height: 200px;
+                .ant-upload-wrapper, .ant-upload {
+                    width: 100%;
+                    display: block;
+                    .ant-btn {
+                        border-color: #414356;
+                    }
+                }
+                .image-preview img {
+                   border-radius: 4px; 
+                   width: 100%;
+                   display: inline-block;
+                }
             }
+
 
             .switch-wrapper {
                 display: flex;

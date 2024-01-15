@@ -158,7 +158,7 @@ export const NodeComponent = memo(({
   }, [imagePreviews])
 
   const resizeIcon = (
-    <div className="resize-icon">
+    <div className="resize-icon nodrag">
       <ResizeIcon/>
     </div>
   )
@@ -198,7 +198,7 @@ export const NodeComponent = memo(({
       </NodeResizeControl>
 
       {!invisible ? (
-        <>
+        <div className='node-inner'>
           <div className="node-header">
             <h2 className="node-title">
               {getWidgetIcon(widget)} {nodeTitle} <NodeError nodeError={nodeError}/>
@@ -262,7 +262,7 @@ export const NodeComponent = memo(({
               }
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <>
           <div className="node-header"></div>
@@ -291,8 +291,6 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   const isConnecting = useAppStore(st => st.isConnecting);
   const connectingParams = useAppStore(st => st.connectingStartParams);
   const transform = useAppStore(st => st.transform);
-  const transforming = useAppStore(st => st.transforming);
-
   const [connectingMe, setConnectingMe] = useState(false);
   const isValidConnection = useCallback((connection: Connection) => {
     const st = useAppStore.getState();
