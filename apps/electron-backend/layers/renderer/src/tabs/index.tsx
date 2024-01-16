@@ -9,7 +9,7 @@ import {ComfyUIStatusButton} from "./comfyui-status-button";
 import { ComfyUIHelpButton } from './comfyui-help-button';
 
 function App() {
-  const {active, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
+  const {active, fullscreen, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
   const [items, setItems] = useState([]);
 
   console.log("tabs", tabs, active);
@@ -39,7 +39,7 @@ function App() {
   const otherTabs = tabs.filter(tab => tab.name !== "Home");
   const totalTabs = tabs.length;
   return (
-    <div className="tabManager">
+    <div className={`tabManager ${fullscreen ? "fullscreen" : ""}`}>
       <div className="drag-area"></div>
       <div className="tab-list">
         <div className="tabs">

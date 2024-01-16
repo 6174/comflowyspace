@@ -2,6 +2,7 @@ export interface ComfyElectronApi {
   name: string;
   version: number;
   openURL: (url: string) => Promise<any>;
+  receiveFromMain: (channel: string, func: any) => () => void;
   windowTabManager: {
     onWindowTabsChange: (
       callback: (tabsData: {
