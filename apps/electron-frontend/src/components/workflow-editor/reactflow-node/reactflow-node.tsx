@@ -246,6 +246,7 @@ export const NodeComponent = memo(({
 
           <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
             <div className="inner">
+              <Image.PreviewGroup>
               {
                 imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
@@ -259,6 +260,7 @@ export const NodeComponent = memo(({
                   )
                 })
               }
+              </Image.PreviewGroup>
             </div>
           </div>
         </div>

@@ -184,7 +184,7 @@
     .ant-image-preview-operations {
         background-color: var(--backgroundColorL1) !important;
     }
-    .ant-image-preview-close {
+    .ant-image-preview-close, .ant-image-preview-switch-right, .ant-image-preview-switch-left {
         background-color: var(--backgroundColorL1);
         &:hover {
             background-color: var(--actionHoverColor);
