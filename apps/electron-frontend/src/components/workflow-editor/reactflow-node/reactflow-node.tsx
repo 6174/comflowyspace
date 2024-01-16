@@ -248,7 +248,7 @@ export const NodeComponent = memo(({
             <div className="inner">
               <Image.PreviewGroup>
               {
-                imagePreviews && imagePreviews.reverse().map((image, index) => {
+                imagePreviews && imagePreviews.map((image, index) => {
                   const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
                   return (
                     <ImageWithDownload
