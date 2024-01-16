@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { Button, message, Upload } from 'antd';
+import { Button, message, Upload , Image} from 'antd';
 import { Widget } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import ImgCrop from 'antd-img-crop';
+import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 const { Dragger } = Upload;
 
 
@@ -88,7 +89,7 @@ export function InputUploadImage({widget, id}: {
                 justifyContent: "center",
                 marginTop: 10
             }}>
-                {previewImage && <img src={previewImage}/>}
+                {previewImage && <ImageWithDownload src={previewImage} fileName={'image'}/>}
             </div>
         </div>
     )
