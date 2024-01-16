@@ -113,21 +113,25 @@ export default function WorkflowEditor() {
   const onDrop = React.useCallback(
     async (event) => {
       event.preventDefault();
-      const rawWidgetInfo = event.dataTransfer.getData('application/reactflow');
-      const widgetInfo = JSON.parse(rawWidgetInfo) as Widget;
-      const widgetType = widgetInfo.name;
-      if (typeof widgetType === 'undefined' || !widgetType) {
-        return;
+      try {
+        const rawWidgetInfo = event.dataTransfer.getData('application/reactflow');
+        const widgetInfo = JSON.parse(rawWidgetInfo) as Widget;
+        const widgetType = widgetInfo.name;
+        if (typeof widgetType === 'undefined' || !widgetType) {
+          return;
+        }
+        // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+        // and you don't need to subtract the reactFlowBounds.left/top anymore
+        // details: https://reactflow.dev/whats-new/2023-11-10
+        const position = reactFlowInstance.screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        await onAddNode(widgetInfo, position);
+        setWidgetTreeContext(null);
+      } catch(err) {
+        console.log("drop error", err);
       }
-      // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
-      // and you don't need to subtract the reactFlowBounds.left/top anymore
-      // details: https://reactflow.dev/whats-new/2023-11-10
-      const position = reactFlowInstance.screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-      await onAddNode(widgetInfo, position);
-      setWidgetTreeContext(null);
     },
     [reactFlowInstance, widgets],
   );
