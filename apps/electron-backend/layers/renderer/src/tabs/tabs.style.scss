@@ -33,7 +33,9 @@ body, html {
   margin-top: 6px;
   height: 24px;
   overflow: hidden;
-
+  &.fullscreen {
+    margin-left: 10px;
+  }
   .drag-area {
     -webkit-app-region: drag;
     /* 指定拖动区域 */
@@ -49,7 +51,7 @@ body, html {
     display: flex;
     .tabs {
       display: flex;
-      flex: 1;
+      flex: 0;
     }
     .tab {
       flex: 1;

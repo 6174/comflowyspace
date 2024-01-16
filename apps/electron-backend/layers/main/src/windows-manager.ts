@@ -86,6 +86,13 @@ class WindowManager {
       this.listWindow = [];
     })
 
+    window.on("enter-full-screen", () => {
+      this.mainWindow.webContents.send("enter-full-screen");
+    });
+    window.on("leave-full-screen", () => {
+      this.mainWindow.webContents.send("leave-full-screen");
+    });
+
     window.loadFile(path.resolve(__dirname, "../../renderer/dist/tabs.html"));
     await setTimeout(1000);
     closeLoadingScreen();
