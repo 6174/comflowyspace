@@ -655,7 +655,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         last_edit_time,
         gallery: [
           ...st.persistedWorkflow?.gallery || [],
-          ...images || []
+          ...images.reverse() || []
         ].reverse()
       },
       graph: {
@@ -674,7 +674,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       last_edit_time,
       gallery: [
         ...st.persistedWorkflow?.gallery || [],
-        ...images || []
+        ...images.reverse() || []
       ].reverse(),
       snapshot: workflow
     });
