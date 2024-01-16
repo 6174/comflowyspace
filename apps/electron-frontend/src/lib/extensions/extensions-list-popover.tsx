@@ -5,6 +5,11 @@ import styles from "./extension.style.module.scss";
 export const ExtensionListPopover = (props: {
   children: any;
 }) => {
+  const extensions = useExtensionsState((st) => st.extensions);
+  const uiExtensions = extensions.filter(ext => !!ext.ui);
+  if (uiExtensions.length === 1) {
+    return null;
+  }
   return (
     <Popover
       title={null}
@@ -23,7 +28,6 @@ export const ExtensionListPopover = (props: {
 function ExtensionList() {
   const extensions = useExtensionsState((st) => st.extensions);
   const uiExtensions = extensions.filter(ext => !!ext.ui);
-
   return (
     <>
       <h3>Extension List</h3>

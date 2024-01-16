@@ -85,13 +85,13 @@ function ReactflowBottomCenterPanel() {
                     </WidgetPopover>
                 </div>
                 <div className="spliter"></div>
-                <div className="action action-open-extension">
-                    <ExtensionListPopover>
+                <ExtensionListPopover>
+                    <div className="action action-open-extension">
                         <Space style={{transform: "scale(1.2)"}}>
                             <ExtensionIcon/>
                         </Space>
-                    </ExtensionListPopover>
-                </div>
+                    </div>
+                </ExtensionListPopover>
                 <div className="action action-Run" onClick={async ev => {
                     const ret = await onSubmit();
                     if (ret.error) {
