@@ -184,6 +184,12 @@
     .ant-image-preview-operations {
         background-color: var(--backgroundColorL1) !important;
     }
+    .ant-image-preview-close {
+        background-color: var(--backgroundColorL1);
+        &:hover {
+            background-color: var(--actionHoverColor);
+        }
+    }
 }
 
 .actions {
