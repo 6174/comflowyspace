@@ -18,16 +18,18 @@ const Gallery = () => {
         </div>
       )}
       <div className={styles.imageGallery}>
-        {images.map((image, index) => {
-          const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-          return (
-            <ImageWithDownload
-              fileName={image.filename}
-              key={imageSrc + index}
-              src={imageSrc}
-            />
-          )
-        })}
+        <Image.PreviewGroup>
+          {images.map((image, index) => {
+            const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+            return (
+              <ImageWithDownload
+                fileName={image.filename}
+                key={imageSrc + index}
+                src={imageSrc}
+              />
+            )
+          })}
+        </Image.PreviewGroup>
       </div>
     </div>
   );
