@@ -268,7 +268,11 @@ export default function WorkflowEditor() {
     !edgeUpdating.current && setWidgetTreeContext(null)
   }, []);
 
-
+  React.useEffect(() => {
+    document.oncontextmenu = function () {
+      return false;
+    }
+  }, []);
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
