@@ -129,8 +129,12 @@ export const Input = {
       return '#6F62FA'
     }
     // BLUE
-    if (Input.isLatent(i) || Input.isImage(i)) {
+    if (Input.isLatent(i)) {
       return '#7BD77A'
+    }
+
+    if (Input.isImage(i)) {
+      return '#F762FA'
     }
 
     if (Input.isVae(i)) {
