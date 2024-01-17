@@ -1,5 +1,15 @@
 ![banner (4) (2)](https://github.com/6174/comflowyspace/assets/37492595/11a0c72a-4f54-483a-b9e4-33c3d600fbb2)
 
+<h4>
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/6174/comflowyspace">
+    <a href="https://github.com/6174/comflowyspace/releases">
+        <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/6174/comflowyspace/latest/total">
+    </a>
+    <a href="https://discord.gg/cj623WvcVx">
+        <img src="https://dcbadge.vercel.app/api/server/cj623WvcVx?style=flat" />
+    </a>
+</h4>
+
 > The product is currently under development, and everyone is welcome to join our [Discord](https://discord.gg/cj623WvcVx) to learn about the latest product progress.
 
 Comflowyspace is an open-source AI imagery and video generation tool committed to providing a better, 
