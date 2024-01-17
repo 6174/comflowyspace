@@ -49,6 +49,7 @@ import exifr from 'exifr'
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
+import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
@@ -647,7 +648,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onImageSave: (id, images) => {
     const last_edit_time = +new Date();
-
     // sync to state
     set((st) => ({
       persistedWorkflow: {
@@ -666,6 +666,13 @@ export const useAppStore = create<AppState>((set, get) => ({
 
     // sync to storage
     const st = get();
+    st.editorEvent.emit({
+      type: ComfyUIEvents.ImageSave,
+      data: {
+        id,
+        images
+      }
+    });
     WorkflowDocumentUtils.onImageSave(get().doc, id, images);
     const workflowMap = st.doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
