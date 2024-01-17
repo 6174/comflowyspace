@@ -10,6 +10,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background-size: 1229px 544px;
+  background-repeat: no-repeat;
+  background-position: center;
   :global {
       .ant-alert-message {
         font-size: 12px;
