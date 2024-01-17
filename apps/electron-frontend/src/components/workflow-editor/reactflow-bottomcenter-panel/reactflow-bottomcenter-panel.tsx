@@ -32,7 +32,6 @@ function ReactflowBottomCenterPanel() {
                     <WidgetPopover showCategory={false} filter={(widget: Widget) => {
                         const name = (widget.category + " " + widget.name + " " + widget.display_name).toLowerCase();
                         if (name.indexOf("checkpoint") >= 0 || name.indexOf("model") >= 0) {
-                            console.log(name);
                             return true;
                         }
                         return false;
@@ -46,7 +45,6 @@ function ReactflowBottomCenterPanel() {
                     <WidgetPopover showCategory={false} filter={(widget: Widget) => {
                         const name = (widget.category + " " + widget.name + " " + widget.display_name).toLowerCase();
                         if (name.indexOf("text") >= 0 || name.indexOf("clip") >= 0) {
-                            console.log(name);
                             return true;
                         }
                         return false;
@@ -60,7 +58,6 @@ function ReactflowBottomCenterPanel() {
                     <WidgetPopover showCategory={false} filter={(widget: Widget) => {
                         const name = (widget.category + " " + widget.name + " " + widget.display_name).toLowerCase();
                         if (name.indexOf("sampler") >= 0) {
-                            console.log(name);
                             return true;
                         }
                         return false;
@@ -74,7 +71,6 @@ function ReactflowBottomCenterPanel() {
                     <WidgetPopover showCategory={false} filter={(widget: Widget) => {
                         const name = (widget.category + " " + widget.name + " " + widget.display_name).toLowerCase();
                         if (name.indexOf("image") >= 0 || name.indexOf("latent") >= 0) {
-                            console.log(name);
                             return true;
                         }
                         return false;
