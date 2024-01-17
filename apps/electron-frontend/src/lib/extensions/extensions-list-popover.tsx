@@ -7,7 +7,7 @@ export const ExtensionListPopover = (props: {
 }) => {
   const extensions = useExtensionsState((st) => st.extensions);
   const uiExtensions = extensions.filter(ext => !!ext.ui);
-  if (uiExtensions.length === 1) {
+  if (uiExtensions.length === 0) {
     return null;
   }
   return (

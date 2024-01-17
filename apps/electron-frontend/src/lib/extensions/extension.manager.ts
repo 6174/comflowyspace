@@ -77,7 +77,7 @@ export class ExtensionManager {
    * @param data 
    */
   async handleRpcCall(data: any) {
-    const { callID, method, args } = data;
+    const { callID, method, args = [] } = data;
     try {
       const result = await this.apis[method](...args);
       this.worker?.postMessage({
@@ -88,6 +88,7 @@ export class ExtensionManager {
         }
       })
     } catch (err) {
+      // console.log("[main] handleRpcCall error", err)
       this.worker?.postMessage({
         type: ExtensionEventTypes.rpcCallError,
         data: {

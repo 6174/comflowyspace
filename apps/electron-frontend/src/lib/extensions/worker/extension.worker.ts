@@ -92,7 +92,7 @@ function extesionMainTemplate(extension: ExtensionManifest, content: string) {
     editor: {
       onmessage: () => {},
       getNodes: async () => {
-        await self.__comflowy__.createRpcCall("getNodes");
+        return await self.__comflowy__.createRpcCall("getNodes");
       }
     },
   };
