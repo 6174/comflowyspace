@@ -31,7 +31,7 @@ class ExtensionWorkerApi {
    */
   async createRpcCall<T = any>(method: string, args?: any[]): Promise<T> {
     const callID = uuid();
-    postMessage({ type: ExtensionEventTypes.rpcCall, data: {
+    self.postMessage({ type: ExtensionEventTypes.rpcCall, data: {
       callID,
       method,
       args
@@ -40,19 +40,20 @@ class ExtensionWorkerApi {
     return new Promise((resolve, reject) => {
       let disposable;
       const listener = (event: ExtensionManagerEvent) => {
-        const { type, data } = event.data;
+        const { type, data } = event;
+        // console.log("[worker] rpc call result", type, data);
         if (type === ExtensionEventTypes.rpcCallResult && data.callID === callID) {
-          resolve(data as T);
+          resolve(data.result as T);
           disposable.dispose();
         }
         if (type === ExtensionEventTypes.rpcCallError && data.callID === callID) {
-          reject(data as T);
+          reject(data.error);
           disposable.dispose();
         }
       }
       disposable = workerEvent.onMessageEvent.on(listener)
       setTimeout(() => {
-        reject(new Error("timeout"));
+        reject(new Error("Timeout：" + method ));
       }, 10000)
     });
   }
