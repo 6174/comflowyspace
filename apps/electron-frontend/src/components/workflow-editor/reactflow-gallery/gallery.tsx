@@ -5,11 +5,17 @@ import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import styles from "./gallery.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
 import { GalleryIcon } from 'ui/icons';
-import { ImageWithDownload } from './image-with-download';
+import { ImageWithDownload, PreviewGroupWithDownload } from './image-with-download';
 
 const Gallery = () => {
   let images = useAppStore(st => st.persistedWorkflow.gallery || []);
-
+  const imagesWithSrc = images.map(image => {
+    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+    return {
+      src: imageSrc,
+      filename: image.filename
+    }
+  });
   return (
     <div className={styles.galleryWrapper} style={{minHeight: 200}}>
       {images.length === 0 && (
@@ -18,18 +24,16 @@ const Gallery = () => {
         </div>
       )}
       <div className={styles.imageGallery}>
-        <Image.PreviewGroup>
-          {images.map((image, index) => {
-            const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+        <PreviewGroupWithDownload images={imagesWithSrc}>
+          {imagesWithSrc.map((image, index) => {
             return (
-              <ImageWithDownload
-                fileName={image.filename}
-                key={imageSrc + index}
-                src={imageSrc}
+              <Image
+                key={image.src + index}
+                src={image.src}
               />
             )
           })}
-        </Image.PreviewGroup>
+        </PreviewGroupWithDownload>
       </div>
     </div>
   );
