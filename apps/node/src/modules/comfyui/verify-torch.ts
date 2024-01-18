@@ -3,6 +3,7 @@ import { PYTHON_PATH, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import path from "path";
 import * as fsExtra from "fs-extra";
+import logger from "../utils/logger";
 
 const macPythonCode = `
 import torch
@@ -35,7 +36,7 @@ export async function verifyIsTorchInstalled(): Promise<boolean> {
 
         // 检查执行结果是否符合预期
         if (stdout.trim() === expectedOutput) {
-            console.log('Torch installation verification successful.');
+            logger.info('Torch installation verification successful.');
             return true;
         } else {
             console.error('Torch installation verification failed. Unexpected output.');

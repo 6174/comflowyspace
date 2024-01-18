@@ -39,6 +39,7 @@
     "typescript": "^5.3.2",
     "unzipper": "^0.10.14",
     "uuid": "9.0.1",
+    "winston": "^3.11.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {

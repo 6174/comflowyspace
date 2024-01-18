@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import simpleGit from 'simple-git';
 import { Extension, getExtensionDir } from './types';
+import logger from '../utils/logger';
 
 
 const js_path = '/path/to/js'; // Change this to your JS path
@@ -84,11 +85,11 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
 
 export async function checkExtensionsInstalled(extensions: Extension[], doFetch = true, doUpdateCheck = true, doUpdate = false): Promise<void> {
     if (doFetch) {
-        console.log('Start fetching...');
+        logger.verbose('Start fetching...');
     } else if (doUpdate) {
-        console.log('Start updating...');
+        logger.verbose('Start updating...');
     } else if (doUpdateCheck) {
-        console.log('Start update check...');
+        logger.verbose('Start update check...');
     }
 
     async function processExtension(item: Extension): Promise<void> {
@@ -98,16 +99,16 @@ export async function checkExtensionsInstalled(extensions: Extension[], doFetch 
     await Promise.all(extensions.map(processExtension));
 
     if (doFetch) {
-        console.log('\x1b[2K\rFetching done.');
+        logger.verbose('\x1b[2K\rFetching done.');
     } else if (doUpdate) {
         const updateExists = extensions.some((item) => item.need_update);
         if (updateExists) {
-            console.log('\x1b[2K\rUpdate done.');
+            logger.verbose('\x1b[2K\rUpdate done.');
         } else {
-            console.log('\x1b[2K\rAll extensions are already up-to-date.');
+            logger.verbose('\x1b[2K\rAll extensions are already up-to-date.');
         }
     } else if (doUpdateCheck) {
-        console.log('\x1b[2K\rUpdate check done.');
+        logger.verbose('\x1b[2K\rUpdate check done.');
     }
 }
 

@@ -2,6 +2,7 @@ import { uuid } from "@comflowy/common";
 import { getExtensionDir } from "./types";
 import * as fsExtra from 'fs-extra';
 import path from 'path';
+import logger from "../utils/logger";
 
 /**
  * Find all frontend extensions
@@ -37,7 +38,7 @@ export async function findAllFrontendExtensions<T = any>(): Promise<T[]> {
     }
     return extensions;
   } catch (err: any) {
-    console.log("findAllFrontendExtensions:", err);
+    logger.info("findAllFrontendExtensions:", err);
     return [];
   }
 }

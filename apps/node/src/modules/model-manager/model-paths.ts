@@ -4,6 +4,7 @@ import { FolderPaths, MarketModel, ModelExt, ModelType } from './types';
 import * as fsExtra from "fs-extra";
 import yaml from 'js-yaml';
 import { uuid } from '@comflowy/common';
+import logger from '../utils/logger';
 export const supported_pt_extensions: ModelExt[] = ['.ckpt', '.pt', '.bin', '.pth', '.safetensors'];
 
 export function getFolderNamesAndPaths() {
@@ -102,13 +103,13 @@ export function parseExtraModelConfig(extraModelConfigFilePath: string, callback
           if (basePath !== null) {
             fullPath = path.join(basePath, fullPath);
           }
-          console.log("Adding extra search path", x, fullPath);
+          logger.info("Adding extra search path", x, fullPath);
           callback(x, fullPath); // Uncomment this line when the function is available
         }
       }
     }
   } catch (err) {
-    console.log("parse extra model config error", err);
+    logger.info("parse extra model config error", err);
   }
 }
 

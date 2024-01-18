@@ -6,6 +6,7 @@ import { uuid } from '@comflowy/common';
 import { SlotEvent } from '@comflowy/common/utils/slot-event';
 import { JSONCollectionMeta, JSONDBEvent, type JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
 import { serve } from './jsondb.service';
+import logger from '../utils/logger';
 
 export class JSONDB<DocType extends JSONDocMeta> {
   static DB_PATH: string = "";
@@ -92,7 +93,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
       }
       await this.metaDb.write();
     } catch(err) {
-      console.log("db iit error", err);
+      logger.info("db iit error", err);
     }
   }
 
@@ -159,7 +160,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
       });
       return newDoc;
     } catch(err: any) {
-      console.log("new doc error:", err);
+      logger.info("new doc error:", err);
       throw new Error("New doc error " + err.message);
     }
   }

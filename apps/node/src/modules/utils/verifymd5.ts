@@ -11,5 +11,5 @@ export async function verifyFileMd5(filePath: string, expectedMd5: string): Prom
         return false;
     }
     return true;
-    // console.log(`MD5 verification successful for ${path.basename(filePath)}`);
+    // logger.info(`MD5 verification successful for ${path.basename(filePath)}`);
 }
