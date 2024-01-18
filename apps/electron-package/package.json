@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@electron-forge/maker-dmg": "^7.2.0",
+    "@electron/osx-sign": "^1.0.5",
     "node-pty": "^1.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
+    "@electron/notarize": "^2.2.0",
     "cli-truncate": "^4.0.0",
     "cross-env": "7.0.3",
     "dts-for-context-bridge": "0.7.1",
