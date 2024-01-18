@@ -56,7 +56,7 @@ export async function checkComfyUIVersion() {
         });
         return ret.stdout;
     } catch(err) {
-        console.log(err);
+        logger.info(err);
     }
     return ""
 }
@@ -88,7 +88,7 @@ export async function checkIfInstalled(name: string): Promise<boolean> {
         }
         return true;
     } catch(err) {
-        console.log("check install error", err);
+        logger.info("check install error", err);
         return false;
     }
 }
@@ -201,7 +201,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
-    console.log("start installing Pytorch");
+    logger.info("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
     });
@@ -277,6 +277,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 
 import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
+import logger from "../utils/logger";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
     type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
@@ -288,7 +289,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
         return true;
     }
     try {
-        console.log("start comfyUI");
+        logger.info("start comfyUI");
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
             runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
@@ -319,11 +320,13 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             });
         });
     } catch (err: any) {
+        const errMsg = `Start ComfyUI error: ${err.message}`
         comfyUIProgressEvent.emit({
             type: "ERROR",
-            message: err.message
+            message: errMsg
         });
-        throw new Error(`Start ComfyUI error: ${err.message}`);
+        logger.error(errMsg);
+        throw new Error(errMsg);
     }
     return true;
 }
@@ -338,8 +341,10 @@ export async function stopComfyUI(): Promise<boolean> {
             type: "STOP",
             message: "STOP COMFYUI SUCCESS"
         });
-    } catch (error) {
-        throw new Error(`Error stopping comfyui`);
+    } catch (error: any) {
+        const msg = `Error stopping comfyui: ${error.message}`
+        logger.error(msg);
+        throw new Error(msg);
     }
     return true;
 }
@@ -349,7 +354,7 @@ export async function isComfyUIAlive(): Promise<boolean> {
         await fetch("http://127.0.0.1:8188");
         return true;
     } catch (error) {
-        console.error('Error checking process:', error);
+        logger.error('Error checking process:', error);
         return false;
     }
 }
@@ -386,9 +391,9 @@ export async function updateComfyUI(dispatcher: TaskEventDispatcher): Promise<bo
             cwd: repoPath
         });
         await restartComfyUI(dispatcher);
-        console.log("updateComfyUI: stopped");
+        logger.info("updateComfyUI: stopped");
     } catch (err: any) {
-        console.log(err);
+        logger.info(err);
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }
     return true;

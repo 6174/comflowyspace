@@ -98,10 +98,11 @@ export async function ApiBootstrap(req: Request, res: Response) {
                 taskId
             }
         });
-    } catch (err) {
+    } catch (err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
-            error: err
+            error: err.message
         })
     } 
 }
@@ -109,6 +110,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
 import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-appdata-dir';
 import * as fsExtra from "fs-extra";
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
+import logger from '../../modules/utils/logger';
 
 /**
  * fetch all extensions
@@ -132,7 +134,7 @@ export async function ApiSetupConfig(req: Request, res: Response) {
 
         // user select pre installed comfyUI but it's not installed
         if (comfyUIPath !== DEFAULT_COMFYUI_PATH && installedComfyUI && !isComfyUIInstalled) {
-            console.log("isComfy isntall", isComfyUIInstalled, comfyUIPath, DEFAULT_COMFYUI_PATH);
+            logger.info("isComfy isntall", isComfyUIInstalled, comfyUIPath, DEFAULT_COMFYUI_PATH);
             throw new Error("Your custom ComfyUI path is not valid, check if  it's a git repo clone from ComfyUI https://github.com/comfyanonymous/ComfyUI");
         }
 
@@ -159,6 +161,7 @@ export async function ApiSetupConfig(req: Request, res: Response) {
             isComfyUIInstalled,
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message
@@ -197,6 +200,7 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
             success: true,
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message
@@ -211,6 +215,7 @@ export async function ApiRestartComfyUI(req: Request, res: Response) {
             success: true,
         });
     } catch(err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message
@@ -225,6 +230,7 @@ export async function ApiUpdateComfyUIAndRestart(req: Request, res: Response) {
             success: true,
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message

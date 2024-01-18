@@ -9,6 +9,7 @@ import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-c
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
+import logger from "../utils/logger";
 const appTmpDir = getAppTmpDir();
 
 /**
@@ -122,7 +123,7 @@ async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsP
 
 
 async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[]): Promise<boolean> {
-    console.log(`git clone: ${files}`);
+    logger.info(`git clone: ${files}`);
     const isGitInstall = await checkIfInstalled("git --version");
     if (!isGitInstall) {
         throw new Error(`Git is not installed, please install it.`)
@@ -177,7 +178,7 @@ async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string
     }
 
     if (fs.existsSync(installScriptPath)) {
-        console.log('Install: install script');
+        logger.info('Install: install script');
         await runCommand(`${PYTHON_PATH} install.py`, dispatcher, {
             cwd: repoPath
         });

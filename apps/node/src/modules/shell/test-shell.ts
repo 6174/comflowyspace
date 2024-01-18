@@ -3,10 +3,11 @@ import { PYTHON_PATH, SHELL_ENV_PATH, runCommand } from "../utils/run-command";
 import { appDir, isWindows } from "../utils/env";
 import { spawn } from "child_process";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
+import logger from "../utils/logger";
 
 async function start() {
   try {
-    console.log("start ");
+    logger.info("start ");
     const repoPath = getComfyUIDir();
     const shell = isWindows ? 'cmd' : '/bin/bash';
     const command = PYTHON_PATH;
@@ -21,7 +22,7 @@ async function start() {
     });
 
     proc.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
+      logger.info(`stdout: ${data}`);
     });
 
     proc.stderr.on('data', (data) => {
@@ -29,7 +30,7 @@ async function start() {
     });
 
     proc.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
+      logger.info(`child process exited with code ${code}`);
     });
     
   } catch (err: any) {

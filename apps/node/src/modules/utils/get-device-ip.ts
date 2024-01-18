@@ -17,4 +17,4 @@ export function getLocalIP() {
   }
   
 //   const localIPs = getLocalIP();
-//   console.log('Local IP Addresses:', localIPs);
+//   logger.info('Local IP Addresses:', localIPs);

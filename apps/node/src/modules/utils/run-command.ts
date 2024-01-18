@@ -20,9 +20,9 @@ export async function runCommand(
     stdout: string,
 }> {
     if (systemProxy) {
-        console.log("run command with proxy:", systemProxy);
+        logger.info("run command with proxy:", systemProxy);
     } else {
-        console.log("run command without proxy")
+        logger.info("run command without proxy")
     }
     const subProcess = execaCommand(command, {
         env: {
@@ -36,14 +36,14 @@ export async function runCommand(
     cb && cb(subProcess);
 
     subProcess.stdout?.on('data', (chunk) => {
-        console.log("out", chunk.toString());
+        logger.info("out", chunk.toString());
         dispatcher && dispatcher({
             message: chunk.toString()
         })
     });
 
     subProcess.stderr?.on('data', (chunk) => {
-        console.log("error", chunk.toString());
+        logger.error("error", chunk.toString());
         dispatcher && dispatcher({
             message: chunk.toString()
         })
@@ -72,6 +72,7 @@ export async function runCommand(
 
 import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
+import logger from "./logger";
 
 const shell = process.platform === 'win32' ? 'cmd' : 'zsh';
 const appDir = getAppDataDir();
@@ -82,7 +83,7 @@ export function runCommandWithPty(
     options: Options = {},
     cb?: (process: nodePty.IPty) => void
 ) {
-    console.log("run command with PTY");
+    logger.info("run command with PTY");
     const fullCommand = `${command};echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
         const pty = nodePty.spawn(shell, [], {
@@ -106,14 +107,14 @@ export function runCommandWithPty(
             }
             buffer += data;
             if (data.indexOf('\n') > 0) {
-                console.log("[Log:" + buffer + "]");
+                logger.info("[Log:" + buffer + "]");
                 dispatcher && dispatcher({
                     message: buffer
                 });
                 buffer = ""
             }
             if (data.trim() === 'END_OF_COMMAND') {
-                console.log('The command has finished executing.');
+                logger.info('The command has finished executing.');
                 disposable.dispose();
                 pty.kill();
             }
@@ -122,7 +123,7 @@ export function runCommandWithPty(
         pty.onData
 
         pty.onExit((e: { exitCode: number }) => {
-            console.log("exitcode", e.exitCode);
+            logger.info("exitcode", e.exitCode);
             resolve(pty);
             // if (e.exitCode !== 0) {
             // } else {

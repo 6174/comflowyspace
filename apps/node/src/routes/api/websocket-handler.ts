@@ -4,6 +4,7 @@ import * as http from "http";
 import * as url from "url";
 import { TaskEvent, taskQueue } from "../../modules/task-queue/task-queue";
 import { ComfyUIProgressEventType, comfyUIProgressEvent } from "../../modules/comfyui/bootstrap";
+import logger from "src/modules/utils/logger";
 
 // websocket handler
 export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServer] {
@@ -23,10 +24,10 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
             const clientId = (ret.query as any).clientId
             if (clientId) {
                 wss.handleUpgrade(req, socket, head, ws => {
-                    console.log("set ws for, ", clientId);
+                    logger.info("set ws for, ", clientId);
                     clientMap.set(clientId, ws);
                     ws.on('message', function incoming(message: string) {
-                        console.log("recieved Message", clientId, message);
+                        logger.info("recieved Message", clientId, message);
                     });
                     ws.on('close', () => {
                         clientMap.delete(clientId);
@@ -37,13 +38,13 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
 
         if (ret.pathname === "/ws/comfyui") {
             wss.handleUpgrade(req, socket, head, ws => {
-                console.log("connected comfyui ws");
+                logger.info("connected comfyui ws");
                 comfyUIClients.push(ws);
                 comfyUIMessages.forEach(message => {
                     ws.send(message);
                 });
                 ws.on('message', function incoming(message: string) {
-                    console.log("recieved Message", message);
+                    logger.info("recieved Message", message);
                 });
                 ws.on('close', () => {
                     comfyUIClients.splice(comfyUIClients.indexOf(ws), 1);
@@ -55,7 +56,9 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
     taskQueue.progressEvent.on((event: TaskEvent) => {
         const ws = clientMap.get(event.task.taskId);
         if (ws) {
-            ws.send(JSON.stringify(event));
+            const eventString = JSON.stringify(event)
+            ws.send(eventString);
+            logger.info(`[ComfyUI Process]: ${eventString}`);
         }
     });
 
@@ -65,10 +68,10 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
         comfyUIClients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(eventString);
+                logger.info(`[ComfyUI Process]: ${eventString}`);
             }
         });
     });
-
 
     return [server, wss];
 }

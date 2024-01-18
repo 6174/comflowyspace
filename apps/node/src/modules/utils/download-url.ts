@@ -5,6 +5,7 @@ import { pipeline } from 'stream/promises';
 import { verifyFileMd5 } from './verifymd5';
 import * as progress from "progress";
 import { TaskEventDispatcher } from '../task-queue/task-queue';
+import logger from './logger';
 
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
   const filename: string = path.basename(url);
@@ -58,11 +59,11 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
     const msg = `File ${filename} already exists. Skipping download.`;
     if (md5) {
       if (await verifyFileMd5(filePath, md5)) {
-        console.log(msg);
+        logger.info(msg);
         return;
       }
     } else {
-      console.log(msg);
+      logger.info(msg);
       return;
     }
   }
@@ -94,7 +95,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
     bufferStream.on('data', (chunk: Buffer) => {
       downloadedSize += chunk.length;
       const progress = (downloadedSize / totalSize) * 100;
-      console.log(`Downloading ${filename}... ${progress.toFixed(2)}%`);
+      logger.info(`Downloading ${filename}... ${progress.toFixed(2)}%`);
       dispatch({
         message: `Downloading ${filename}... ${progress.toFixed(2)}%`
       });
@@ -118,7 +119,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
         }
       }
       fs.renameSync(tmpFilePath, filePath);
-      console.log(`Renamed ${filename}.tmp to ${filename}`);
+      logger.info(`Renamed ${filename}.tmp to ${filename}`);
     }
   } catch (error) {
     throw new Error(`Error downloading from ${url}: ${error}`);

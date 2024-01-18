@@ -5,10 +5,11 @@ import { JSONFile } from 'lowdb/node';
 import path from "path";
 import { Low } from 'lowdb';
 import * as fsExtra from "fs-extra";
+import logger from '../utils/logger';
 
 type Doc = {title: string} & JSONDocMeta;
 
-console.log(getAppDataDir());
+logger.info(getAppDataDir());
 JSONDB.dir(path.resolve(getAppDataDir(), "db"));
 async function test() {
   // test node
@@ -19,17 +20,17 @@ async function test() {
   // await metaDb.read();
   // await metaDb.write();
 
-  // console.log("data", metaDb.data);
+  // logger.info("data", metaDb.data);
   // await metaDb.update((db) => {
   //   db.create_at = 345
   // })
 
-  // console.log(file_path);
+  // logger.info(file_path);
   // await metaDb.write();
   // if (fsExtra.existsSync(file_path)) {
-  //   console.log("file exist");
+  //   logger.info("file exist");
   // } else {
-  //   console.log("file not exist");
+  //   logger.info("file not exist");
   // }
 
   const db = await JSONDB.db<Doc>("workflows", ["id", "title"]);

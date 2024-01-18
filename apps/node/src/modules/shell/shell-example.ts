@@ -2,6 +2,7 @@ import * as nodePty from "node-pty"
 import { getAppDataDir, getComfyUIDir } from "../utils/get-appdata-dir";
 import { PYTHON_PATH, SHELL_ENV_PATH } from "../utils/run-command";
 import path from "path";
+import logger from "../utils/logger";
 
 const shell = process.platform === 'win32' ? 'powershell.exe' : 'bash';
 const appDir = getAppDataDir()
@@ -19,17 +20,17 @@ const repoPath = getComfyUIDir();
 pty.write(`echo Hell0; sleep 5; echo END_OF_COMMAND\n`);
 
 const dispose = pty.onData(function (data: string) {
-  console.log(data);
+  logger.info(data);
   if (data.trim() === 'END_OF_COMMAND') {
-    console.log('The command has finished executing.');
+    logger.info('The command has finished executing.');
     dispose.dispose();
     pty.kill();
   }
 });
 
 pty.onExit((e: {exitCode: number}) => {
-  console.log("exitcode", e.exitCode);
+  logger.info("exitcode", e.exitCode);
 });
 
 
-console.log(nodePty);
+logger.info(nodePty);

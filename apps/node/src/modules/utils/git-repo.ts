@@ -1,4 +1,5 @@
 import simpleGit, { SimpleGit } from 'simple-git';
+import logger from './logger';
 
 async function isRepoOutdated(repoPath: string): Promise<boolean> {
   const git: SimpleGit = simpleGit(repoPath);
@@ -28,9 +29,9 @@ async function forceUpdateRepo(repoPath: string): Promise<void> {
     await git.fetch(['--all']);
     await git.reset(['--hard', 'origin/master']); // 可根据实际情况更改分支
 
-    console.log('Repository forcefully updated.');
+    logger.info('Repository forcefully updated.');
   } catch (error) {
-    console.error('Error updating repository:', error);
+    logger.error('Error updating repository:', error);
   }
 }
 
@@ -42,6 +43,6 @@ export async function updateRepo(repoPath: string) {
     if (outdated) {
       await forceUpdateRepo(repoPath);
     } else {
-      console.log('Repository is up to date.');
+      logger.info('Repository is up to date.');
     }
 }

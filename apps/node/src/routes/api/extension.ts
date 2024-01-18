@@ -4,6 +4,7 @@ import { installExtension } from '../../modules/comfy-extension-manager/install-
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
 import { restartComfyUI } from 'src/modules/comfyui/bootstrap';
+import logger from 'src/modules/utils/logger';
 
 /**
  * fetch all extensions
@@ -32,7 +33,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
             }
         });
     } catch (err: any) {
-        console.log("error", err);
+        logger.error("error", err);
         res.send({
             success: false,
             error: err.message
@@ -48,7 +49,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
  */
 export async function ApiRouteGetExtensions(req: Request, res: Response) {
     try {
-        console.log("start route get extensions info");
+        logger.info("start route get extensions info");
         const extensions = await comfyExtensionManager.getAllExtensions();
         const extensionNodeMap = await comfyExtensionManager.getExtensionNodeMap();
         const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
@@ -61,6 +62,7 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
             }
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({ 
             success: false,
             error: err.message
@@ -76,6 +78,7 @@ export async function ApiRouteGetFrontendExtensions(req: Request, res: Response)
             data: extensions
         });
     } catch(err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message
@@ -86,12 +89,13 @@ export async function ApiRouteGetFrontendExtensions(req: Request, res: Response)
 export async function ApiRouteDisableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
-        console.log("extensions", extensions);
+        logger.info("extensions", extensions);
         await comfyExtensionManager.disableExtensions(extensions);
         res.send({
             success: true
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({ 
             success: false,
             error: err.message
@@ -107,6 +111,7 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({ 
             success: false,
             error: err.message
@@ -122,6 +127,7 @@ export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({ 
             success: false,
             error: err.message
@@ -138,6 +144,7 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
+        logger.error(err.message);
         res.send({
             success: false,
             error: err.message

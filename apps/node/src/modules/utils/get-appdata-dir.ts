@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fsExtra from 'fs-extra';
 import { CONFIG_KEYS, appConfigManager } from '../config-manager';
+import logger from './logger';
 
 export function getAppDataDir() {
     const appDir = path.join(os.homedir(), 'comflowy');
@@ -24,7 +25,7 @@ export function getComfyUIDir(): string {
             const config = JSON.parse(configStr);
             comfyUIDir = config.comfyUIDir;
         } catch(err) {
-            console.log("parse config error", err);
+            logger.error("parse config error", err);
         }
     }
     return comfyUIDir;
@@ -38,7 +39,7 @@ export function getStableDiffusionDir(): string {
             const config = JSON.parse(configStr);
             stableDiffusionDir = config.stableDiffusionDir;
         } catch(err) {
-            console.log("parse config error", err);
+            logger.error("parse config error", err);
         }
     }
     return stableDiffusionDir;

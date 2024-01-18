@@ -1,3 +1,4 @@
+import logger from "../utils/logger";
 import { TaskEvent, TaskEventDispatcher, TaskExecutor, TaskProps } from "./task-queue";
 
 export const TASK_MAP: Record<string, TaskExecutor> = {
@@ -5,7 +6,7 @@ export const TASK_MAP: Record<string, TaskExecutor> = {
 }
 
 const EMPTY_TASK =  (dispatchEvent: TaskEventDispatcher) => {
-    console.log("empty task");
+    logger.info("empty task");
 };
 
 export function resolveTask(taskProps: TaskProps) {
@@ -14,6 +15,6 @@ export function resolveTask(taskProps: TaskProps) {
 
 
 export async function downloadURLTask(dispatch: TaskEventDispatcher, params: any): Promise<boolean> {
-    console.log("download url task", params);
+    logger.info("download url task", params);
     return true;
 }

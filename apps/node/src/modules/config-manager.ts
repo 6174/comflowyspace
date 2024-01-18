@@ -45,6 +45,6 @@ export {appConfigManager}
 
 // // 获取配置项
 // const apiKey = appConfigManager.get('apiKey');
-// console.log('API Key:', apiKey);
+// logger.info('API Key:', apiKey);
 // // 删除配置项
 // appConfigManager.delete('apiKey');

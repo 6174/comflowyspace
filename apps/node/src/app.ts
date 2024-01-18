@@ -8,6 +8,7 @@ import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensio
 import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig, ApiRestartComfyUI, ApiUpdateComfyUIAndRestart } from './routes/api/bootstrap';
 import { JSONDB } from './modules/jsondb/jsondb';
 import { getComfyUIDir } from './modules/utils/get-appdata-dir';
+import logger from './modules/utils/logger';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -64,6 +65,6 @@ export async function startAppServer(params: {
 
   JSONDB.serve(app, server, wss);
   server.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+    logger.info(`Server is running at http://localhost:${port}`);
   });
 }

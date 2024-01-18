@@ -6,6 +6,7 @@ import * as url from "url";
 import { getAppDataDir } from '../utils/get-appdata-dir';
 import path from 'path';
 import { JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
+import logger from '../utils/logger';
 
 export function serve(app: Express, server: http.Server, wss: WebSocketServer) {  
   const dbs: Record<string, JSONDB<JSONDocMeta> > = {};
@@ -33,7 +34,7 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
       wss.handleUpgrade(req, socket, head, ws => {
         clients.push(ws);
         ws.on('message', function incoming(message: string) {
-          console.log("recieved Message", message);
+          logger.info("recieved Message", message);
         });
         ws.on('close', () => {
           clients.splice(clients.indexOf(ws), 1);
@@ -52,7 +53,7 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
         success: true
       });
     } catch (err: any) {
-      console.log(err);
+      logger.info(err);
       res.status(500).send({
         success: false,
         error: err.message
