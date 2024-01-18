@@ -43,8 +43,10 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     dispatch({
       message: `Downloaded ${filename} to ${targetPath}`
     })
-  } catch (error) {
-    throw new Error(`Error downloading from ${url}: ${error}`);
+  } catch (error: any) {
+    const msg = `Error downloading from ${url}: ${error.message}`
+    logger.error(msg);
+    throw new Error(msg);
   }
 }
 

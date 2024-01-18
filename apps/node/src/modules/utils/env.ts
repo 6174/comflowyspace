@@ -22,6 +22,8 @@ if (isMac) {
   parseWindowsProxySettings();
 }
 
+export const systemProxyString = JSON.stringify(systemProxy);
+
 export {systemProxy}
 
 function parseMacProxySettings() {
