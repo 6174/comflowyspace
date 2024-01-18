@@ -11,7 +11,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
-import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
+import { ImageWithDownload, PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
 import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
 
 export const NODE_IDENTIFIER = 'sdNode'
@@ -169,6 +169,13 @@ export const NodeComponent = memo(({
 
   const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
+  const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
+    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+    return {
+      src: imageSrc,
+      filename: image.filename
+    }
+  });
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
@@ -246,21 +253,19 @@ export const NodeComponent = memo(({
 
           <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
             <div className="inner">
-              <Image.PreviewGroup>
+              <PreviewGroupWithDownload images={imagePreviewsWithSrc}>
               {
-                imagePreviews && imagePreviews.map((image, index) => {
-                  const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+                imagePreviewsWithSrc.map((image, index) => {
                   return (
-                    <ImageWithDownload
-                      fileName={image.filename}
-                      key={imageSrc + index}
+                    <Image
+                      key={image.src + index}
                       className="node-preview-image"
-                      src={imageSrc}
+                      src={image.src}
                     />
                   )
                 })
               }
-              </Image.PreviewGroup>
+              </PreviewGroupWithDownload>
             </div>
           </div>
         </div>
