@@ -7,8 +7,8 @@ module.exports = {
   "packagerConfig": {
     "asar": false,
     "dir": "./",
-    "icon": './assets/icon',
-    "appBundleId": fromBuildIdentifier({ beta: 'comcomflowy.beta.app', prod: 'com.comflowy.app' })
+    "icon": './assets/logo.icns',
+    "appBundleId": fromBuildIdentifier({ beta: 'comcomflowy.beta.app', prod: 'com.comflowy.app' }),
   },
   "makers": [
     // {
@@ -24,7 +24,8 @@ module.exports = {
         // "background": "",
         "overwrite": true,
         "debug": false,
-        "icon": "./assets/icon.png"
+        "icon": "./assets/logo.icns",
+        "appId": "com.comflowy.app"
       }
     },
     // {
