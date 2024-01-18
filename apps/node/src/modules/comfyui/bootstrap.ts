@@ -249,11 +249,13 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
             message: 'Start cloning ComfyUI...'
         });
 
-        await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI`, dispatch, {
-            cwd: appDir
-        });
-
         const repoPath = getComfyUIDir();
+        const parentDir = path.dirname(repoPath);
+        await fsExtra.ensureDir(parentDir);
+
+        await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI`, dispatch, {
+            cwd: parentDir
+        });
 
         await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
             cwd: repoPath
