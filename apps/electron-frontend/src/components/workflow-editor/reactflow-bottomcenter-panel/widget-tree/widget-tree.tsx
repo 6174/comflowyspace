@@ -91,7 +91,7 @@ export const WidgetTree = (props: {
     }, [currentCategory, widgets]);
 
     const widgetCategoryPanel = (
-        <div className="widget-category-panel">
+        <div className={`widget-category-panel ${!showCategory ? "no-category" : ""}`}>
             {showCategory && (
                 <div className="category">
                     {firstLevelCatogories.map((name) => {

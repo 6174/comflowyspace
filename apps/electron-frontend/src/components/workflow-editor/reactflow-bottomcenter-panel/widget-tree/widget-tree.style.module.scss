@@ -71,11 +71,20 @@
                         font-size: 10px;
                         opacity: .2;
                         margin-bottom: 10px;
-                        padding-left: 6px;
+                        padding-left: 10px;
                     }
                     border-bottom: solid 1px var(--popupBorderColor);
                     &:last-child {
                         border-bottom: transparent;
+                    }
+                }
+            }
+
+            &.no-category {
+                .widget-list {
+                    padding-left: 0;
+                    .widget-category-section-title {
+                        padding-left: 10px;
                     }
                 }
             }
