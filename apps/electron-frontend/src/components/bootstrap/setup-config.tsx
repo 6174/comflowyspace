@@ -167,7 +167,7 @@ export function SetupConfig() {
              Back
             </Button>
             <Button onClick={saveValue} type="primary" loading={loading} disabled={loading}>
-              <SaveIcon/> Save
+              Next
             </Button>
           </Space>
         </div>
