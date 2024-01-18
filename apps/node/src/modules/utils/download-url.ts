@@ -3,9 +3,11 @@ import * as path from 'path';
 import fetch, { Response } from 'node-fetch';
 import { pipeline } from 'stream/promises';
 import { verifyFileMd5 } from './verifymd5';
-import * as progress from "progress";
+import progress from "progress";
 import { TaskEventDispatcher } from '../task-queue/task-queue';
 import logger from './logger';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import { systemProxy } from './env';
 
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
   const filename: string = path.basename(url);
@@ -17,7 +19,11 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     const headers: { [key: string]: string } = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     };
-    const response: Response = await fetch(url, { headers });
+    const response: Response = await fetch(
+      url, { 
+        headers,
+        agent: systemProxy.http_proxy ? new HttpsProxyAgent(systemProxy.http_proxy as string) : undefined,
+      });
     if (!response.ok) {
       throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
     }
@@ -81,8 +87,10 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       headers: {
         ...headers,
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-      }
-    , signal });
+      }, 
+      signal,
+      agent: systemProxy.http_proxy ? new HttpsProxyAgent(systemProxy.http_proxy as string) : undefined,
+     });
     if (!response.ok) {
       throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
     }

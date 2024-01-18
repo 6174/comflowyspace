@@ -21,12 +21,25 @@ module.exports = {
     {
       "name": "@electron-forge/maker-dmg",
       "config": {
+        "overwrite": true,
+        "debug": false,
+        "icon": "./assets/logo.icns",
+        "appId": "com.comflowy.app",
+        "extraResources": ["./assets/osx-arm64"]
+      },
+      "arch": ["arm64"]
+    },
+    {
+      "name": "@electron-forge/maker-dmg",
+      "config": {
         // "background": "",
         "overwrite": true,
         "debug": false,
         "icon": "./assets/logo.icns",
-        "appId": "com.comflowy.app"
-      }
+        "appId": "com.comflowy.app",
+        "extraResources": ["./assets/osx-x64"]
+      },
+      "arch": ["x64"]
     },
     // {
     //   "name": "@electron-forge/maker-deb",
