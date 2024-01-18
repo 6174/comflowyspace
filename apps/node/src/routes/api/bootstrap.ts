@@ -117,15 +117,22 @@ import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/
  */
 export async function ApiSetupConfig(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const comfyUIPath = data.comfyUIDir.trim();
+        const { data, installedComfyUI } = req.body;
+        let comfyUIPath = data.comfyUIDir.trim();
         if (!comfyUIPath) {
             throw new Error("ComfyUI path is empty");
         }
 
+        // User select custom install comfyUI folder, comfyUI path will add the folder path
+        if (!installedComfyUI && comfyUIPath !== DEFAULT_COMFYUI_PATH) {
+            comfyUIPath = path.resolve(comfyUIPath, "ComfyUI");
+        }
+
         let isComfyUIInstalled = await checkIfInstalledComfyUI(comfyUIPath);
-        console.log("isComfy isntall", isComfyUIInstalled, comfyUIPath, DEFAULT_COMFYUI_PATH);
-        if (comfyUIPath !== DEFAULT_COMFYUI_PATH && !isComfyUIInstalled) {
+
+        // user select pre installed comfyUI but it's not installed
+        if (comfyUIPath !== DEFAULT_COMFYUI_PATH && installedComfyUI && !isComfyUIInstalled) {
+            console.log("isComfy isntall", isComfyUIInstalled, comfyUIPath, DEFAULT_COMFYUI_PATH);
             throw new Error("Your custom ComfyUI path is not valid, check if  it's a git repo clone from ComfyUI https://github.com/comfyanonymous/ComfyUI");
         }
 
