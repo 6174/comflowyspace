@@ -50,7 +50,6 @@ export function SetupConfig() {
     }
   }, []);
 
-  
   const useDefaultFolder = useCallback(() => {
       setValue(defaultValue);
   }, [value, defaultValue]);
@@ -101,6 +100,7 @@ export function SetupConfig() {
         <div className="field select-if-installed-comfyui">
           <div className={`card ${installedComfyUI ? "": "active"}`} onClick={ev => {
             setInstalledComfyUI(false);
+            setValue(defaultValue);
           }}>
             <div className="card-inner">
               <div className="icon">
@@ -115,6 +115,7 @@ export function SetupConfig() {
           </div>
           <div className={`card ${installedComfyUI ? "active" : ""}`} onClick={ev => {
             setInstalledComfyUI(true);
+            setValue("");
           }}>
             <div className="card-inner">
               <div className="icon">
@@ -152,7 +153,7 @@ export function SetupConfig() {
             You can select the ComfyUI path you have installed before to reuse existing extensions and models.
           </div>
           <div className="input-wrapper">
-            <Input disabled={electronEnv} value={value} />
+            <Input disabled={electronEnv} value={value} placeholder="Select a folder"/>
           </div>
           <Space>
             { electronEnv && <Button onClick={selectFolder}> <FolderIcon/> Select folder</Button>}
