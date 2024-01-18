@@ -1,7 +1,7 @@
 import { ExecaChildProcess, Options, execaCommand } from "execa";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import * as os from "os";
-import { isMac, isWindows } from "./env";
+import { isMac, isWindows, systemProxyString } from "./env";
 import { CONDA_ENV_NAME } from "../config-manager";
 import { systemProxy } from "./env";
 
@@ -20,7 +20,7 @@ export async function runCommand(
     stdout: string,
 }> {
     if (systemProxy) {
-        logger.info("run command with proxy:", systemProxy);
+        logger.info("run command with proxy:" + systemProxyString);
     } else {
         logger.info("run command without proxy")
     }
