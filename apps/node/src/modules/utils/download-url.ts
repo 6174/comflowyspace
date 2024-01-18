@@ -43,10 +43,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       message: `Downloaded ${filename} to ${targetPath}`
     })
   } catch (error) {
-    dispatch({
-      message: `Error downloading from ${url}: ${error}`,
-      error
-    })
+    throw new Error(`Error downloading from ${url}: ${error}`);
   }
 }
 
@@ -124,9 +121,6 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       console.log(`Renamed ${filename}.tmp to ${filename}`);
     }
   } catch (error) {
-    dispatch({
-      message: `Error downloading from ${url}: ${error}`,
-      error
-    });
+    throw new Error(`Error downloading from ${url}: ${error}`);
   }
 }

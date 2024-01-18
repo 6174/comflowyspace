@@ -321,7 +321,6 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             type: "ERROR",
             message: err.message
         });
-        console.log("Start ComfyUI Error", err);
         throw new Error(`Start ComfyUI error: ${err.message}`);
     }
     return true;
