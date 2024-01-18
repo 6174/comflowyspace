@@ -27,6 +27,7 @@
     "fastq": "^1.15.0",
     "fs-extra": "^11.2.0",
     "http-proxy-middleware": "^2.0.6",
+    "https-proxy-agent": "^7.0.2",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "lowdb": "^7.0.1",
