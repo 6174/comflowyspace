@@ -7,7 +7,8 @@ import progress from "progress";
 import { TaskEventDispatcher } from '../task-queue/task-queue';
 import logger from './logger';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { systemProxy } from './env';
+import { systemProxy, systemProxyString } from './env';
+import { sys } from 'typescript';
 
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
   const filename: string = path.basename(url);
@@ -19,6 +20,11 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     const headers: { [key: string]: string } = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     };
+    if (systemProxy.http_proxy) {
+      logger.info("download with proxy" + systemProxyString)
+    } else {
+      logger.info("download without proxy")
+    }
     const response: Response = await fetch(
       url, { 
         headers,
