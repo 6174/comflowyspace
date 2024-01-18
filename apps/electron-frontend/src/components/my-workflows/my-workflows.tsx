@@ -6,7 +6,7 @@ import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
-
+import CoverSvg from "./default-workflow-cover.svg";
 function MyWorkflowsPage() {
   return (
     <div className={styles.myWorkflows}>
@@ -146,7 +146,7 @@ function WorkflowList() {
                 ev.stopPropagation();
               }
             }} style={{height: 200}}>
-              <Carousel>
+              {galleryImages.length > 0 ? (<Carousel>
                 {galleryImages.map((image, index) => (
                   <div key={index} className='carousel-item'>
                     <div className="image-wrapper" 
@@ -165,7 +165,18 @@ function WorkflowList() {
                     </div>
                   </div>
                 ))}
-              </Carousel>
+              </Carousel>) : (
+                <div className="wrapper" style={{
+                  height: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "var(--backgroundColor)",
+                  borderRadius: 6
+                }}>
+                  <img src={CoverSvg.src} style={{width: 34, height: 28}}/>
+                </div>
+              )}
             </div>
             <div className="flex">
               <div className="title">
