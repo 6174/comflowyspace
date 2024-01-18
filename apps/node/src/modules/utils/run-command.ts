@@ -3,6 +3,8 @@ import { TaskEventDispatcher } from "../task-queue/task-queue";
 import * as os from "os";
 import { isMac, isWindows } from "./env";
 import { CONDA_ENV_NAME } from "../config-manager";
+import { systemProxy } from "./env";
+
 export const OS_TYPE = os.type().toUpperCase();
 export const OS_HOME_DIRECTORY = os.homedir();
 export const SHELL_ENV_PATH = getSystemPath();
@@ -17,9 +19,15 @@ export async function runCommand(
     exitCode: number,
     stdout: string,
 }> {
+    if (systemProxy) {
+        console.log("run command with proxy:", systemProxy);
+    } else {
+        console.log("run command without proxy")
+    }
     const subProcess = execaCommand(command, {
         env: {
-            PATH: SHELL_ENV_PATH
+            PATH: SHELL_ENV_PATH,
+            ...systemProxy,
         },
         // shell: isMac ? "/bin/zsh" : true,
         ...options
@@ -83,7 +91,8 @@ export function runCommandWithPty(
             rows: 30,
             env: {
                 PATH: SHELL_ENV_PATH,
-                DISABLE_UPDATE_PROMPT: "true"
+                DISABLE_UPDATE_PROMPT: "true",
+                ...systemProxy,
             },
             cwd: (options.cwd || appDir) as string
         });
@@ -109,6 +118,8 @@ export function runCommandWithPty(
                 pty.kill();
             }
         });
+
+        pty.onData
 
         pty.onExit((e: { exitCode: number }) => {
             console.log("exitcode", e.exitCode);
