@@ -1,26 +1,43 @@
 {
   "name": "comflowy",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {
     "start": "electron ./",
     "compile": "cd ../electron-frontend && pnpm build && cd ../electron-backend && npm run compile && cd ../electron-package && node ./scripts/pre-package.js && npm run package",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "package": "electron-builder --dir",
+    "make": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.flowy.app",
+    "files": [
+      "**/*"
+    ],
+    "extraResources": [],
+    "directories": {
+      "buildResources": "assets",
+      "output": "out"
+    },
+    "mac": {
+      "icon": "logo.icns",
+      "category": "public.app-category.productivity",
+      "target": [
+        "dmg"
+      ]
+    }
   },
   "dependencies": {
-    "@electron-forge/maker-dmg": "^7.2.0",
-    "@electron/osx-sign": "^1.0.5",
     "node-pty": "^1.0.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.2.0",
     "@electron/notarize": "^2.2.0",
+    "@electron/osx-sign": "^1.0.5",
     "cli-truncate": "^4.0.0",
     "cross-env": "7.0.3",
     "dts-for-context-bridge": "0.7.1",
     "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
     "electron-devtools-installer": "3.2.0",
     "electron-rebuild": "^3.2.9",
     "node-gyp": "^10.0.1"
