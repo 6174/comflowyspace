@@ -7,7 +7,7 @@ async function testDownload() {
   try {
     const ret = await downloadUrl((event) => {
       console.log(event)
-    }, "https://google.com", dataURL);
+    }, "https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh", dataURL);
   } catch(err) {
     console.log(err);
   }

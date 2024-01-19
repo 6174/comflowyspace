@@ -42,15 +42,42 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       total: totalSize,
     });
 
-    const bufferStream = new (require('stream').PassThrough)();
+    const stream = require('stream');
+    const util = require('util');
+    const finished = util.promisify(stream.finished);
+    
+    const bufferStream = new stream.PassThrough();
+    const writeStream = fs.createWriteStream(filePath);
+
+    bufferStream.on('error', (err: any) => {
+      logger.error(`Error with buffer stream: ${err.message}`);
+    });
+
+    writeStream.on('error', (err: any) => {
+      logger.error(`Error writing to file: ${err.message}`);
+    });
+
+    response.body!.on('error', (err) => {
+      logger.error(`Error reading from response body: ${err.message}`);
+    });
+
     response.body!.on('data', (chunk) => {
       progressBar.tick(chunk.length);
       dispatch({
         message: `Download progress: ${progressBar.curr}/${progressBar.total}`
       })
     });
+
     response.body!.pipe(bufferStream);
-    await pipeline(bufferStream, fs.createWriteStream(filePath));
+    bufferStream.pipe(writeStream);
+
+    try {
+      // this will throw if an error occurred
+      await finished(writeStream);
+    } catch (err: any) {
+      logger.error(`Error with streams: ${err.message}`);
+      throw err;
+    }
 
     dispatch({
       message: `Downloaded ${filename} to ${targetPath}`
