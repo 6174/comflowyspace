@@ -18,12 +18,12 @@ install_torch() {
     fi
 
     python3 -c "
-    import torch
-    if torch.__version__:
-        print(f'Torch version: {torch.__version__} installed successfully.')
-    else:
-        print('Torch verification failed.')
-    "
+import torch
+if torch.__version__:
+    print(f'Torch version: {torch.__version__} installed successfully.')
+else:
+    print('Torch verification failed.')
+"
 }
 
 # 通过conda安装Python
