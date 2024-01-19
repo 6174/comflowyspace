@@ -8,6 +8,24 @@ is_installed() {
     return $?
 }
 
+# Function to install and check PyTorch
+install_torch() {
+    pip3 install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu
+
+    if [ $? -ne 0 ]; then
+        echo "PyTorch installation failed"
+        exit 1
+    fi
+
+    python3 -c "
+    import torch
+    if torch.__version__:
+        print(f'Torch version: {torch.__version__} installed successfully.')
+    else:
+        print('Torch verification failed.')
+    "
+}
+
 # 通过conda安装Python
 install_python() {
     if conda env list | grep -q "^${CONDA_ENV_NAME}.*"; then
@@ -29,7 +47,9 @@ install_python() {
 install_conda() {
     if is_installed conda; then
         echo "conda already installed"
+        conda activate ${CONDA_ENV_NAME} 
         install_python
+        install_torch
         return $?
     fi
 
@@ -51,12 +71,15 @@ install_conda() {
         fi
 
         install_python
+        install_torch
         return $?
     else
         echo "Unsupported OS"
         return 1
     fi
 }
+
+
 
 # 运行函数
 install_conda
