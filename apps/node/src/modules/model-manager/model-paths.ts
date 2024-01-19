@@ -37,7 +37,7 @@ export function getFolderNamesAndPaths() {
   const OUTPUT_DIRECTORY = `${BASE_PATH}/output`;
   const TEMP_DIRECTORY = `${BASE_PATH}/temp`;
   const INPUT_DIRECTORY = `${BASE_PATH}/input`;
-  const EXTRA_MODEL_PATH_CONFIG = `${BASE_PATH}/extra_model_paths.yaml}`
+  const EXTRA_MODEL_PATH_CONFIG = `${BASE_PATH}/extra_model_paths.yaml`
 
   if (fsExtra.existsSync(EXTRA_MODEL_PATH_CONFIG)) {
     parseExtraModelConfig(EXTRA_MODEL_PATH_CONFIG, add_model_folder_path);
