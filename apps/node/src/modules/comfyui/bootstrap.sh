@@ -47,8 +47,8 @@ install_python() {
 install_conda() {
     if is_installed conda; then
         echo "conda already installed"
-        conda activate ${CONDA_ENV_NAME} 
         install_python
+        conda activate ${CONDA_ENV_NAME} 
         install_torch
         return $?
     fi
