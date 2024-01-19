@@ -26,6 +26,9 @@
       "target": [
         "dmg"
       ]
+    },
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
     }
   },
   "dependencies": {
