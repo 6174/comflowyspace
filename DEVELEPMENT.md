@@ -19,7 +19,7 @@ and a electron app.
 
 If there are some problems happen related to node-pty, try to rebuild id on `electron-backend` project for your OS 
 1. `cd apps/electron-backend`
-2. `./node_modules/.bin/electron-rebuild --arc=arm64`
+2. `./node_modules/.bin/electron-rebuild`
 
 # Build App
 
