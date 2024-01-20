@@ -8,15 +8,14 @@ import { TaskEventDispatcher } from '../task-queue/task-queue';
 import logger from './logger';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import { systemProxy, systemProxyString } from './env';
-import { sys } from 'typescript';
-
+import * as fsExtra from "fs-extra";
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
   const filename: string = path.basename(url);
-  const filePath: string = path.join(targetPath, filename);
   dispatch({
     message: `Downloading ${url}`
-  })
+  });
   try {
+    await fsExtra.ensureDir(path.dirname(targetPath));
     const headers: { [key: string]: string } = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     };
@@ -47,7 +46,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     const finished = util.promisify(stream.finished);
     
     const bufferStream = new stream.PassThrough();
-    const writeStream = fs.createWriteStream(filePath);
+    const writeStream = fs.createWriteStream(targetPath);
 
     bufferStream.on('error', (err: any) => {
       logger.error(`Error with buffer stream: ${err.message}`);

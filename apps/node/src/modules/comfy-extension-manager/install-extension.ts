@@ -10,6 +10,8 @@ import { getAppTmpDir } from "../utils/get-appdata-dir";
 import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
 import logger from "../utils/logger";
+import { URL } from 'url';
+
 const appTmpDir = getAppTmpDir();
 
 /**
@@ -94,7 +96,6 @@ async function unzipInstall(dispatcher: TaskEventDispatcher, files: string[]): P
     return true;
 }
 
-
 async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsPathName: string | null = null): Promise<boolean> {
     for (const url of files) {
         let cleanUrl: string = url;
@@ -102,13 +103,18 @@ async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsP
             cleanUrl = cleanUrl.slice(0, -1);
         }
         try {
+            let myurl = new URL(cleanUrl);
+            let pathname = myurl.pathname;
+            let filename = path.basename(pathname);
+            let ext = path.extname(pathname);
+            const fileNameWithExt = filename + ext;
             if (cleanUrl.endsWith('.py')) {
                 dispatcher({
                     message: `Start copy ${cleanUrl} to install`
                 });
-                await downloadUrl(dispatcher, url, EXTENTION_FOLDER);
+                await downloadUrl(dispatcher, url, path.resolve(EXTENTION_FOLDER, fileNameWithExt));
             } else {
-                const targetPath: string = path.join(WEB_EXTENTION_FOLDER, jsPathName || '');
+                const targetPath: string = path.join(WEB_EXTENTION_FOLDER, jsPathName || '', fileNameWithExt);
                 if (!fs.existsSync(targetPath)) {
                     fs.mkdirSync(targetPath, { recursive: true });
                 }
