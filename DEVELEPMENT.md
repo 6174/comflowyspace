@@ -28,9 +28,8 @@ create a new npm based folder to package app
 
 1. Clean node_modules already installed in /apps/electron-package
 2. Install dependencies: `npm i` 
-3. Compile & Package: `npm run compile` 
-4. Package Only: `npm run package`
+3. Code signing: rename `.env.example` to `.env` and change your app signing params
+4. Compile: `npm run compile` 
 5. Make app: `npm run make`
-
 
 
