@@ -7,8 +7,8 @@
     "start": "electron ./",
     "compile": "cd ../electron-frontend && pnpm build && cd ../electron-backend && npm run compile && cd ../electron-package && node ./scripts/pre-package.js && npm run package",
     "package": "electron-builder --dir",
-    "make-mac-x64": "electron-builder --mac --x64 && node ./scripts/post-package.js --x64",
-    "make-mac-arm64": "electron-builder --mac --arm64 && node ./scripts/post-package.js"
+    "make-mac-x64": "electron-builder --mac --x64",
+    "make-mac-arm64": "electron-builder --mac --arm64"
   },
   "build": {
     "appId": "com.flowy.app",
@@ -29,7 +29,8 @@
     },
     "electronDownload": {
       "mirror": "https://npm.taobao.org/mirrors/electron/"
-    }
+    },
+    "afterSign": "./scripts/after-sign.js"
   },
   "dependencies": {
     "node-pty": "^1.0.0"
