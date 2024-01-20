@@ -7,8 +7,7 @@
     "start": "electron ./",
     "compile": "cd ../electron-frontend && pnpm build && cd ../electron-backend && npm run compile && cd ../electron-package && node ./scripts/pre-package.js && npm run package",
     "package": "electron-builder --dir",
-    "make-mac-x64": "electron-builder --mac --x64",
-    "make-mac-arm64": "electron-builder --mac --arm64"
+    "make": "electron-builder --mac"
   },
   "build": {
     "appId": "com.flowy.app",
@@ -23,14 +22,16 @@
     "mac": {
       "icon": "logo.icns",
       "category": "public.app-category.productivity",
-      "target": [
-        "dmg"
-      ]
+      "target": {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+      }
     },
     "electronDownload": {
       "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
-    "afterSign": "./scripts/after-sign.js"
+    "afterSign": "./scripts/after-sign.js",
+    "npmRebuild": true
   },
   "dependencies": {
     "node-pty": "^1.0.0"
