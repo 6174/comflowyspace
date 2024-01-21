@@ -17,7 +17,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "../../types/**/*.d.ts"
+    "../../types/**/*.d.ts",
+    "@comflowy/node/src/**/*.ts"
   ],
   "exclude": [
     "**/*.spec.ts",
