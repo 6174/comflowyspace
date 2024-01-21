@@ -35,7 +35,7 @@ app.on('ready', async () => {
     // auto update listener
     log.info('start auto update');
 
-    startAutoUpdater()
+    startAutoUpdater();
   } catch(err: any) {
     log.error(err);
     dialog.showErrorBox('Error', err.message);

@@ -31,7 +31,14 @@
       "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
     "afterSign": "./scripts/after-sign.js",
-    "npmRebuild": true
+    "npmRebuild": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "6174",
+        "repo": "comflowyspace"
+      }
+    ]
   },
   "dependencies": {
     "node-pty": "^1.0.0"
