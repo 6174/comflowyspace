@@ -12,7 +12,8 @@
     "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p layers/preload/tsconfig.json",
-    "typecheck": "npm run typecheck:main && npm run typecheck:preload"
+    "typecheck": "npm run typecheck:main && npm run typecheck:preload",
+    "rebuild": "electron-rebuild"
   },
   "dependencies": {
     "configstore": "^6.0.0",
