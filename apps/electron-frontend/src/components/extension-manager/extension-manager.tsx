@@ -119,7 +119,7 @@ function ExtensionListItem({extension}: {
     setVisible(false);
   };
 
-  const title = `${extension.title}${extension.disabled && "(disabled)"}`;
+  const title = `${extension.title}${extension.disabled ? "(disabled)" : ""}`;
   return (
     <>
       <ExtensionModal extension={extension} visible={visible} handleOk={handleOk} handleCancel={handleCancel}/>

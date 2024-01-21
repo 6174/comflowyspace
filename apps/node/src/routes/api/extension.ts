@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
+import { PartialTaskEvent, TaskEvent, TaskEventDispatcher, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
-import { restartComfyUI } from 'src/modules/comfyui/bootstrap';
+import { comfyUIProgressEvent, restartComfyUI } from 'src/modules/comfyui/bootstrap';
 import logger from 'src/modules/utils/logger';
 
 /**
@@ -19,8 +19,15 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
             taskId: taskParams.taskId,
             name: taskParams.name,
             params: taskParams.params,
-            executor: async (dispatcher) => {
-                await installExtension(dispatcher, taskParams.params);
+            executor: async (dispatcher: TaskEventDispatcher) => {
+                const newDispatcher = (event: PartialTaskEvent) => {
+                    dispatcher(event);
+                    comfyUIProgressEvent.emit({
+                        type: event.type == "FAILED" ? "ERROR" : "INFO",
+                        message: event.message || ""
+                    })
+                }
+                await installExtension(newDispatcher, taskParams.params);
                 await restartComfyUI(dispatcher);
                 return true;
             }
@@ -91,6 +98,7 @@ export async function ApiRouteDisableExtensions(req: Request, res: Response) {
         const extensions = req.body.extensions as Extension[];
         logger.info("extensions", extensions);
         await comfyExtensionManager.disableExtensions(extensions);
+        await restartComfyUI();
         res.send({
             success: true
         });
@@ -107,6 +115,7 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.disableExtensions(extensions);
+        await restartComfyUI();
         res.send({
             success: true
         });
@@ -123,6 +132,7 @@ export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.removeExtensions(extensions);
+        await restartComfyUI();
         res.send({
             success: true
         });
@@ -140,6 +150,7 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
         const { data } = req.body;
         const extensions = data as Extension[];
         await comfyExtensionManager.updateExtensions(extensions);
+        await restartComfyUI();
         res.send({
             success: true
         });

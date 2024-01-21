@@ -280,7 +280,7 @@ import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
-    type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
+    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING",
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
@@ -359,14 +359,14 @@ export async function isComfyUIAlive(): Promise<boolean> {
     }
 }
 
-export async function restartComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean>  {
+export async function restartComfyUI(dispatcher?: TaskEventDispatcher): Promise<boolean>  {
     try {
         comfyUIProgressEvent.emit({
             type: "RESTART",
             message: "Restart ComfyUI"
         });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
-        await startComfyUI(dispatcher); // 启动新的 ComfyUI
+        await startComfyUI(dispatcher ? dispatcher : (event) => null); // 启动新的 ComfyUI
     } catch (err: any) {
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }

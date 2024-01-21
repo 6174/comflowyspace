@@ -84,7 +84,7 @@ export function runCommandWithPty(
     cb?: (process: nodePty.IPty) => void
 ) {
     logger.info("run command with PTY");
-    const fullCommand = `${command};echo END_OF_COMMAND\n`;
+    const fullCommand = `${command} && echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
         const pty = nodePty.spawn(shell, [], {
             name: 'xterm-color',
@@ -109,7 +109,7 @@ export function runCommandWithPty(
             if (data.indexOf('\n') > 0) {
                 logger.info("[Log:" + buffer + "]");
                 dispatcher && dispatcher({
-                    message: buffer
+                    message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
                 });
                 buffer = ""
             }
