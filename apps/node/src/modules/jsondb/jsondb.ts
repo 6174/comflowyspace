@@ -116,7 +116,7 @@ export class JSONDB<DocType extends JSONDocMeta> {
     const docsMeta = this.metaDb.data.docsMeta;
     return docs.map(id => {
       return docsMeta[id];
-    }).filter(doc => !doc.deleted)
+    }).filter(doc => !doc.deleted).reverse();
   }
 
   /**
