@@ -10,6 +10,10 @@ export type EditorClipBoardData = {
 
 const CLIPBOARD_TYPE = '@comflowy/nodes';
 export function copyNodes(nodes: PersistedWorkflowNode[], ev: ClipboardEvent) {
+  if (nodes.length === 0) {
+    // Normal prompt text copying
+    return;
+  } 
   const clipboardData = JSON.stringify({
     nodes,
   });

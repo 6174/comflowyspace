@@ -23,6 +23,20 @@
 //     background-color: transparent;
 // }
 
+::-webkit-scrollbar {
+    width: var(--sb-size);
+}
+
+::-webkit-scrollbar-track {
+    background: var(--sb-track-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--sb-thumb-color);
+    border-radius: 10px;
+}
+
 .spliter {
     width: 2px;
     border-radius: 2px;
