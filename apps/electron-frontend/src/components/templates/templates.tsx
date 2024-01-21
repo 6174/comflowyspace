@@ -3,7 +3,7 @@ import { Template, useTemplatesState } from './template-state';
 import styles from './templates.style.module.scss';
 import { Modal, message } from 'antd';
 import { documentDatabaseInstance } from '@comflowy/common/storage';
-import { openTabPage } from '@/lib/electron-bridge';
+import { openExternalURL, openTabPage } from '@/lib/electron-bridge';
 import { useAppStore } from '@comflowy/common/store';
 
 const Templates = () => {
@@ -75,7 +75,13 @@ function TemplateCard(props: {
         onCancel={handleCancel}
       >
         {template.thumbnail && image}
-        <p>Click ok to create a new workfow from {template.name}</p>
+        {template.description 
+          ? <p>{template.description} <a onClick={ev => {
+            openExternalURL(template.reference_url)
+          }}> Learn more </a></p> 
+          : <p>Click ok to create a new workfow from {template.name}</p>
+        }
+        
       </Modal>
       {image}
       <div className="name">{template.name}</div>
