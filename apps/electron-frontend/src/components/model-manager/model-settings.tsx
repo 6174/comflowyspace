@@ -63,8 +63,10 @@ export const ModelSettings = () => {
   const electronEnv = useIsElectron();
 
   return (
-    <div className='setting-button action-button'>
-      <Button size="small" onClick={handleSettingIconClick}><SettingsIcon /> Settings </Button>
+    <div className='setting-button'>
+      <Button size="small" onClick={handleSettingIconClick}>
+        <SettingsIcon /> Settings 
+      </Button>
       <Modal
         title="Settings"
         open={isModalVisible}
