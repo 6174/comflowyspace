@@ -130,7 +130,8 @@ export class SlotEvent<T = void> implements IDisposable {
 export enum GlobalEvents {
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",
-  initial_launch = "initial_launch"
+  initial_launch = "initial_launch",
+  comfyui_process_error = "comfyui_process_error"
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;
