@@ -277,6 +277,15 @@ export default function WorkflowEditor() {
       return false;
     }
   }, []);
+
+  const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
+  React.useEffect(() => {
+    if (ref.current) {
+      setToolsUIVisible(true);
+    }
+  }, [ref])
+
+
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
@@ -385,16 +394,20 @@ export default function WorkflowEditor() {
         }}
       >
         <Background variant={BackgroundVariant.Dots} />
-        <Controls />
-        <Panel position="bottom-center">
-          <ReactflowBottomCenterPanel/>
-        </Panel>
-        <Panel position="top-left">
-          <ReactflowTopLeftPanel/>
-        </Panel>
-        <Panel position="top-right">
-          <ReactflowTopRightPanel/>
-        </Panel>
+        {toolsUIVisible && (
+          <>
+            <Controls />
+            <Panel position="bottom-center">
+              <ReactflowBottomCenterPanel/>
+            </Panel>
+            <Panel position="top-left">
+              <ReactflowTopLeftPanel/>
+            </Panel>
+            <Panel position="top-right">
+              <ReactflowTopRightPanel/>
+            </Panel>
+          </>
+        )}
         {menu && <ContextMenu hide={onPaneClick} {...menu} />}
       </ReactFlow>
       <AsyncComfyUIProcessManager/>
