@@ -18,23 +18,41 @@
         align-items: center;
     }
 }
-
-// ::-webkit-scrollbar-track:hover {
-//     background-color: transparent;
-// }
-
 ::-webkit-scrollbar {
     width: var(--sb-size);
 }
 
 ::-webkit-scrollbar-track {
     background: var(--sb-track-color);
-    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
     background: var(--sb-thumb-color);
     border-radius: 10px;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    &:hover,
+    &:focus,
+    &:active {
+        scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+    }
+    &:hover::-webkit-scrollbar-track,
+    &:focus::-webkit-scrollbar-track,
+    &:active::-webkit-scrollbar-track {
+        background: var(--sb-track-color);
+    }
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+    &:hover::-webkit-scrollbar-thumb,
+    &:focus::-webkit-scrollbar-thumb,
+    &:active::-webkit-scrollbar-thumb {
+        background: var(--sb-thumb-color);
+        border-radius: 10px;
+    }
 }
 
 .spliter {
