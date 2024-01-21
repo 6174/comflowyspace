@@ -278,6 +278,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
+import { comfyExtensionManager } from "../comfy-extension-manager/comfy-extension-manager";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
     type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING",
@@ -319,6 +320,16 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
                 comfyuiProcess = process;
             });
         });
+
+        // check comfyUI extensions
+        const extensions = await comfyExtensionManager.getAllExtensions();
+        const installedExtensions = extensions.filter((extension) => extension.installed);
+        const msg = "All installed extensions: " + installedExtensions.map(ext => ext.title).join(",")
+        logger.info(msg)
+        comfyUIProgressEvent.emit({
+            type: "INFO",
+            message: msg
+        })
     } catch (err: any) {
         const errMsg = `Start ComfyUI error: ${err.message}`
         comfyUIProgressEvent.emit({
