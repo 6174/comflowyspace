@@ -94,8 +94,8 @@ function ExtensionList(props: {
         Total extensions: {displayedExtensions.length}
       </p>
       <div className="result">
-        {displayedExtensions.map(ext => {
-          return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
+        {displayedExtensions.map((ext, index) => {
+          return <ExtensionListItem extension={ext} key={ext.title + ext.author + index}/>
         })}
       </div>
     </div>

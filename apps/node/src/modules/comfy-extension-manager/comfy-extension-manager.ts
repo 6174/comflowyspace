@@ -1,5 +1,5 @@
-import extensionList from './extension-list';
-import extensionNodeMapping from './extension-node-mapping';
+import extensionList from './extension-list.json';
+import extensionNodeMapping from './extension-node-mapping.json';
 import { checkExtensionsInstalled } from './check-extension-status';
 import { Extension, ExtensionNodeMap } from './types';
 import { removeExtension } from './remove-extension';
@@ -34,7 +34,7 @@ class ComfyExtensionManager {
   }
 
   async getAllExtensions(): Promise<Extension[]> {
-    const ret = extensionList.extensions as unknown as Extension[];
+    const ret = extensionList.custom_nodes as unknown as Extension[];
     await checkExtensionsInstalled(ret);
     return ret ;
   }
