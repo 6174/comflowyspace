@@ -2,6 +2,7 @@ import { getBackendUrl, getComfyUIBackendUrl } from '../config'
 import { Input, Widget, type NodeId, type PropertyKey, type WidgetKey } from '../comfui-interfaces'
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../storage'
 import { ComfyUIError, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types'
+import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 
 interface PromptRequest {
   client_id?: string
@@ -253,7 +254,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   return {
     prompt,
     client_id: clientId,
-    extra_data: { extra_pnginfo: { workflow: { connections: workflow.connections, data } } },
+    extra_data: { extra_pnginfo: { workflow: persistedWorkflowDocumentToComfyUIWorkflow(workflow, widgets) } },
   }
   
   function findEdgeSourceValue(edge: PersistedWorkflowConnection) {
@@ -297,7 +298,6 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       return findEdgeSourceValue(edge);
     }
   }
-
 }
 
 

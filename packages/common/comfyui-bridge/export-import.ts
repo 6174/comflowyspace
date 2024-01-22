@@ -237,7 +237,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
   };
 }
 
-function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocument: PersistedWorkflowDocument, widgets: Widgets): ComfyUIWorkflow {
+export function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocument: PersistedWorkflowDocument, widgets: Widgets): ComfyUIWorkflow {
   const { nodes, connections, id, title } = persistedWorkflowDocument;
   const comfyUIWorkflow: ComfyUIWorkflow = {
     id: id,
