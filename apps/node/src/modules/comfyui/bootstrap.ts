@@ -1,6 +1,6 @@
 import * as os from "os";
 import * as path from "path";
-import { isMac } from "../utils/env"
+import { isMac, systemProxy, systemProxyString } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
@@ -291,6 +291,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
     }
     try {
         logger.info("start comfyUI");
+        comfyUIProgressEvent.emit({
+            type: "INFO",
+            message: systemProxy.http_proxy ?  "Start ComfyUI With Proxy: " + systemProxyString : "Start ComfyUI Without Proxy"
+        })
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
             runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
