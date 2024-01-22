@@ -57,6 +57,9 @@ export function startAutoUpdater() {
 
 function startUpdateCheck(timeInterval: number) {
     try {
+        if (!findAvaliableUpdate) {
+            autoUpdater.checkForUpdates();
+        }
         updateCheckIntervaId = setInterval(() => {
             if (!findAvaliableUpdate) {
                 autoUpdater.checkForUpdates();
