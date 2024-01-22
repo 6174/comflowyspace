@@ -23,7 +23,7 @@
       "icon": "logo.icns",
       "category": "public.app-category.productivity",
       "target": {
-          "target": "dmg",
+          "target": ["zip", "dmg"],
           "arch": ["x64", "arm64"]
       }
     },
