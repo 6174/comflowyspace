@@ -18,13 +18,15 @@ export type ComfyUIWorkflowNodeOutput = {
   shape?: number;
 }
 
+export type ComfyUIID = number | string;
+
 export type ComfyUIWorkflowNode = {
-  id: number;
+  id: ComfyUIID;
   type: string;
   pos: [number, number];
   size: [number, number];
-  flags: Flags;
-  order: number;
+  flags?: Flags;
+  order?: number;
   mode: number;
   properties: any;
   widgets_values: string[];
@@ -43,7 +45,7 @@ export type ComfyUIWorkflowNode = {
 // 第五个元素是目标节点的输入插槽索引
 // 第六个元素是连接的类型
 
-export type ComfyUIWorkflowConnection = [number, number, number, number, number, FlowPropsKey];
+export type ComfyUIWorkflowConnection = [ComfyUIID, ComfyUIID, number, ComfyUIID, number, FlowPropsKey];
 
 export type ComfyUIWorkflowGroup = {
   title: string;
@@ -57,10 +59,6 @@ export type ComfyUIWorkflow = {
   nodes: ComfyUIWorkflowNode[];
   links: ComfyUIWorkflowConnection[];
   groups: ComfyUIWorkflowGroup[];
-  properties: any;
-  widgets_values: string[];
-  color: string;
-  bgcolor: string;
   version: number;
   config: any;
   extra: any;

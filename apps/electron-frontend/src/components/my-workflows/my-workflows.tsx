@@ -131,7 +131,7 @@ function WorkflowList() {
         const deleteItem = async () => {
           modal.confirm({
             title: 'Do you want to delete this item?',
-            content: 'When clicked the OK button, this dialog will be closed after 1 second',
+            okText: 'Yes',
             onOk: async () => {
               const ret = await documentDatabaseInstance.deleteDocSoft(doc.id); 
             },

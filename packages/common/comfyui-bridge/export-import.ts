@@ -1,8 +1,22 @@
 import exifr from 'exifr';
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from '../storage';
-import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
+import { ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode } from '../comfui-interfaces/comfy-workflow';
 import { Input, Widget, WidgetKey, Widgets } from '../comfui-interfaces';
 import { uuid } from '../utils';
+import { includes } from 'lodash';
+
+/**
+ *  1) Transform comflowyspace workflow JSON format to comfyui JSON format
+ *  2) Download as JSON file
+ * @param workflow 
+ */
+export async function exportWorkflowToJSONFile(workflow: PersistedWorkflowDocument, widgets: Widgets): Promise<void> {
+  const a = document.createElement('a')
+  a.download =  `${workflow.title || "workflow"}.json`
+  const comfyUIWorkflow = persistedWorkflowDocumentToComfyUIWorkflow(workflow, widgets);
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(comfyUIWorkflow)], { type: 'application/json' }))
+  a.click();
+}
 
 export async function readWorkflowFromFile( file: File, widgets: Widgets ): Promise<PersistedWorkflowDocument> {
   const reader = new FileReader()
@@ -89,7 +103,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       }
 
       if (node.type === "KSampler") {
-        params.splice(1, 0, "control_after_generate")
+        params.splice(1, 0, "control_after_generated")
       }
 
       if (node.type === "KSamplerAdvanced" || 
@@ -97,7 +111,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         node.type === "SamplerCustom" || 
         node.type === "ImpactKSamplerAdvancedBasicPipe"
         ) {
-        params.splice(2, 0, "control_after_generate")
+        params.splice(2, 0, "control_after_generated")
       }
 
       node.widgets_values.forEach((value, index) => {
@@ -223,4 +237,97 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
   };
 }
 
+function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocument: PersistedWorkflowDocument, widgets: Widgets): ComfyUIWorkflow {
+  const { nodes, connections, id, title } = persistedWorkflowDocument;
+  const comfyUIWorkflow: ComfyUIWorkflow = {
+    id: id,
+    title: title || "Untitled",
+    nodes: [],
+    links: [],
+    groups: [],
+    version: 0,
+    config: undefined,
+    extra: {
+      comflowy_version: process.env.NEXT_PUBLIC_APP_VERSION
+    }
+  };
 
+  for (const nodeId in nodes) {
+    const node = nodes[nodeId];
+    const widget = widgets[node.value.widget];
+    const comfyUINode: ComfyUIWorkflowNode = {
+      id: nodeId,
+      type: node.value.widget,
+      title: node.value.title,
+      bgcolor: node.value.bgcolor!,
+      color: node.value.color!,
+      properties: node.value.properties,
+      pos: [node.position.x, node.position.y],
+      size: [node.dimensions!.width, node.dimensions!.height],
+      inputs: node.value.inputs,
+      outputs: node.value.outputs,
+      widgets_values: [],
+      flags: undefined,
+      order: 0,
+      mode: 0
+    };
+
+    if (widget && node.value.fields) {
+      const params: string[] = [];
+      const inputs = node.value.inputs || [];
+      const inputKeys = inputs.map(input => input.name);
+      for (const [property, input] of Object.entries(widget.input.required)) {
+        if (!inputKeys.includes(property)) {
+            params.push(property)
+        }
+      }
+
+      if (node.value.widget === "KSampler") {
+        params.splice(1, 0, "control_after_generated")
+      }
+
+      if (node.value.widget === "KSamplerAdvanced" ||
+        node.value.widget === "ImpactKSamplerBasicPipe" ||
+        node.value.widget === "SamplerCustom" ||
+        node.value.widget === "ImpactKSamplerAdvancedBasicPipe"
+      ) {
+        params.splice(2, 0, "control_after_generated")
+      }
+
+      comfyUINode.widgets_values = params.map(param => node.value.fields[param]);
+    } else {
+      if (node.value.widget === "PrimitiveNode") {
+        const fieldName = node.value.outputs[0].name;
+        comfyUINode.widgets_values.push(node.value.fields[fieldName]);
+      }
+    }
+
+    comfyUIWorkflow.nodes.push(comfyUINode);
+  }
+
+  connections.forEach((connection) => {
+    const link: ComfyUIWorkflowConnection = [
+      connection.id,
+      connection.source!,
+      nodes[connection.source!].value.outputs.findIndex(output => output.name.toUpperCase() === connection.sourceHandle),
+      connection.target,
+      nodes[connection.target].value.inputs.findIndex(input => input.name.toUpperCase() === connection.targetHandle),
+      connection.handleType as any
+    ];
+    comfyUIWorkflow.links.push(link);
+  });
+
+  for (const nodeId in nodes) {
+    const node = nodes[nodeId];
+    if (node.value.widget === "Group") {
+      const group: ComfyUIWorkflowGroup = {
+        title: node.value.title!,
+        color: node.value.color!,
+        bounding: [node.position.x, node.position.y, node.dimensions!.width, node.dimensions!.height]
+      };
+      comfyUIWorkflow.groups.push(group);
+    }
+  }
+
+  return comfyUIWorkflow;
+}
