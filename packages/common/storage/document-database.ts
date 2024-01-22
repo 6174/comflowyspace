@@ -21,7 +21,7 @@ export type PersistedWorkflowNode = {
   images?: PreviewImage[],
   position: XYPosition
 }
-export type PersistedWorkflowConnection = ({id: string, source: string, target: string, sourceHandle: string, targetHandle: string, handleType: string, selected?: boolean} & Connection)
+export type PersistedWorkflowConnection = ({id: string, source: string, target: string, sourceHandle: string, targetHandle: string, handleType?: string, selected?: boolean} & Connection)
 
 export type PersistedWorkflowDocument = {
   id: string;

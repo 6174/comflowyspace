@@ -202,10 +202,10 @@ const WorkflowDocumentUtils = {
             const index = connectionsArray.toArray().findIndex(conn => conn.id === oldEdge.id);
             const connection = connectionsArray.get(index)!;
             if (connection) {
-                connection.source = newConnection.source;
-                connection.sourceHandle = newConnection.sourceHandle;
-                connection.target = newConnection.target;
-                connection.targetHandle = newConnection.targetHandle;
+                connection.source = newConnection.source!;
+                connection.sourceHandle = newConnection.sourceHandle!;
+                connection.target = newConnection.target!;
+                connection.targetHandle = newConnection.targetHandle!;
             }
         });
     },
@@ -227,7 +227,7 @@ const WorkflowDocumentUtils = {
         const workflowMap = doc.getMap("workflow");
         const connectionsArray = (workflowMap.get("connections") as Y.Array<PersistedWorkflowConnection>);
         connectionsArray.push([{
-            ...connection,
+            ...connection as any,
             id: "conn_" + uuid(),
         }])
     },

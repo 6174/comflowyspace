@@ -1,22 +1,32 @@
 import { app, dialog, MessageBoxOptions } from "electron";
 import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from 'electron-updater';
 import isDev from "electron-is-dev";
-import log from 'electron-log';
 import logger from "@comflowy/node/src/modules/utils/logger";
 
+let findAvaliableUpdate = false;
+let updateCheckIntervaId: NodeJS.Timeout;
 export function startAutoUpdater() {
     if (require('electron-squirrel-startup')) {
         app.quit();
     }
     if (!isDev) {
-        autoUpdater.on('update-available', (info: UpdateInfo) => {
-            log.debug('Update available.');
+        autoUpdater.autoDownload = false;
+        autoUpdater.on('update-available', async (info: UpdateInfo) => {
+            findAvaliableUpdate = true;
+            clearInterval(updateCheckIntervaId);
             logger.info("update-available: " + JSON.stringify(info));
+            // showMessage("Update Available", "A new version " + info.version + " is available")
+
+            try {
+                autoUpdater.downloadUpdate();
+            } catch(err: any) {
+                logger.error("download update error: " + err.message);
+                showMessage("Update App Error", "There was a problem updating the application: " + err.message)
+            }
         });
 
         autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
-            log.debug('Update downloaded.');
-
+            logger.info("update-downloaded: " + JSON.stringify(info));
             const dialogOpts: MessageBoxOptions = {
                 type: 'info',
                 buttons: ['Restart', 'Later'],
@@ -26,7 +36,14 @@ export function startAutoUpdater() {
             };
 
             dialog.showMessageBox(dialogOpts).then((returnValue) => {
-                if (returnValue.response === 0) autoUpdater.quitAndInstall();
+                if (returnValue.response === 0) {
+                    autoUpdater.quitAndInstall();
+                } else {
+                    setTimeout(() => {
+                        findAvaliableUpdate = false;
+                        startUpdateCheck(60000);
+                    }, 1000 * 60 * 60 * 3)
+                }
             });
         });
 
@@ -34,19 +51,27 @@ export function startAutoUpdater() {
             logger.error('There was a problem updating the application: ' + err.message);
         });
 
-        try {
-            autoUpdater.checkForUpdates();
-            setInterval(() => {
-                autoUpdater.checkForUpdates();
-            }, 60000);
-        } catch(err: any) {
-            logger.error("auto update error: " + err.message)
-            // dialog.showMessageBox({
-            //     type: 'info',
-            //     title: 'Fetch new version failed',
-            //     message: 'Error: ' + err.message,
-            //     buttons: ['OK']
-            // })
-        }
+        startUpdateCheck(60000);
     }
+}
+
+function startUpdateCheck(timeInterval: number) {
+    try {
+        updateCheckIntervaId = setInterval(() => {
+            if (!findAvaliableUpdate) {
+                autoUpdater.checkForUpdates();
+            }
+        }, timeInterval);
+    } catch(err: any) {
+        logger.error("auto update error: " + err.message)   
+        showMessage("Update App Error", "There was a problem updating the application: " + err.message)
+    }
+}
+
+function showMessage(title: string, message: string) {
+    dialog.showMessageBox({
+        title,
+        message,
+        buttons: ['OK']
+    });
 }
