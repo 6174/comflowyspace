@@ -115,7 +115,7 @@ export async function ApiRouteDisableExtensions(req: Request, res: Response) {
 export async function ApiRouteEnableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
-        await comfyExtensionManager.disableExtensions(extensions);
+        await comfyExtensionManager.enableExtensions(extensions);
         await restartComfyUI();
         res.send({
             success: true
@@ -148,15 +148,14 @@ export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
 
 export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
     try {
-        const { data } = req.body;
-        const extensions = data as Extension[];
+        const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.updateExtensions(extensions);
         await restartComfyUI();
         res.send({
             success: true
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ": " + err.stack);
         res.send({
             success: false,
             error: err.message
