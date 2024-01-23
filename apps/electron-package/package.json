@@ -22,10 +22,22 @@
     "mac": {
       "icon": "logo.icns",
       "category": "public.app-category.productivity",
-      "target": {
-          "target": ["zip", "dmg"],
-          "arch": ["x64", "arm64"]
-      }
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "electronDownload": {
       "mirror": "https://npm.taobao.org/mirrors/electron/"
