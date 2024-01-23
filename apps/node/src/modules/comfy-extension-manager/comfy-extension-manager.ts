@@ -34,7 +34,7 @@ class ComfyExtensionManager {
     }
   }
 
-  async getAllExtensions(): Promise<Extension[]> {
+  async getAllExtensions(checkUpdate = false): Promise<Extension[]> {
     const ret = _.cloneDeep(extensionList.custom_nodes as unknown as Extension[]);
     ret.forEach(item => {
       item.installed = false;
@@ -42,9 +42,8 @@ class ComfyExtensionManager {
       item.disabled = false;
     });
     const installedExtensions = await findAllInstalledExtensions({
-      doFetch: false,
-      doUpdate: false,
-      doUpdateCheck: false
+      doFetch: checkUpdate,
+      doUpdateCheck: checkUpdate
     });
     return ret.map(it => {
       const installedExtension = installedExtensions.find(it2 => it2.title + it2.reference === it.title + it.reference);

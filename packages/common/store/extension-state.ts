@@ -18,15 +18,15 @@ export type ExtensionsState = {
 }
 
 export type ExtensionsAction = {
-    onInit: () => Promise<void>;
+    onInit: (doUpdateCheck?: boolean) => Promise<void>;
 }
 
 export const useExtensionsState = create<ExtensionsState & ExtensionsAction>((set, get) => ({
     extensions: [],
     loading: true,
     extensionNodeMap: {},
-    onInit: async () => {
-        const ret = await getExtensionInfos();
+    onInit: async (doUpdateCheck = true) => {
+        const ret = await getExtensionInfos(doUpdateCheck);
         if (ret.success) {
             const { extensions, extensionNodeMap } = ret.data;
             set({

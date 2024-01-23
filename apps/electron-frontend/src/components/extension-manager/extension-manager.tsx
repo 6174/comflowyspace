@@ -13,7 +13,11 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
-    onInit();
+    onInit(false).then(() => {
+      setTimeout(() => {
+        onInit()
+      }, 3000)
+    });
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);

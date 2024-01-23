@@ -49,10 +49,10 @@ export async function getComfyUIEnvRequirements(): Promise<any> {
   return ret;
 }
 
-export async function getExtensionInfos(): Promise<any> {
+export async function getExtensionInfos(doUpdateCheck = false): Promise<any> {
   let ret;
   try {
-    const rest = await fetch(getBackendUrl('/api/extension_infos'));
+    const rest = await fetch(getBackendUrl(doUpdateCheck ? '/api/extension_infos?update_check=true' : '/api/extension_infos'));
     ret = await rest.json();
   } catch (err) {
     console.log(err);

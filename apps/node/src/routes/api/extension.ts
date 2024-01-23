@@ -57,7 +57,8 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
 export async function ApiRouteGetExtensions(req: Request, res: Response) {
     try {
         logger.info("start route get extensions info");
-        const extensions = await comfyExtensionManager.getAllExtensions();
+        const update_check = req.query.update_check;
+        const extensions = await comfyExtensionManager.getAllExtensions(!!update_check);
         const extensionNodeMap = await comfyExtensionManager.getExtensionNodeMap();
         const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
         res.send({
