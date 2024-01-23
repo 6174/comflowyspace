@@ -43,7 +43,7 @@ export async function runCommand(
     });
 
     subProcess.stderr?.on('data', (chunk) => {
-        logger.error("error", chunk.toString());
+        logger.error(`run command "${command}" error: ${chunk.toString()}`);
         dispatcher && dispatcher({
             message: chunk.toString()
         })

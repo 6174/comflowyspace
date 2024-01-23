@@ -70,7 +70,7 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
             }
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({ 
             success: false,
             error: err.message
@@ -86,7 +86,7 @@ export async function ApiRouteGetFrontendExtensions(req: Request, res: Response)
             data: extensions
         });
     } catch(err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message
@@ -104,7 +104,7 @@ export async function ApiRouteDisableExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({ 
             success: false,
             error: err.message
@@ -121,7 +121,7 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({ 
             success: false,
             error: err.message
@@ -138,7 +138,7 @@ export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({ 
             success: false,
             error: err.message
@@ -155,7 +155,7 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
             success: true
         });
     } catch (err: any) {
-        logger.error(err.message + ": " + err.stack);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message

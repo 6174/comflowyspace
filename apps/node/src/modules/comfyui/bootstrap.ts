@@ -335,7 +335,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             message: msg
         })
     } catch (err: any) {
-        const errMsg = `Start ComfyUI error: ${err.message}`
+        const errMsg = `Start ComfyUI error: ${err.message}, ${err.stack}`
         comfyUIProgressEvent.emit({
             type: "ERROR",
             message: errMsg
@@ -357,7 +357,7 @@ export async function stopComfyUI(): Promise<boolean> {
             message: "STOP COMFYUI SUCCESS"
         });
     } catch (error: any) {
-        const msg = `Error stopping comfyui: ${error.message}`
+        const msg = `Error stopping comfyui: ${error.message}, ${error.stack}`
         logger.error(msg);
         throw new Error(msg);
     }
@@ -368,8 +368,8 @@ export async function isComfyUIAlive(): Promise<boolean> {
     try {
         await fetch("http://127.0.0.1:8188");
         return true;
-    } catch (error) {
-        logger.error('Error checking process:', error);
+    } catch (err: any) {
+        logger.error('Error checking process:' + err.message + ":" + err.stack);
         return false;
     }
 }
