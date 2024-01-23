@@ -12,7 +12,7 @@ export default function ExportWorkflow() {
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     try {
       await exportWorkflowToJSONFile(workflow, widgets);
-      message.success("Workflow exported successfully");
+      // message.success("Workflow exported successfully");
     } catch(err) {
       message.error("Failed to export workflow:" + err.message, 5);
     }
