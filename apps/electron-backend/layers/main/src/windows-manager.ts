@@ -55,8 +55,8 @@ class WindowManager {
     }
     const window = new BrowserWindow({
       show: false,
-      width: 800,
-      height: 600,
+      width: 1200,
+      height: 800,
       backgroundColor: "#1B1B1F",
       titleBarStyle: isMacOS ? 'hiddenInset' : 'default',
       frame: isMacOS,
