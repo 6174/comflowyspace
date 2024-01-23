@@ -45,5 +45,5 @@ export type MarketModel = {
  */
 export type AllModels = { [key: string]: {
     name: string,
-    size: number
+    size: string
 }[]}
