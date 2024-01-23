@@ -99,7 +99,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
             }
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message
@@ -161,7 +161,7 @@ export async function ApiSetupConfig(req: Request, res: Response) {
             isComfyUIInstalled,
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message
@@ -200,7 +200,7 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
             success: true,
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message
@@ -215,7 +215,7 @@ export async function ApiRestartComfyUI(req: Request, res: Response) {
             success: true,
         });
     } catch(err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message
@@ -230,7 +230,7 @@ export async function ApiUpdateComfyUIAndRestart(req: Request, res: Response) {
             success: true,
         });
     } catch (err: any) {
-        logger.error(err.message);
+        logger.error(err.message + ":" + err.stack);
         res.send({
             success: false,
             error: err.message

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { ComfyUIEvents } from '@comflowy/common/comfui-interfaces/comfy-event-types';
+import { message } from 'antd';
 export function WsController(): JSX.Element {
   const clientId = useAppStore((st) => st.clientId);
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
@@ -55,6 +56,17 @@ export function WsController(): JSX.Element {
       }
     },
   });
+
+  useEffect(() => {
+    const disposable = SlotGlobalEvent.on((event) => {
+      if (event.type = GlobalEvents.comfyui_process_error) {
+        message.error("Runtime Error: " + event.data.message);
+      }
+    })
+    return () => {
+      disposable.dispose();
+    }
+  }, []);
 
   return <></>
 }

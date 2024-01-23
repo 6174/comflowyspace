@@ -24,8 +24,8 @@ export function getComfyUIDir(): string {
         try {
             const config = JSON.parse(configStr);
             comfyUIDir = config.comfyUIDir;
-        } catch(err) {
-            logger.error("parse config error", err);
+        } catch(err: any) {
+            logger.error("parse config error" + err.message + ":" + err.stack);
         }
     }
     return comfyUIDir;
@@ -38,8 +38,8 @@ export function getStableDiffusionDir(): string {
         try {
             const config = JSON.parse(configStr);
             stableDiffusionDir = config.stableDiffusionDir;
-        } catch(err) {
-            logger.error("parse config error", err);
+        } catch(err: any) {
+            logger.error("parse config error" + err.message + ":" + err.stack);
         }
     }
     return stableDiffusionDir;

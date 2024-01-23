@@ -22,6 +22,14 @@ if (isMac) {
   parseWindowsProxySettings();
 }
 
+if (systemProxy.http_proxy) {
+  process.env.GLOBAL_AGENT_HTTP_PROXY = systemProxy.http_proxy
+}
+
+if (systemProxy.https_proxy) {
+  process.env.GLOBAL_AGENT_HTTPS_PROXY = systemProxy.https_proxy
+}
+
 export const systemProxyString = JSON.stringify(systemProxy);
 
 export {systemProxy}

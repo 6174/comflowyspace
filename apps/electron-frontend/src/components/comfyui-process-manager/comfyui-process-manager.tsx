@@ -20,6 +20,14 @@ const ComfyUIProcessManager = () => {
     const msg = JSON.parse(ev.data) as Message;
     term.current && term.current.write(msg.message);
     setMessages([...messages, msg]);
+    if (msg.message.includes("RuntimeError:")) {
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.comfyui_process_error,
+        data: {
+          message: msg.message
+        }
+      });
+    }
   };
 
   const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {

@@ -98,6 +98,7 @@ import { ImportWorkflow } from "./action-import";
 import ResetDefault from "./action-reset-default";
 import { ReloadIcon } from "ui/icons";
 import { comfyElectronApi, useIsElectron } from "@/lib/electron-bridge";
+import ExportWorkflow from "./action-export-workflow";
 
 function FileMenu() {
     const [visible, setVisible] = useState(false);
@@ -108,6 +109,7 @@ function FileMenu() {
     const items: MenuItem[] = [
         getMenuItem(<ImportWorkflow/>, 'MENU_ITEM_IMPORT_WORKFLOW', null, null),
         getMenuItem(<ResetDefault/>, 'MENU_ITEM_RESET_DEFAULT', null, null),
+        getMenuItem(<ExportWorkflow/>, 'MENU_EXPORT_WORKFLOW', null, null)
     ];
     const content = (
         <div>

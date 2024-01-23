@@ -3,6 +3,7 @@ import { getFolderNamesAndPaths, getModelDir } from './model-paths';
 import * as fs from 'fs';
 import {models} from './models';
 import { AllModels, MarketModel, ModelType } from './types';
+import { getFileSizeSync } from '../utils/file-size';
 
 class ModelManager {
     getAllInstalledModels = (): AllModels => {
@@ -13,7 +14,7 @@ class ModelManager {
                 const supportedExtensions: string[] = extensions; // Remove dot from extensions
                 const files: {
                     name: string,
-                    size: number,
+                    size: string,
                     dir: string,
                     path: string
                 }[] = [];
@@ -26,7 +27,7 @@ class ModelManager {
                                     dir: dir,
                                     path: file,
                                     name: file,
-                                    size: 1
+                                    size: getFileSizeSync(path.resolve(dir, file))
                                 });
                             }
                         });
@@ -38,6 +39,7 @@ class ModelManager {
             }
         });
 
+        delete models['configs']
         return models;
     }
 

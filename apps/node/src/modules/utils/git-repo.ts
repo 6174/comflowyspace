@@ -30,8 +30,8 @@ async function forceUpdateRepo(repoPath: string): Promise<void> {
     await git.reset(['--hard', 'origin/master']); // 可根据实际情况更改分支
 
     logger.info('Repository forcefully updated.');
-  } catch (error) {
-    logger.error('Error updating repository:', error);
+  } catch (error: any) {
+    logger.error('Error updating repository:' + error.message + ":" + error.stack);
   }
 }
 

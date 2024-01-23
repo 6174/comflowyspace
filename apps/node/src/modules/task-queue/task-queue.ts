@@ -2,7 +2,16 @@ import fastq from "fastq";
 import type { queue as Queue, done as Done} from "fastq";
 
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
-export type TaskEventDispatcher = (event: Pick<TaskEvent, "type" | "message" | "data" | "progress" | "error">) => void;
+export type TaskEvent = {
+    type?: "SUCCESS" | "PROGRESS" | "FAILED",
+    task: TaskProps,
+    progress?: number,
+    message?: string,
+    data?: any,
+    error?: any
+}
+export type PartialTaskEvent = Pick<TaskEvent, "type" | "message" | "data" | "progress" | "error">
+export type TaskEventDispatcher = (event: PartialTaskEvent) => void;
 export type TaskExecutor = (dispatcher: TaskEventDispatcher, params: any) => Promise<boolean>
 export type TaskProps = {
     taskId: string,
@@ -12,14 +21,7 @@ export type TaskProps = {
     [key: string]: any
 }
 
-export type TaskEvent = {
-    type?: "SUCCESS" | "PROGRESS" | "FAILED",
-    task: TaskProps,
-    progress?: number,
-    message?: string,
-    data?: any,
-    error?: any
-}
+
 
 /**
  * TaskQueue

@@ -49,15 +49,15 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     const writeStream = fs.createWriteStream(targetPath);
 
     bufferStream.on('error', (err: any) => {
-      logger.error(`Error with buffer stream: ${err.message}`);
+      logger.error(`Error with buffer stream: ${err.message}, ${err.stack}`);
     });
 
     writeStream.on('error', (err: any) => {
-      logger.error(`Error writing to file: ${err.message}`);
+      logger.error(`Error writing to file: ${err.message}, ${err.stack}`);
     });
 
     response.body!.on('error', (err) => {
-      logger.error(`Error reading from response body: ${err.message}`);
+      logger.error(`Error reading from response body: ${err.message}, ${err.stack}`);
     });
 
     response.body!.on('data', (chunk) => {
@@ -74,7 +74,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       // this will throw if an error occurred
       await finished(writeStream);
     } catch (err: any) {
-      logger.error(`Error with streams: ${err.message}`);
+      logger.error(`Error with streams: ${err.message} + ${err.stack}`);
       throw err;
     }
 
@@ -82,7 +82,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       message: `Downloaded ${filename} to ${targetPath}`
     })
   } catch (error: any) {
-    const msg = `Error downloading from ${url}: ${error.message}`
+    const msg = `Error downloading from ${url}: ${error.message}, ${error.stack}`
     logger.error(msg);
     throw new Error(msg);
   }

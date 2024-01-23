@@ -25,26 +25,26 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
     }
   }, [bootstraped]);
 
-  if (!bootstraped) {
-    return (
-      <Bootstrap />
-    )
-  }
-
   return (
     <>
-    <Head>
-      <title>{title}</title>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
-    <div id="app" className={styles.app}>
-      <WorkspaceNav/>
-      <div className="workspace-main">
-        {children}
-      </div>
-    </div>
-      <AsyncComfyUIProcessManager/>
+      <AsyncComfyUIProcessManager />
+      {!bootstraped ? (
+        <Bootstrap />
+      ) : (
+        <>
+          <Head>
+            <title>{title}</title>
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+          </Head>
+          <div id="app" className={styles.app}>
+            <WorkspaceNav/>
+            <div className="workspace-main">
+              {children}
+            </div>
+          </div>
+        </>
+      )}
   </>
   )
 }

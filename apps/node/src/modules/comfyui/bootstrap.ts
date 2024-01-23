@@ -1,6 +1,6 @@
 import * as os from "os";
 import * as path from "path";
-import { isMac } from "../utils/env"
+import { isMac, systemProxy, systemProxyString } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
@@ -278,9 +278,10 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
 import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
+import { comfyExtensionManager } from "../comfy-extension-manager/comfy-extension-manager";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
-    type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
+    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING",
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
@@ -290,6 +291,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
     }
     try {
         logger.info("start comfyUI");
+        comfyUIProgressEvent.emit({
+            type: "INFO",
+            message: systemProxy.http_proxy ?  "Start ComfyUI With Proxy: " + systemProxyString : "Start ComfyUI Without Proxy"
+        })
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
             runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
@@ -319,8 +324,18 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
                 comfyuiProcess = process;
             });
         });
+
+        // check comfyUI extensions
+        const extensions = await comfyExtensionManager.getAllExtensions();
+        const installedExtensions = extensions.filter((extension) => extension.installed);
+        const msg = "All installed extensions: " + installedExtensions.map(ext => ext.title).join(",")
+        logger.info(msg)
+        comfyUIProgressEvent.emit({
+            type: "INFO",
+            message: msg
+        })
     } catch (err: any) {
-        const errMsg = `Start ComfyUI error: ${err.message}`
+        const errMsg = `Start ComfyUI error: ${err.message}, ${err.stack}`
         comfyUIProgressEvent.emit({
             type: "ERROR",
             message: errMsg
@@ -342,7 +357,7 @@ export async function stopComfyUI(): Promise<boolean> {
             message: "STOP COMFYUI SUCCESS"
         });
     } catch (error: any) {
-        const msg = `Error stopping comfyui: ${error.message}`
+        const msg = `Error stopping comfyui: ${error.message}, ${error.stack}`
         logger.error(msg);
         throw new Error(msg);
     }
@@ -353,20 +368,20 @@ export async function isComfyUIAlive(): Promise<boolean> {
     try {
         await fetch("http://127.0.0.1:8188");
         return true;
-    } catch (error) {
-        logger.error('Error checking process:', error);
+    } catch (err: any) {
+        logger.error('Error checking process:' + err.message + ":" + err.stack);
         return false;
     }
 }
 
-export async function restartComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean>  {
+export async function restartComfyUI(dispatcher?: TaskEventDispatcher): Promise<boolean>  {
     try {
         comfyUIProgressEvent.emit({
             type: "RESTART",
             message: "Restart ComfyUI"
         });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
-        await startComfyUI(dispatcher); // 启动新的 ComfyUI
+        await startComfyUI(dispatcher ? dispatcher : (event) => null); // 启动新的 ComfyUI
     } catch (err: any) {
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }

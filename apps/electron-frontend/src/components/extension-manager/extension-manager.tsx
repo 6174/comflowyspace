@@ -13,7 +13,11 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
-    onInit();
+    onInit(false).then(() => {
+      setTimeout(() => {
+        onInit()
+      }, 3000)
+    });
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);
@@ -94,8 +98,8 @@ function ExtensionList(props: {
         Total extensions: {displayedExtensions.length}
       </p>
       <div className="result">
-        {displayedExtensions.map(ext => {
-          return <ExtensionListItem extension={ext} key={ext.title + ext.author}/>
+        {displayedExtensions.map((ext, index) => {
+          return <ExtensionListItem extension={ext} key={ext.title + ext.author + index}/>
         })}
       </div>
     </div>
@@ -119,7 +123,7 @@ function ExtensionListItem({extension}: {
     setVisible(false);
   };
 
-  const title = `${extension.title}${extension.disabled && "(disabled)"}`;
+  const title = `${extension.title}${extension.disabled ? "(disabled)" : ""}`;
   return (
     <>
       <ExtensionModal extension={extension} visible={visible} handleOk={handleOk} handleCancel={handleCancel}/>

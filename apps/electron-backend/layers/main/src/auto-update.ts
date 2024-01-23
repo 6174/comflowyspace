@@ -1,44 +1,80 @@
-import { MessageBoxOptions, app, autoUpdater, dialog } from "electron";
-import log from 'electron-log';
-
-// const isMacOS = false;
+import { app, dialog, MessageBoxOptions } from "electron";
+import { autoUpdater, UpdateDownloadedEvent, UpdateInfo } from 'electron-updater';
 import isDev from "electron-is-dev";
+import logger from "@comflowy/node/src/modules/utils/logger";
 
+let findAvaliableUpdate = false;
+let updateCheckIntervaId: NodeJS.Timeout;
 export function startAutoUpdater() {
-    // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-    if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
+    if (require('electron-squirrel-startup')) {
         app.quit();
     }
     if (!isDev) {
-        const server = "https://refi-updater.vercel.app";
-        const feed = `${server}/update/${process.platform}/${app.getVersion()}`
-    
-        autoUpdater.setFeedURL({ url: feed, serverType: "json" })
-    
-        setInterval(() => {
-            autoUpdater.checkForUpdates()
-        }, 60000);
-    
-        autoUpdater.on('update-downloaded', (_, releaseNotes, releaseName) => {
-            log.debug('Downloaded new update');
-            const dialogOpts: MessageBoxOptions = {
-            type: 'info',
-            buttons: ['Restart', 'Later'],
-            title: 'Application Update',
-            message: process.platform === 'win32' ? releaseNotes : releaseName,
-            detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+        autoUpdater.autoDownload = false;
+        autoUpdater.on('update-available', async (info: UpdateInfo) => {
+            findAvaliableUpdate = true;
+            clearInterval(updateCheckIntervaId);
+            logger.info("update-available: " + JSON.stringify(info));
+            // showMessage("Update Available", "A new version " + info.version + " is available")
+
+            try {
+                autoUpdater.downloadUpdate();
+            } catch(err: any) {
+                logger.error("download update error: " + err.message);
+                showMessage("Update App Error", "There was a problem updating the application: " + err.message)
             }
-    
-            dialog.showMessageBox(dialogOpts).then((returnValue) => {
-            if (returnValue.response === 0) autoUpdater.quitAndInstall()
-            })
         });
-    
-        autoUpdater.on('error', message => {
-            log.error('There was a problem updating the application')
-            log.error(message)
-        })
-    } 
+
+        autoUpdater.on('update-downloaded', (info: UpdateDownloadedEvent) => {
+            logger.info("update-downloaded: " + JSON.stringify(info));
+            const dialogOpts: MessageBoxOptions = {
+                type: 'info',
+                buttons: ['Restart', 'Later'],
+                title: 'Application Update',
+                message: info.version,
+                detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+            };
+
+            dialog.showMessageBox(dialogOpts).then((returnValue) => {
+                if (returnValue.response === 0) {
+                    autoUpdater.quitAndInstall();
+                } else {
+                    setTimeout(() => {
+                        findAvaliableUpdate = false;
+                        startUpdateCheck(60000);
+                    }, 1000 * 60 * 60 * 3)
+                }
+            });
+        });
+
+        autoUpdater.on('error', (err) => {
+            logger.error('There was a problem updating the application: ' + err.message);
+        });
+
+        startUpdateCheck(60000);
+    }
 }
 
+function startUpdateCheck(timeInterval: number) {
+    try {
+        if (!findAvaliableUpdate) {
+            autoUpdater.checkForUpdates();
+        }
+        updateCheckIntervaId = setInterval(() => {
+            if (!findAvaliableUpdate) {
+                autoUpdater.checkForUpdates();
+            }
+        }, timeInterval);
+    } catch(err: any) {
+        logger.error("auto update error: " + err.message)   
+        showMessage("Update App Error", "There was a problem updating the application: " + err.message)
+    }
+}
 
+function showMessage(title: string, message: string) {
+    dialog.showMessageBox({
+        title,
+        message,
+        buttons: ['OK']
+    });
+}

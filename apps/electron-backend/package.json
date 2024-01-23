@@ -1,6 +1,6 @@
 {
   "name": "comflowy",
-  "version": "0.0.0",
+  "version": "0.0.3-alpha",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "build:preload:types": "dts-cb -i \"layers/preload/tsconfig.json\" -o \"layers/preload/exposedInMainWorld.d.ts\"",
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p layers/preload/tsconfig.json",
-    "typecheck": "npm run typecheck:main && npm run typecheck:preload"
+    "typecheck": "npm run typecheck:main && npm run typecheck:preload",
+    "rebuild": "electron-rebuild"
   },
   "dependencies": {
     "configstore": "^6.0.0",
@@ -28,7 +29,8 @@
     "simple-git": "^3.21.0",
     "uuid": "9.0.1",
     "ws": "^8.14.2",
-    "zustand": "^4.4.6"
+    "zustand": "^4.4.6",
+    "electron-updater": "^6.1.7"
   },
   "devDependencies": {
     "@chialab/esbuild-plugin-html": "^0.17.3",
@@ -51,7 +53,6 @@
     "electron-next": "^3.1.5",
     "electron-rebuild": "^3.2.9",
     "electron-squirrel-startup": "^1.0.0",
-    "electron-updater": "^6.1.7",
     "esbuild": "^0.19.8",
     "esbuild-sass-plugin": "^2.16.0",
     "eslint": "8.8.0",

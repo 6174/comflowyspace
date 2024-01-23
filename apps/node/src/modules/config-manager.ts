@@ -14,7 +14,7 @@ class MyConfigManager {
     this.config = new Configstore(configName, {}, { configPath });
   }
 
-  // 获取配置项
+  // 获取配置项 p
   get(key: string): any {
     return this.config.get(key);
   }

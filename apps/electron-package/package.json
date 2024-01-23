@@ -1,6 +1,6 @@
 {
   "name": "comflowy",
-  "version": "0.0.2",
+  "version": "0.0.3-alpha",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
       "icon": "logo.icns",
       "category": "public.app-category.productivity",
       "target": {
-          "target": "dmg",
+          "target": ["zip", "dmg"],
           "arch": ["x64", "arm64"]
       }
     },
@@ -31,7 +31,14 @@
       "mirror": "https://npm.taobao.org/mirrors/electron/"
     },
     "afterSign": "./scripts/after-sign.js",
-    "npmRebuild": true
+    "npmRebuild": true,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "6174",
+        "repo": "comflowyspace"
+      }
+    ]
   },
   "dependencies": {
     "node-pty": "^1.0.0"

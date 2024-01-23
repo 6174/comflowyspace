@@ -8,7 +8,7 @@ export default {
         "widget": "KSampler",
         "fields": {
           "seed": 156680208700286,
-          "control_after_generate": "randomize",
+          "control_after_generated": "randomize",
           "steps": 20,
           "cfg": 8,
           "sampler_name": "euler",

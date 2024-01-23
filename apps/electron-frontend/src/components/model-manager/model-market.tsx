@@ -51,7 +51,7 @@ const ModelList = ({ models }) => {
                     </Space>
                 </Col>
                 <Col span={6}>
-                    <Space>
+                    <Space style={{paddingRight: 10}}>
                         <span>Search:</span>
                         <Input type="text" placeholder='Type to search models' onChange={handleSearchInputChange} />
                     </Space>

@@ -1,11 +1,12 @@
-import extensionList from './extension-list';
-import extensionNodeMapping from './extension-node-mapping';
-import { checkExtensionsInstalled } from './check-extension-status';
+import extensionList from './extension-list.json';
+import extensionNodeMapping from './extension-node-mapping.json';
 import { Extension, ExtensionNodeMap } from './types';
 import { removeExtension } from './remove-extension';
 import { disableExtension, enableExtension } from './disable-extension';
 import { updateExtension } from './update-extension';
 import { findAllFrontendExtensions } from './frontend-extensions';
+import { findAllInstalledExtensions } from './installed-extensions';
+import _ from "lodash";
 
 class ComfyExtensionManager {
 
@@ -33,10 +34,21 @@ class ComfyExtensionManager {
     }
   }
 
-  async getAllExtensions(): Promise<Extension[]> {
-    const ret = extensionList.extensions as unknown as Extension[];
-    await checkExtensionsInstalled(ret);
-    return ret ;
+  async getAllExtensions(checkUpdate = false): Promise<Extension[]> {
+    const ret = _.cloneDeep(extensionList.custom_nodes as unknown as Extension[]);
+    ret.forEach(item => {
+      item.installed = false;
+      item.need_update = false;
+      item.disabled = false;
+    });
+    const installedExtensions = await findAllInstalledExtensions({
+      doFetch: checkUpdate,
+      doUpdateCheck: checkUpdate
+    });
+    return ret.map(it => {
+      const installedExtension = installedExtensions.find(it2 => it2.title + it2.reference === it.title + it.reference);
+      return installedExtension ? installedExtension : it;
+    });
   }
 
   async getExtensionNodeMap(): Promise<ExtensionNodeMap> {
