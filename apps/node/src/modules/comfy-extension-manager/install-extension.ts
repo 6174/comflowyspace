@@ -154,7 +154,7 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
             if (fs.existsSync(repoPath)) {
                 fsExtra.removeSync(repoPath);
             }
-            await runCommandWithPty(`git clone ${cleanUrl}`, dispatcher, {
+            await runCommandWithPty(`git clone ${cleanUrl} --recursive`, dispatcher, {
                 cwd: EXTENTION_FOLDER,
             });
             await executeInstallScript(dispatcher, cleanUrl, repoPath);
