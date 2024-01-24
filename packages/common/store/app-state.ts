@@ -367,7 +367,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
 
       /**
-       * Check is postive of is negative connection, and update graph
+       * Check is postive or is negative connection, and update graph
        */
       for (const connection of workflow.connections) {
         const sourceNode = state.graph[connection.source];
@@ -523,6 +523,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       value
     });
     onSyncFromYjsDoc();
+    set(AppState.attatchStaticCheckErrors(get()));
   },
   onNodeAttributeChange: (id: string, updates) => {
     const { doc, onSyncFromYjsDoc } = get();
