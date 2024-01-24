@@ -180,6 +180,8 @@ export const AppState = {
         ...state.graph,
         [node.id]: {
           ...node.value,
+          isPositive: false,
+          isNegative: false,
           images: state.graph[node.id]?.images || node.images || [],
         }
       }
@@ -359,8 +361,31 @@ export const useAppStore = create<AppState>((set, get) => ({
           console.log(`Unknown widget ${node.value.widget}`)
         }
       }
+
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
+      }
+
+      /**
+       * Check is postive of is negative connection, and update graph
+       */
+      for (const connection of workflow.connections) {
+        const sourceNode = state.graph[connection.source];
+        const targetNode = state.graph[connection.target];
+        const sourceOutputs = sourceNode.outputs;
+        const targetInputs = targetNode.inputs;
+        const output = sourceOutputs.find(output => output.name.toUpperCase() === connection.sourceHandle);
+        const input = targetInputs.find(input => input.name.toUpperCase() === connection.targetHandle);
+        const sourceGraphNode = state.graph[connection.source];
+        if (output && input) {
+          if (output.type === "CONDITIONING") {
+            if (input.name === "negative") {
+              sourceGraphNode.isNegative = true;
+            } else if (input.name === "positive") {
+              sourceGraphNode.isPositive = true;
+            }
+          }
+        }
       }
       return {
         ...state,
