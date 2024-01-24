@@ -386,7 +386,7 @@ function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
     setVisible(visible);
   };
 
-  if (!nodeError) {
+  if (!nodeError || nodeError.errors.length === 0) {
     return null
   }
 
@@ -419,10 +419,17 @@ function InstallMissingWidget(props: {
 }) {
   const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
   const {nodeError, node} = props;
+  const installWidget = useCallback((extension) => {
+    SlotGlobalEvent.emit({
+      type: GlobalEvents.show_missing_widgets_modal,
+      data: null
+    });
+  }, []);
 
   if (!nodeError) {
     return null;
   }
+
   const widgetNotFoundError = nodeError.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found);
 
   if (!widgetNotFoundError) {
@@ -437,18 +444,11 @@ function InstallMissingWidget(props: {
     console.log("extension", extension);
   }
 
-  const installWidget = useCallback((extension) => {
-    SlotGlobalEvent.emit({
-      type: GlobalEvents.show_missing_widgets_modal,
-      data: null
-    });
-  }, []);
-
   return (
     <div className="install-missing-widget nodrag">
       <Button type="primary" onClick={ev => {
         installWidget(extension);
-      }}>Install "{widget}"</Button>
+      }}>Install "{extension.title}"</Button>
     </div>
   )
 }

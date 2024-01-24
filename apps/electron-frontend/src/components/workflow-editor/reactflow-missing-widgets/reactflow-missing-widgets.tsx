@@ -6,9 +6,11 @@ import { useAppStore } from "@comflowy/common/store";
 import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { ExtensionIcon } from "ui/icons";
 import { openExternalURL } from "@/lib/electron-bridge";
-import { Button, Space } from "antd";
+import { Button, Space, message } from "antd";
 
 import extensionStyles from "../../extension-manager/extension-manager.style.module.scss";
+import { useRemoteTask } from "@/lib/utils/use-remote-task";
+import { getBackendUrl } from "@comflowy/common/config";
 /**
  * Component for install missing widgets
  */
@@ -45,8 +47,8 @@ export const MissingWidgetsPopoverEntry = memo(() => {
         open={visible}
         className={styles.queueWrapper}
         onOk={handleOk}
-        initialWidth={300}
-        initialHeight={300}
+        initialWidth={600}
+        initialHeight={500}
         onCancel={handleCancel}
         footer={null}
       >
@@ -87,6 +89,30 @@ function ExtensionItem(props: {
   extension: Extension
 }) {
   const {extension} = props;
+  const onInitAppState = useAppStore(st => st.onInit);
+  const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
+  const updateErrorCheck = useAppStore(st => st.updateErrorCheck);
+  const { startTask, running } = useRemoteTask({
+    api: getBackendUrl(`/api/install_extension`),
+    onMessage: async (msg) => {
+      console.log(msg);
+      if (msg.type === "SUCCESS") {
+        await onInitAppState();
+        onSyncFromYjsDoc();
+        updateErrorCheck();
+        message.success(`${extension.title} installed successfully`);
+      }
+    }
+  });
+
+  const isLoading = running;
+  const installExtension = useCallback(() => {
+    startTask({
+      name: "installExtension",
+      params: extension
+    })
+  }, [extension]);
+
   const title = (
     <div className={extensionStyles.extensionTitleBar} >
       <div className="icon">
@@ -101,7 +127,7 @@ function ExtensionItem(props: {
         </div>
       </div>
       <div className="extension-item-install">
-        <Button>Install</Button>
+        <Button loading={isLoading} disabled={isLoading} onClick={installExtension}>Install</Button>
       </div>
     </div>
   )

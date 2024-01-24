@@ -69,12 +69,16 @@ export function RefreshPageButton() {
         setVisible(visible);
     };
     const onInit = useAppStore(st => st.onInit);
+    const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
+    const updateErrorCheck = useAppStore(st => st.updateErrorCheck);
     const triggerSyncup = useCallback(async () => {
         if (triggered) {
             return;
         }
         triggered = true;
         await onInit();
+        onSyncFromYjsDoc();
+        updateErrorCheck();
         message.success("Success");
         triggered = false;
     }, []);

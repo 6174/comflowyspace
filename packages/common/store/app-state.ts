@@ -86,6 +86,7 @@ export interface AppState {
   resetWorkflowEvent: SlotEvent<any>;
   // document mutation handler
   onSyncFromYjsDoc: () => void;
+  updateErrorCheck: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onDeleteNodes: (changes: (Node | { id: string })[]) => void
@@ -226,18 +227,21 @@ export const AppState = {
         return;
       }
 
+      // clean old errors 
+      error.errors = error.errors.filter(err => {
+        return err.type !== ComfyUIErrorTypes.widget_not_found && err.type !== ComfyUIErrorTypes.image_not_in_list;
+      });
+
       // check widget exist
       if (!widget) {
-        if (!error.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found)) {
-          error.errors.push({
-            type: ComfyUIErrorTypes.widget_not_found,
-            message: `Widget \`${sdnode.widget}\` not found`,
-            details: `${sdnode.widget}`,
-            extra_info: {
-              widget: sdnode.widget
-            }
-          });
-        }
+        error.errors.push({
+          type: ComfyUIErrorTypes.widget_not_found,
+          message: `Widget \`${sdnode.widget}\` not found`,
+          details: `${sdnode.widget}`,
+          extra_info: {
+            widget: sdnode.widget
+          }
+        });
         findError = true;
         flowError!.node_errors[id] = error as any;
       }
@@ -246,14 +250,11 @@ export const AppState = {
         const image = sdnode.fields.image;
         const options = widget.input.required.image[0] as [string];
         if (options.indexOf(image) < 0) {
-          const errorInfo = {
-            type: ComfyUIErrorTypes.value_not_in_list,
+          error.errors.push({
+            type: ComfyUIErrorTypes.image_not_in_list,
             message: `Image ${image} not in list`,
             details: `[ ${options.join(", ")} ]`,
-          }
-          if (!error.errors.find(err => err.type === ComfyUIErrorTypes.value_not_in_list && err.message === errorInfo.message)) {
-            error.errors.push();
-          }
+          });
           findError = true;
           flowError!.node_errors[id] = error;
         }
@@ -618,6 +619,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
     st.onSyncFromYjsDoc();
 
+    set(AppState.attatchStaticCheckErrors(get()));
+  },
+  updateErrorCheck: () => {
     set(AppState.attatchStaticCheckErrors(get()));
   },
   /**

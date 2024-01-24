@@ -5,6 +5,7 @@ import { comfyExtensionManager } from '../../modules/comfy-extension-manager/com
 import { Extension } from '../../modules/comfy-extension-manager/types';
 import { comfyUIProgressEvent, restartComfyUI } from 'src/modules/comfyui/bootstrap';
 import logger from 'src/modules/utils/logger';
+import { checkAExtensionInstalled } from 'src/modules/comfy-extension-manager/check-extension-status';
 
 /**
  * fetch all extensions
@@ -26,6 +27,14 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                         type: event.type == "FAILED" ? "ERROR" : "INFO",
                         message: event.message || ""
                     })
+                }
+                const extension = taskParams.params as Extension;
+                await checkAExtensionInstalled(extension)
+                if (extension.installed) {
+                    newDispatcher({
+                        message: "Extension already installed"
+                    });
+                    return true;
                 }
                 await installExtension(newDispatcher, taskParams.params);
                 await restartComfyUI(dispatcher);
