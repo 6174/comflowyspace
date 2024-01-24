@@ -153,16 +153,27 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
         });
         return true;
     }
-    try {
-        dispatcher({
-            message: `Start installing Python=3.10.8`
-        });
-        await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
-        dispatcher({
-            message: `Install Python=3.10.8 finished`
-        });
-    } catch (e: any) {
-        throw new Error(`Install python error: ${e.message}`)
+
+    let success = false;
+    let lastError = null;
+    for (let i = 0; i < 5; i++) {
+        try {
+            dispatcher({
+                message: `Start installing Python=3.10.8`
+            });
+            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+            dispatcher({
+                message: `Install Python=3.10.8 finished`
+            });
+            success = true;
+            break;
+        } catch (e: any) {
+            lastError = e;
+        }
+    }
+
+    if (!success) {
+        throw new Error(`Install python error: ${lastError.message}`);
     }
     return true;
 }
