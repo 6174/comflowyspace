@@ -14,6 +14,7 @@ import { getWidgetIcon } from './reactflow-node-icons';
 import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
 import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -416,7 +417,6 @@ function InstallMissingWidget(props: {
   nodeError?: ComfyUINodeError;
   node: SDNode;
 }) {
-  const extensions = useExtensionsState(st => st.extensions);
   const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
   const {nodeError, node} = props;
 
@@ -431,16 +431,24 @@ function InstallMissingWidget(props: {
 
   const widget = node.widget;
   const extension = extensionsNodeMap[widget];
-  console.log(widget, extension, extensionsNodeMap)
   if (!extension) {
     return null
   } else {
     console.log("extension", extension);
   }
 
+  const installWidget = useCallback((extension) => {
+    SlotGlobalEvent.emit({
+      type: GlobalEvents.show_missing_widgets_modal,
+      data: null
+    });
+  }, []);
+
   return (
     <div className="install-missing-widget nodrag">
-      <Button type="primary">Install "{widget}"</Button>
+      <Button type="primary" onClick={ev => {
+        installWidget(extension);
+      }}>Install "{widget}"</Button>
     </div>
   )
 }

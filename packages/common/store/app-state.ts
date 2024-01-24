@@ -65,6 +65,7 @@ export interface AppState {
   slectionMode: SelectionMode
   transform: number
   transforming: boolean
+  unknownWidgets: Set<string>;
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
 
@@ -220,19 +221,23 @@ export const AppState = {
       const sdnode = node.value;
       const widget = widgets[sdnode.widget];
       const error = flowError!.node_errors[id] || { errors: [] };
+
       if (["Reroute", "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
         return;
       }
+
       // check widget exist
       if (!widget) {
-        error.errors.push({
-          type: ComfyUIErrorTypes.widget_not_found,
-          message: `Widget \`${sdnode.widget}\` not found`,
-          details: `${sdnode.widget}`,
-          extra_info: {
-            widget: sdnode.widget
-          }
-        });
+        if (!error.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found)) {
+          error.errors.push({
+            type: ComfyUIErrorTypes.widget_not_found,
+            message: `Widget \`${sdnode.widget}\` not found`,
+            details: `${sdnode.widget}`,
+            extra_info: {
+              widget: sdnode.widget
+            }
+          });
+        }
         findError = true;
         flowError!.node_errors[id] = error as any;
       }
@@ -241,11 +246,14 @@ export const AppState = {
         const image = sdnode.fields.image;
         const options = widget.input.required.image[0] as [string];
         if (options.indexOf(image) < 0) {
-          error.errors.push({
-            type: "value_not_in_list",
+          const errorInfo = {
+            type: ComfyUIErrorTypes.value_not_in_list,
             message: `Image ${image} not in list`,
             details: `[ ${options.join(", ")} ]`,
-          });
+          }
+          if (!error.errors.find(err => err.type === ComfyUIErrorTypes.value_not_in_list && err.message === errorInfo.message)) {
+            error.errors.push();
+          }
           findError = true;
           flowError!.node_errors[id] = error;
         }
@@ -275,6 +283,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   graph: {},
   nodes: [],
   edges: [],
+  unknownWidgets: new Set<string>(),
 
   // temporary state
   slectionMode: "default",
@@ -343,7 +352,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-
+      const unknownWidgets = new Set<string>();
       throttledUpdateDocument({
         ...st.persistedWorkflow!,
         last_edit_time: +new Date(),
@@ -361,6 +370,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             name: node.value.widget,
             display_name: node.value.widget
           }, node);
+          unknownWidgets.add(node.value.widget);
           console.log(`Unknown widget ${node.value.widget}`)
         }
       }
@@ -392,6 +402,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
       return {
         ...state,
+        unknownWidgets
       }
     }, true)
   },

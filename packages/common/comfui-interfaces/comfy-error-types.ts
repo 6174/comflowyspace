@@ -58,6 +58,7 @@
 // }
 export enum ComfyUIErrorTypes {
   widget_not_found = "widget_not_found",
+  value_not_in_list = "value_not_in_list"
 }
 
 export type ComfyUIError = {
