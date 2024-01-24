@@ -205,7 +205,7 @@ export const AppState = {
   },
   attatchStaticCheckErrors(state: AppState, error?: ComfyUIExecuteError): AppState {
     // check all nodes are valid;
-    let flowError: ComfyUIExecuteError | undefined = error || {
+    let flowError: ComfyUIExecuteError | undefined = error || state.promptError || {
       error: {
         message: ""
       },
