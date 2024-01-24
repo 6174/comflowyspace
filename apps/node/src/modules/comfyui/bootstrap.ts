@@ -128,7 +128,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
         } else if (systemType.toUpperCase().includes("LINUX")) {
             installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh';
             installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
-            installCommand = ['bash', [installerPath, '-b']];
+            installCommand = ['bash', [installerPath, '-b', '-u']];
         }
         await downloadUrl(dispatcher,installerUrl!, installerPath!)
         await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
