@@ -424,6 +424,12 @@ function InstallMissingWidget(props: {
       type: GlobalEvents.show_missing_widgets_modal,
       data: null
     });
+    setTimeout(() => {
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.install_missing_widget,
+        data: extension
+      });
+    }, 10);
   }, []);
 
   if (!nodeError) {

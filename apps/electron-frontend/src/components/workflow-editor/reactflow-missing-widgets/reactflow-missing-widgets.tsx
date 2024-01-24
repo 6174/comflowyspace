@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import styles from "./reactflow-missing-widgets.style.module.scss";
 import { DraggableModal } from "ui/antd/draggable-modal";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
@@ -113,8 +113,24 @@ function ExtensionItem(props: {
     })
   }, [extension]);
 
+  const ref = useRef<HTMLDivElement>();
+  useEffect(() => {
+    const disposable = SlotGlobalEvent.on((event) => {
+      if (event.type === GlobalEvents.install_missing_widget) {
+        const extension2 = event.data as Extension;
+        if (extension2.title === extension.title) {
+          // ref.current.scrollIntoView({ behavior: 'auto' })
+          installExtension();
+        }
+      }
+    });
+    return () => {
+      disposable.dispose();
+    }
+  }, [extension, ref]);
+
   const title = (
-    <div className={extensionStyles.extensionTitleBar} >
+    <div className={extensionStyles.extensionTitleBar} ref={ref}>
       <div className="icon">
         <ExtensionIcon />
       </div>
