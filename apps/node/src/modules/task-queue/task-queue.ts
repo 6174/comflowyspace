@@ -39,11 +39,6 @@ class TaskQueue {
 
     private processJob = async (job: TaskProps, done: Done) => {
         const { executor, params } = job;
-        this.#dispatchTaskProgressEvent({
-            type: "PROGRESS",
-            task: job,
-            message: "Start task " + job.name
-        });
         try {
             const result = await executor((event) => {
                 this.#dispatchTaskProgressEvent({
