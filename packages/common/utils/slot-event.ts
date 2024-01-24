@@ -131,7 +131,8 @@ export enum GlobalEvents {
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",
   initial_launch = "initial_launch",
-  comfyui_process_error = "comfyui_process_error"
+  comfyui_process_error = "comfyui_process_error",
+  show_missing_widgets_modal = "show_missing_widgets_modal"
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;

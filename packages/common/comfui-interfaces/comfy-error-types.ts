@@ -56,9 +56,12 @@
 //     }
 //   }
 // }
+export enum ComfyUIErrorTypes {
+  widget_not_found = "widget_not_found",
+}
 
-export interface ComfyUIError {
-  type?: string;
+export type ComfyUIError = {
+  type?: ComfyUIErrorTypes | string;
   message: string;
   details?: string;
   extra_info?: {
@@ -68,13 +71,15 @@ export interface ComfyUIError {
   } | any;
 };
 
-export interface ComfyUINodeError {
+
+export type ComfyUINodeError = {
   errors: ComfyUIError[];
   dependent_outputs?: string[];
   class_type?: string;
+  extra_info?: any;
 }
 
-export interface ComfyUIExecuteError {
+export type ComfyUIExecuteError = {
   error: ComfyUIError;
   node_errors: Record<string, ComfyUINodeError>;
 }

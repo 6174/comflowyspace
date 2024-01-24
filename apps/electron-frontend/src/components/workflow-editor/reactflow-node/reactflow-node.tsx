@@ -1,8 +1,8 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
 import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
-import { Image, Popover } from 'antd';
+import { Button, Image, Popover } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
@@ -12,7 +12,8 @@ import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
-import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+import { useExtensionsState } from '@comflowy/common/store/extension-state';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -265,12 +266,13 @@ export const NodeComponent = memo(({
                 ))}
               </div>
             </div>
-
+            
             <div className="node-params">
               {params.map(({ property, input }) => (
                 <InputContainer key={property} name={property} id={node.id} input={input} widget={widget} />
               ))}
             </div>
+            <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
             <div style={{ height: 10 }}></div>
           </div>
 
@@ -350,7 +352,6 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
     transformFactor = Math.max(1, (1 / transform)) * 2.8;
   };
 
-
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -407,6 +408,39 @@ function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
       >
         Errors
       </Popover>
+    </div>
+  )
+}
+
+function InstallMissingWidget(props: {
+  nodeError?: ComfyUINodeError;
+  node: SDNode;
+}) {
+  const extensions = useExtensionsState(st => st.extensions);
+  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
+  const {nodeError, node} = props;
+
+  if (!nodeError) {
+    return null;
+  }
+  const widgetNotFoundError = nodeError.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found);
+
+  if (!widgetNotFoundError) {
+    return null;
+  }
+
+  const widget = node.widget;
+  const extension = extensionsNodeMap[widget];
+  console.log(widget, extension, extensionsNodeMap)
+  if (!extension) {
+    return null
+  } else {
+    console.log("extension", extension);
+  }
+
+  return (
+    <div className="install-missing-widget nodrag">
+      <Button type="primary">Install "{widget}"</Button>
     </div>
   )
 }

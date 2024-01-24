@@ -14,7 +14,7 @@ export type Extension = {
 export type ExtensionsState = {
     extensions: Extension[],
     loading: boolean,
-    extensionNodeMap: Record<string, string[]>
+    extensionNodeMap: Record<string, Extension>
 }
 
 export type ExtensionsAction = {
@@ -32,9 +32,23 @@ export const useExtensionsState = create<ExtensionsState & ExtensionsAction>((se
             set({
                 loading: false,
                 extensions: extensions,
-                extensionNodeMap: extensionNodeMap
+                extensionNodeMap: transformModeMap(extensionNodeMap, extensions)
             });
             console.log("extension infos", ret);
         }
     },
 }));
+
+export function transformModeMap(extensionNodeMap: Record<string, string[]>, extensions: Extension[]): Record<string, Extension> {
+    const ret: Record<string, Extension> = {};
+    for (let extensionName in extensionNodeMap) {
+        const widgetList = extensionNodeMap[extensionName];
+        const extension = extensions.find(ext => ext.title === extensionName);
+        if (extension) {
+            widgetList.forEach(widgetName => {
+                ret[widgetName] = extension;
+            })
+        }
+    }
+    return ret;
+}

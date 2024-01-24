@@ -48,7 +48,7 @@ import exifr from 'exifr'
 
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
-import { ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
+import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
 import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 
 export type SelectionMode = "figma" | "default";
@@ -226,9 +226,12 @@ export const AppState = {
       // check widget exist
       if (!widget) {
         error.errors.push({
-          type: "widget_not_found",
+          type: ComfyUIErrorTypes.widget_not_found,
           message: `Widget \`${sdnode.widget}\` not found`,
-          details: `${sdnode.widget}`
+          details: `${sdnode.widget}`,
+          extra_info: {
+            widget: sdnode.widget
+          }
         });
         findError = true;
         flowError!.node_errors[id] = error as any;
