@@ -18,10 +18,10 @@ export function startAutoUpdater() {
             // showMessage("Update Available", "A new version " + info.version + " is available")
 
             try {
-                autoUpdater.downloadUpdate();
+                await autoUpdater.downloadUpdate();
             } catch(err: any) {
                 logger.error("download update error: " + err.message);
-                showMessage("Update App Error", "There was a problem updating the application: " + err.message)
+                // showMessage("Update App Error", "There was a problem updating the application: " + err.message)
             }
         });
 
@@ -55,19 +55,23 @@ export function startAutoUpdater() {
     }
 }
 
-function startUpdateCheck(timeInterval: number) {
+async function startUpdateCheck(timeInterval: number) {
     try {
         if (!findAvaliableUpdate) {
-            autoUpdater.checkForUpdates();
+            await autoUpdater.checkForUpdates();
         }
-        updateCheckIntervaId = setInterval(() => {
+        updateCheckIntervaId = setInterval(async () => {
             if (!findAvaliableUpdate) {
-                autoUpdater.checkForUpdates();
+                try {
+                    await autoUpdater.checkForUpdates();
+                } catch(err: any) {
+                    logger.error("auto update error: " + err.message)   
+                }
             }
         }, timeInterval);
     } catch(err: any) {
         logger.error("auto update error: " + err.message)   
-        showMessage("Update App Error", "There was a problem updating the application: " + err.message)
+        // showMessage("Update App Error", "There was a problem updating the application: " + err.message)
     }
 }
 
