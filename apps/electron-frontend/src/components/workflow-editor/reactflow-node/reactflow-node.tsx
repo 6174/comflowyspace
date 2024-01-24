@@ -441,7 +441,7 @@ function InstallMissingWidget(props: {
   if (!extension) {
     return null
   } else {
-    console.log("extension", extension);
+    console.log("miss extension", extension, node);
   }
 
   return (

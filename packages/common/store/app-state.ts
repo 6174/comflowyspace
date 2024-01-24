@@ -372,7 +372,7 @@ export const useAppStore = create<AppState>((set, get) => ({
             display_name: node.value.widget
           }, node);
           unknownWidgets.add(node.value.widget);
-          console.log(`Unknown widget ${node.value.widget}`)
+          // console.log(`Unknown widget ${node.value.widget}`)
         }
       }
 

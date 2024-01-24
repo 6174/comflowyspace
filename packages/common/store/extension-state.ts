@@ -6,6 +6,7 @@ export type Extension = {
     author: string;
     description: string;
     installed: boolean;
+    reference: string;
     disabled: boolean;
     need_update: boolean;
     [_: string]: any
@@ -50,5 +51,6 @@ export function transformModeMap(extensionNodeMap: Record<string, string[]>, ext
             })
         }
     }
+    // console.log("mapping", ret);
     return ret;
 }
