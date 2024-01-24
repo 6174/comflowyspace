@@ -22,6 +22,8 @@ interface Props {
     value: SDNode;
     dimensions: Dimensions
   }>
+  isPositive: boolean;
+  isNegative: boolean;
   progressBar?: number;
   nodeError?: ComfyUINodeError;
   widget: Widget;
@@ -32,6 +34,8 @@ export const NodeComponent = memo(({
   node,
   nodeError,
   progressBar,
+  isPositive,
+  isNegative,
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
@@ -167,8 +171,7 @@ export const NodeComponent = memo(({
 
   const invisible = transform < 0.2;
 
-  const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
-
+  
   const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
     const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
     return {
@@ -176,6 +179,20 @@ export const NodeComponent = memo(({
       filename: image.filename
     }
   });
+  
+  let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+  let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
+
+  if (isPositive) {
+    nodeBgColor = "#212923";
+    nodeColor = "#67A166";
+  } 
+
+  if (isNegative) {
+    nodeBgColor = "#261E1F";
+    nodeColor = "#DE654B";
+  }
+
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
@@ -183,10 +200,12 @@ export const NodeComponent = memo(({
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${nodeError ? nodeStyles.reactFlowError : ""}
+      ${isPositive ? "positive-node" : ""}
+      ${isNegative ? "negative-node" : ""}
       `} style={{
-      '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
-      '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
+        '--node-color': nodeColor,
+        '--node-border-color': nodeColor,
+        '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
 
       <NodeResizeControl
@@ -210,7 +229,11 @@ export const NodeComponent = memo(({
         <div className='node-inner'>
           <div className="node-header">
             <h2 className="node-title">
-              {getWidgetIcon(widget)} {nodeTitle} <NodeError nodeError={nodeError}/>
+              {getWidgetIcon(widget)} 
+              {nodeTitle} 
+              {isPositive && <span>{"("}Positive{")"}</span>} 
+              {isNegative && <span>{"("}Negative{")"}</span>} 
+              <NodeError nodeError={nodeError}/>
             </h2>
 
             {isInProgress? 
