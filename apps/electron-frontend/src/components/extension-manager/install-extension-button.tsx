@@ -12,11 +12,8 @@ export function InstallExtensionButton(props: {extension: Extension}) {
         onMessage: async (msg) => {
             console.log(msg);
             if (msg.type === "SUCCESS") {
+                await onInit();
                 message.success("Extension installed successfully");
-                await onInit(false);
-                setTimeout(() => {
-                    onInit()
-                }, 3000)
             }
         }
     });

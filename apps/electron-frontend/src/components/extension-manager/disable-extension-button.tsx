@@ -24,11 +24,8 @@ export function DisableExtensionButton(props: {extension: Extension}) {
             });
             const ret = await res.json();
             if (ret.success) {
+                await onInit()
                 message.success("Success");
-                await onInit(false);
-                setTimeout(() => {
-                    onInit()
-                }, 3000)
             } else {
                 message.error(ret.error)
             }
