@@ -6,7 +6,8 @@ import { useCallback, useState } from "react";
 export function RemoveExtensionButton(props: {extension: Extension}) {
     const {extension} = props;
     const disabled = extension.disabled
-    const {onInit} = useExtensionsState()
+    const onInit = useExtensionsState(st => st.onInit);
+    const onRemoveExtension = useExtensionsState(st => st.removeExtension);
     const [running, setRunning] = useState(false);
     const api = getBackendUrl("/api/remove_extensions");
     const removeExtension = useCallback(async () => {
@@ -23,7 +24,7 @@ export function RemoveExtensionButton(props: {extension: Extension}) {
             });
             const ret = await res.json();
             if (ret.success) {
-                await onInit();
+                onRemoveExtension(extension);
                 message.success("Success");
             } else {
                 message.error(ret.error)
@@ -32,7 +33,7 @@ export function RemoveExtensionButton(props: {extension: Extension}) {
             message.error("Unexpected error: ", err);
         }
         setRunning(false);
-    }, [extension, onInit]);
+    }, [extension, onInit, onRemoveExtension]);
 
     if (!extension.installed) {
         return null

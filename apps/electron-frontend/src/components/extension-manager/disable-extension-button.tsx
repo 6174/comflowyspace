@@ -9,7 +9,8 @@ export function DisableExtensionButton(props: {extension: Extension}) {
     const [running, setRunning] = useState(false);
     const disable_api = getBackendUrl("/api/disable_extensions");
     const enable_api = getBackendUrl("/api/enable_extensions");
-    const {onInit} = useExtensionsState()
+    const onInit = useExtensionsState(st => st.onInit);
+    const onDisableExtension = useExtensionsState(st => st.onDisableExtension);
     const diableExtension = useCallback(async (disable: boolean) => {
         try {
             setRunning(true);
@@ -24,7 +25,7 @@ export function DisableExtensionButton(props: {extension: Extension}) {
             });
             const ret = await res.json();
             if (ret.success) {
-                await onInit()
+                onDisableExtension(extension, disable);
                 message.success("Success");
             } else {
                 message.error(ret.error)
@@ -33,7 +34,7 @@ export function DisableExtensionButton(props: {extension: Extension}) {
             message.error("Unexpected error: ", err);
         }
         setRunning(false);
-    }, [extension, onInit]);
+    }, [extension, onInit, onDisableExtension]);
 
     if (!extension.installed) {
         return null

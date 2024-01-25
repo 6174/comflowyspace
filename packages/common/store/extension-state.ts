@@ -20,6 +20,8 @@ export type ExtensionsState = {
 
 export type ExtensionsAction = {
     onInit: (doUpdateCheck?: boolean) => Promise<void>;
+    removeExtension: (extension: Extension) => void;
+    onDisableExtension: (extension: Extension, disabled: boolean) => void;
 }
 
 export const useExtensionsState = create<ExtensionsState & ExtensionsAction>((set, get) => ({
@@ -38,6 +40,22 @@ export const useExtensionsState = create<ExtensionsState & ExtensionsAction>((se
             console.log("extension infos", ret);
         }
     },
+    removeExtension: (extension: Extension) => {
+        set({
+            extensions: get().extensions.filter(it => it.title !== extension.title)
+        })
+    },
+    onDisableExtension: (extension: Extension, disabled: boolean) => {
+        const newExtensions = get().extensions.map(ext => {
+            if (ext.title === extension.title) {
+                ext.disabled = disabled;
+            }
+            return ext;
+        });
+        set({
+            extensions: newExtensions
+        })
+    }
 }));
 
 export function transformModeMap(extensionNodeMap: Record<string, string[]>, extensions: Extension[]): Record<string, Extension> {
