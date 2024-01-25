@@ -448,7 +448,7 @@ export async function updateComfyUI(dispatcher: TaskEventDispatcher): Promise<bo
             message: "Try Update ComfyUI"
         });
         const repoPath = getComfyUIDir();
-        await runCommandWithPty(`git pull`, (event => {
+        await runCommand(`git pull`, (event => {
             dispatcher(event);
             const cevent: ComfyUIProgressEventType = {
                 type: "INFO",
