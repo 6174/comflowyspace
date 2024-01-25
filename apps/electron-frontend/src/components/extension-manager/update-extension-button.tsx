@@ -23,7 +23,10 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             const ret = await res.json();
             if (ret.success) {
                 message.success("Success");
-                await onInit();
+                await onInit(false);
+                setTimeout(() => {
+                    onInit()
+                }, 3000)
             } else {
                 message.error(ret.error)
             }

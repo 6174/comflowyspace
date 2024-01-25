@@ -25,7 +25,10 @@ export function RemoveExtensionButton(props: {extension: Extension}) {
             if (ret.success) {
                 message.success("Success");
                 setRunning(false);
-                await onInit();
+                await onInit(false);
+                setTimeout(() => {
+                    onInit()
+                }, 3000)
             } else {
                 message.error(ret.error)
             }

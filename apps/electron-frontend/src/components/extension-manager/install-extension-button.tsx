@@ -9,11 +9,14 @@ export function InstallExtensionButton(props: {extension: Extension}) {
     const {onInit} = useExtensionsState()
     const {startTask, running, messages} = useRemoteTask({
         api: getBackendUrl(`/api/install_extension`),
-        onMessage: (msg) => {
+        onMessage: async (msg) => {
             console.log(msg);
             if (msg.type === "SUCCESS") {
                 message.success("Extension installed successfully");
-                onInit();
+                await onInit(false);
+                setTimeout(() => {
+                    onInit()
+                }, 3000)
             }
         }
     });
