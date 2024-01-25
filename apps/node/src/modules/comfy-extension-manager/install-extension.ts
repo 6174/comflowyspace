@@ -55,7 +55,7 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         dispatcher({
             message: `Start installing pip packages ${extension.title}`
         });
-        await runCommandWithPty(`${PIP_PATH} install ${extension.pip.join(" ")}`)
+        await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
     }
 
     if (res) {
@@ -154,7 +154,7 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
             if (fs.existsSync(repoPath)) {
                 fsExtra.removeSync(repoPath);
             }
-            await runCommandWithPty(`git clone ${cleanUrl} --recursive`, dispatcher, {
+            await runCommand(`git clone ${cleanUrl} --recursive`, dispatcher, {
                 cwd: EXTENTION_FOLDER,
             });
             await executeInstallScript(dispatcher, cleanUrl, repoPath);
