@@ -21,11 +21,10 @@ export const MissingWidgetsPopoverEntry = memo(() => {
   };
 
   const handleOk = e => {
-    console.log(e);
     setVisible(false);
   };
 
-  const handleCancel = useCallback(e => {
+  const handleCancel = useCallback(() => {
     setVisible(false);
   }, [setVisible]);
 
@@ -40,6 +39,30 @@ export const MissingWidgetsPopoverEntry = memo(() => {
     }
   }, []);
 
+  const unknownWidgets = useAppStore(st => st.unknownWidgets);
+  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
+
+  const extensions = new Set<Extension>();
+  unknownWidgets.forEach(widgetName => {
+    const extension = extensionsNodeMap[widgetName];
+    if (extension) {
+      extensions.add(extension);
+    }
+  });
+
+
+  const extensionsArr: Extension[] = [];
+  extensions.forEach(extension => {
+    extensionsArr.push(extension);
+  });
+
+
+  useEffect(() => {
+    if (extensionsArr.length === 0) {
+      handleCancel();
+    }
+  }, [unknownWidgets]);
+
   return (
     <div className="missing-widgets-entry">
       <DraggableModal
@@ -52,33 +75,16 @@ export const MissingWidgetsPopoverEntry = memo(() => {
         onCancel={handleCancel}
         footer={null}
       >
-        <MissingWidgetInstallHelper />
+        <MissingWidgetInstallHelper extensions={extensionsArr}/>
       </DraggableModal>
     </div>
   )
 });
 
-function MissingWidgetInstallHelper() {
-  const unknownWidgets = useAppStore(st => st.unknownWidgets);
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
-
-  const extensions = new Set<Extension>();
-  unknownWidgets.forEach(widgetName => {
-    const extension = extensionsNodeMap[widgetName];
-    if (extension) {
-      extensions.add(extension);
-    }
-  });
-
-  const extensionsArr: Extension[] = [];
-  extensions.forEach(extension => {
-    extensionsArr.push(extension);
-  });
-
-
+function MissingWidgetInstallHelper({ extensions }: { extensions: Extension[]}) {
   return (
     <div className={styles.missingWidgetsContent}>
-      {extensionsArr.map(extension => {
+      {extensions.map(extension => {
         return <ExtensionItem extension={extension} key={extension.title}/>
       })}
     </div>
