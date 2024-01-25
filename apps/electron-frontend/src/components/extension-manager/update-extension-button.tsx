@@ -31,7 +31,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             message.error("Unexpected error: ", err);
         }
         setRunning(false);
-    }, [extension]);
+    }, [extension, onInit]);
 
     if (!extension.need_update || extension.disabled) {
         return null

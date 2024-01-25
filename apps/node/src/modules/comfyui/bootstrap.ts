@@ -394,7 +394,6 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             message: errMsg
         });
         logger.error(errMsg);
-        throw new Error(errMsg);
     }
     return true;
 }

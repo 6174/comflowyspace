@@ -69,17 +69,18 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
         const update_check = req.query.update_check;
         const extensions = await comfyExtensionManager.getAllExtensions(!!update_check);
         const extensionNodeMap = await comfyExtensionManager.getExtensionNodeMap();
-        const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
+        // const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
         res.send({
             success: true,
             data: {
                 extensions,
                 extensionNodeMap,
-                extensionNodeList
+                // extensionNodeList
             }
         });
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
+        console.log(err.stack);
         res.send({ 
             success: false,
             error: err.message
