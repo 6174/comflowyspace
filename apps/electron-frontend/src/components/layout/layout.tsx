@@ -10,7 +10,6 @@ import styles from "./layout.style.module.scss";
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
 import { BulbIcon, ExtensionIcon, ModelIcon, WorkflowIcon } from 'ui/icons'
-import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
@@ -27,7 +26,6 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
 
   return (
     <>
-      <AsyncComfyUIProcessManager />
       {!bootstraped ? (
         <Bootstrap />
       ) : (

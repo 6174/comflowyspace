@@ -6,6 +6,7 @@ import "../styles/global.scss";
 import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 import { DraggableModalProvider } from "ui/antd/draggable-modal";
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
+import { AsyncComfyUIProcessManager } from "@/components/comfyui-process-manager/comfyui-process-manager-async";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
@@ -18,6 +19,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ConfigProvider theme={theme}>
       <DraggableModalProvider>
+        <AsyncComfyUIProcessManager />
         <JSXCO {...pageProps} />
       </DraggableModalProvider>
     </ConfigProvider>

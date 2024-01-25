@@ -12,7 +12,6 @@ import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-toprigh
 import { useRouter } from 'next/router';
 import { PersistedFullWorkflow, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
-import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
@@ -419,7 +418,6 @@ export default function WorkflowEditor() {
         )}
         {menu && <ContextMenu hide={onPaneClick} {...menu} />}
       </ReactFlow>
-      <AsyncComfyUIProcessManager/>
       <ReactflowExtensionController/>
       { widgetTreeContext && <WidgetTreeOnPanel context={widgetTreeContext}/>}
       <MissingWidgetsPopoverEntry/>
