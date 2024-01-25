@@ -429,6 +429,10 @@ function InstallMissingWidget(props: {
         type: GlobalEvents.install_missing_widget,
         data: extension
       });
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.show_comfyprocess_manager,
+        data: null
+      });
     }, 10);
   }, []);
 

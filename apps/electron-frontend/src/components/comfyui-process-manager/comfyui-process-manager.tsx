@@ -139,10 +139,17 @@ const ComfyUIProcessManager = () => {
         restart();
       }
     });
-    
+
+    const dispose3 = SlotGlobalEvent.on((ev) => {
+      if (ev.type === GlobalEvents.show_comfyprocess_manager) {
+        showModal();
+      }
+    });
+
     return () => {
       dispose();
       dispose2.dispose();
+      dispose3.dispose();
     }
   }, [])
 
