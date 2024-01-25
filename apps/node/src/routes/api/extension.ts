@@ -37,7 +37,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                     return true;
                 }
                 await installExtension(newDispatcher, taskParams.params);
-                await restartComfyUI(dispatcher);
+                restartComfyUI(dispatcher);
                 return true;
             }
         };
@@ -108,10 +108,10 @@ export async function ApiRouteDisableExtensions(req: Request, res: Response) {
         const extensions = req.body.extensions as Extension[];
         logger.info("extensions", extensions);
         await comfyExtensionManager.disableExtensions(extensions);
-        await restartComfyUI();
         res.send({
             success: true
         });
+        restartComfyUI();
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
         res.send({ 
@@ -125,10 +125,10 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.enableExtensions(extensions);
-        await restartComfyUI();
         res.send({
             success: true
         });
+        restartComfyUI();
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
         res.send({ 
@@ -142,10 +142,10 @@ export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.removeExtensions(extensions);
-        await restartComfyUI();
         res.send({
             success: true
         });
+        restartComfyUI();
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
         res.send({ 
@@ -159,10 +159,10 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.updateExtensions(extensions);
-        await restartComfyUI();
         res.send({
             success: true
         });
+        restartComfyUI();
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
         res.send({
