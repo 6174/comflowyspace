@@ -50,7 +50,6 @@ export const MissingWidgetsPopoverEntry = memo(() => {
     }
   });
 
-
   const extensionsArr: Extension[] = [];
   extensions.forEach(extension => {
     extensionsArr.push(extension);
