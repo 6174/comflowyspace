@@ -7,7 +7,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       grid-gap: 10px;
-      padding: 10px;
+      padding: 10px 10px 10px 0;
     }
 
     .template-card {
