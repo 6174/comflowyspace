@@ -90,7 +90,7 @@ export const NodeComponent = memo(({
   const mainRef = useRef<HTMLDivElement>();
 
   const onNodesChange = useAppStore(st => st.onNodesChange);
-
+  const undoManager = useAppStore(st => st.undoManager);
   const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
       await new Promise((resolve) => {

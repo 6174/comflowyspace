@@ -20,8 +20,25 @@ export default function ReactflowTopLeftPanel() {
 export function UndoRedo() {
     const undo = useAppStore(st => st.undo);
     const redo = useAppStore(st => st.redo);
-    const canUndo = useAppStore(st => st.undoManager && st.undoManager.canUndo());
-    const canRedo = useAppStore(st => st.undoManager && st.undoManager.canRedo());
+    const undoManager = useAppStore(st => st.undoManager);
+    const [canUndo, setCanUndo] = useState(false);
+    const [canRedo, setCanRedo] = useState(false);
+    useEffect(() => {
+        if (!undoManager) {
+            return;
+        }
+        const updateHandler = (ev) => {
+            setCanRedo(undoManager.canRedo());
+            setCanUndo(undoManager.canUndo());
+        }
+        undoManager.on('stack-item-updated', updateHandler);
+        undoManager.on('stack-item-added', updateHandler);
+        undoManager.on('stack-item-popped', updateHandler);
+        return () => {
+            undoManager.off('stack-item-updated', updateHandler);
+        }
+    }, [undoManager]);
+
     const inActiveColor = '#ababab';
     const activeColor = 'white';
     return (
