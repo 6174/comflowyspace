@@ -577,6 +577,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         id: "node-" + uuid(),
         selected: true,
         position: moved,
+        dimensions: node?.data.dimensions,
         value: item
       }
     })

@@ -182,8 +182,8 @@ export const NodeComponent = memo(({
     }
   });
   
-  let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
+  let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
   if (isPositive) {
     nodeBgColor = "#212923";

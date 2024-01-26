@@ -24,27 +24,52 @@ export interface SDNode {
 
 export type SDNodeColorOption = {
   color: string,
-  bgcolor: string,
+  bgcolor?: string,
   label?: string,
 }
 
 export const SDNODE_COLORS: SDNodeColorOption[] = [
-{
+  {
+    color: '#67A166',
+    bgcolor: '#212A23',
+    label: 'Green',
+  }, {
+    color: '#2ABDAE',
+    bgcolor: '#21292A',
+    label: 'Primary',
+  }, {
+    color: '#2AAFF7',
+    bgcolor: '#21262A',
+    label: 'Blue',
+  }, {
+    color: '#6F62FA',
+    bgcolor: '#22212A',
+    label: 'Purple',
+  }, {
+    color: '#F26344',
+    bgcolor: '#271F1F',
+    label: 'Red',
+  }, {
+    color: '#F4BD50',
+    bgcolor: '#2A2621',
+    label: 'Yellow',
+  }, {
+    color: '#939393',
+    bgcolor: '#26262A',
+    label: 'Gray',
+  },
+  {
+    color: "#2E303B",
+    bgcolor: "#26272F",
+    label: 'Default',
+  },
+] 
+
+export const SDNODE_DEFAULT_COLOR = {
   color: "#2E303B",
   bgcolor: "#26272F",
   label: 'Default',
-},
-{
-  color: '#5B4B2D',
-  bgcolor: '#473A23',
-  label: 'Brown',
-}, {
-  color: '#4B2D4B',
-  bgcolor: '#2D1F2D',
-  label: 'Red',
-}]
-
-export const SDNODE_DEFAULT_COLOR = SDNODE_COLORS[0];
+};
 
 export interface PreviewImage {
   filename: string;
