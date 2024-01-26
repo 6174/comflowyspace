@@ -42,12 +42,12 @@ const ModelManagement = () => {
           </div>
         </div>
       </div>
-      <Tabs defaultActiveKey="installed">
-        <Tabs.TabPane tab="Installed" key="installed">
-          <InstalledModels/>
-        </Tabs.TabPane> 
+      <Tabs defaultActiveKey="available">
         <Tabs.TabPane tab="Available" key="available">
           <ModelMarket/>
+        </Tabs.TabPane> 
+        <Tabs.TabPane tab="Installed" key="installed">
+          <InstalledModels/>
         </Tabs.TabPane> 
       </Tabs>
     </div>
