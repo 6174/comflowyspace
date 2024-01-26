@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react'
+import React, { ReactNode, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import Head from 'next/head'
 
@@ -50,6 +50,9 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
 const WorkspaceNav = () => {
   const route = useRouter();
   const path = route.pathname;
+  const changeRoute = useCallback((url) => {
+    route.push(url);
+  }, [route])
   return (
     <div className="workspace-nav">
       <div className="logo">
@@ -58,37 +61,45 @@ const WorkspaceNav = () => {
       </div>
       <div className="sub">MENU</div>
       <div className="nav-list">
-        <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`}>
+        <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`} onClick={ev => {
+          changeRoute("/")
+        }}>
           <div className="icon">
             <WorkflowIcon/>
           </div>
-          <Link href="/">
+          <a>
             My workflows
-          </Link>
+          </a>
         </div>
-        <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`}>
+        <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {
+          changeRoute("/templates")
+        }}>
           <div className="icon">
             <BulbIcon/>
           </div>
-          <Link href="/templates">
+          <a>
             Templates
-          </Link>
+          </a>
         </div>
-        <div className={`workspace-nav-item ${path === "/models" ? "active" : ""}`}>
+        <div className={`workspace-nav-item ${path === "/models" ? "active" : ""}`} onClick={ev => {
+          changeRoute("/models")
+        }}>
           <div className="icon">
             <ModelIcon/>
           </div>
-          <Link href="/models">
+          <a>
             Models
-          </Link>
+          </a>
         </div>
-        <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`}>
+        <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`} onClick={ev => {
+          changeRoute("/extensions")
+        }}>
           <div className="icon">
             <ExtensionIcon/>
           </div>
-          <Link href="/extensions">
+          <a>
             Extensions
-          </Link>
+          </a>
         </div>
       </div>
     </div>

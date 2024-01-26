@@ -53,6 +53,8 @@
                 box-sizing: border-box;
                 display: flex;
                 transition: var(--transition);
+                user-select: none;
+                cursor: pointer;
                 .icon {
                     display: flex;
                     justify-content: center;
