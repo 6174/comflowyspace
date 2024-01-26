@@ -22,8 +22,8 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             });
             const ret = await res.json();
             if (ret.success) {
-                message.success("Success");
                 await onInit();
+                message.success("Success");
             } else {
                 message.error(ret.error)
             }
@@ -31,7 +31,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             message.error("Unexpected error: ", err);
         }
         setRunning(false);
-    }, [extension]);
+    }, [extension, onInit]);
 
     if (!extension.need_update || extension.disabled) {
         return null

@@ -91,7 +91,7 @@ function checkEnvRequirements(env: EnvRequirements): BootstrapTask[] {
     });
     tasks.push({ 
         type: BootStrapTaskType.installPython, 
-        title: "Install Python", 
+        title: "Create Conda venv", 
         description: "ComfyUI need a safe and proper python enviroment to run. We will use conda to create virtual env called comflowy to manage your python & pip packages",
         finished: env.isPythonInstalled 
     });

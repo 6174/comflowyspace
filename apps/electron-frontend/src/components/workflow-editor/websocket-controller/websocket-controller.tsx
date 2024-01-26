@@ -59,7 +59,7 @@ export function WsController(): JSX.Element {
 
   useEffect(() => {
     const disposable = SlotGlobalEvent.on((event) => {
-      if (event.type = GlobalEvents.comfyui_process_error) {
+      if (event.type === GlobalEvents.comfyui_process_error) {
         message.error("Runtime Error: " + event.data.message);
       }
     })

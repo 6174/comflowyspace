@@ -22,7 +22,7 @@ export async function findAllInstalledExtensions({
       if (file.endsWith('.disabled')) {
         continue
       }
-      const extension = allExtensions.find(it => it.title === file);
+      const extension = findExtensionByTitle(allExtensions, file);
       if (extension) {
         ret.push(_.cloneDeep(extension));
       }
@@ -33,4 +33,15 @@ export async function findAllInstalledExtensions({
     logger.info("findAllFrontendExtensions:", err);
     return [];
   }
+}
+
+function findExtensionByTitle(extensions: Extension[], title: string): Extension | undefined {
+  return extensions.find(it => {
+    const install_type = it.install_type;
+    const reference = it.reference;
+    if (install_type === "git-clone") {
+      return reference.endsWith(title);
+    }
+    return it.title === title;
+  });
 }

@@ -1,0 +1,20 @@
+.missingWidgetsContent {
+  padding: 10px;
+  :global {
+    .extension-item {
+      margin-bottom: 20px;
+      border-bottom: solid 1px var(--borderColor);
+      .extension-item-description {
+        font-size: 14px;
+        opacity: .8;
+        line-height: 1.2;
+        max-height: 60px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      .text .name {
+        max-width: 400px;
+      }
+    }
+  }
+}

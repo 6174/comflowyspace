@@ -99,44 +99,52 @@ export async function checkIfInstalled(name: string): Promise<boolean> {
  * @returns 
  */
 export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise<boolean> {
-    if (await checkIfInstalled("conda")) {
-        dispatcher({
-            message: `Already Find Conda`
-        });
-        return true;
-    }
-    dispatcher({
-        message: `Start install conda`
-    });
-    try {
-        let installerUrl, installerPath, installCommand: any[] = [];
-        if (systemType.toUpperCase().includes("WINDOWS")) {
-            installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe';
-            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
-            installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
-        } else if (systemType.toUpperCase().includes("DARWIN")) {
-            const architecture = await getMacArchitecture();
-            installerUrl = architecture === 'arm64'
-                ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
-                : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
-            installerPath = path.resolve(appTmpDir, architecture === 'arm64' 
-                ? 'Miniconda3-latest-MacOSX-arm64.sh'
-                : 'Miniconda3-latest-MacOSX-x86_64.sh'
-            );
+    let success = false;
+    let lastError = null;
+    for (let i = 0; i < 3; i++) {
+        try {
+            if (await checkIfInstalled("conda")) {
+                dispatcher({
+                    message: `Already Find Conda`
+                });
+                return true;
+            }
+            dispatcher({
+                message: `Start install conda`
+            });
+            let installerUrl, installerPath, installCommand: any[] = [];
+            if (systemType.toUpperCase().includes("WINDOWS")) {
+                installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe';
+                installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
+                installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
+            } else if (systemType.toUpperCase().includes("DARWIN")) {
+                const architecture = await getMacArchitecture();
+                installerUrl = architecture === 'arm64'
+                    ? 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh'
+                    : 'https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh';
+                installerPath = path.resolve(appTmpDir, architecture === 'arm64' 
+                    ? 'Miniconda3-latest-MacOSX-arm64.sh'
+                    : 'Miniconda3-latest-MacOSX-x86_64.sh'
+                );
 
-            installCommand = ['bash', [installerPath, '-b']];
-        } else if (systemType.toUpperCase().includes("LINUX")) {
-            installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh';
-            installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
-            installCommand = ['bash', [installerPath, '-b']];
+                installCommand = ['bash', [installerPath, '-b']];
+            } else if (systemType.toUpperCase().includes("LINUX")) {
+                installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh';
+                installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Linux-x86_64.sh');
+                installCommand = ['bash', [installerPath, '-b', '-u']];
+            }
+            await downloadUrl(dispatcher,installerUrl!, installerPath!)
+            await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
+            dispatcher({
+                message: `Install conda end`
+            });
+            success = true;
+        } catch (e: any) {
+            lastError = e;
         }
-        await downloadUrl(dispatcher,installerUrl!, installerPath!)
-        await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
-        dispatcher({
-            message: `Install conda end`
-        });
-    } catch (e: any) {
-        throw new Error(`Install conda error: ${e.message}`)
+    }
+    if (!success) {
+        throw new Error(`Install conda error: ${lastError.message}`)
     }
     return true;
 }
@@ -147,22 +155,32 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
  * @returns 
  */
 export async function installPythonTask(dispatcher: TaskEventDispatcher): Promise<boolean> {
-    if (await checkIfInstalled("python")) {
-        dispatcher({
-            message: `Already Find Python=3.10.8`
-        });
-        return true;
+    let success = false;
+    let lastError = null;
+    for (let i = 0; i < 3; i++) {
+        try {
+            if (await checkIfInstalled("python")) {
+                dispatcher({
+                    message: `Already Find Python=3.10.8`
+                });
+                return true;
+            }
+            dispatcher({
+                message: `Start installing Python=3.10.8`
+            });
+            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+            dispatcher({
+                message: `Install Python=3.10.8 finished`
+            });
+            success = true;
+            break;
+        } catch (e: any) {
+            lastError = e;
+        }
     }
-    try {
-        dispatcher({
-            message: `Start installing Python=3.10.8`
-        });
-        await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
-        dispatcher({
-            message: `Install Python=3.10.8 finished`
-        });
-    } catch (e: any) {
-        throw new Error(`Install python error: ${e.message}`)
+
+    if (!success) {
+        throw new Error(`Install python error: ${lastError.message}`);
     }
     return true;
 }
@@ -176,20 +194,31 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
 export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, params: {
     packageRequirment: string
 }): Promise<boolean> {
-    try {
-        dispatcher({
-            message: `Start installing ${params.packageRequirment}...`
-        });
-        if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
-            return true;
+    let success = false;
+    let lastError = null;
+
+    for (let i = 0; i < 3; i++) {
+        try {
+            dispatcher({
+                message: `Start installing ${params.packageRequirment}...`
+            });
+            if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
+                return true;
+            }
+            await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
+            dispatcher({
+                message: `Install ${params.packageRequirment} end`
+            });
+            success = true;
+        } catch(e: any) {
+            lastError = e
         }
-        await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
-        dispatcher({
-            message: `Install ${params.packageRequirment} end`
-        });
-    } catch(e: any) {
-        throw new Error(`Install conda packages error: ${e.message}`)
     }
+
+    if (!success) {
+        new Error(`Install conda packages error: ${lastError.message}`)
+    }
+
     return true;
 }
 
@@ -205,37 +234,51 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     dispatcher({
         message: "Start installing PyTorch..."
     });
-    if (isMac) {
-        try {
-            const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
-            await runCommand(installCommand, dispatcher);
-        } catch (error: any) {
-            throw new Error(`PyTorch installation failed: ${error.message}`)
-        }
-    } else {
-        try {
-            const gpuType = await getGPUType()
-            // AMD GPU
-            if (gpuType === 'amd') {
-                const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
-                const installCommand = nightly
-                    ? `${PIP_PATH} install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
-                    : ` ${PIP_PATH} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
 
+    let success = false;
+    let lastError = null;
+    for (let i = 0; i < 3; i++) {
+        if (isMac) {
+            try {
+                const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
                 await runCommand(installCommand, dispatcher);
+                success = true;
+            } catch (error: any) {
+                lastError = error;
             }
-            // NVIDIA GPU
-            else if (gpuType === 'nvidia') {
-                const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+        } else {
+            try {
+                const gpuType = await getGPUType()
+                // AMD GPU
+                if (gpuType === 'amd') {
+                    const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
+                    const installCommand = nightly
+                        ? `${PIP_PATH} install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
+                        : ` ${PIP_PATH} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
 
-                await runCommand(installCommand, dispatcher);
-            } else {
-                throw new Error(`Unkown GPU Type`)
+                    await runCommand(installCommand, dispatcher);
+                    success = true;
+                }
+                // NVIDIA GPU
+                else if (gpuType === 'nvidia') {
+                    const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+
+                    await runCommand(installCommand, dispatcher);
+                    success = true;
+                } else {
+                    lastError = new Error(`Unkown GPU Type`)
+                }
+
+            } catch (error: any) {
+                lastError = error;
             }
-        } catch (error: any) {
-            throw new Error(`PyTorch installation failed: ${error.message}`)
         }
     }
+
+    if (!success) {
+        throw new Error(`PyTorch installation failed: ${lastError.message}`)
+    }
+
     dispatcher({
         message: "Installing PyTorch Finish"
     });
@@ -244,33 +287,43 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 }
 
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
-    try {
-        dispatch({
-            message: 'Start cloning ComfyUI...'
-        });
+    let success = false;
+    let lastError = null;
+    for (let i = 0; i < 3; i++) {
+        try {
+            const repoPath = getComfyUIDir();
+            const parentDir = path.dirname(repoPath);
+            await fsExtra.ensureDir(parentDir);
 
-        const repoPath = getComfyUIDir();
-        const parentDir = path.dirname(repoPath);
-        await fsExtra.ensureDir(parentDir);
+            if (!await checkIfInstalledComfyUI()) {
+                dispatch({
+                    message: 'Start cloning ComfyUI...'
+                });
+                await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI`, dispatch, {
+                    cwd: parentDir
+                });
+            }
 
-        await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI`, dispatch, {
-            cwd: parentDir
-        });
+            await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
+                cwd: repoPath
+            });
 
-        await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatch, {
-            cwd: repoPath
-        });
+            const sdPath = getStableDiffusionDir()
+            if (sdPath !== "") {
+                createOrUpdateExtraConfigFileFromStableDiffusion(sdPath)
+            }
 
-        const sdPath = getStableDiffusionDir()
-        if (sdPath !== "") {
-            createOrUpdateExtraConfigFileFromStableDiffusion(sdPath)
+            dispatch({
+                message: "clone comfyui success"
+            });
+
+            success = true;
+        } catch (error: any) {
+            lastError = error;
         }
-
-        dispatch({
-            message: "clone comfyui success"
-        });
-    } catch (error: any) {
-        throw new Error(`clone comfyui error: ${error.message}`);
+    }
+    if (!success) {
+        throw new Error(`clone comfyui error: ${lastError.message}`);
     }
     return true;
 }
@@ -341,7 +394,6 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
             message: errMsg
         });
         logger.error(errMsg);
-        throw new Error(errMsg);
     }
     return true;
 }
@@ -395,7 +447,7 @@ export async function updateComfyUI(dispatcher: TaskEventDispatcher): Promise<bo
             message: "Try Update ComfyUI"
         });
         const repoPath = getComfyUIDir();
-        await runCommandWithPty(`git pull`, (event => {
+        await runCommand(`git pull`, (event => {
             dispatcher(event);
             const cevent: ComfyUIProgressEventType = {
                 type: "INFO",

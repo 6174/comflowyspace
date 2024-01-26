@@ -10,6 +10,7 @@ import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
+import { CopyIcon, DeleteIcon } from 'ui/icons';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -71,11 +72,13 @@ function NodesMenu(props: {
     }
   };
   const items: MenuItem[] = [
-    getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null),
-    getMenuItem("Delte", 'MENU_ITEM_DELETE_NODE', null, null),
+    getMenuItem(<div className="menu-item-title"> <CopyIcon /> Duplicate</div>, 'MENU_ITEM_DUPLICATE_NODE', null, null),
+    getMenuItem(<div className="menu-item-title"> <DeleteIcon /> Remove </div>, 'MENU_ITEM_DELETE_NODE', null, null),
   ];
   return (
-    <div className='node-menu'>
+    <div className='node-menu' style={{
+      paddingTop: 8
+    }}>
       <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} />
     </div>
   )
@@ -118,9 +121,8 @@ function NodeMenu(props: NodeMenuProps) {
 
   const hasInputs = node.inputs && node.inputs.length > 0;
   const items: MenuItem[] = [
-    {type: "divider"},
+    getMenuItem(<div className="menu-item-title"> <CopyIcon /> Duplicate</div>, 'MENU_ITEM_DUPLICATE_NODE', null, null),
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
-    getMenuItem(<ChangeColorMenuItem {...props}/>, 'MENU_ITEM_CHANGE_COLOR', null, null),
     { type: "divider" },
   ];
 
@@ -129,15 +131,15 @@ function NodeMenu(props: NodeMenuProps) {
     items.push({ type: "divider" })
   }
 
-  items.push(getMenuItem("Duplicate", 'MENU_ITEM_DUPLICATE_NODE', null, null));
-  items.push(getMenuItem("Delete", 'MENU_ITEM_DELETE_NODE', null, null));
+  items.push(getMenuItem(<div className="menu-item-title"> <DeleteIcon /> Remove </div>, 'MENU_ITEM_DELETE_NODE', null, null));
 
   return (
     <div className='node-menu'>
       <div className="node-info">
-        Type: {widget.name}
+        {widget.name}
       </div>
-      <Menu onClick={onClick} style={{ width: 256 }} mode="vertical" items={items} />
+      <ChangeColorMenuItem {...props}/>
+      <Menu onClick={onClick} style={{ width: 200 }} mode="vertical" items={items} />
     </div>
   )
 }

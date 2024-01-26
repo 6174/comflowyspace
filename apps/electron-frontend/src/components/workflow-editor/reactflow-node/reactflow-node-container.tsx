@@ -13,6 +13,8 @@ export type  FlowNodeProps = NodeProps<{
 export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
   const progressBar = useAppStore(st => st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined);
   const imagePreviews = useAppStore(st => st.graph[props.id]?.images || []);
+  const isPositive = useAppStore(st => st.graph[props.id]?.isPositive);
+  const isNegative = useAppStore(st => st.graph[props.id]?.isNegative);
   const widget = useAppStore(st => st.widgets[props.data.widget.name]) || {
     ...UnknownWidget,
     name: props.data.value.widget,
@@ -22,6 +24,8 @@ export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
   return (
     <NodeComponent
       node={props}
+      isPositive={isPositive}
+      isNegative={isNegative}
       widget={widget}
       nodeError={nodeError}
       progressBar={progressBar}

@@ -4,6 +4,7 @@ import { NodeMenuProps } from './types';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./reactflow-context-menu.module.scss";
 import { FlowPropsKey, Input, InputType } from '@comflowy/common/comfui-interfaces';
+import { EditIcon } from 'ui/icons';
 type InputArrayItem = { property: string; type: any; disabled: boolean; enable: boolean };
 type InputArray = InputArrayItem[];
 
@@ -98,7 +99,7 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
       placement='right'
       onOpenChange={handleVisibleChange}
     >
-      <div>Change Input</div>
+      <div className='menu-item-title'> <EditIcon/> Convert to input</div>
     </Popover>
   );
 };

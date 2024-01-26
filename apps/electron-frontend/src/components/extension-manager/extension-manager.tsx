@@ -37,13 +37,13 @@ function ExtensionManager() {
         }}>
           <h2> Installed Extensions </h2>
           <div className="actions">
-            <div className="refresh-button">
+            {/* <div className="refresh-button">
               <Button size='small' loading={loading} disabled={loading} onClick={() => {
                 restartComfyUI();
               }}>
                 <ReloadIcon /> Restart ComfyUI
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
         <p className="sub">Extensions already installed on your device</p>

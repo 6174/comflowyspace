@@ -42,6 +42,9 @@
         .node-inner {
             height: 100%;
             overflow-y: hidden;
+            margin-left: -1px;
+            margin-top: -1px;
+            margin-right: -1px;
         }
 
         .connectionindicator {
@@ -291,11 +294,22 @@
             top: -3em;
             left: 0.5em;
         }
+
+        .install-missing-widget {
+            padding: 0 10px;
+        }
     }
 }
 
 .reactFlowSelected {
-    border: 2px solid var(--primaryColor);
+    &::before,
+    &::after {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    &::before {
+        background-image: linear-gradient(to right, #37B7AB, #37B7AB);
+    }
 }
 
 .reactFlowProgress {

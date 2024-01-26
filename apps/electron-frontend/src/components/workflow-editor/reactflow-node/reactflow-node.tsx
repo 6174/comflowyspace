@@ -1,8 +1,8 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
 import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
 
-import { Image, Popover, Progress } from 'antd';
+import { Button, Image, Popover } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
@@ -11,8 +11,10 @@ import { useAppStore } from '@comflowy/common/store';
 import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
-import { ImageWithDownload, PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
-import { ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
+import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
+import { useExtensionsState } from '@comflowy/common/store/extension-state';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -22,6 +24,8 @@ interface Props {
     value: SDNode;
     dimensions: Dimensions
   }>
+  isPositive: boolean;
+  isNegative: boolean;
   progressBar?: number;
   nodeError?: ComfyUINodeError;
   widget: Widget;
@@ -32,6 +36,8 @@ export const NodeComponent = memo(({
   node,
   nodeError,
   progressBar,
+  isPositive,
+  isNegative,
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
@@ -84,7 +90,7 @@ export const NodeComponent = memo(({
   const mainRef = useRef<HTMLDivElement>();
 
   const onNodesChange = useAppStore(st => st.onNodesChange);
-
+  const undoManager = useAppStore(st => st.undoManager);
   const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
       await new Promise((resolve) => {
@@ -167,8 +173,7 @@ export const NodeComponent = memo(({
 
   const invisible = transform < 0.2;
 
-  const nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
-
+  
   const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
     const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
     return {
@@ -176,6 +181,20 @@ export const NodeComponent = memo(({
       filename: image.filename
     }
   });
+  
+  let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
+  let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+
+  if (isPositive) {
+    nodeBgColor = "#212923";
+    nodeColor = "#67A166";
+  } 
+
+  if (isNegative) {
+    nodeBgColor = "#261E1F";
+    nodeColor = "#DE654B";
+  }
+
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
@@ -183,10 +202,12 @@ export const NodeComponent = memo(({
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${nodeError ? nodeStyles.reactFlowError : ""}
+      ${isPositive ? "positive-node" : ""}
+      ${isNegative ? "negative-node" : ""}
       `} style={{
-      '--node-color': node.data.value.color || SDNODE_DEFAULT_COLOR.color,
-      '--node-border-color': Color(node.data.value.color || SDNODE_DEFAULT_COLOR.color).lighten(0.2).hex(),
-      '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
+        '--node-color': nodeColor,
+        '--node-border-color': nodeColor,
+        '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
 
       <NodeResizeControl
@@ -210,7 +231,11 @@ export const NodeComponent = memo(({
         <div className='node-inner'>
           <div className="node-header">
             <h2 className="node-title">
-              {getWidgetIcon(widget)} {nodeTitle} <NodeError nodeError={nodeError}/>
+              {getWidgetIcon(widget)} 
+              {nodeTitle} 
+              {isPositive && <span>{"("}Positive{")"}</span>} 
+              {isNegative && <span>{"("}Negative{")"}</span>} 
+              <NodeError nodeError={nodeError}/>
             </h2>
 
             {isInProgress? 
@@ -242,12 +267,13 @@ export const NodeComponent = memo(({
                 ))}
               </div>
             </div>
-
+            
             <div className="node-params">
               {params.map(({ property, input }) => (
                 <InputContainer key={property} name={property} id={node.id} input={input} widget={widget} />
               ))}
             </div>
+            <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
             <div style={{ height: 10 }}></div>
           </div>
 
@@ -327,7 +353,6 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
     transformFactor = Math.max(1, (1 / transform)) * 2.8;
   };
 
-
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle 
@@ -361,7 +386,7 @@ function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
     setVisible(visible);
   };
 
-  if (!nodeError) {
+  if (!nodeError || nodeError.errors.length === 0) {
     return null
   }
 
@@ -384,6 +409,56 @@ function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
       >
         Errors
       </Popover>
+    </div>
+  )
+}
+
+function InstallMissingWidget(props: {
+  nodeError?: ComfyUINodeError;
+  node: SDNode;
+}) {
+  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
+  const {nodeError, node} = props;
+  const installWidget = useCallback((extension) => {
+    SlotGlobalEvent.emit({
+      type: GlobalEvents.show_missing_widgets_modal,
+      data: null
+    });
+    setTimeout(() => {
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.install_missing_widget,
+        data: extension
+      });
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.show_comfyprocess_manager,
+        data: null
+      });
+    }, 10);
+  }, []);
+
+  if (!nodeError) {
+    return null;
+  }
+
+  const widgetNotFoundError = nodeError.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found);
+
+  if (!widgetNotFoundError) {
+    return null;
+  }
+
+  const widget = node.widget;
+  const extension = extensionsNodeMap[widget];
+  if (!extension) {
+    return null
+  } else {
+    console.log("miss extension", extension, node);
+  }
+
+  return (
+    <div className="install-missing-widget nodrag">
+      <Button type="primary" onClick={ev => {
+        installWidget(extension);
+      }}>Install "{extension.title}"</Button>
     </div>
   )
 }

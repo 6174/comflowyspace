@@ -48,7 +48,7 @@ import exifr from 'exifr'
 
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
-import { ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
+import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
 import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 
 export type SelectionMode = "figma" | "default";
@@ -65,6 +65,7 @@ export interface AppState {
   slectionMode: SelectionMode
   transform: number
   transforming: boolean
+  unknownWidgets: Set<string>;
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
 
@@ -85,6 +86,7 @@ export interface AppState {
   resetWorkflowEvent: SlotEvent<any>;
   // document mutation handler
   onSyncFromYjsDoc: () => void;
+  updateErrorCheck: () => void;
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
   onDeleteNodes: (changes: (Node | { id: string })[]) => void
@@ -180,6 +182,8 @@ export const AppState = {
         ...state.graph,
         [node.id]: {
           ...node.value,
+          isPositive: false,
+          isNegative: false,
           images: state.graph[node.id]?.images || node.images || [],
         }
       }
@@ -203,7 +207,7 @@ export const AppState = {
   },
   attatchStaticCheckErrors(state: AppState, error?: ComfyUIExecuteError): AppState {
     // check all nodes are valid;
-    let flowError: ComfyUIExecuteError | undefined = error || {
+    let flowError: ComfyUIExecuteError | undefined = error || state.promptError || {
       error: {
         message: ""
       },
@@ -218,15 +222,25 @@ export const AppState = {
       const sdnode = node.value;
       const widget = widgets[sdnode.widget];
       const error = flowError!.node_errors[id] || { errors: [] };
+
       if (["Reroute", "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
         return;
       }
+
+      // clean old errors 
+      error.errors = error.errors.filter(err => {
+        return err.type !== ComfyUIErrorTypes.widget_not_found && err.type !== ComfyUIErrorTypes.image_not_in_list;
+      });
+
       // check widget exist
       if (!widget) {
         error.errors.push({
-          type: "widget_not_found",
+          type: ComfyUIErrorTypes.widget_not_found,
           message: `Widget \`${sdnode.widget}\` not found`,
-          details: `${sdnode.widget}`
+          details: `${sdnode.widget}`,
+          extra_info: {
+            widget: sdnode.widget
+          }
         });
         findError = true;
         flowError!.node_errors[id] = error as any;
@@ -237,7 +251,7 @@ export const AppState = {
         const options = widget.input.required.image[0] as [string];
         if (options.indexOf(image) < 0) {
           error.errors.push({
-            type: "value_not_in_list",
+            type: ComfyUIErrorTypes.image_not_in_list,
             message: `Image ${image} not in list`,
             details: `[ ${options.join(", ")} ]`,
           });
@@ -270,6 +284,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   graph: {},
   nodes: [],
   edges: [],
+  unknownWidgets: new Set<string>(),
 
   // temporary state
   slectionMode: "default",
@@ -338,7 +353,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((st) => {
       const workflowMap = st.doc.getMap("workflow");
       const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-
+      const unknownWidgets = new Set<string>();
       throttledUpdateDocument({
         ...st.persistedWorkflow!,
         last_edit_time: +new Date(),
@@ -356,14 +371,39 @@ export const useAppStore = create<AppState>((set, get) => ({
             name: node.value.widget,
             display_name: node.value.widget
           }, node);
-          console.log(`Unknown widget ${node.value.widget}`)
+          unknownWidgets.add(node.value.widget);
+          // console.log(`Unknown widget ${node.value.widget}`)
         }
       }
+
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
       }
+
+      /**
+       * Check is postive or is negative connection, and update graph
+       */
+      for (const connection of workflow.connections) {
+        const sourceNode = state.graph[connection.source];
+        const targetNode = state.graph[connection.target];
+        const sourceOutputs = sourceNode.outputs;
+        const targetInputs = targetNode.inputs;
+        const output = sourceOutputs.find(output => output.name.toUpperCase() === connection.sourceHandle);
+        const input = targetInputs.find(input => input.name.toUpperCase() === connection.targetHandle);
+        const sourceGraphNode = state.graph[connection.source];
+        if (output && input) {
+          if (output.type === "CONDITIONING") {
+            if (input.name === "negative") {
+              sourceGraphNode.isNegative = true;
+            } else if (input.name === "positive") {
+              sourceGraphNode.isPositive = true;
+            }
+          }
+        }
+      }
       return {
         ...state,
+        unknownWidgets
       }
     }, true)
   },
@@ -498,6 +538,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       value
     });
     onSyncFromYjsDoc();
+    set(AppState.attatchStaticCheckErrors(get()));
   },
   onNodeAttributeChange: (id: string, updates) => {
     const { doc, onSyncFromYjsDoc } = get();
@@ -536,6 +577,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         id: "node-" + uuid(),
         selected: true,
         position: moved,
+        dimensions: node?.data.dimensions,
         value: item
       }
     })
@@ -578,6 +620,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
     st.onSyncFromYjsDoc();
 
+    set(AppState.attatchStaticCheckErrors(get()));
+  },
+  updateErrorCheck: () => {
     set(AppState.attatchStaticCheckErrors(get()));
   },
   /**

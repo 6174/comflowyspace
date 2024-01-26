@@ -12,13 +12,15 @@ import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-toprigh
 import { useRouter } from 'next/router';
 import { PersistedFullWorkflow, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
-import { AsyncComfyUIProcessManager } from '../comfyui-process-manager/comfyui-process-manager-async';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { copyNodes, pasteNodes } from './reactflow-clipboard';
 import { ReactflowExtensionController } from '@/lib/extensions/extensions.controller';
 import { WidgetTreeOnPanel, WidgetTreeOnPanelContext } from './reactflow-bottomcenter-panel/widget-tree/widget-tree-on-panel-click';
 import { onEdgeUpdateFailed } from './reactflow-connecting';
+import { useExtensionsState } from '@comflowy/common/store/extension-state';
+import { message } from 'antd';
+import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeContainer,
@@ -26,6 +28,7 @@ const nodeTypes = {
 }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
+  const onInitExtensionState = useExtensionsState((st) => st.onInit);
   const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
@@ -388,9 +391,14 @@ export default function WorkflowEditor() {
           onChangeDragingAndResizingState(false);
         }}
         onInit={async (instance) => {
-          setReactFlowInstance(instance);
-          await onInit(instance);
-          setInited(true);
+          try {
+            setReactFlowInstance(instance);
+            await onInitExtensionState(false);
+            await onInit(instance);
+            setInited(true);
+          } catch(err) {
+            message.error("App init failed: " + err.message);
+          }
         }}
       >
         <Background variant={BackgroundVariant.Dots} />
@@ -410,9 +418,9 @@ export default function WorkflowEditor() {
         )}
         {menu && <ContextMenu hide={onPaneClick} {...menu} />}
       </ReactFlow>
-      <AsyncComfyUIProcessManager/>
       <ReactflowExtensionController/>
       { widgetTreeContext && <WidgetTreeOnPanel context={widgetTreeContext}/>}
+      <MissingWidgetsPopoverEntry/>
     </div>
   )
 }

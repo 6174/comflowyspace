@@ -21,7 +21,7 @@ function getExtensionPath(item: Extension): string | void {
         const dirName = path.parse(url).name.replace('.git', '');
         const dirPath = path.join(custom_nodes_path, dirName);
         return dirPath;
-    } 
+    }
 
     if (item.install_type === 'copy' && item.files.length === 1) {
         return path.join(custom_nodes_path, item.files[0]);

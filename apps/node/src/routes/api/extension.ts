@@ -5,6 +5,7 @@ import { comfyExtensionManager } from '../../modules/comfy-extension-manager/com
 import { Extension } from '../../modules/comfy-extension-manager/types';
 import { comfyUIProgressEvent, restartComfyUI } from 'src/modules/comfyui/bootstrap';
 import logger from 'src/modules/utils/logger';
+import { checkAExtensionInstalled } from 'src/modules/comfy-extension-manager/check-extension-status';
 
 /**
  * fetch all extensions
@@ -26,6 +27,14 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                         type: event.type == "FAILED" ? "ERROR" : "INFO",
                         message: event.message || ""
                     })
+                }
+                const extension = taskParams.params as Extension;
+                await checkAExtensionInstalled(extension)
+                if (extension.installed) {
+                    newDispatcher({
+                        message: "Extension already installed"
+                    });
+                    return true;
                 }
                 await installExtension(newDispatcher, taskParams.params);
                 await restartComfyUI(dispatcher);
@@ -60,17 +69,17 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
         const update_check = req.query.update_check;
         const extensions = await comfyExtensionManager.getAllExtensions(!!update_check);
         const extensionNodeMap = await comfyExtensionManager.getExtensionNodeMap();
-        const extensionNodeList = await comfyExtensionManager.getExtensionNodes()
         res.send({
             success: true,
             data: {
                 extensions,
                 extensionNodeMap,
-                extensionNodeList
+                // extensionNodeList
             }
         });
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
+        console.log(err.stack);
         res.send({ 
             success: false,
             error: err.message

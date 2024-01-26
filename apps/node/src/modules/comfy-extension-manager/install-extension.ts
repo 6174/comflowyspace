@@ -5,7 +5,7 @@ import * as unzipper from "unzipper";
 import {downloadUrl} from "../utils/download-url";
 import { isValidGitUrl } from "../utils/is-valid-git-url";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
-import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand, runCommandWithPty } from "../utils/run-command";
+import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
@@ -55,7 +55,7 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         dispatcher({
             message: `Start installing pip packages ${extension.title}`
         });
-        await runCommandWithPty(`${PIP_PATH} install ${extension.pip.join(" ")}`)
+        await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
     }
 
     if (res) {
@@ -154,7 +154,7 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
             if (fs.existsSync(repoPath)) {
                 fsExtra.removeSync(repoPath);
             }
-            await runCommandWithPty(`git clone ${cleanUrl}`, dispatcher, {
+            await runCommand(`git clone ${cleanUrl} --recursive`, dispatcher, {
                 cwd: EXTENTION_FOLDER,
             });
             await executeInstallScript(dispatcher, cleanUrl, repoPath);
@@ -178,14 +178,14 @@ async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string
         dispatcher({
             message: 'Install: pip packages'
         });
-        await runCommandWithPty(`${PIP_PATH} install -r requirements.txt`, dispatcher, {
+        await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatcher, {
             cwd: repoPath,
         });
     }
 
     if (fs.existsSync(installScriptPath)) {
         logger.info('Install: install script');
-        await runCommandWithPty(`${PYTHON_PATH} install.py`, dispatcher, {
+        await runCommand(`${PYTHON_PATH} install.py`, dispatcher, {
             cwd: repoPath
         });
     }

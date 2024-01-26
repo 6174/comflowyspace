@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Popover, Input, Space, Button } from 'antd';
 import { NodeMenuProps } from './types';
 import { useAppStore } from '@comflowy/common/store';
+import { RenameIcon } from 'ui/icons';
 
 
 const ChangeTitleMenuItem = (props: NodeMenuProps) => {
@@ -43,7 +44,9 @@ const ChangeTitleMenuItem = (props: NodeMenuProps) => {
       placement='right'
       onOpenChange={handleVisibleChange}
     >
-      <div>Change Title</div>
+      <div className="menu-item-title"> 
+        <RenameIcon/>  Rename 
+      </div>
     </Popover>
   );
 };

@@ -2,7 +2,7 @@
   "extends": "tsconfig/base.json",
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module":  "commonjs",
     "esModuleInterop": true,
     "resolveJsonModule": true
   }

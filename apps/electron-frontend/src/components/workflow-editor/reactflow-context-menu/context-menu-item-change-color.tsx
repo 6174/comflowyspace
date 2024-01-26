@@ -29,9 +29,12 @@ const ChangeColorMenuItem = (props: NodeMenuProps) => {
 
   const content = (
     <div className="content change-color">
-      <p>Change  Color</p>
-      <br />
-      <Space>
+    </div>
+  )
+
+  return (
+    <div className={styles.reactflowContextMenuPopover}>
+      <Space className='content change-color' size={2}>
         {SDNODE_COLORS.map((colorOption, index) => {
           return (
             <div
@@ -53,21 +56,9 @@ const ChangeColorMenuItem = (props: NodeMenuProps) => {
         })}
       </Space>
     </div>
-  )
-
-  return (
-    <Popover
-      content={content}
-      title={null}
-      trigger="click"
-      open={visible}
-      overlayClassName={styles.reactflowContextMenuPopover}
-      placement='right'
-      onOpenChange={handleVisibleChange}
-    >
-      <div>Change Color</div>
-    </Popover>
   );
 };
+
+
 
 export default ChangeColorMenuItem;
