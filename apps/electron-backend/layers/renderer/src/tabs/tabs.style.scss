@@ -143,6 +143,10 @@ body, html {
       flex: 1;
     }
   }
+  &.windows {
+    margin-left: 0;
+    margin-right: 100px;
+  }
 }
 
 
@@ -209,4 +213,30 @@ body, html {
     }
   }
 
+}
+
+.wiondows-window-controller {
+  position: fixed;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  * {
+    user-select: none;
+  }
+  >div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background-color: transparent;
+    transition: var(--transition);
+    &:hover {
+      background-color: var(--hover-bg);
+    }
+  }
 }

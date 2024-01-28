@@ -7,6 +7,9 @@ import DocIcon from './doc.icon';
 import CloseIcon from './close.icon';
 import {ComfyUIStatusButton} from "./comfyui-status-button";
 import { ComfyUIHelpButton } from './comfyui-help-button';
+import { comfyElectronApi } from '../lib/bridge';
+import { CustomWindowsWindowControl } from './custom-windows-window-control';
+const isWindows = comfyElectronApi.isWindows;
 
 function App() {
   const {active, fullscreen, setActive, tabs, changeTab, closeTab, onInit} = useTabsState();
@@ -39,7 +42,7 @@ function App() {
   const otherTabs = tabs.filter(tab => tab.name !== "Home");
   const totalTabs = tabs.length;
   return (
-    <div className={`tabManager ${fullscreen ? "fullscreen" : ""}`}>
+    <div className={`tabManager ${fullscreen ? "fullscreen" : ""} ${isWindows ? "windows" : ""}`}>
       <div className="drag-area"></div>
       <div className="tab-list">
         <div className="tabs">
@@ -91,6 +94,7 @@ function App() {
           <ComfyUIStatusButton/>
         </div>
       </div>
+      {isWindows && <CustomWindowsWindowControl/>}
     </div>
   );
 }
