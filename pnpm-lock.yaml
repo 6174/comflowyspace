@@ -279,6 +279,9 @@ importers:
       '@types/sass':
         specifier: ^1.45.0
         version: 1.45.0
+      cross-env:
+        specifier: 7.0.3
+        version: 7.0.3
       electron:
         specifier: ^27.1.2
         version: 27.1.2
