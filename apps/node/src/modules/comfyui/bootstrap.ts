@@ -1,6 +1,6 @@
 import * as os from "os";
 import * as path from "path";
-import { getSystemProxy, isMac } from "../utils/env"
+import { getSystemProxy, isMac, isWindows } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
@@ -114,6 +114,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
             });
             let installerUrl, installerPath, installCommand: any[] = [];
             if (systemType.toUpperCase().includes("WINDOWS")) {
+                await fsExtra.ensureDir('C:\\tools');
                 installerUrl = 'https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe';
                 installerPath = path.resolve(appTmpDir, './Miniconda3-latest-Windows-x86_64.exe');
                 installCommand = [installerPath, ['/InstallationType=JustMe', '/RegisterPython=0', '/S', '/D=C:\\tools\\Miniconda3']];
@@ -134,11 +135,19 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
                 installCommand = ['bash', [installerPath, '-b', '-u']];
             }
             await downloadUrl(dispatcher,installerUrl!, installerPath!)
-            await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher)
-            dispatcher({
-                message: `Install conda end`
-            });
-            success = true;
+            try {
+                await runCommand(`${installCommand[0]} ${installCommand[1].join(" ")}`, dispatcher);
+                dispatcher({
+                    message: `Install conda end`
+                });
+                success = true;
+            } catch (err: any) {
+                console.error('Error running command:', err);
+                dispatcher({
+                    message: `Error running command:` + err.message
+                });
+                lastError = err;
+            }
         } catch (e: any) {
             lastError = e;
         }
@@ -249,6 +258,10 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
         } else {
             try {
                 const gpuType = await getGPUType()
+
+                dispatcher({
+                    message: "GPU Type: " + gpuType + ", pip: " +  PIP_PATH
+                })
                 // AMD GPU
                 if (gpuType === 'amd') {
                     const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
@@ -351,7 +364,8 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
         })
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
-            runCommandWithPty(`${PIP_PATH} install -r requirements.txt; ${PYTHON_PATH} main.py --enable-cors-header`, (event => {
+            const command = `${PIP_PATH} install -r requirements.txt ; ${PYTHON_PATH} main.py --enable-cors-header \r`;
+            runCommandWithPty(command, (event => {
                 dispatcher(event);
                 const cevent: ComfyUIProgressEventType = {
                     type: "INFO",
