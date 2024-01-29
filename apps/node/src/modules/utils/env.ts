@@ -77,9 +77,10 @@ async function parseWindowsProxySettings() {
     };
 
     if (ret.enabled && ret.server) {
-      systemProxy.all_proxy = ret.server;
-      systemProxy.http_proxy = ret.server;
-      systemProxy.https_proxy = ret.server;
+      const server = "http://" + ret.server;
+      systemProxy.all_proxy = server;
+      systemProxy.http_proxy = server;
+      systemProxy.https_proxy = server;
     }
 
   } catch (err) {
