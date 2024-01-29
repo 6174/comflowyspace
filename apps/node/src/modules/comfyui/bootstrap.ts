@@ -351,7 +351,7 @@ export type ComfyUIProgressEventType = {
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
-export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
+export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean = false): Promise<boolean> {
     const {systemProxy, systemProxyString} = await getSystemProxy();
     if (comfyuiProcess) {
         return true;
@@ -364,13 +364,15 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boo
         })
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
-            const command = `${PIP_PATH} install -r requirements.txt ; ${PYTHON_PATH} main.py --enable-cors-header \r`;
+            const command = pip ? `${PIP_PATH} install -r requirements.txt ; ${PYTHON_PATH} main.py --enable-cors-header \r` : `${PYTHON_PATH} main.py --enable-cors-header \r`;
             runCommandWithPty(command, (event => {
                 dispatcher(event);
                 const cevent: ComfyUIProgressEventType = {
                     type: "INFO",
                     message: event.message
                 };
+
+                console.log(event.message);
 
                 if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
                     dispatcher({
@@ -441,14 +443,14 @@ export async function isComfyUIAlive(): Promise<boolean> {
     }
 }
 
-export async function restartComfyUI(dispatcher?: TaskEventDispatcher): Promise<boolean>  {
+export async function restartComfyUI(dispatcher?: TaskEventDispatcher, pip=false): Promise<boolean>  {
     try {
         comfyUIProgressEvent.emit({
             type: "RESTART",
             message: "Restart ComfyUI"
         });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
-        await startComfyUI(dispatcher ? dispatcher : (event) => null); // 启动新的 ComfyUI
+        await startComfyUI(dispatcher ? dispatcher : (event) => null, pip); // 启动新的 ComfyUI
     } catch (err: any) {
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }
@@ -472,7 +474,7 @@ export async function updateComfyUI(dispatcher: TaskEventDispatcher): Promise<bo
         }), {
             cwd: repoPath
         });
-        await restartComfyUI(dispatcher);
+        await restartComfyUI(dispatcher, true);
         logger.info("updateComfyUI: stopped");
     } catch (err: any) {
         logger.info(err);
