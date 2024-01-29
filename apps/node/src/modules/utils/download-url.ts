@@ -7,9 +7,10 @@ import progress from "progress";
 import { TaskEventDispatcher } from '../task-queue/task-queue';
 import logger from './logger';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { systemProxy, systemProxyString } from './env';
+import {getSystemProxy} from './env';
 import * as fsExtra from "fs-extra";
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
+  const { systemProxy, systemProxyString } = await getSystemProxy();
   const filename: string = path.basename(url);
   dispatch({
     message: `Downloading ${url}`
@@ -89,6 +90,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
 }
 
 export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string, targetPath: string, md5?: string): Promise<void> {
+  const { systemProxy, systemProxyString } = await getSystemProxy();
   const filename: string = path.basename(url);
   const tmpFilePath: string = path.join(targetPath, `${filename}.tmp`);
   const filePath: string = path.join(targetPath, filename);

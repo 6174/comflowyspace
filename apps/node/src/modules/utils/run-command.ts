@@ -1,9 +1,8 @@
 import { ExecaChildProcess, Options, execaCommand } from "execa";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import * as os from "os";
-import { isMac, isWindows, systemProxyString } from "./env";
+import { getSystemProxy, isMac, isWindows } from "./env";
 import { CONDA_ENV_NAME } from "../config-manager";
-import { systemProxy } from "./env";
 
 export const OS_TYPE = os.type().toUpperCase();
 export const OS_HOME_DIRECTORY = os.homedir();
@@ -19,6 +18,7 @@ export async function runCommand(
     exitCode: number,
     stdout: string,
 }> {
+    const { systemProxy, systemProxyString } = await getSystemProxy();
     if (systemProxy) {
         logger.info("run command with proxy:" + systemProxyString);
     } else {
@@ -77,12 +77,13 @@ import logger from "./logger";
 const shell = process.platform === 'win32' ? 'cmd' : 'zsh';
 const appDir = getAppDataDir();
 
-export function runCommandWithPty(
+export async function runCommandWithPty(
     command: string,
     dispatcher: TaskEventDispatcher = () => { },
     options: Options = {},
     cb?: (process: nodePty.IPty) => void
 ) {
+    const { systemProxy, systemProxyString } = await getSystemProxy();
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {

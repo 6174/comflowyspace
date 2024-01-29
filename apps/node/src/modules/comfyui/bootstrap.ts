@@ -1,6 +1,6 @@
 import * as os from "os";
 import * as path from "path";
-import { isMac, systemProxy, systemProxyString } from "../utils/env"
+import { getSystemProxy, isMac } from "../utils/env"
 import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
@@ -339,6 +339,7 @@ export type ComfyUIProgressEventType = {
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher): Promise<boolean> {
+    const {systemProxy, systemProxyString} = await getSystemProxy();
     if (comfyuiProcess) {
         return true;
     }

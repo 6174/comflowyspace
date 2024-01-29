@@ -285,8 +285,6 @@ class WindowManager {
     ipcMain.handle('is-maxmize', async () => {
       return this.mainWindow.isMaximized();
     });
-
-
   }
 
   restoreOrCreateWindow = async () => {

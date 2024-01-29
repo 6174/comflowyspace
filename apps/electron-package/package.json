@@ -53,7 +53,8 @@
     ]
   },
   "dependencies": {
-    "node-pty": "^1.0.0"
+    "node-pty": "^1.0.0",
+    "regedit": "^5.1.2"
   },
   "devDependencies": {
     "@electron/notarize": "^2.2.0",
