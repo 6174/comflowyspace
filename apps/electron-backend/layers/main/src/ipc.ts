@@ -1,6 +1,7 @@
 import { ipcMain, dialog } from "electron"
 import * as os from "os"
 import { shell } from 'electron';
+import path from "path";
 
 export function startIPC() {
   ipcMain.handle('select-directory', openDirectoryDialog)
@@ -16,7 +17,11 @@ async function openURL(ev: any, url: string) {
 
 async function openDirectory(ev: any, directoryPath: string) {
   console.log(directoryPath);
-  await shell.openPath(directoryPath);
+  let normalizedPath = directoryPath;
+  if (os.platform() === 'win32') {
+    normalizedPath = path.normalize(directoryPath);
+  }
+  await shell.openPath(normalizedPath);
   return true;
 }
 

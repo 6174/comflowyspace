@@ -7,7 +7,8 @@
     "start": "electron ./",
     "compile": "cd ../electron-frontend && pnpm build && cd ../electron-backend && npm run compile && cd ../electron-package && node ./scripts/pre-package.js",
     "package": "electron-builder --dir",
-    "make": "electron-builder --mac"
+    "make": "electron-builder --mac",
+    "makewin": "electron-builder --win"
   },
   "build": {
     "appId": "com.flowy.app",
@@ -18,6 +19,20 @@
     "directories": {
       "buildResources": "assets",
       "output": "out"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "logo.ico",
+      "uninstallerIcon": "logo.ico",
+      "installerHeaderIcon": "logo.ico",
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Comflowyspace"
     },
     "mac": {
       "icon": "logo.icns",
