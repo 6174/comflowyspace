@@ -55,7 +55,7 @@
       ]
     },
     "electronDownload": {
-      "mirror": "https://npm.taobao.org/mirrors/electron/"
+      "mirror": "https://npmmirror.com/mirrors/electron/"
     },
     "afterSign": "./scripts/after-sign.js",
     "npmRebuild": true,
@@ -78,10 +78,11 @@
     "cross-env": "7.0.3",
     "dotenv": "^16.3.2",
     "dts-for-context-bridge": "0.7.1",
-    "electron": "^28.0.0",
+    "electron": "^28.2.0",
     "electron-builder": "^24.9.1",
     "electron-devtools-installer": "3.2.0",
     "electron-rebuild": "^3.2.9",
+    "fs-extra": "^11.2.0",
     "node-gyp": "^10.0.1"
   }
 }
