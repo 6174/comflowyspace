@@ -13,7 +13,7 @@
     "typecheck:main": "tsc --noEmit -p layers/main/tsconfig.json",
     "typecheck:preload": "tsc --noEmit -p layers/preload/tsconfig.json",
     "typecheck": "npm run typecheck:main && npm run typecheck:preload",
-    "rebuild": "electron-rebuild"
+    "rebuild-pty": "electron-rebuild"
   },
   "dependencies": {
     "configstore": "^6.0.0",
