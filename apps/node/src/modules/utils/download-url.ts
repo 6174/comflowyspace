@@ -91,11 +91,9 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       logger.error(msg);
       throw new Error(msg);
     }
-    console.log('Before dispatch');
     dispatch({
       message: `Downloaded ${filename} to ${targetPath}`
     })
-    console.log('After dispatch');
   } catch (error: any) {
     if (fs.existsSync(targetPath) && fs.statSync(targetPath).size > 0) {
       dispatch({

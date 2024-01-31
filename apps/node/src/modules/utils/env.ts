@@ -65,7 +65,6 @@ function parseMacProxySettings() {
 
 async function parseWindowsProxySettings() {
   const regedit = require('regedit').promisified;
-  console.log("start read windows proxy")
   try {
     const key = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
     const proxySettings = (await regedit.list(key))[key].values;

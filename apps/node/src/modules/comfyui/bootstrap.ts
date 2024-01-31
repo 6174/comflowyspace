@@ -372,8 +372,6 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
                     message: event.message
                 };
 
-                console.log(event.message);
-
                 if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
                     dispatcher({
                         type: "SUCCESS",

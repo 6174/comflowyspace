@@ -21,8 +21,9 @@ const MainBuildConfig = {
     bundle: true,
     platform: 'node',
     format: 'cjs',
+    minify: false,
     target: [`node${node}`],
-    sourcemap: false,
+    sourcemap: true,
     external: ['electron', 'node-pty', "regedit",...builtinModules], 
 }
 
@@ -31,8 +32,9 @@ const PreloadBuildConfig = {
     outfile:  path.resolve(__dirname, "../layers/preload/", "./dist/index.js"),
     bundle: true,
     platform: 'node',
+    minify: false,
     target: `chrome${chrome}`,
-    sourcemap: false,
+    sourcemap: true,
     external: ['electron', ...builtinModules], // Add external dependencies here
 }
 
@@ -41,11 +43,12 @@ const RendererBuildConfig = {
     outdir: path.resolve(__dirname, "../layers/renderer/", "./dist"),
     bundle: true,
     platform: 'node',
+    minify: false,
     define: {
         'process.env.NODE_ENV': JSON.stringify(process.env.MODE || "development"),
     },
     target: `chrome${chrome}`,
-    sourcemap: false,
+    sourcemap: true,
     assetNames: 'assets/[name]-[hash]',
     chunkNames: '[ext]/[name]-[hash]',
     external: ['electron', ...builtinModules], // Add external dependencies here

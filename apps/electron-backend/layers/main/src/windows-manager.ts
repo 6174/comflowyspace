@@ -1,4 +1,4 @@
-import { BrowserView, BrowserWindow, ipcMain } from "electron";
+import { BrowserView, BrowserWindow, Menu, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 import { isMacOS } from "./utils";
 import path from "path";
@@ -61,7 +61,7 @@ class WindowManager {
       titleBarStyle: isMacOS ? 'hiddenInset' : 'default',
       frame: isMacOS,
       webPreferences: {
-        devTools: isDev,
+        devTools: true,
         contextIsolation: true,
         nodeIntegration: false,
         preload: PRELOAD_JS_PATH,
@@ -73,8 +73,28 @@ class WindowManager {
 
     this.mainWindow = window;
 
-    if (isDev) {
-      this.mainWindow.webContents.openDevTools({ mode: 'detach' })
+    try {
+      let appMenu = Menu.getApplicationMenu()!
+
+      // change default toggle devtools behavior
+      // @ts-ignore
+      let viewMenuItem = appMenu.items.find(item => item.role === 'viewmenu')!;
+      // @ts-ignore
+      let devMenuItem = viewMenuItem.submenu!.items.find(item => item.role === 'toggledevtools')!
+      devMenuItem.click = () => {
+        this.mainWindow!.getBrowserView()?.webContents.toggleDevTools();
+      }
+
+      console.log("view Menu Item", viewMenuItem);
+      let reloadMenuItem = viewMenuItem.submenu!.items.find(item => item.role === 'reload')!
+      reloadMenuItem.click = () => {
+        this.mainWindow!.getBrowserView()?.webContents.reload();
+      }
+
+
+      Menu.setApplicationMenu(appMenu)
+    } catch(err) {
+      console.log("custom menu error", err);
     }
     
     window.on('closed', () => {
@@ -111,7 +131,7 @@ class WindowManager {
     // Create the browser view.
     const window = new BrowserView({
       webPreferences: {
-        devTools: isDev,
+        devTools: true,
         contextIsolation: true,
         nodeIntegration: false,
         preload: PRELOAD_JS_PATH,
@@ -127,9 +147,6 @@ class WindowManager {
     const url = this.#getRealUrl(tabData);
     window.webContents.frameRate = 60;
     window.webContents.loadURL(url);
-    if (isDev) {
-      window.webContents.openDevTools({ mode: 'detach' })
-    }
     window.webContents.on("did-finish-load", () => {
       // window.webContents.send("set-socket", {});
     });

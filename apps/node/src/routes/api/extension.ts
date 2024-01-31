@@ -79,7 +79,6 @@ export async function ApiRouteGetExtensions(req: Request, res: Response) {
         });
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
-        console.log(err.stack);
         res.send({ 
             success: false,
             error: err.message
