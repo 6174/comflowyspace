@@ -71,5 +71,5 @@ export async function startAppServer(params: {
 
   setTimeout(() => {
     downloadDefaultModel();
-  }, 3000);
+  }, 10000);
 }

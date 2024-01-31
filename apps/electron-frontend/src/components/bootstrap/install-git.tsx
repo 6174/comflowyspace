@@ -4,7 +4,7 @@ import { BootstrapTask } from "./bootstrap-task";
 export function InstallGit() {
   return (
     <div className="InstallGit">
-      <BootstrapTask type={BootStrapTaskType.installConda}/>
+      <BootstrapTask type={BootStrapTaskType.installGit}/>
     </div>
   )
 }

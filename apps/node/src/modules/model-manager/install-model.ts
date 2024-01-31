@@ -41,7 +41,7 @@ export async function installModel(dispatch: TaskEventDispatcher, model: MarketM
  * 4) download step2: move model from tmp folder to comfyUI folder
  */
 import * as fsExtra from "fs-extra";
-import { checkIfInstalledComfyUI } from "../comfyui/bootstrap";
+import { checkIfInstalledComfyUI, comfyUIProgressEvent, restartComfyUI } from "../comfyui/bootstrap";
 import { calculateSHA } from "../utils/sha";
 import logger from "../utils/logger";
 
@@ -100,6 +100,11 @@ export async function downloadDefaultModel(): Promise<boolean> {
 
         if (await checkIfInstalledComfyUI()) {
             await fsExtra.move(tmpOutputFile, finalOutputFile);
+            comfyUIProgressEvent.emit({
+                type: "INFO",
+                message: "Download default dream-shaper model success",
+            })
+            await restartComfyUI();
         }
         return true;
     } catch(err: any) {
