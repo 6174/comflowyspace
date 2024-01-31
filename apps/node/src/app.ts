@@ -69,7 +69,7 @@ export async function startAppServer(params: {
     logger.info(`Server is running at http://localhost:${port}`);
   });
 
-  // setTimeout(() => {
-  //   downloadDefaultModel();
-  // }, 3000);
+  setTimeout(() => {
+    downloadDefaultModel();
+  }, 3000);
 }

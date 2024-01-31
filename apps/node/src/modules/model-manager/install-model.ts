@@ -48,15 +48,15 @@ import logger from "../utils/logger";
 export async function downloadDefaultModel(): Promise<boolean> { 
     try {
         const modelConfig = {
-            "name": "v1-5-pruned-emaonly.ckpt",
+            "name": "v1-5-dream-shaper.ckpt",
             "type": "checkpoints",
             "base": "SD1.5",
-            "sha": "cc6cb27103417325ff94f52b7a5d2dde45a7515b25c255d8e396c90014281516",
+            "sha": "879DB523C30D3B9017143D56705015E15A2CB5628762C11D086FED9538ABD7FD",
             "save_path": "default",
-            "description": "Stable Diffusion 1.5 base model",
-            "reference": "https://huggingface.co/runwayml/stable-diffusion-v1-5",
-            "filename": "v1-5-pruned-emaonly.ckpt",
-            "url": "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt",
+            "description": "Stable Diffusion 1.5 DreamShaper ",
+            "reference": "https://civitai.com/models/4384?modelVersionId=128713",
+            "filename": "v1-5-dream-shaper.ckpt",
+            "url": "https://civitai.com/api/download/models/128713",
             "size": "4067.78M"
         } as MarketModel;
 
@@ -66,7 +66,7 @@ export async function downloadDefaultModel(): Promise<boolean> {
             return true;
         }
 
-        const fileName = "v1-5-pruned-emaonly.ckpt";
+        const fileName = "v1-5-dream-shaper.ckpt";
         const tmpOutputFile = path.resolve(getAppTmpDir(), fileName);
 
         console.log(tmpOutputFile, finalOutputFile);
@@ -81,10 +81,21 @@ export async function downloadDefaultModel(): Promise<boolean> {
             }
         }
 
-        await downloadUrlPro((ev) => {
-            console.log(ev);
-        }, modelConfig.url, tmpOutputFile, modelConfig.sha);   
-        
+        if (isWindows) {
+            // For Windows
+            const downloadCommand = `powershell -c "Start-BitsTransfer -Source ${modelConfig.url} -Destination '${tmpOutputFile}' -Restartable"`;
+            await runCommand(downloadCommand, (ev) => {
+                console.log(ev);
+            });
+        } else {
+            // For Mac
+            // -C - means continue download if file already exists
+            const downloadCommand = `curl -L -C - ${modelConfig.url} --output ${tmpOutputFile}`;
+            await runCommand(downloadCommand, (ev) => {
+                console.log(ev);
+            });
+        }
+
         console.log("download success");
 
         if (await checkIfInstalledComfyUI()) {
