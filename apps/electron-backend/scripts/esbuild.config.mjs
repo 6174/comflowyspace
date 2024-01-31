@@ -23,7 +23,7 @@ const MainBuildConfig = {
     format: 'cjs',
     target: [`node${node}`],
     sourcemap: false,
-    external: ['electron', 'node-pty', ...builtinModules], 
+    external: ['electron', 'node-pty', "regedit",...builtinModules], 
 }
 
 const PreloadBuildConfig = {

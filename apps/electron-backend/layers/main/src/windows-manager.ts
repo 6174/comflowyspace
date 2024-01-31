@@ -265,6 +265,26 @@ class WindowManager {
       this.dispatchChangeEvent();
       return this.getTabData(); 
     });
+
+    ipcMain.handle('maxmize-window', async () => {
+      this.mainWindow.maximize();
+    });
+
+    ipcMain.handle('unmaxmize-window', async () => {
+      this.mainWindow.unmaximize();
+    });
+
+    ipcMain.handle('minimize-window', async () => {
+      this.mainWindow.minimize();
+    });
+    
+    ipcMain.handle('close-window', async () => {
+      this.mainWindow.close();
+    });
+
+    ipcMain.handle('is-maxmize', async () => {
+      return this.mainWindow.isMaximized();
+    });
   }
 
   restoreOrCreateWindow = async () => {

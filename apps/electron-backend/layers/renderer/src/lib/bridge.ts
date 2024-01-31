@@ -3,7 +3,13 @@ export interface ComfyElectronApi {
   version: number;
   openURL: (url: string) => Promise<any>;
   receiveFromMain: (channel: string, func: any) => () => void;
+  isWindows: boolean;
   windowTabManager: {
+    maxmizeWindow: () => Promise<void>,
+    unmaxmizeWindow: () => Promise<void>,
+    minimizeWindow: () => Promise<void>,
+    closeWindow: () => Promise<void>,
+    isMaxmized: () => Promise<boolean>,
     onWindowTabsChange: (
       callback: (tabsData: {
         tabs: WindowTab[];

@@ -1,3 +1,4 @@
+require("global-agent/bootstrap");
 import * as os from "os";
 import { getAppDataDir, getAppTmpDir } from "./get-appdata-dir";
 import { execSync } from "child_process";
@@ -16,23 +17,33 @@ const systemProxy: {
   [_:string]: any
 } = {};
 
-if (isMac) { 
-  parseMacProxySettings();
-} else if (isWindows) { 
-  parseWindowsProxySettings();
-}
-
-if (systemProxy.http_proxy) {
-  process.env.GLOBAL_AGENT_HTTP_PROXY = systemProxy.http_proxy
-}
-
-if (systemProxy.https_proxy) {
-  process.env.GLOBAL_AGENT_HTTPS_PROXY = systemProxy.https_proxy
-}
-
-export const systemProxyString = JSON.stringify(systemProxy);
-
+export let systemProxyString = JSON.stringify(systemProxy);
 export {systemProxy}
+let inited = false;
+export async function getSystemProxy() {
+  if (!inited) {
+    if (isMac) { 
+      parseMacProxySettings();
+    } else if (isWindows) { 
+      await parseWindowsProxySettings();
+    }
+  
+    if (systemProxy.http_proxy) {
+      process.env.GLOBAL_AGENT_HTTP_PROXY = systemProxy.http_proxy
+    }
+    
+    if (systemProxy.https_proxy) {
+      process.env.GLOBAL_AGENT_HTTPS_PROXY = systemProxy.https_proxy
+    }
+  
+    systemProxyString = JSON.stringify(systemProxy);
+    inited = true;
+  }
+  return {
+    systemProxy,
+    systemProxyString
+  }
+}
 
 function parseMacProxySettings() {
   const systemProxyString = execSync("scutil --proxy").toString();
@@ -52,18 +63,29 @@ function parseMacProxySettings() {
   }
 }
 
-function parseWindowsProxySettings() {
-  const systemProxyString = execSync('netsh winhttp show proxy').toString();
+async function parseWindowsProxySettings() {
+  const regedit = require('regedit').promisified;
+  console.log("start read windows proxy")
+  try {
+    const key = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
+    const proxySettings = (await regedit.list(key))[key].values;
+    
+    const ret = {
+      enabled: proxySettings.ProxyEnable.value,
+      server: proxySettings.ProxyServer.value,
+      override: proxySettings.ProxyOverride.value
+    };
 
-  // Windows 的代理设置通常是这种格式 "HTTP(S) Proxy Directories: (proxy-server-and-port) Directories: (none)"
-  const proxyPattern = /(HTTP|HTTPS) Proxy Directories: ((\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}:\d+))/g;
+    if (ret.enabled && ret.server) {
+      const server = "http://" + ret.server;
+      systemProxy.all_proxy = server;
+      systemProxy.http_proxy = server;
+      systemProxy.https_proxy = server;
+    }
 
-  let match;
-  while (match = proxyPattern.exec(systemProxyString)) {
-    const key = match[1] === 'HTTP' ? 'http_proxy' : 'https_proxy';
-    systemProxy[key] = `http://${match[2]}`;
+  } catch (err) {
+    console.log("read error", err);
   }
 
   // Windows 上 SOCKS 代理需要另一个调研工具 (代理设置)，Windows 平台可能不提供 SOCK 代理设置的命令行工具
-  return systemProxy;
 }

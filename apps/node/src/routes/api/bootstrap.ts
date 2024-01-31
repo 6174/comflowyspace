@@ -1,5 +1,5 @@
-import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { updateComfyUI, checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI, restartComfyUI } from '../../modules/comfyui/bootstrap';
+import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
+import { updateComfyUI, checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI, restartComfyUI, comfyUIProgressEvent } from '../../modules/comfyui/bootstrap';
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
@@ -51,27 +51,34 @@ export async function ApiBootstrap(req: Request, res: Response) {
             taskId,
             name: taskType,
             executor: async (dispatcher): Promise<boolean> => {
+                const newDispatcher = (event: PartialTaskEvent) => {
+                    dispatcher(event);
+                    comfyUIProgressEvent.emit({
+                        type: event.type == "FAILED" ? "ERROR" : "INFO",
+                        message: event.message || ""
+                    })
+                }
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
                         const isCondaInstalled = await checkIfInstalled("conda");
                         if (isCondaInstalled) {
                             return true;
                         }
-                        return await installCondaTask(dispatcher);
+                        return await installCondaTask(newDispatcher);
                     case BootStrapTaskType.installPython:
                         const isPythonInstalled = await checkIfInstalled("python");
                         if (isPythonInstalled) {
                             return true;
                         }
-                        return await installPythonTask(dispatcher);
+                        return await installPythonTask(newDispatcher);
                     case BootStrapTaskType.installTorch:
-                        return await installPyTorchForGPU(dispatcher);
+                        return await installPyTorchForGPU(newDispatcher);
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {
                             return true;
                         }
-                        return await installCondaPackageTask(dispatcher, {
+                        return await installCondaPackageTask(newDispatcher, {
                             packageRequirment: "git"
                         });
                     case BootStrapTaskType.installComfyUI:
@@ -79,7 +86,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         if (isComfyUIInstalled) {
                             return true;
                         }
-                        return await cloneComfyUI(dispatcher);
+                        return await cloneComfyUI(newDispatcher);
                     case BootStrapTaskType.startComfyUI:
                         const isComfyUIStarted = await isComfyUIAlive();
                         if (isComfyUIStarted) {

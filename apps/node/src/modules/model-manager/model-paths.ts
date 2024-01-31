@@ -5,6 +5,7 @@ import * as fsExtra from "fs-extra";
 import yaml from 'js-yaml';
 import { uuid } from '@comflowy/common';
 import logger from '../utils/logger';
+import { isWindows } from '../utils/env';
 export const supported_pt_extensions: ModelExt[] = ['.ckpt', '.pt', '.bin', '.pth', '.safetensors'];
 
 export function getFolderNamesAndPaths() {

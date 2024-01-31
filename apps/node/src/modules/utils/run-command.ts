@@ -1,9 +1,8 @@
 import { ExecaChildProcess, Options, execaCommand } from "execa";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import * as os from "os";
-import { isMac, isWindows, systemProxyString } from "./env";
+import { getSystemProxy, isMac, isWindows } from "./env";
 import { CONDA_ENV_NAME } from "../config-manager";
-import { systemProxy } from "./env";
 
 export const OS_TYPE = os.type().toUpperCase();
 export const OS_HOME_DIRECTORY = os.homedir();
@@ -19,6 +18,7 @@ export async function runCommand(
     exitCode: number,
     stdout: string,
 }> {
+    const { systemProxy, systemProxyString } = await getSystemProxy();
     if (systemProxy) {
         logger.info("run command with proxy:" + systemProxyString);
     } else {
@@ -26,6 +26,7 @@ export async function runCommand(
     }
     const subProcess = execaCommand(command, {
         env: {
+            ...process.env,
             PATH: SHELL_ENV_PATH,
             ...systemProxy,
         },
@@ -57,6 +58,7 @@ export async function runCommand(
             stderr,
             stdout,
         },
+        message: stderr + stdout
     });
 
     if (exitCode !== 0) {
@@ -74,15 +76,17 @@ import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
 import logger from "./logger";
 
-const shell = process.platform === 'win32' ? 'cmd' : 'zsh';
+const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
+
 const appDir = getAppDataDir();
 
-export function runCommandWithPty(
+export async function runCommandWithPty(
     command: string,
     dispatcher: TaskEventDispatcher = () => { },
     options: Options = {},
     cb?: (process: nodePty.IPty) => void
 ) {
+    const { systemProxy, systemProxyString } = await getSystemProxy();
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
@@ -91,6 +95,7 @@ export function runCommandWithPty(
             cols: 80,
             rows: 30,
             env: {
+                ...process.env,
                 PATH: SHELL_ENV_PATH,
                 DISABLE_UPDATE_PROMPT: "true",
                 ...systemProxy,
@@ -134,21 +139,21 @@ export function runCommandWithPty(
     })
 }
 
+export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
+export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
+export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
+export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
+export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
+
 export function getSystemPath(): string {
     let paths;
     let pathDelimiter;
     if (OS_TYPE.includes('WINDOWS')) {
         pathDelimiter = ';';
-        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', 'C:\\tools\\Miniconda3\\Scripts', process.env.PATH];
+        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', 'C:\\tools\\Miniconda3\\Scripts',  `${CONDA_ENV_PATH}\\Scripts`, process.env.PATH];
     } else {
         pathDelimiter = ':';
         paths = ['/usr/local/bin', `${OS_HOME_DIRECTORY}/miniconda3/condabin`, `${OS_HOME_DIRECTORY}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
     }
     return paths.join(pathDelimiter);
 }
-
-export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
-export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
-export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
-export const PYTHON_PATH = isWindows ? `${CONDA_ENV_NAME}\\bin\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
-export const PIP_PATH = isWindows ? `${CONDA_ENV_NAME}\\bin\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;

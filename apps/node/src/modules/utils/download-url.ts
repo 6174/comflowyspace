@@ -7,10 +7,14 @@ import progress from "progress";
 import { TaskEventDispatcher } from '../task-queue/task-queue';
 import logger from './logger';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import { systemProxy, systemProxyString } from './env';
+import {getSystemProxy} from './env';
 import * as fsExtra from "fs-extra";
 export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, targetPath: string): Promise<void> {
+  const { systemProxy, systemProxyString } = await getSystemProxy();
   const filename: string = path.basename(url);
+  if (fs.existsSync(targetPath) && fs.statSync(targetPath).size > 0) {
+    return;
+  }
   dispatch({
     message: `Downloading ${url}`
   });
@@ -24,10 +28,13 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     } else {
       logger.info("download without proxy")
     }
+    const agentOptions = {
+      secureProtocol: 'TLSv1_2_method',
+    };
     const response: Response = await fetch(
       url, { 
         headers,
-        agent: systemProxy.http_proxy ? new HttpsProxyAgent(systemProxy.http_proxy as string) : undefined,
+        agent: systemProxy.http_proxy ? new HttpsProxyAgent(systemProxy.http_proxy as string, agentOptions) : undefined,
       });
     if (!response.ok) {
       throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
@@ -49,15 +56,21 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     const writeStream = fs.createWriteStream(targetPath);
 
     bufferStream.on('error', (err: any) => {
-      logger.error(`Error with buffer stream: ${err.message}, ${err.stack}`);
+      const msg = `Error with buffer stream: ${err.message}, ${err.stack}`
+      logger.error(msg);
+      throw new Error(msg)
     });
 
     writeStream.on('error', (err: any) => {
-      logger.error(`Error writing to file: ${err.message}, ${err.stack}`);
+      const msg = `Error writing to file: ${err.message}, ${err.stack}`
+      logger.error(msg);
+      throw new Error(msg)
     });
 
     response.body!.on('error', (err) => {
-      logger.error(`Error reading from response body: ${err.message}, ${err.stack}`);
+      const msg = `Error reading from response body: ${err.message}, ${err.stack}`
+      logger.error(msg);
+      throw new Error(msg)
     });
 
     response.body!.on('data', (chunk) => {
@@ -74,21 +87,30 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       // this will throw if an error occurred
       await finished(writeStream);
     } catch (err: any) {
-      logger.error(`Error with streams: ${err.message} + ${err.stack}`);
-      throw err;
+      const msg = `Error with streams: ${err.message} + ${err.stack}`
+      logger.error(msg);
+      throw new Error(msg);
     }
-
+    console.log('Before dispatch');
     dispatch({
       message: `Downloaded ${filename} to ${targetPath}`
     })
+    console.log('After dispatch');
   } catch (error: any) {
-    const msg = `Error downloading from ${url}: ${error.message}, ${error.stack}`
-    logger.error(msg);
-    throw new Error(msg);
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).size > 0) {
+      dispatch({
+        message: `Downloaded ${filename} to ${targetPath}`
+      })
+    } else {
+      const msg = `Error downloading from ${url}: ${error.message}, ${error.stack}`
+      logger.error(msg);
+      throw new Error(msg);
+    }
   }
 }
 
 export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string, targetPath: string, md5?: string): Promise<void> {
+  const { systemProxy, systemProxyString } = await getSystemProxy();
   const filename: string = path.basename(url);
   const tmpFilePath: string = path.join(targetPath, `${filename}.tmp`);
   const filePath: string = path.join(targetPath, filename);

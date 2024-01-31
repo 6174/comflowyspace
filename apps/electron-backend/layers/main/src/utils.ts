@@ -1,8 +1,10 @@
 const isMacOS = process.platform === 'darwin';
+const isWindows = process.platform === 'win32';
 import isDev from 'electron-is-dev'
 export {
     isMacOS,
-    isDev
+    isDev,
+    isWindows
 }
 import crypto from "crypto";
 export function uuid() {
