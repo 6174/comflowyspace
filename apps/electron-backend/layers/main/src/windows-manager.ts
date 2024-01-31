@@ -85,12 +85,10 @@ class WindowManager {
         this.mainWindow!.getBrowserView()?.webContents.toggleDevTools();
       }
 
-      console.log("view Menu Item", viewMenuItem);
       let reloadMenuItem = viewMenuItem.submenu!.items.find(item => item.role === 'reload')!
       reloadMenuItem.click = () => {
         this.mainWindow!.getBrowserView()?.webContents.reload();
       }
-
 
       Menu.setApplicationMenu(appMenu)
     } catch(err) {

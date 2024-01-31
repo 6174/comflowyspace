@@ -162,7 +162,7 @@ export async function ApiSetupConfig(req: Request, res: Response) {
         });
 
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
-
+        
         res.send({
             success: true,
             isComfyUIInstalled,

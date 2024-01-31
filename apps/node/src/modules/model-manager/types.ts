@@ -37,6 +37,7 @@ export type MarketModel = {
     description: string;
     reference: string;
     filename: string;
+    sha?: string;
     url: string;
 }
   
