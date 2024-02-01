@@ -1,4 +1,4 @@
-import create from 'zustand';
+import {create} from 'zustand';
 
 const api = process.env.NEXT_PUBLIC_API_SERVER + "/api";
 
@@ -8,9 +8,9 @@ type Tutorial = {
   url: string;
 };
 
-type TutorialAction = {
+type TutorialStore = {
   tutorials: Tutorial[];
-  onInit: () => void;
+  fetchTutorials: () => void;
   setTutorials: (tutorials: Tutorial[]) => void;
 }
 
