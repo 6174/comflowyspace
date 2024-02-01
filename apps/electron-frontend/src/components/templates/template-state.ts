@@ -37,6 +37,8 @@ import scribbleThumbnail from "./thumbnails/scribble.png";
 import cannyThumbnail from "./thumbnails/canny.png";
 import batchThumbnail from "./thumbnails/batch.png";
 import sdxlThumbnail from "./thumbnails/sdxl.png";
+import pixelAndHiResThumbnail from "./thumbnails/pixel-and-hi-res.png";
+import upscalingModelThumbnail from "./thumbnails/upscaling-model.png";
 
 import { ComfyUIWorkflow } from "@comflowy/common/comfui-interfaces/comfy-workflow";
 function getHardCodedTemplates(): Template[] {
@@ -95,7 +97,7 @@ function getHardCodedTemplates(): Template[] {
             description: "Use the upscale model to enlarge the image. This workflow will not only enlarge the image but also enhance its sharpness. However, it will add some content that the original image does not have.",
             data: upscalePixelByModelWorkflow as unknown as ComfyUIWorkflow,
             reference_url: "https://www.comflowy.com/advanced/upscale#upscale-pixel-by-algorithm-workflow",
-            thumbnail: upscaleThumbnail.src
+            thumbnail: upscalingModelThumbnail.src
         },
         {
             name: "Hi-res fix latent upscale workflow",
@@ -109,7 +111,7 @@ function getHardCodedTemplates(): Template[] {
             description: "This is a workflow combining Upscale pixel by model and Hi-res fixed. If you want a relatively balanced effect, and intend to enlarge the image while maintaining its consistency with the original, you can choose this workflow.",
             data: upscalePixelAndHiResFixLatentWorkflow as unknown as ComfyUIWorkflow,
             reference_url: "https://www.comflowy.com/advanced/upscale#upscale-pixel-and-hi-res-fix-workflow",
-            thumbnail: hiResUpscale.src
+            thumbnail: pixelAndHiResThumbnail.src
         },
         {
             name: "Inpainting workflow",
