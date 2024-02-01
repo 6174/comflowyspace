@@ -1,15 +1,27 @@
 import create from 'zustand';
 
-const api = process.env.NEXT_PUBLIC_API_SERVER;
+const api = process.env.NEXT_PUBLIC_API_SERVER + "/api";
 
-type TutorialStore = {
-  tutorial: string;
-  setTutorial: (tutorial: string) => void;
+type Tutorial = {
+  image: string;
+  title: string;
+  url: string;
 };
 
+type TutorialAction = {
+  tutorials: Tutorial[];
+  onInit: () => void;
+  setTutorials: (tutorials: Tutorial[]) => void;
+}
+
 const useTutorialStore = create<TutorialStore>((set) => ({
-  tutorial: '',
-  setTutorial: (tutorial) => set({ tutorial }),
+  tutorials: [],
+  setTutorials: (tutorials) => set({ tutorials }),
+  fetchTutorials: async () => {
+    const response = await fetch(`${api}/gettutorial`);
+    const tutorials: Tutorial[] = await response.json();
+    set({ tutorials });
+  },
 }));
 
 export default useTutorialStore;

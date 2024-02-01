@@ -1,27 +1,53 @@
 import { useEffect, useState } from 'react';
 import styles from './tutorials.style.module.scss';
 import { openExternalURL } from '@/lib/electron-bridge';
-import { tutorialCards } from './tutorialData';
+import  useTutorialStore  from './tutorial.store';
 
 interface TutorialCardProps {
   image: string;
+  title: string;
   url: string;
 }
 
 const TutorialCard: React.FC<TutorialCardProps> = ({ image, title, url }) => {
   return (
-    <div className="tutorial-card" onClick={() => openExternalURL(url)}>
-      <img className="image"src={image} alt={title} />
+    <div className={styles.tutorials}>
+      <div 
+        className="tutorial-card" 
+        onClick={() => openExternalURL(url)} 
+        style={{ 
+        backgroundImage: `url(${process.env.NEXT_PUBLIC_API_SERVER + image})`,
+        width: '100%',
+        height: '90px',
+        backgroundSize: 'cover',
+        position: 'relative', 
+        display: 'flex', 
+        justifyContent: 'left', 
+        alignItems: 'center', 
+        }}
+      >
+        <div className="name" style={{ position: 'absolute'}}>
+          {title}
+        </div>
+      </div>
     </div>
   );
 };
 
 const Tutorials = () => {
+  const { tutorials, fetchTutorials } = useTutorialStore();
+
+  useEffect(() => {
+    fetchTutorials();
+  }, [fetchTutorials]);
+
+  console.log(tutorials);
+
   return (
     <div className={styles.tutorials}>
       <h2>Tutorials</h2>
       <div className="tutorial-card-list">
-        {tutorialCards.map((card, index) => (
+        {tutorials.map((card, index) => (
           <TutorialCard key={index} {...card} />
         ))}
       </div>
