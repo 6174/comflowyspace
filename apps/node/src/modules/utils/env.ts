@@ -1,4 +1,3 @@
-require("global-agent/bootstrap");
 import * as os from "os";
 import { getAppDataDir, getAppTmpDir } from "./get-appdata-dir";
 import { execSync } from "child_process";

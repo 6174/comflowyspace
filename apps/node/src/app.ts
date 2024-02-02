@@ -9,6 +9,7 @@ import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConf
 import { JSONDB } from './modules/jsondb/jsondb';
 import { getComfyUIDir } from './modules/utils/get-appdata-dir';
 import logger from './modules/utils/logger';
+import { downloadDefaultModel } from './modules/model-manager/install-model';
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
@@ -67,4 +68,8 @@ export async function startAppServer(params: {
   server.listen(port, () => {
     logger.info(`Server is running at http://localhost:${port}`);
   });
+
+  setTimeout(() => {
+    downloadDefaultModel();
+  }, 10000);
 }

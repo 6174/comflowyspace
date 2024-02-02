@@ -1,0 +1,16 @@
+body.windows {
+    $fontFamily: Arial, Helvetica, sans-serif;
+    .node-inner {
+        .node-input-container .node-input-label-name {
+            font-family: $fontFamily;
+            font-weight: lighter;
+        }
+        .node-slots .node-slot {
+            font-family: $fontFamily;
+        }
+        input, textarea, .ant-select-selection-item, .nodeErrorWrapper, .node-input-label-name,
+        .ant-input-prefix {
+            font-family: $fontFamily !important;
+        }
+    }
+}

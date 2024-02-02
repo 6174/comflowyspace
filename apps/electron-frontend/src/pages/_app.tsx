@@ -14,6 +14,12 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(()=> {
     onInit();
     JSONDBClient.listen();
+    // Check if the platform is Windows
+    if (navigator.userAgent.indexOf('Win') > -1) {
+      // Add 'windows' class to the document
+      document.body.className += ' windows';
+    }
+    
   }, [])
 
   return (

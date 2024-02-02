@@ -43,9 +43,9 @@ export function BootstrapTask(props: BootstrapTaskProps) {
     <div className={props.type}>
       {/* {contextHolder} */}
       <div className="actions">
-        {success ? 
+        {(success && task) ? 
           (
-            <div>{task.title} success</div>
+            <div>{task?.title} success</div>
           ) : (
             null
           )

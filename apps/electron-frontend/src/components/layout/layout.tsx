@@ -9,7 +9,7 @@ type Props = {
 import styles from "./layout.style.module.scss";
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
-import { BulbIcon, ExtensionIcon, ModelIcon, WorkflowIcon } from 'ui/icons'
+import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon } from 'ui/icons'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
@@ -99,6 +99,16 @@ const WorkspaceNav = () => {
           </div>
           <a>
             Extensions
+          </a>
+        </div>
+        <div className={`workspace-nav-item ${path === "/tutorials" ? "active" : ""}`} onClick={ev => {
+          changeRoute("/tutorials")
+        }}>
+          <div className="icon">
+            <TutorialIcon/>
+          </div>
+          <a>
+            Tutorials
           </a>
         </div>
       </div>

@@ -62,7 +62,7 @@ export async function runCommand(
     });
 
     if (exitCode !== 0) {
-        throw new Error("Run command error" + stderr);
+        throw new Error("Run command error:" + stderr);
     }
 
     return {

@@ -8,7 +8,13 @@ const nextConfig = {
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
-  }
+  },
+  webpack(config, { dev }) {
+    if (!dev) {
+      config.optimization.minimize = false;
+    }
+    return config;
+  },
 }
 
 module.exports = nextConfig

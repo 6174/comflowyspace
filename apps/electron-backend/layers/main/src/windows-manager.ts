@@ -6,7 +6,7 @@ import contextMenu from 'electron-context-menu';
 import { APP_SERVER_PORT } from "./config";
 import { closeLoadingScreen } from "./loading";
 import { setTimeout } from 'timers/promises';
-const BASE_URL = isDev ? 'http://localhost:3000' : `http://localhost:${APP_SERVER_PORT}`
+const BASE_URL = isDev ? 'http://localhost:4000' : `http://localhost:${APP_SERVER_PORT}`
 export function resolveWindowUrl(pageName: string): string {
   let realPageName = pageName
   if (pageName === "index" && isDev) {
@@ -18,10 +18,10 @@ export function resolveWindowUrl(pageName: string): string {
 export const DEFAULT_WINDOW_URL = resolveWindowUrl("index");
 
 type WindowTab = {
-  pageName: string, 
+  pageName: string,
   query?: string,
-  name: string, 
-  type: "MANAGEMENT" | "DOC", 
+  name: string,
+  type: "MANAGEMENT" | "DOC",
   id: number
 }
 // type define
@@ -47,7 +47,7 @@ class WindowManager {
   /**
    * create main window to manager tab windows
    * https://www.electronjs.org/docs/latest/api/browser-view
-   * @returns 
+   * @returns
    */
   createMainWindow = async () => {
     if (this.mainWindow) {
@@ -85,23 +85,21 @@ class WindowManager {
         this.mainWindow!.getBrowserView()?.webContents.toggleDevTools();
       }
 
-      console.log("view Menu Item", viewMenuItem);
       let reloadMenuItem = viewMenuItem.submenu!.items.find(item => item.role === 'reload')!
       reloadMenuItem.click = () => {
         this.mainWindow!.getBrowserView()?.webContents.reload();
       }
 
-
       Menu.setApplicationMenu(appMenu)
     } catch(err) {
       console.log("custom menu error", err);
     }
-    
+
     window.on('closed', () => {
       // @ts-ignore
       this.mainWindow = null;
       this.listWindow.forEach(instance => {
-        (instance.window.webContents as any)?.destroy() 
+        (instance.window.webContents as any)?.destroy()
       });
       this.listWindow = [];
     })
@@ -140,7 +138,7 @@ class WindowManager {
         enableWebSQL: false,
       },
     });
-    contextMenu({ 
+    contextMenu({
       window,
       showSaveImageAs: true
     });
@@ -218,7 +216,7 @@ class WindowManager {
         this.dispatchChangeEvent();
         return tab.window.webContents.id;
       } else {
-        const window = await this.newTab(tabData) 
+        const window = await this.newTab(tabData)
         this.dispatchChangeEvent();
         return window.webContents.id;
       }
@@ -253,7 +251,7 @@ class WindowManager {
       }
       this.dispatchChangeEvent();
     });
-    
+
     ipcMain.handle("switch-tab", async (_event, id: number) => {
       const tab = this.listWindow.find(instance => instance.window.webContents.id === id);
       console.log("switch tab", id, tab);
@@ -280,7 +278,7 @@ class WindowManager {
     }) => {
       this.replaceTab(data.id, data.newTab);
       this.dispatchChangeEvent();
-      return this.getTabData(); 
+      return this.getTabData();
     });
 
     ipcMain.handle('maxmize-window', async () => {
@@ -306,16 +304,16 @@ class WindowManager {
 
   restoreOrCreateWindow = async () => {
     let window = this.mainWindow;
-  
+
     if (window === undefined) {
       await this.createMainWindow();
       window = this.mainWindow;
     }
-  
+
     if (window.isMinimized()) {
       window.restore();
     }
-  
+
     window.focus();
   }
 }
