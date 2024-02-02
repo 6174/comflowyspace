@@ -11,24 +11,15 @@ interface TutorialCardProps {
 
 const TutorialCard: React.FC<TutorialCardProps> = ({ image, title, url }) => {
   return (
-    <div className={styles.tutorials}>
-      <div 
-        className="tutorial-card" 
-        onClick={() => openExternalURL(url)} 
-        style={{ 
-        backgroundImage: `url(${process.env.NEXT_PUBLIC_API_SERVER + image})`,
-        width: '100%',
-        height: '90px',
-        backgroundSize: 'cover',
-        position: 'relative', 
-        display: 'flex', 
-        justifyContent: 'left', 
-        alignItems: 'center', 
-        }}
-      >
-        <div className="name" style={{ position: 'absolute'}}>
-          {title}
-        </div>
+    <div 
+      className="tutorial-card" 
+      onClick={() => openExternalURL(url)} 
+      style={{ 
+      backgroundImage: `url(${process.env.NEXT_PUBLIC_API_SERVER + image})`,
+      }}
+    >
+      <div className="name" style={{ position: 'absolute'}}>
+        {title}
       </div>
     </div>
   );

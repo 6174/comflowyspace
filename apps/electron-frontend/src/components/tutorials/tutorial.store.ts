@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import {create} from 'zustand';
 
 const api = process.env.NEXT_PUBLIC_API_SERVER + "/api";
@@ -18,9 +19,13 @@ const useTutorialStore = create<TutorialStore>((set) => ({
   tutorials: [],
   setTutorials: (tutorials) => set({ tutorials }),
   fetchTutorials: async () => {
-    const response = await fetch(`${api}/gettutorial`);
-    const tutorials: Tutorial[] = await response.json();
-    set({ tutorials });
+    try {
+      const response = await fetch(`${api}/gettutorial`);
+      const tutorials: Tutorial[] = await response.json();
+      set({ tutorials });
+    } catch(err) {
+      message.error("Failed to fetch tutorials: " + err.message);
+    }
   },
 }));
 

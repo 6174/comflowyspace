@@ -2,6 +2,8 @@
   overflow-y: auto;
   padding-top: 14px;
   height: 100%;
+  padding-left: 10px;
+  margin-left: -10px;
   :global {
     .tutorial-card-list {
       display: grid;
@@ -13,14 +15,21 @@
     .tutorial-card {
       cursor: pointer;
       height: 100px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      width: 100%;
+      height: 90px;
+      transition: var(--transition);
+      background-color: white;
+      border-radius: 8px;
       .image {
         width: 100%;
         height: 90px;
-      }
-      &:hover {
-        .image {
-          background-color: var(--backgroundColorL2);
-        }
       }
       .name {
         width: 120px;
@@ -29,6 +38,12 @@
         font-weight: 600;
         font-size: 18px;
         margin-left: 18px;
+      }
+      &:hover {
+        transform: scale(1.03);
+        .image {
+          background-color: var(--backgroundColorL2);
+        }
       }
     }
   }
