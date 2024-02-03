@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { runCommand } from "../utils/run-command";
+import { getCondaPaths, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import path from "path";
 import * as fsExtra from "fs-extra";
