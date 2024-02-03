@@ -1,11 +1,13 @@
 import path from "path";
-import { PYTHON_PATH, SHELL_ENV_PATH, runCommand } from "../utils/run-command";
+import { SHELL_ENV_PATH, getCondaPaths, runCommand } from "../utils/run-command";
 import { appDir, isWindows } from "../utils/env";
 import { spawn } from "child_process";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
 import logger from "../utils/logger";
 
 async function start() {
+  const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
   try {
     logger.info("start ");
     const repoPath = getComfyUIDir();

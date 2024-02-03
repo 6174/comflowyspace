@@ -139,21 +139,57 @@ export async function runCommandWithPty(
     })
 }
 
-export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
-export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
-export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
-export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
-export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
-
 export function getSystemPath(): string {
     let paths;
     let pathDelimiter;
+    const { CONDA_SCRIPTS_PATH } = getCondaPaths();
     if (OS_TYPE.includes('WINDOWS')) {
         pathDelimiter = ';';
-        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', 'C:\\tools\\Miniconda3\\Scripts',  `${CONDA_ENV_PATH}\\Scripts`, process.env.PATH];
+        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, process.env.PATH];
     } else {
         pathDelimiter = ':';
-        paths = ['/usr/local/bin', `${OS_HOME_DIRECTORY}/miniconda3/condabin`, `${OS_HOME_DIRECTORY}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
+        paths = ['/usr/local/bin', CONDA_SCRIPTS_PATH, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
     }
     return paths.join(pathDelimiter);
+}
+
+// export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
+// export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
+// export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
+// export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
+// export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
+
+export function getCondaPaths(): {
+    CONDA_ROOT: string,
+    CONDA_ENV_PATH: string,
+    CONDA_SCRIPTS_PATH: string,
+    CONDA_PATH: string,
+    PYTHON_PATH: string,
+    PIP_PATH: string
+}{
+    // if user already install conda, conda_prefix is the location of conda root;
+    const condaEnv = process.env.CONDA_PREFIX;
+    const CONDA_ROOT = condaEnv ? condaEnv : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
+
+    if (isWindows) {
+        const CONDA_ENV_PATH = `${CONDA_ROOT}\\envs\\${CONDA_ENV_NAME}`
+        return {
+            CONDA_ROOT,
+            CONDA_ENV_PATH,
+            CONDA_SCRIPTS_PATH: `${CONDA_ROOT}\\Scripts`,
+            CONDA_PATH: `${CONDA_ROOT}\\Scripts\\conda.exe`,
+            PYTHON_PATH: `${CONDA_ENV_PATH}\\python.exe`,
+            PIP_PATH: `${CONDA_ENV_PATH}\\Scripts\\pip.exe`
+        }
+    }
+
+    const CONDA_ENV_PATH = `${CONDA_ROOT}/envs/${CONDA_ENV_NAME}`
+    return {
+        CONDA_ROOT,
+        CONDA_ENV_PATH,
+        CONDA_SCRIPTS_PATH: `${CONDA_ROOT}/bin`,
+        CONDA_PATH: `${CONDA_ROOT}/condabin/conda`,
+        PYTHON_PATH: `${CONDA_ENV_PATH}/bin/python`,
+        PIP_PATH: `${CONDA_ENV_PATH}/bin/pip`
+    }
 }

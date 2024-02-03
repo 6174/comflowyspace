@@ -5,7 +5,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { PIP_PATH, PYTHON_PATH, runCommand, runCommandWithPty } from "../utils/run-command";
+import { getCondaPaths, runCommand, runCommandWithPty } from "../utils/run-command";
 import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -80,6 +80,8 @@ export async function checkIfInstalledComfyUI(comfy_path?: string): Promise<bool
 
 // 检查一个程序是否已经安装
 export async function checkIfInstalled(name: string): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     try {
         if (name === "python") {
             await runCommand(`${PYTHON_PATH} --version`);
@@ -239,6 +241,8 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     logger.info("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
@@ -302,6 +306,8 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     let success = false;
     let lastError = null;
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     for (let i = 0; i < 3; i++) {
         try {
             const repoPath = getComfyUIDir();
@@ -352,6 +358,8 @@ export type ComfyUIProgressEventType = {
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean = false): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     const {systemProxy, systemProxyString} = await getSystemProxy();
     if (comfyuiProcess) {
         return true;

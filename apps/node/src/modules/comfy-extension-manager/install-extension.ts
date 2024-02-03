@@ -5,7 +5,7 @@ import * as unzipper from "unzipper";
 import {downloadUrl} from "../utils/download-url";
 import { isValidGitUrl } from "../utils/is-valid-git-url";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
-import { PIP_PATH, PYTHON_PATH, condaActivate, runCommand } from "../utils/run-command";
+import { getCondaPaths, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
@@ -20,6 +20,7 @@ const appTmpDir = getAppTmpDir();
  * @returns 
  */
 export async function installExtension(dispatcher: TaskEventDispatcher, extension: Extension): Promise<boolean> {
+    const {PIP_PATH} = getCondaPaths();
     dispatcher({
         message: `Start installing ${extension.title}`
     });
@@ -171,6 +172,7 @@ async function gitCloneInstall(dispatcher: TaskEventDispatcher, files: string[])
 
 
 async function executeInstallScript(dispatcher: TaskEventDispatcher, url: string, repoPath: string, lazyMode: boolean = false): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
     const installScriptPath: string = path.join(repoPath, 'install.py');
     const requirementsPath: string = path.join(repoPath, 'requirements.txt');
 

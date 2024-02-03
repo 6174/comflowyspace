@@ -1,6 +1,6 @@
 import * as nodePty from "node-pty"
 import { getAppDataDir, getComfyUIDir } from "../utils/get-appdata-dir";
-import { PYTHON_PATH, SHELL_ENV_PATH } from "../utils/run-command";
+import { SHELL_ENV_PATH } from "../utils/run-command";
 import path from "path";
 import logger from "../utils/logger";
 
