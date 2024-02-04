@@ -179,7 +179,7 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
             dispatcher({
                 message: `Start installing Python=3.10.8`
             });
-            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 numpy -y`, dispatcher);
             dispatcher({
                 message: `Install Python=3.10.8 finished`
             });
@@ -216,7 +216,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
             if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
                 return true;
             }
-            await runCommand(`conda install -c anaconda -n comflowy ${params.packageRequirment} -y`, dispatcher);
+            await runCommand(`conda install -c anaconda -n ${CONDA_ENV_NAME} ${params.packageRequirment} -y`, dispatcher);
             dispatcher({
                 message: `Install ${params.packageRequirment} end`
             });
@@ -353,7 +353,7 @@ import logger from "../utils/logger";
 import { comfyExtensionManager } from "../comfy-extension-manager/comfy-extension-manager";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
-    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING",
+    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
@@ -373,6 +373,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
             const command = pip ? `${PIP_PATH} install -r requirements.txt ; ${PYTHON_PATH} main.py --enable-cors-header \r` : `${PYTHON_PATH} main.py --enable-cors-header \r`;
+            let success = false;
             runCommandWithPty(command, (event => {
                 dispatcher(event);
                 const cevent: ComfyUIProgressEventType = {
@@ -387,8 +388,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
                     })
                     cevent.type = "START"
                     cevent.message = "Comfy UI started success"
+                    success = true;
                     resolve(null);
                 }
+
                 if (event.message?.includes("ERROR")) {
                     cevent.type = "ERROR"
                 }
@@ -399,6 +402,17 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
             }, (process: nodePty.IPty) => {
                 comfyuiProcess = process;
             });
+
+            setTimeout(() => {
+                if (!success) {
+                    comfyUIProgressEvent.emit({
+                        type: "TIMEOUT",
+                        message: "ComfyUI start timeout"
+                    });
+                    reject(new Error("ComfyUI start timeout"));
+                }
+            }, 60 * 1000);
+
         });
 
         // check comfyUI extensions
