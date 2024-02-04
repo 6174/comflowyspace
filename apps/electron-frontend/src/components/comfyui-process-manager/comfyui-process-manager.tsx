@@ -12,7 +12,6 @@ const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
   const messages = useComfyUIProcessManagerState(state => state.messages);
-  const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
   const onInit = useComfyUIProcessManagerState(state => state.onInit);
   const termRef = useRef(null);
   const term = useRef(null);
@@ -218,6 +217,17 @@ const ComfyUIProcessManager = () => {
         </div>
       </DraggableModal>
     </div>
+  )
+}
+
+function InstallMissingModuleAction(props: {module: string}) {
+  const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
+  if (missingModules.length === 0) {
+    return null
+  }
+
+  return (
+    <Button type="primary" onClick={() => {}}></Button>
   )
 }
 

@@ -88,7 +88,7 @@ const Bootstrap = () => {
 
         <div className="faq-link">
           <a onClick={ev=> {
-            openExternalURL("https://comflowy.com/blog/faq");
+            openExternalURL("https://www.comflowy.com/blog/comflowy-faq");
           }}>Refer to the FAQ document for assistance &#x2192; </a>
         </div>
       </div>
