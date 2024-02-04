@@ -27,6 +27,7 @@
       border-radius: 8px;
       background: rgba(34, 35, 44, 0.75);
       backdrop-filter: blur(10px);
+      position: relative;
       &.setup-task {
         min-height: 320px;
       }
@@ -116,6 +117,21 @@
             padding-right: 20px;
           }
         }
+      }
+    }
+
+    .faq-link {
+      position: absolute;
+      left: 10px;
+      bottom: -30px;
+      border-bottom: solid 1px;
+      opacity: .8;
+      transition: var(--transition);
+      a {
+        cursor: pointer;
+      }
+      &:hover {
+        opacity: 1;
       }
     }
   }

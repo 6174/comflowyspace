@@ -6,6 +6,7 @@ export type Message = {
 }
 type State = {
   messages: Message[];
+  missingModules: string[];
 };
 type Actions = {
   setMessages: (messages: Message[]) => void;
@@ -14,6 +15,7 @@ type Actions = {
 
 const initialState: State = {
   messages: [],
+  missingModules: [],
 };
 
 const useComfyUIProcessManagerState = create<State & Actions>((set, get) => ({
@@ -32,9 +34,23 @@ const useComfyUIProcessManagerState = create<State & Actions>((set, get) => ({
     // }
   },
   setMessages: (messages: Message[]) => {
-    set({messages})
-    // localStorage.setItem("comfyui-messages", JSON.stringify(messages));
+    set({
+      messages,
+      missingModules: findMissingModulesInMessages(messages)
+    })
   },
 }));
 
 export default useComfyUIProcessManagerState;
+
+function findMissingModulesInMessages(messages: Message[] = []): string[] {
+  const logText = messages.map(m => m.message).join("\n");
+  const regex = /No module named '(\w+)'/g;
+  let match;
+  let missingModules = [];
+
+  while ((match = regex.exec(logText)) !== null) {
+    missingModules.push(match[1]);
+  }
+  return missingModules;
+}

@@ -179,7 +179,7 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
             dispatcher({
                 message: `Start installing Python=3.10.8`
             });
-            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 numpy -y`, dispatcher);
+            await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
             dispatcher({
                 message: `Install Python=3.10.8 finished`
             });

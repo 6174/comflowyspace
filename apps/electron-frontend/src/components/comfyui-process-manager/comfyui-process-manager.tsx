@@ -12,6 +12,7 @@ const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
   const messages = useComfyUIProcessManagerState(state => state.messages);
+  const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
   const onInit = useComfyUIProcessManagerState(state => state.onInit);
   const termRef = useRef(null);
   const term = useRef(null);
