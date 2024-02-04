@@ -216,7 +216,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
             if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
                 return true;
             }
-            await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
+            await runCommand(`conda install -c anaconda -n comflowy ${params.packageRequirment} -y`, dispatcher);
             dispatcher({
                 message: `Install ${params.packageRequirment} end`
             });
