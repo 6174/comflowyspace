@@ -54,29 +54,29 @@ const ComfyUIProcessManager = () => {
       await new Promise(resolve => setTimeout(resolve, 300));
       const {Terminal} = await import('xterm')
       const {FitAddon} = await import ('xterm-addon-fit');
-      const {CanvasAddon} = await import ('xterm-addon-canvas');
+      // const {CanvasAddon} = await import ('xterm-addon-canvas');
       const {ImageAddon} = await import ('xterm-addon-image');
       const {SearchAddon} = await import ('xterm-addon-search');
       const {SerializeAddon} = await import ('xterm-addon-serialize');
       const {Unicode11Addon} = await import ('xterm-addon-unicode11');
-      const {WebglAddon} = await import ('xterm-addon-webgl');
+      // const {WebglAddon} = await import ('xterm-addon-webgl');
       const fitAddon = new FitAddon();
-      const canvasAddon = new CanvasAddon();
+      // const canvasAddon = new CanvasAddon();
       const imageAddon = new ImageAddon();
       const searchAddon = new SearchAddon();
       const serializeAddon = new SerializeAddon();
       const unicode11Addon = new Unicode11Addon();
-      const webglAddon = new WebglAddon();
+      // const webglAddon = new WebglAddon();
       term.current = new Terminal({
         allowProposedApi: true
       });
       term.current.loadAddon(fitAddon);
-      term.current.loadAddon(canvasAddon);
+      // term.current.loadAddon(canvasAddon);
       term.current.loadAddon(imageAddon);
       term.current.loadAddon(searchAddon);
       term.current.loadAddon(serializeAddon);
       term.current.loadAddon(unicode11Addon);
-      term.current.loadAddon(webglAddon);
+      // term.current.loadAddon(webglAddon);
       term.current.open(termRef.current);
       fitAddon.fit();
       const messages = useComfyUIProcessManagerState.getState().messages;

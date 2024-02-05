@@ -39,7 +39,7 @@ const setupMainBuild = async () => {
     }
 
     const appPath = path.resolve(__dirname, "../");
-    spawnProcess = spawn(String(electronPath), [appPath]);
+    spawnProcess = spawn(String(electronPath), ['--inspect', appPath]);
     console.log("working dir:", String(electronPath), appPath);
 
     spawnProcess.stdout.on(

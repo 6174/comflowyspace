@@ -90,52 +90,57 @@ export async function runCommandWithPty(
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
-        const pty = nodePty.spawn(shell, [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            env: {
-                ...process.env,
-                PATH: SHELL_ENV_PATH,
-                DISABLE_UPDATE_PROMPT: "true",
-                ...systemProxy,
-            },
-            cwd: (options.cwd || appDir) as string
-        });
+        try {
+            const pty = nodePty.spawn(shell, [], {
+                name: 'xterm-color',
+                // conpty will cause Error: ptyProcess.kill() will throw a error that can't be catched
+                useConpty: false,
+                cols: 80,
+                rows: 30,
+                env: {
+                    ...process.env,
+                    PATH: SHELL_ENV_PATH,
+                    DISABLE_UPDATE_PROMPT: "true",
+                    ...systemProxy,
+                },
+                cwd: (options.cwd || appDir) as string
+            });
+    
+            cb && cb(pty);
+            
+            let buffer = "";
+            const disposable = pty.onData(function (data: string) {
+                if (data.trim() === fullCommand.trim()) {
+                    return;
+                }
+                buffer += data;
+                if (data.indexOf('\n') > 0) {
+                    logger.info("[Log:" + buffer + "]");
+                    dispatcher && dispatcher({
+                        message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
+                    });
+                    buffer = ""
+                }
+                if (data.trim() === 'END_OF_COMMAND') {
+                    logger.info('The command has finished executing.');
+                    disposable.dispose();
+                    pty.kill();
+                }
+            });
+    
+            pty.onExit((e: { exitCode: number }) => {
+                logger.info("exitcode", e.exitCode);
+                resolve(null);
+                // if (e.exitCode !== 0) {
+                // } else {
+                //     resolve(pty);
+                // }
+            });
+            pty.write(fullCommand);
 
-        cb && cb(pty);
-        
-        let buffer = "";
-        const disposable = pty.onData(function (data: string) {
-            if (data.trim() === fullCommand.trim()) {
-                return;
-            }
-            buffer += data;
-            if (data.indexOf('\n') > 0) {
-                logger.info("[Log:" + buffer + "]");
-                dispatcher && dispatcher({
-                    message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
-                });
-                buffer = ""
-            }
-            if (data.trim() === 'END_OF_COMMAND') {
-                logger.info('The command has finished executing.');
-                disposable.dispose();
-                pty.kill();
-            }
-        });
-
-        pty.onData
-
-        pty.onExit((e: { exitCode: number }) => {
-            logger.info("exitcode", e.exitCode);
-            resolve(pty);
-            // if (e.exitCode !== 0) {
-            // } else {
-            //     resolve(pty);
-            // }
-        });
-        pty.write(fullCommand);
+        } catch (err: any) {
+            logger.error("Run command error" + err.message + err.stack);
+        }
     })
 }
 

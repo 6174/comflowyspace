@@ -80,10 +80,9 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       })
     });
 
-    response.body!.pipe(bufferStream);
-    bufferStream.pipe(writeStream);
-
     try {
+      response.body!.pipe(bufferStream);
+      bufferStream.pipe(writeStream);
       // this will throw if an error occurred
       await finished(writeStream);
     } catch (err: any) {
@@ -162,7 +161,6 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
     const finished = util.promisify(stream.finished);
     const bufferStream = new stream.PassThrough();
     const writeStream = fs.createWriteStream(tmpFilePath, { flags: 'a' });
-    response.body!.pipe(writeStream);
 
     bufferStream.on('error', (err: any) => {
       const msg = `Error with buffer stream: ${err.message}, ${err.stack}`
@@ -190,10 +188,10 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       })
     });
 
-    response.body!.pipe(bufferStream);
-    bufferStream.pipe(writeStream);
-
+    
     try {
+      response.body!.pipe(bufferStream);
+      bufferStream.pipe(writeStream);
       await finished(writeStream);
       if (downloadedSize >= totalSize) {
         dispatch({

@@ -479,7 +479,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
 export async function stopComfyUI(): Promise<boolean> {
     try {
         if (comfyuiProcess) {
-            await comfyuiProcess.kill(); 
+            console.log("before kill")
+            comfyuiProcess.clear();
+            comfyuiProcess.kill(); // 停止当前运行的 ComfyUI
+            console.log("after kill")
             comfyuiProcess = null;
         }
         comfyUIProgressEvent.emit({
@@ -489,7 +492,6 @@ export async function stopComfyUI(): Promise<boolean> {
     } catch (error: any) {
         const msg = `Error stopping comfyui: ${error.message}, ${error.stack}`
         logger.error(msg);
-        throw new Error(msg);
     }
     return true;
 }
