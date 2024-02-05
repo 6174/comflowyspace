@@ -34,22 +34,25 @@ const TutorialCard: React.FC<TutorialCardProps> = ({ image, title, url }) => {
   );
 };
 
-const TutorialBanner: React.FC<TutorialBannerProps> = ({ image, title, subtitle, url, tag }) => {
+export const TutorialBanner: React.FC<TutorialBannerProps> = ({ image, title, subtitle, url, tag }) => {
   return (
     <div 
       className="totorial-banner" 
       onClick={() => openExternalURL(url)} 
       style={{ 
       backgroundImage: `url(${process.env.NEXT_PUBLIC_API_SERVER + image})`,
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'flex-start'
       }}
     >
-      <div className="tag" style={{ position: 'absolute', top: "15%"}}>
+      <div className="tag">
         {tag}
       </div>
-      <div className="title" style={{ position: 'absolute', top: "32%"}}>
+      <div className="title">
         {title}
       </div>
-      <div className="subtitle" style={{ position: 'absolute', top: '42%'}}>
+      <div className="subtitle">
         {subtitle}
       </div>
     </div>

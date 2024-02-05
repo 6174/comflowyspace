@@ -1,6 +1,8 @@
 import { Button, Col, Input, Row, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from "./model-manager.style.module.scss";
+import { TutorialBanner } from '../tutorials/tutorials';
+import  useTutorialStore  from '../tutorials/tutorial.store';
 
 import { Tabs, Card} from 'antd';
 import ModelMarket from './model-market';
@@ -12,10 +14,15 @@ import { ModelSettings } from './model-settings';
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
+  const { tutorials, fetchTutorials } = useTutorialStore();
   const isElectronEnv = useIsElectron();
   useEffect(() => {
     onInit();
-  }, []);
+    fetchTutorials();
+  }, [fetchTutorials]);
+
+  const getstartedTutorials = tutorials.filter(tutorial => tutorial.tag === 'model suggestion');
+
   return (
     <div className={styles.modelManagement}>
       <div style={{
@@ -42,7 +49,12 @@ const ModelManagement = () => {
           </div>
         </div>
       </div>
-      <Tabs defaultActiveKey="available">
+      <div className="tutorial-banner-list">
+        {getstartedTutorials.map((card, index) => (
+          <TutorialBanner key={index} {...card} />
+        ))}
+      </div>
+      <Tabs defaultActiveKey="available" >
         <Tabs.TabPane tab="Available" key="available">
           <ModelMarket/>
         </Tabs.TabPane> 

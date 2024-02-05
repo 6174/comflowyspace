@@ -14,7 +14,7 @@
 
     .tutorial-banner-list {
       display: flex;
-      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
       grid-gap: 20px;
       padding: 10px 10px 10px 0;
     }
@@ -51,6 +51,7 @@
         line-height: 22px;
         color: black;
         font-size: 18px;
+        margin-top: 40px;
         margin-left: 18px;
         text-transform: uppercase;
       }
@@ -60,6 +61,7 @@
         font-weight: bold;
         font-size: 32px;
         margin-left: 18px;
+        margin-top: 10px;
       }
       .subtitle {
         margin-top: 10px;
