@@ -29,7 +29,7 @@ export async function sheduleUpdateMarketExtensions() {
       const now = new Date();
       const diff = now.getTime() - lastUpdateTime.getTime();
       const diffInDays = diff / (1000 * 60 * 60 * 24);
-      if (diffInDays > 1) {
+      if (diffInDays > 0) {
         need_update = true;
       }
     }
@@ -49,7 +49,7 @@ export async function sheduleUpdateMarketExtensions() {
  */
 async function doUpdateMarketExtension() {
   try {
-    const apiUrl = "https://comflowy.com/api/get-market-extensions";
+    const apiUrl = "https://www.comflowy.com/api/get-market-extensions";
     const response = await fetch(apiUrl);
     const extensions = await response.json();
     
@@ -67,7 +67,7 @@ async function doUpdateMarketExtension() {
  */
 async function doUpdateMarketExtensionNodeMap() {
   try {
-    const apiUrl = "https://comflowy.com/api/get-extension-node-map";
+    const apiUrl = "https://www.comflowy.com/api/get-extension-node-map";
     const response = await fetch(apiUrl);
     const extensions = await response.json();
 
