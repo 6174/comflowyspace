@@ -16,7 +16,8 @@ import Bootstrap from '../bootstrap/bootstrap'
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
-
+  const route = useRouter();
+  const path = route.pathname;
   const onInit = useAppStore(st => st.onInit);
   useEffect(() => {
     if (typeof window !== 'undefined' && bootstraped) {
@@ -37,8 +38,12 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
           </Head>
           <div id="app" className={styles.app}>
             <WorkspaceNav/>
-            <div className="workspace-main">
-              {children}
+            <div className="workspace-main" style={{
+              overflow: ['/models'].indexOf(path) !== -1 ? 'hidden' : 'auto',
+            }}>
+              <div className='main-inner'>
+                {children}
+              </div>
             </div>
           </div>
         </>

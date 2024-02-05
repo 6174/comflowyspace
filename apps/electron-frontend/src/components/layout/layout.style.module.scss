@@ -101,9 +101,16 @@
             }
         }
         .workspace-main {
+            height: 100%;
+            overflow-y: auto;
+            margin-right: 2px;
             flex: 1;
-            padding: 6px;
-            padding-left: 20px;
+            .main-inner {
+                padding: 6px;
+                padding-left: 20px;
+                max-width: 1300px;
+                margin: 0 auto;
+            }
             h2 {
                 font-size: 18px;
                 margin: 10px 0;
