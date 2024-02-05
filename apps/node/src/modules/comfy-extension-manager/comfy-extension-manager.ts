@@ -1,12 +1,10 @@
-import extensionList from './extension-list.json';
-import extensionNodeMapping from './extension-node-mapping.json';
 import { Extension, ExtensionNodeMap } from './types';
 import { removeExtension } from './remove-extension';
 import { disableExtension, enableExtension } from './disable-extension';
 import { updateExtension } from './update-extension';
 import { findAllFrontendExtensions } from './frontend-extensions';
 import { findAllInstalledExtensions } from './installed-extensions';
-import _ from "lodash";
+import { getMarketExtensionNodeMap, getMarketExtensions, sheduleUpdateMarketExtensions } from './market-extension';
 
 class ComfyExtensionManager {
 
@@ -35,7 +33,7 @@ class ComfyExtensionManager {
   }
 
   async getAllExtensions(checkUpdate = false): Promise<Extension[]> {
-    const ret = _.cloneDeep(extensionList.custom_nodes as unknown as Extension[]);
+    const ret = getMarketExtensions();
     ret.forEach(item => {
       item.installed = false;
       item.need_update = false;
@@ -45,6 +43,7 @@ class ComfyExtensionManager {
       doFetch: checkUpdate,
       doUpdateCheck: checkUpdate
     });
+    sheduleUpdateMarketExtensions();
     return ret.map(it => {
       const installedExtension = installedExtensions.find(it2 => it2.title + it2.reference === it.title + it.reference);
       return installedExtension ? installedExtension : it;
@@ -52,9 +51,7 @@ class ComfyExtensionManager {
   }
 
   async getExtensionNodeMap(): Promise<ExtensionNodeMap> {
-    const mapping = extensionNodeMapping as any as {
-      [key: string]: [string[], { title_aux: string }]
-    };
+    const mapping = getMarketExtensionNodeMap();
     const ret: ExtensionNodeMap = {};
     for (const key in mapping) {
       const it = mapping[key];

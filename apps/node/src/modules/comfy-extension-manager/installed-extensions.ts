@@ -1,10 +1,9 @@
 import { Extension, getExtensionDir } from "./types";
 import * as fsExtra from 'fs-extra';
-import path from 'path';
 import logger from "../utils/logger";
-import extensionList from './extension-list.json';
 import { checkExtensionsInstalled } from "./check-extension-status";
 import _ from "lodash";
+import { getMarketExtensions } from "./market-extension";
 /**
  * Find all frontend extensions
  */
@@ -14,7 +13,7 @@ export async function findAllInstalledExtensions({
   doUpdate = false
 }): Promise<Extension[]> {
   try {
-    const allExtensions = extensionList.custom_nodes as unknown as Extension[];
+    const allExtensions = getMarketExtensions();
     const custom_nodes_path = getExtensionDir();
     const ret: Extension[] = [];
     const files = await fsExtra.readdir(custom_nodes_path);
