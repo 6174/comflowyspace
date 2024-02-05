@@ -23,12 +23,6 @@ function ExtensionManager() {
   const installedExtensions = extensions.filter(ext => ext.installed);
   const communityExtensions = extensions.filter(ext => !ext.installed);
 
-  const restartComfyUI = useCallback(() => {
-    SlotGlobalEvent.emit({
-      type: GlobalEvents.restart_comfyui,
-      data: null
-    })
-  }, []);
   return (
     <div className={styles.extensionManager}>
       <div className="my-extensions">
@@ -36,15 +30,6 @@ function ExtensionManager() {
           display: 'flex'
         }}>
           <h2> Installed Extensions </h2>
-          <div className="actions">
-            {/* <div className="refresh-button">
-              <Button size='small' loading={loading} disabled={loading} onClick={() => {
-                restartComfyUI();
-              }}>
-                <ReloadIcon /> Restart ComfyUI
-              </Button>
-            </div> */}
-          </div>
         </div>
         <p className="sub">Extensions already installed on your device</p>
         <ExtensionList extensions={installedExtensions} showFilter={false}/>

@@ -18,9 +18,10 @@ export function WsController(): JSX.Element {
   const nodeIdInProgress = nodeInProgress?.id;
 
   const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
+  const [timestamp, setTimestamp] = useState(Date.now());
 
-  useWebSocket(socketUrl, {
-    queryParams: clientId ? { clientId } : {},
+  const { sendJsonMessage, lastMessage } = useWebSocket(socketUrl, {
+    queryParams: clientId ? { clientId, timestamp } : {},
     onMessage: (ev) => {
       const msg = JSON.parse(ev.data)
       editorEvent.emit({
@@ -63,10 +64,49 @@ export function WsController(): JSX.Element {
         message.error("Runtime Error: " + event.data.message);
       }
     })
+
+    const disposable2 = SlotGlobalEvent.on((event) => {
+      if (event.type === GlobalEvents.restart_comfyui_success) {
+        // console.log("try to reconncet websocket")
+        setTimestamp(Date.now())
+      }
+    })
+
     return () => {
       disposable.dispose();
+      disposable2.dispose();
     }
   }, []);
+
+  // const [pongReceived, setPongReceived] = useState(true);
+  // // Send a ping every 5 seconds
+  // useEffect(() => {
+  //   const pingInterval = setInterval(() => {
+  //     sendJsonMessage('ping');
+  //     setPongReceived(false);
+  //   }, 5000);
+  //   return () => clearInterval(pingInterval);
+  // }, [sendJsonMessage]);
+
+  // // Reset pong status when a pong is received
+  // useEffect(() => {
+  //   if (lastMessage && lastMessage.data === 'pong') {
+  //     console.log("receive pond");
+  //     setPongReceived(true);
+  //   }
+  // }, [lastMessage]);
+
+  // // Check if a pong is received, if no pong is received within 5 seconds, it is considered that the connection is disconnected and needs to be reconnected
+  // useEffect(() => {
+  //   if (!pongReceived) {
+  //     setTimeout(() => {
+  //       if (!pongReceived) {
+  //         console.log("No pong received, reconnecting...");
+  //         setSocketUrl(`ws://${config.host}/comfyui/ws?timestamp=${Date.now()}`);
+  //       }
+  //     }, 5000); // If there is no response within 5 seconds, reconnect
+  //   }
+  // }, [pongReceived]);
 
   return <></>
 }

@@ -514,6 +514,10 @@ export async function restartComfyUI(dispatcher?: TaskEventDispatcher, pip=false
         });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
         await startComfyUI(dispatcher ? dispatcher : (event) => null, pip); // 启动新的 ComfyUI
+        comfyUIProgressEvent.emit({
+            type: "RESTART",
+            message: "Restart ComfyUI Success"
+        })
     } catch (err: any) {
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }

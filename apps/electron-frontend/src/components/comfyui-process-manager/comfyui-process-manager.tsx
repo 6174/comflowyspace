@@ -30,6 +30,14 @@ const ComfyUIProcessManager = () => {
         }
       });
     }
+
+    if (msg.message.includes("Restart ComfyUI Success")) {
+      // console.log("trigger restart_comfyui_success");
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.restart_comfyui_success,
+        data: null
+      })
+    }
   };
 
   const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
