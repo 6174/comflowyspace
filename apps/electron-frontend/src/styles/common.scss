@@ -135,6 +135,18 @@
     }
 }
 
+.ant-btn.ant-btn-dangerous {
+    border-color: #dc4446;
+    svg * {
+        fill: #dc4446;
+    }
+    &:hover {
+        svg * {
+            fill:#e86e6b;
+        }
+    }
+}
+
 .ant-btn {
     display: inline-flex;
     align-items: center;  

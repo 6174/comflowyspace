@@ -2,12 +2,13 @@ import config, { getBackendUrl } from "@comflowy/common/config";
 import useWebSocket from "react-use-websocket";
 import useComfyUIProcessManagerState, { Message } from "./comfyui-process-manager-state";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { Button, Space, message } from "antd";
+import { Button, Input, Modal, Popover, Space, Tooltip, message } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
 import {DraggableModal} from "ui/antd/draggable-modal";
 import { listenElectron, openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
+import {WarningIcon} from "ui/icons";
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -83,7 +84,11 @@ const ComfyUIProcessManager = () => {
       // Create a ResizeObserver instance to monitor size changes
       const resizeObserver = new ResizeObserver(() => {
         // Adjust the size of the terminal when the size of #terminal-container changes
-        fitAddon.fit();
+        try {
+          fitAddon.fit();
+        } catch(err) {
+          console.log(err);
+        }
       });
 
       // Start observing the container
@@ -202,17 +207,18 @@ const ComfyUIProcessManager = () => {
           })} */}
         </div>
         <div className="actions flex">
-          <div className="info">
-            <Space>
-              <span>ComfyUI@<a onClick={(ev) => {
-                openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
-              }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
-              <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
-            </Space>
-          </div>
           <Space>
             <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
             <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+            <InstallPipActions/>
+          </Space>
+        </div>
+        <div className="info">
+          <Space>
+            <span>ComfyUI@<a onClick={(ev) => {
+              openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
+            }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
+            <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
           </Space>
         </div>
       </DraggableModal>
@@ -220,14 +226,79 @@ const ComfyUIProcessManager = () => {
   )
 }
 
-function InstallMissingModuleAction(props: {module: string}) {
+function InstallPipActions() {
   const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
-  if (missingModules.length === 0) {
-    return null
-  }
+  const [visible, setVisible] = useState(false);
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const handleOk = e => {
+    console.log(e);
+    setVisible(false);
+  };
+
+  const handleCancel = useCallback(() => {
+    setVisible(false);
+  }, [setVisible]);
+
+  const toolTip = (
+    <>
+      <Tooltip trigger="hover" title="Missing modules detected. Click to install the necessary packages to start ComfyUI.">
+        <div style={{
+          display: "inline-flex",
+          justifyContent: "center",
+          alignItems: "center",
+          transform: "scale(.9)",
+          position: "relative",
+          top: 3,
+          marginRight: -10
+        }}>
+          <WarningIcon/>
+        </div>
+      </Tooltip>
+    </>
+  )
+  
+  const [value, setValue] = useState("");
+  useEffect(() => {
+    setValue(missingModules.length > 0 ? missingModules.join(" ") : "")
+  }, [missingModules])
+
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleValueSubmit = useCallback(() => {
+    if (value.trim() === "") {
+      message.warning("No package input");
+      return;
+    }
+
+    handleCancel();
+  }, [value]);
 
   return (
-    <Button type="primary" onClick={() => {}}></Button>
+    <div className="install-pip-packages">
+      <Button danger={missingModules.length > 0} onClick={() => {
+        showModal();
+      }}>Pip Install {missingModules.length > 0 ? toolTip : ""}</Button>
+      <Modal  
+        title={"Install Pip Packages"}
+        okText="Install"
+        onOk={handleValueSubmit}
+        onCancel={handleCancel}
+        open={visible}>
+        <div className="content">
+          <Input 
+            placeholder="Input python packages eg `numbpy pandas tensorflow`"
+            value={value} 
+            style={{width: "100%"}}
+            onChange={handleValueChange} 
+            />
+        </div>
+      </Modal>
+    </div>
   )
 }
 

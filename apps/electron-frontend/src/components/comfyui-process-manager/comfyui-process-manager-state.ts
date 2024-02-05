@@ -47,10 +47,12 @@ function findMissingModulesInMessages(messages: Message[] = []): string[] {
   const logText = messages.map(m => m.message).join("\n");
   const regex = /No module named '(\w+)'/g;
   let match;
-  let missingModules = [];
+  let uniqueMissingModules = new Set();
 
   while ((match = regex.exec(logText)) !== null) {
-    missingModules.push(match[1]);
+    uniqueMissingModules.add(match[1]);
   }
+
+  const missingModules = Array.from(uniqueMissingModules) as string[];
   return missingModules;
 }
