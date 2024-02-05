@@ -143,6 +143,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
                     message: `Install conda end`
                 });
                 success = true;
+                break;
             } catch (err: any) {
                 console.error('Error running command:', err);
                 dispatcher({
@@ -213,15 +214,51 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
             dispatcher({
                 message: `Start installing ${params.packageRequirment}...`
             });
-            if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
-                return true;
-            }
             await runCommand(`conda install -c anaconda -n ${CONDA_ENV_NAME} ${params.packageRequirment} -y`, dispatcher);
             dispatcher({
                 message: `Install ${params.packageRequirment} end`
             });
             success = true;
+            break;
         } catch(e: any) {
+            lastError = e
+        }
+    }
+
+    if (!success) {
+        new Error(`Install conda packages error: ${lastError.message}`)
+    }
+
+    return true;
+}
+
+
+/**
+ * install any conda package
+ * @param dispatcher 
+ * @param params 
+ * @returns 
+ */
+export async function installPipPackageTask(dispatcher: TaskEventDispatcher, params: {
+    packageRequirment: string
+}): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
+    let success = false;
+    let lastError = null;
+
+    for (let i = 0; i < 3; i++) {
+        try {
+            dispatcher({
+                message: `Pip install ${params.packageRequirment}...`
+            });
+            await runCommand(`${PIP_PATH} install ${params.packageRequirment}`, dispatcher);
+            dispatcher({
+                message: `Install ${params.packageRequirment} end`
+            });
+            success = true;
+            break;
+        } catch (e: any) {
             lastError = e
         }
     }
@@ -256,6 +293,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                 const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
                 await runCommand(installCommand, dispatcher);
                 success = true;
+                break;
             } catch (error: any) {
                 lastError = error;
             }
@@ -275,6 +313,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 
                     await runCommand(installCommand, dispatcher);
                     success = true;
+                    break;
                 }
                 // NVIDIA GPU
                 else if (gpuType === 'nvidia') {
@@ -282,6 +321,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 
                     await runCommand(installCommand, dispatcher);
                     success = true;
+                    break;
                 } else {
                     lastError = new Error(`Unkown GPU Type`)
                 }
@@ -337,6 +377,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
             });
 
             success = true;
+            break;
         } catch (error: any) {
             lastError = error;
         }

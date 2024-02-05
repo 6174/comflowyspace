@@ -6,15 +6,18 @@ export type Message = {
 }
 type State = {
   messages: Message[];
+  installedModules: string[];
   missingModules: string[];
 };
 type Actions = {
   setMessages: (messages: Message[]) => void;
   onInit: () => void;
+  setInstalledModules: (modules: string[]) => void;
 }
 
 const initialState: State = {
   messages: [],
+  installedModules: [],
   missingModules: [],
 };
 
@@ -34,11 +37,22 @@ const useComfyUIProcessManagerState = create<State & Actions>((set, get) => ({
     // }
   },
   setMessages: (messages: Message[]) => {
-    set({
-      messages,
-      missingModules: findMissingModulesInMessages(messages)
+    set((st) => {
+      return {
+        messages,
+        missingModules: filterMissingModules(findMissingModulesInMessages(messages), st.installedModules)
+      }
     })
   },
+  setInstalledModules: (modules: string[]) => {
+    set((st) => {
+      const installedModules = [...st.installedModules, ...modules];
+      return {
+        installedModules,
+        missingModules: filterMissingModules(st.missingModules, installedModules)
+      }
+    })
+  }
 }));
 
 export default useComfyUIProcessManagerState;
@@ -55,4 +69,8 @@ function findMissingModulesInMessages(messages: Message[] = []): string[] {
 
   const missingModules = Array.from(uniqueMissingModules) as string[];
   return missingModules;
+}
+
+function filterMissingModules(missingModules: string[], installedModules: string[]) {
+  return missingModules.filter(m => !installedModules.includes(m));
 }

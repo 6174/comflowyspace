@@ -14,6 +14,7 @@ const ComfyUIProcessManager = () => {
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
   const messages = useComfyUIProcessManagerState(state => state.messages);
   const onInit = useComfyUIProcessManagerState(state => state.onInit);
+  const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
   const termRef = useRef(null);
   const term = useRef(null);
 
@@ -175,12 +176,17 @@ const ComfyUIProcessManager = () => {
       }
     });
 
+    if (missingModules.length > 0) {
+      showModal();
+    }
+
     return () => {
       dispose();
       dispose2.dispose();
       dispose3.dispose();
     }
-  }, [])
+  }, [missingModules])
+
 
   const env = useDashboardState(state => state.env);
   const $title = (
@@ -228,6 +234,7 @@ const ComfyUIProcessManager = () => {
 
 function InstallPipActions() {
   const missingModules = useComfyUIProcessManagerState(state => state.missingModules);
+  const setInstalledModules = useComfyUIProcessManagerState(state => state.setInstalledModules);
   const [visible, setVisible] = useState(false);
   const showModal = () => {
     setVisible(true);
@@ -269,18 +276,42 @@ function InstallPipActions() {
     setValue(e.target.value);
   };
 
-  const handleValueSubmit = useCallback(() => {
+  const [processing, setProcessing] = useState(false);
+
+  const handleValueSubmit = useCallback(async () => {
     if (value.trim() === "") {
       message.warning("No package input");
       return;
     }
 
+    setProcessing(true);
+    try {
+      const api = getBackendUrl("/api/install_pip_packages");
+      const ret = await fetch(api, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({packages: value}),
+      })
+
+      const response = await ret.json();
+      if (!response.success) {
+        throw new Error(response.error);
+      }
+
+      setInstalledModules(missingModules);
+
+    } catch(err) {
+      message.error("install failed:" + err.message)
+    }
+    setProcessing(false);
     handleCancel();
-  }, [value]);
+  }, [value, missingModules]);
 
   return (
     <div className="install-pip-packages">
-      <Button danger={missingModules.length > 0} onClick={() => {
+      <Button disabled={processing} loading={processing} danger={missingModules.length > 0} onClick={() => {
         showModal();
       }}>Pip Install {missingModules.length > 0 ? toolTip : ""}</Button>
       <Modal  
