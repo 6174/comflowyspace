@@ -5,7 +5,9 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "install-package-builder": "cd ./apps/electron-package && npm i",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "dev:frontend": "cd ./apps/electron-frontend && pnpm run dev",
+    "dev:backend": "cd ./apps/electron-backend && pnpm run dev"
   },
   "devDependencies": {
     "@types/jest": "^29.5.10",
