@@ -54,6 +54,7 @@
       display: flex;
       justify-content: left;
       align-items: center;
+      transition: var(--transition);
       background-color: white;
       border-radius: 8px;
       .image {
