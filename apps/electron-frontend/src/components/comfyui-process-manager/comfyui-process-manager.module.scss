@@ -22,12 +22,17 @@
     .term {
       color: white;
       border-radius: 10px;
-      height: calc(100% - 40px);
+      height: calc(100% - 60px);
       .message {
         font-size: 12px;
         line-height: 1.4;
         margin-bottom: 4px;;
       }
+    }
+    .info {
+      font-size: 11px;
+      position: relative;
+      top: 4px;
     }
   }
 }

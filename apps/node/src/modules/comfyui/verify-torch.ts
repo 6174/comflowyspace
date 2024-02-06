@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { PYTHON_PATH, runCommand } from "../utils/run-command";
+import { getCondaPaths, runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import path from "path";
 import * as fsExtra from "fs-extra";
@@ -29,6 +29,7 @@ const expectedOutput = isMac ? expectedMacOutput : expectedOtherOutput;
 
 const tmpFile = path.resolve(getAppTmpDir(), "tmp.py");
 export async function verifyIsTorchInstalled(): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
     try {
         await writeTmpPythonFile(pythonCode);
         // 使用 execa 执行 conda run 命令，切换到指定的 Conda 环境并运行 Python 代码

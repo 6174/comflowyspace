@@ -3,7 +3,7 @@ import { PartialTaskEvent, TaskEvent, TaskEventDispatcher, TaskProps, taskQueue 
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
-import { comfyUIProgressEvent, restartComfyUI } from 'src/modules/comfyui/bootstrap';
+import { comfyUIProgressEvent, installCondaPackageTask, installPipPackageTask, restartComfyUI } from 'src/modules/comfyui/bootstrap';
 import logger from 'src/modules/utils/logger';
 import { checkAExtensionInstalled } from 'src/modules/comfy-extension-manager/check-extension-status';
 
@@ -164,6 +164,36 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
         });
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
+        res.send({
+            success: false,
+            error: err.message
+        })
+    }
+}
+
+export async function ApiInstallPipPackages(req: Request, res: Response) {
+    try {
+        const {packages} = req.body;
+        console.log("install", packages);
+        if (packages) {
+            const dispatcher = (event: PartialTaskEvent) => {
+                comfyUIProgressEvent.emit({
+                    type: event.type == "FAILED" ? "ERROR" : "INFO",
+                    message: event.message || ""
+                })
+            }
+            await installPipPackageTask(dispatcher, {
+                packageRequirment: packages
+            });
+            await restartComfyUI();
+            res.send({
+                success: true,
+            });
+        } else {
+            throw new Error("packages is required");
+        }
+    } catch (err: any) {
+        logger.error("error", err);
         res.send({
             success: false,
             error: err.message

@@ -18,10 +18,10 @@ export async function ApiEnvCheck(req: Request, res: Response) {
             success: true,
             data: requirements
         });
-    } catch (err) {
+    } catch (err: any) {
         res.send({
             success: false,
-            error: err
+            error: err.message + err.stack
         })
     } 
 }

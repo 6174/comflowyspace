@@ -24,8 +24,10 @@ workflow templates, and process editing, every step is well designed.
 If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/comflowyspace) and [👀 Watch](https://github.com/6174/comflowyspace/subscription) our repository to stay updated.
 
 ## Download
-* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.5-alpha/comflowy-0.0.5-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.5-alpha/comflowy-0.0.5-alpha-arm64.dmg) 
-* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.5-alpha/comflowy.Setup.0.0.5-alpha.exe)**
+
+* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.6-alpha/comflowy-0.0.6-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.6-alpha/comflowy-0.0.6-alpha-arm64.dmg) 
+* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.6-alpha/comflowy-0.0.6-alpha.exe)**
+
 
 ## Key Features
 > If you want to know more about key features, feel free to check out our blog articles [ComflowySpace VS ComfyUI](https://www.comflowy.com/blog/comflowy-vs-comfyui).

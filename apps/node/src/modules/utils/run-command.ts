@@ -90,70 +90,111 @@ export async function runCommandWithPty(
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
     return new Promise((resolve, reject) => {
-        const pty = nodePty.spawn(shell, [], {
-            name: 'xterm-color',
-            cols: 80,
-            rows: 30,
-            env: {
-                ...process.env,
-                PATH: SHELL_ENV_PATH,
-                DISABLE_UPDATE_PROMPT: "true",
-                ...systemProxy,
-            },
-            cwd: (options.cwd || appDir) as string
-        });
+        try {
+            const pty = nodePty.spawn(shell, [], {
+                name: 'xterm-color',
+                // conpty will cause Error: ptyProcess.kill() will throw a error that can't be catched
+                useConpty: false,
+                cols: 80,
+                rows: 30,
+                env: {
+                    ...process.env,
+                    PATH: SHELL_ENV_PATH,
+                    DISABLE_UPDATE_PROMPT: "true",
+                    ...systemProxy,
+                },
+                cwd: (options.cwd || appDir) as string
+            });
+    
+            cb && cb(pty);
+            
+            let buffer = "";
+            const disposable = pty.onData(function (data: string) {
+                if (data.trim() === fullCommand.trim()) {
+                    return;
+                }
+                buffer += data;
+                if (data.indexOf('\n') > 0) {
+                    logger.info("[Log:" + buffer + "]");
+                    dispatcher && dispatcher({
+                        message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
+                    });
+                    buffer = ""
+                }
+                if (data.trim() === 'END_OF_COMMAND') {
+                    logger.info('The command has finished executing.');
+                    disposable.dispose();
+                    pty.kill();
+                }
+            });
+    
+            pty.onExit((e: { exitCode: number }) => {
+                logger.info("exitcode", e.exitCode);
+                resolve(null);
+                // if (e.exitCode !== 0) {
+                // } else {
+                //     resolve(pty);
+                // }
+            });
+            pty.write(fullCommand);
 
-        cb && cb(pty);
-        
-        let buffer = "";
-        const disposable = pty.onData(function (data: string) {
-            if (data.trim() === fullCommand.trim()) {
-                return;
-            }
-            buffer += data;
-            if (data.indexOf('\n') > 0) {
-                logger.info("[Log:" + buffer + "]");
-                dispatcher && dispatcher({
-                    message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
-                });
-                buffer = ""
-            }
-            if (data.trim() === 'END_OF_COMMAND') {
-                logger.info('The command has finished executing.');
-                disposable.dispose();
-                pty.kill();
-            }
-        });
-
-        pty.onData
-
-        pty.onExit((e: { exitCode: number }) => {
-            logger.info("exitcode", e.exitCode);
-            resolve(pty);
-            // if (e.exitCode !== 0) {
-            // } else {
-            //     resolve(pty);
-            // }
-        });
-        pty.write(fullCommand);
+        } catch (err: any) {
+            logger.error("Run command error" + err.message + err.stack);
+        }
     })
 }
-
-export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
-export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
-export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
-export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
-export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
 
 export function getSystemPath(): string {
     let paths;
     let pathDelimiter;
+    const { CONDA_SCRIPTS_PATH, CONDA_ENV_PATH } = getCondaPaths();
     if (OS_TYPE.includes('WINDOWS')) {
         pathDelimiter = ';';
-        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', 'C:\\tools\\Miniconda3\\Scripts',  `${CONDA_ENV_PATH}\\Scripts`, process.env.PATH];
+        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, `${CONDA_ENV_PATH}\\Scripts` ,process.env.PATH];
     } else {
         pathDelimiter = ':';
-        paths = ['/usr/local/bin', `${OS_HOME_DIRECTORY}/miniconda3/condabin`, `${OS_HOME_DIRECTORY}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
+        paths = ['/usr/local/bin', CONDA_SCRIPTS_PATH, , `${CONDA_ENV_PATH}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
     }
     return paths.join(pathDelimiter);
+}
+
+// export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
+// export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
+// export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
+// export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
+// export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
+
+export function getCondaPaths(): {
+    CONDA_ROOT: string,
+    CONDA_ENV_PATH: string,
+    CONDA_SCRIPTS_PATH: string,
+    CONDA_PATH: string,
+    PYTHON_PATH: string,
+    PIP_PATH: string
+}{
+    // if user already install conda, conda_prefix is the location of conda root;
+    const condaEnv = process.env.CONDA_PREFIX;
+    const CONDA_ROOT = condaEnv ? condaEnv : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
+
+    if (isWindows) {
+        const CONDA_ENV_PATH = `${CONDA_ROOT}\\envs\\${CONDA_ENV_NAME}`
+        return {
+            CONDA_ROOT,
+            CONDA_ENV_PATH,
+            CONDA_SCRIPTS_PATH: `${CONDA_ROOT}\\Scripts`,
+            CONDA_PATH: `${CONDA_ROOT}\\Scripts\\conda.exe`,
+            PYTHON_PATH: `${CONDA_ENV_PATH}\\python.exe`,
+            PIP_PATH: `${CONDA_ENV_PATH}\\Scripts\\pip.exe`
+        }
+    }
+
+    const CONDA_ENV_PATH = `${CONDA_ROOT}/envs/${CONDA_ENV_NAME}`
+    return {
+        CONDA_ROOT,
+        CONDA_ENV_PATH,
+        CONDA_SCRIPTS_PATH: `${CONDA_ROOT}/bin`,
+        CONDA_PATH: `${CONDA_ROOT}/condabin/conda`,
+        PYTHON_PATH: `${CONDA_ENV_PATH}/bin/python`,
+        PIP_PATH: `${CONDA_ENV_PATH}/bin/pip`
+    }
 }

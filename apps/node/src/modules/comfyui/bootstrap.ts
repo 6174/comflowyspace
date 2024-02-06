@@ -5,7 +5,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { PIP_PATH, PYTHON_PATH, runCommand, runCommandWithPty } from "../utils/run-command";
+import { getCondaPaths, runCommand, runCommandWithPty } from "../utils/run-command";
 import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -80,6 +80,8 @@ export async function checkIfInstalledComfyUI(comfy_path?: string): Promise<bool
 
 // 检查一个程序是否已经安装
 export async function checkIfInstalled(name: string): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     try {
         if (name === "python") {
             await runCommand(`${PYTHON_PATH} --version`);
@@ -141,6 +143,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
                     message: `Install conda end`
                 });
                 success = true;
+                break;
             } catch (err: any) {
                 console.error('Error running command:', err);
                 dispatcher({
@@ -211,15 +214,51 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
             dispatcher({
                 message: `Start installing ${params.packageRequirment}...`
             });
-            if (await checkIfInstalled(params.packageRequirment.split("=")[0])) {
-                return true;
-            }
-            await runCommand(`conda install -c anaconda ${params.packageRequirment}`, dispatcher);
+            await runCommand(`conda install -c anaconda -n ${CONDA_ENV_NAME} ${params.packageRequirment} -y`, dispatcher);
             dispatcher({
                 message: `Install ${params.packageRequirment} end`
             });
             success = true;
+            break;
         } catch(e: any) {
+            lastError = e
+        }
+    }
+
+    if (!success) {
+        new Error(`Install conda packages error: ${lastError.message}`)
+    }
+
+    return true;
+}
+
+
+/**
+ * install any conda package
+ * @param dispatcher 
+ * @param params 
+ * @returns 
+ */
+export async function installPipPackageTask(dispatcher: TaskEventDispatcher, params: {
+    packageRequirment: string
+}): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
+    let success = false;
+    let lastError = null;
+
+    for (let i = 0; i < 3; i++) {
+        try {
+            dispatcher({
+                message: `Pip install ${params.packageRequirment}...`
+            });
+            await runCommand(`${PIP_PATH} install ${params.packageRequirment}`, dispatcher);
+            dispatcher({
+                message: `Install ${params.packageRequirment} end`
+            });
+            success = true;
+            break;
+        } catch (e: any) {
             lastError = e
         }
     }
@@ -239,6 +278,8 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     logger.info("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
@@ -252,6 +293,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                 const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
                 await runCommand(installCommand, dispatcher);
                 success = true;
+                break;
             } catch (error: any) {
                 lastError = error;
             }
@@ -271,6 +313,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 
                     await runCommand(installCommand, dispatcher);
                     success = true;
+                    break;
                 }
                 // NVIDIA GPU
                 else if (gpuType === 'nvidia') {
@@ -278,6 +321,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 
                     await runCommand(installCommand, dispatcher);
                     success = true;
+                    break;
                 } else {
                     lastError = new Error(`Unkown GPU Type`)
                 }
@@ -302,6 +346,8 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     let success = false;
     let lastError = null;
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     for (let i = 0; i < 3; i++) {
         try {
             const repoPath = getComfyUIDir();
@@ -331,6 +377,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
             });
 
             success = true;
+            break;
         } catch (error: any) {
             lastError = error;
         }
@@ -347,11 +394,13 @@ import logger from "../utils/logger";
 import { comfyExtensionManager } from "../comfy-extension-manager/comfy-extension-manager";
 let comfyuiProcess: nodePty.IPty | null;
 export type ComfyUIProgressEventType = {
-    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING",
+    type: "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
     message: string | undefined
 }
 export const comfyUIProgressEvent = new SlotEvent<ComfyUIProgressEventType>();
 export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean = false): Promise<boolean> {
+    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+
     const {systemProxy, systemProxyString} = await getSystemProxy();
     if (comfyuiProcess) {
         return true;
@@ -365,6 +414,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
         const repoPath = getComfyUIDir();
         await new Promise((resolve, reject) => {
             const command = pip ? `${PIP_PATH} install -r requirements.txt ; ${PYTHON_PATH} main.py --enable-cors-header \r` : `${PYTHON_PATH} main.py --enable-cors-header \r`;
+            let success = false;
             runCommandWithPty(command, (event => {
                 dispatcher(event);
                 const cevent: ComfyUIProgressEventType = {
@@ -379,8 +429,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
                     })
                     cevent.type = "START"
                     cevent.message = "Comfy UI started success"
+                    success = true;
                     resolve(null);
                 }
+
                 if (event.message?.includes("ERROR")) {
                     cevent.type = "ERROR"
                 }
@@ -391,6 +443,17 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
             }, (process: nodePty.IPty) => {
                 comfyuiProcess = process;
             });
+
+            setTimeout(() => {
+                if (!success) {
+                    comfyUIProgressEvent.emit({
+                        type: "TIMEOUT",
+                        message: "ComfyUI start timeout"
+                    });
+                    reject(new Error("ComfyUI start timeout"));
+                }
+            }, 60 * 1000);
+
         });
 
         // check comfyUI extensions
@@ -416,7 +479,10 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
 export async function stopComfyUI(): Promise<boolean> {
     try {
         if (comfyuiProcess) {
-            await comfyuiProcess.kill(); 
+            console.log("before kill")
+            comfyuiProcess.clear();
+            comfyuiProcess.kill(); // 停止当前运行的 ComfyUI
+            console.log("after kill")
             comfyuiProcess = null;
         }
         comfyUIProgressEvent.emit({
@@ -426,7 +492,6 @@ export async function stopComfyUI(): Promise<boolean> {
     } catch (error: any) {
         const msg = `Error stopping comfyui: ${error.message}, ${error.stack}`
         logger.error(msg);
-        throw new Error(msg);
     }
     return true;
 }
@@ -449,6 +514,10 @@ export async function restartComfyUI(dispatcher?: TaskEventDispatcher, pip=false
         });
         await stopComfyUI(); // 停止当前运行的 ComfyUI
         await startComfyUI(dispatcher ? dispatcher : (event) => null, pip); // 启动新的 ComfyUI
+        comfyUIProgressEvent.emit({
+            type: "RESTART",
+            message: "Restart ComfyUI Success"
+        })
     } catch (err: any) {
         throw new Error(`Error restarting comfyui: ${err.message}`);
     }

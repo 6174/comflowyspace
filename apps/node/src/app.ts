@@ -4,7 +4,7 @@ import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
 import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
-import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions } from './routes/api/extension';
+import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions, ApiInstallPipPackages } from './routes/api/extension';
 import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig, ApiRestartComfyUI, ApiUpdateComfyUIAndRestart } from './routes/api/bootstrap';
 import { JSONDB } from './modules/jsondb/jsondb';
 import { getComfyUIDir } from './modules/utils/get-appdata-dir';
@@ -50,6 +50,7 @@ export async function startAppServer(params: {
   app.post('/api/disable_extensions', ApiRouteDisableExtensions)
   app.post('/api/remove_extensions', ApiRouteRemoveExtensions)
   app.post('/api/update_extensions', ApiRouteUpdateExtensions)
+  app.post('/api/install_pip_packages', ApiInstallPipPackages)
 
   app.post('/api/install_model', ApiRouteInstallModel)
   app.post('/api/add_task', ApiRouteAddTask);

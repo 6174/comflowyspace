@@ -10,7 +10,7 @@ export type TaskProps = {
 }
 
 export type TaskEvent = {
-    type: "SUCCESS" | "PROGRESS" | "FAILED",
+    type: "SUCCESS" | "FAILED" | "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "PROGRESS" | "WARNING" | "TIMEOUT",
     task: TaskProps,
     progress?: number,
     message?: string,

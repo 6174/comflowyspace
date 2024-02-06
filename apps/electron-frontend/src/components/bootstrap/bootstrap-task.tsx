@@ -26,6 +26,13 @@ export function BootstrapTask(props: BootstrapTaskProps) {
         if (msg.type === "FAILED") {
           message.error("Task failed: " + msg.error);
         }
+
+        if (msg.type === "TIMEOUT" && task.type === BootStrapTaskType.startComfyUI) {
+          message.error("Start ComfyUI timeout, check the comfyui process manager to find out what happened");
+          task.finished = true;
+          setBootstrapTasks([...bootstrapTasks]);
+        }
+
       }
   });
   

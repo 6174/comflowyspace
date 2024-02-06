@@ -13,6 +13,7 @@ import { InstallComfyUI } from './install-comfyui';
 import LogoSvg from "ui/icons/logo";
 import BgSVG from "./background.svg";
 import { Spin } from "antd";
+import { openExternalURL } from '@/lib/electron-bridge';
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();
   console.log("bootstrap", bootstrapTasks);
@@ -84,6 +85,12 @@ const Bootstrap = () => {
             <Spin/> Preparing
           </>
         )}
+
+        <div className="faq-link">
+          <a onClick={ev=> {
+            openExternalURL("https://www.comflowy.com/blog/comflowy-faq");
+          }}>Refer to the FAQ document for assistance &#x2192; </a>
+        </div>
       </div>
     </div>
   )
