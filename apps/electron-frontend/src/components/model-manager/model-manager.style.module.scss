@@ -35,5 +35,60 @@
         background-color: var(--backgroundColorL3);
       }
     }
+
+    .tutorial-banner-list {
+      display: flex;
+      grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+      grid-gap: 20px;
+      padding: 10px 10px 10px 0;
+    }
+
+    .totorial-banner {
+      cursor: pointer;
+      height: 200px;
+      width: 100%;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      position: relative;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      background-color: white;
+      border-radius: 8px;
+      .image {
+        width: 100%;
+        height: 100px;
+      }
+      .tag {
+        line-height: 22px;
+        color: black;
+        font-size: 18px;
+        margin-left: 18px;
+        margin-top: 40px;
+        text-transform: uppercase;
+      }
+      .title {
+        line-height: 28px;
+        color: black;
+        font-weight: bold;
+        font-size: 32px;
+        margin-left: 18px;
+        margin-top: 6px;
+        max-width: 300px;
+      }
+      .subtitle {
+        margin-top: 6px;
+        line-height: 22px;
+        color: black;
+        font-size: 16px;
+        margin-left: 18px;
+      }
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
   }
 }
+

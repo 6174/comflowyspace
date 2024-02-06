@@ -6,7 +6,9 @@ const api = process.env.NEXT_PUBLIC_API_SERVER + "/api";
 type Tutorial = {
   image: string;
   title: string;
+  subtitle: string;
   url: string;
+  tag: string;
 };
 
 type TutorialStore = {
