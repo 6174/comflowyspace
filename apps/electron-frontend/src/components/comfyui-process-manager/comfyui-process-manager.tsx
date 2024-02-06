@@ -325,6 +325,7 @@ function InstallPipActions() {
       <Modal  
         title={"Install Pip Packages"}
         okText="Install"
+        okButtonProps={{loading: processing, disabled: processing}}
         onOk={handleValueSubmit}
         onCancel={handleCancel}
         open={visible}>
