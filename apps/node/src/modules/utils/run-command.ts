@@ -166,6 +166,7 @@ export function getSystemPath(): string {
 // export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
 
 import { execSync } from 'child_process';
+import path from "path";
 
 function getCondaPrefixSync(): string | undefined {
     try {
@@ -197,7 +198,7 @@ export function getCondaPaths(): {
     // if user already install conda, conda_prefix is the location of conda root;
     const condaEnv = USER_CONDA_ENV_PATH;
     console.log("conda env4", condaEnv);
-    const CONDA_ROOT = condaEnv ? condaEnv : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
+    const CONDA_ROOT = condaEnv ? condaEnv.replace(new RegExp(`\\${path.sep}envs\\${path.sep}.*`), '') : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
 
     if (isWindows) {
         const CONDA_ENV_PATH = `${CONDA_ROOT}\\envs\\${CONDA_ENV_NAME}`

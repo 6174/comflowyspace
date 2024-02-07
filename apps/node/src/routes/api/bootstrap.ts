@@ -217,7 +217,7 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
 
 export async function ApiRestartComfyUI(req: Request, res: Response) {
     try {
-        await restartComfyUI((ev) => {});
+        await restartComfyUI((ev) => {}, true);
         res.send({
             success: true,
         });
