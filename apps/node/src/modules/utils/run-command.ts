@@ -99,9 +99,10 @@ export async function runCommandWithPty(
                 rows: 30,
                 env: {
                     ...process.env,
+                    ...systemProxy,
                     PATH: SHELL_ENV_PATH,
                     DISABLE_UPDATE_PROMPT: "true",
-                    ...systemProxy,
+                    encoding: 'utf-8',
                 },
                 cwd: (options.cwd || appDir) as string
             });
@@ -164,6 +165,27 @@ export function getSystemPath(): string {
 // export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
 // export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
 
+import { execSync } from 'child_process';
+
+function getCondaPrefixSync(): string | undefined {
+    try {
+        const result = execSync(`conda info --base`, {
+            env: {
+                ...process.env,
+                PATH: SHELL_ENV_PATH
+            },
+            encoding: 'utf-8',
+
+        });
+        return result.toString().trim();
+    } catch (err) {
+        console.log("get conda default prefix error", err);
+        return undefined
+    }
+}
+
+const USER_CONDA_ENV_PATH = process.env.CONDA_PREFIX || getCondaPrefixSync();
+
 export function getCondaPaths(): {
     CONDA_ROOT: string,
     CONDA_ENV_PATH: string,
@@ -173,7 +195,8 @@ export function getCondaPaths(): {
     PIP_PATH: string
 }{
     // if user already install conda, conda_prefix is the location of conda root;
-    const condaEnv = process.env.CONDA_PREFIX;
+    const condaEnv = USER_CONDA_ENV_PATH;
+    console.log("conda env4", condaEnv);
     const CONDA_ROOT = condaEnv ? condaEnv : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
 
     if (isWindows) {
