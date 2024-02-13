@@ -4,7 +4,7 @@ Sentry.init({
   dsn: "https://c22ceb8e2ea24010369ea2497e96fbd6@o4506737077256192.ingest.sentry.io/4506737079156736",
   // Replay may only be enabled for the client-side
   integrations: [Sentry.replayIntegration()],
-
+  environment: process.env.NODE_ENV || 'development',
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production

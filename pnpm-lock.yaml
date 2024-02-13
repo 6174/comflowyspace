@@ -324,6 +324,9 @@ importers:
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
+      '@sentry/node':
+        specifier: ^7.100.1
+        version: 7.100.1
       '@types/configstore':
         specifier: ^6.0.2
         version: 6.0.2

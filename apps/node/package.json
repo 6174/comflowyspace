@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@comflowy/common": "workspace:*",
+    "@sentry/node": "^7.100.1",
     "@types/configstore": "^6.0.2",
     "@types/cors": "^2.8.17",
     "@types/crypto-js": "^4.1.2",

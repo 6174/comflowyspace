@@ -10,6 +10,17 @@ import { JSONDB } from './modules/jsondb/jsondb';
 import { getComfyUIDir } from './modules/utils/get-appdata-dir';
 import logger from './modules/utils/logger';
 import { downloadDefaultModel } from './modules/model-manager/install-model';
+
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: "https://c22ceb8e2ea24010369ea2497e96fbd6@o4506737077256192.ingest.sentry.io/4506737079156736",
+  environment: process.env.NODE_ENV || 'development',
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0,
+});
+
 export async function startAppServer(params: {
   port:number,
   staticFolder?: string | null
