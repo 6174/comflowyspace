@@ -182,6 +182,9 @@ importers:
       '@ant-design/icons':
         specifier: ^5.2.6
         version: 5.2.6(react-dom@18.2.0)(react@18.2.0)
+      '@aptabase/react':
+        specifier: ^0.3.3
+        version: 0.3.3(react@18.2.0)
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
@@ -739,6 +742,14 @@ packages:
       react: 18.2.0
       resize-observer-polyfill: 1.5.1
       throttle-debounce: 5.0.0
+    dev: false
+
+  /@aptabase/react@0.3.3(react@18.2.0):
+    resolution: {integrity: sha512-/8pSVMv5kElaVD4ukDQmPzF7sw/VsOM/P/B/4tieUZt3zmACPcVpYTFQZ0oYESSn/yTvVIU1iTeXa6zKwxi4vw==}
+    peerDependencies:
+      react: ^18.0.0
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /@babel/code-frame@7.23.4:
