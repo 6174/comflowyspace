@@ -50,8 +50,7 @@ export const WidgetTree = (props: {
         );
 
         // Sort the widgets based on the match length with the search value
-        const reOrderedWidgets = findedWidgets
-        .sort((a, b) => {
+        const reOrderedWidgets = findedWidgets.sort((a, b) => {
             const aMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[a]));
             const bMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[b]));
 

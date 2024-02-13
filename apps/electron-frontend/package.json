@@ -12,6 +12,7 @@
     "@ant-design/icons": "^5.2.6",
     "@comflowy/common": "workspace:*",
     "@comflowy/node": "workspace:*",
+    "@sentry/nextjs": "^7.100.1",
     "@types/color": "^3.0.6",
     "@types/lodash": "^4.14.202",
     "antd": "5.12.5",
