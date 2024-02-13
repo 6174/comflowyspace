@@ -25,13 +25,17 @@ export const WidgetTree = (props: {
     useEffect(() => {
         setSearchValue('');
     }, [props.id]);
+    const getWidgetSearchString = (widget) => {
+        return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
+    }
     const handleSearch = (value) => {
         setSearchValue(value);
         const searchWords = value.toLowerCase().split(' ');
+
         const findedWidgets = Object.keys(widgets).filter(
             (key) => {
                 const widget = widgets[key];
-                const search_string = `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
+                const search_string = getWidgetSearchString(widget);
                 if (!filter(widget)) {
                     return false;
                 }
@@ -44,8 +48,25 @@ export const WidgetTree = (props: {
                 }
             }
         );
-        setSearchResult(findedWidgets.map(key => widgets[key]));
+
+        // Sort the widgets based on the match length with the search value
+        const reOrderedWidgets = findedWidgets
+        .sort((a, b) => {
+            const aMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[a]));
+            const bMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[b]));
+
+            // Check for exact matches and prioritize them
+            if (value.toLowerCase() === widgets[a].name.toLowerCase() && value.toLowerCase() !== widgets[b].name.toLowerCase()) {
+                return -1;
+            } else if (value.toLowerCase() !== widgets[a].name.toLowerCase() && value.toLowerCase() === widgets[b].name.toLowerCase()) {
+                return 1;
+            }
+
+            return bMatch - aMatch;
+        });
+        setSearchResult(reOrderedWidgets.map(key => widgets[key]));
     };
+
 
     const firstLevelCatogories = Object.keys(widgetCategory);
     const [currentCategory, setCurrentCategory] = useState("");
