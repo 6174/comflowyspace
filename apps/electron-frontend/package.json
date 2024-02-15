@@ -10,8 +10,10 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.17.0",
     "@ant-design/icons": "^5.2.6",
+    "@aptabase/react": "^0.3.3",
     "@comflowy/common": "workspace:*",
     "@comflowy/node": "workspace:*",
+    "@sentry/nextjs": "^7.100.1",
     "@types/color": "^3.0.6",
     "@types/lodash": "^4.14.202",
     "antd": "5.12.5",

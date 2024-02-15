@@ -7,6 +7,7 @@ import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { ComfyUIEvents } from '@comflowy/common/comfui-interfaces/comfy-event-types';
 import { message } from 'antd';
+import { useAptabase } from '@aptabase/react';
 export function WsController(): JSX.Element {
   const clientId = useAppStore((st) => st.clientId);
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
@@ -16,7 +17,7 @@ export function WsController(): JSX.Element {
   const onImageSave = useAppStore((st) => st.onImageSave);
   const editorEvent = useAppStore(st => st.editorEvent);
   const nodeIdInProgress = nodeInProgress?.id;
-
+  const { trackEvent } = useAptabase();
   const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
   const [timestamp, setTimestamp] = useState(Date.now());
 
@@ -45,11 +46,13 @@ export function WsController(): JSX.Element {
           onNodeInProgress(nodeIdInProgress, msg.data.value / msg.data.max)
         }
       } else if (Message.isExecuted(msg)) {
+        trackEvent('comfyui-executed-success');
         const images = msg.data.output.images
         if (Array.isArray(images)) {
           onImageSave(msg.data.node, images)
         }
       } else if (Message.isExecutingInterrupted) {
+        trackEvent('comfyui-executed-interrupted');
         SlotGlobalEvent.emit({
           type: GlobalEvents.execution_interrupted,
           data: null

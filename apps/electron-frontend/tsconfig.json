@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     "custom.d.ts",
-    ".next/types/**/*.ts",
+    ".next/types/**/*.ts", "sentry.server.config.js", "sentry.client.config.js",
   ],
   "exclude": [
     "node_modules"
