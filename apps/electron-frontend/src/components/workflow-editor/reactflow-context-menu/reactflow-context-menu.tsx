@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Node, NodeProps, useReactFlow } from 'reactflow';
 import styles from './reactflow-context-menu.module.scss';
-import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
-import { FlowNodeProps } from '../reactflow-node/reactflow-node-container';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import ChangeTitleMenuItem from './context-menu-item-change-title';
@@ -11,6 +9,7 @@ import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
 import { CopyIcon, DeleteIcon } from 'ui/icons';
+import { EditImage, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -128,6 +127,11 @@ function NodeMenu(props: NodeMenuProps) {
 
   if (hasInputs) {
     items.push(getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null))
+    items.push({ type: "divider" })
+  }
+
+  if (needEditImage(node)) {
+    items.push(getMenuItem(<EditImage {...props} />, 'MENU_ITEM_EDIT_IMAGE', null, null))
     items.push({ type: "divider" })
   }
 

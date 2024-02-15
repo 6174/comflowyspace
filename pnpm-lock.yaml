@@ -209,6 +209,9 @@ importers:
       color:
         specifier: ^4.2.3
         version: 4.2.3
+      comflowy-image-editor:
+        specifier: https://github.com/6174/comflowy-image-editor.git
+        version: github.com/6174/comflowy-image-editor/469176e43a22b3603dfcfcc99538d863ed6069ab
       dexie-react-hooks:
         specifier: ^1.1.7
         version: 1.1.7(@types/react@18.2.21)(dexie@3.2.4)(react@18.2.0)
@@ -13111,4 +13114,10 @@ packages:
       lodash.pickby: 4.6.0
     transitivePeerDependencies:
       - debug
+    dev: false
+
+  github.com/6174/comflowy-image-editor/469176e43a22b3603dfcfcc99538d863ed6069ab:
+    resolution: {tarball: https://codeload.github.com/6174/comflowy-image-editor/tar.gz/469176e43a22b3603dfcfcc99538d863ed6069ab}
+    name: comflowy-image-editor
+    version: 4.0.0
     dev: false
