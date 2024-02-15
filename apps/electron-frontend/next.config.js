@@ -5,18 +5,21 @@ const { withSentryConfig } = require("@sentry/nextjs");
  */
 const nextConfig = {
   output: 'export',
-  transpilePackages: ["ui", "@comflowy/common", "antd", "@ant-design"],
+  transpilePackages: ["ui", "@comflowy/common", "antd", "@ant-design", "comflowy-image-editor"],
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
-  webpack(config, { dev }) {
+  webpack(config, { dev, isServer }) {
     if (!dev) {
       config.optimization.minimize = false;
     }
+    // Fixes npm packages (like comflowy-image-editor) that depend on `fs` module
+    if (!isServer) {
+      config.resolve.fallback.fs = false;
+    }
+    config.resolve.mainFields = ['browser', 'main', 'module'];
     return config;
-  },
-  sentry: {
   }
 }
 const sentryWebpackPluginOptions = {
