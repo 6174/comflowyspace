@@ -9,7 +9,7 @@ import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
 import { CopyIcon, DeleteIcon } from 'ui/icons';
-import { EditImage, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
+import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -131,7 +131,7 @@ function NodeMenu(props: NodeMenuProps) {
   }
 
   if (needEditImage(node)) {
-    items.push(getMenuItem(<EditImage {...props} />, 'MENU_ITEM_EDIT_IMAGE', null, null))
+    items.push(getMenuItem(<EditImageMenuItem {...props} />, 'MENU_ITEM_EDIT_IMAGE', null, null))
     items.push({ type: "divider" })
   }
 

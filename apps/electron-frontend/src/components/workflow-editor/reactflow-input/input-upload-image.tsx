@@ -74,7 +74,6 @@ export function InputUploadImage({widget, id}: {
     };
     return (
         <div className='upload-image-wrapper'>
-            <ImgCrop rotationSlider>
                 <Upload {...props}>
                     <Button style={{
                         fontSize: 10,
@@ -82,7 +81,6 @@ export function InputUploadImage({widget, id}: {
                         display: "block"
                     }} icon={<UploadOutlined />}>Click to Upload</Button>
                 </Upload>
-            </ImgCrop>
             <div className="image-preview" style={{
                 display: "flex",
                 alignItems: "center",
