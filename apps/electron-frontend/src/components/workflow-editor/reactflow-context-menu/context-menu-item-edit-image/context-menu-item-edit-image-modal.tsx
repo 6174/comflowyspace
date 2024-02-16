@@ -58,7 +58,7 @@ export default function EditImageModal(props: {
       title="Edit Image"
       open={visible}
       initialWidth={600}
-      initialHeight={480}
+      initialHeight={510}
       onOk={() => { }}
       className={styles.contextMenuEditImageModal}
       onCancel={handleCancel}
@@ -72,6 +72,7 @@ export default function EditImageModal(props: {
               console.log(imageInfo);
               return false;
             }}
+
             defaultTabId={TABS.ANNOTATE}
             tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
             onSave={async (data) => {
