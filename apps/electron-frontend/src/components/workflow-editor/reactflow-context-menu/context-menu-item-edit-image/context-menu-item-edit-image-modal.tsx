@@ -58,38 +58,36 @@ export default function EditImageModal(props: {
       title="Edit Image"
       open={visible}
       initialWidth={600}
-      initialHeight={510}
+      initialHeight={500}
       onOk={() => { }}
       className={styles.contextMenuEditImageModal}
       onCancel={handleCancel}
       footer={null}
     >
-      <div className={styles.editImageModal}>
-        <div className="image-container">
-          <ComflowyImageEditor 
-            source={imgsrc}
-            onBeforeSave={(imageInfo) => {
-              console.log(imageInfo);
-              return false;
-            }}
+      <div className="image-container">
+        <ComflowyImageEditor 
+          source={imgsrc}
+          onBeforeSave={(imageInfo) => {
+            console.log(imageInfo);
+            return false;
+          }}
 
-            defaultTabId={TABS.ANNOTATE}
-            tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
-            onSave={async (data) => {
-              try {
-                console.log("save", data)
-                const base64Data = data.imageBase64;
-                const blob = base64ToBlob(base64Data, 'image/png');
-                await props.onSave(blob);
-              } catch(err) {
-                console.log(err);
-                message.error("Save image failed: " + err.message);
-              }
-            }}
-            savingPixelRatio={0} 
-            previewPixelRatio={0} />
-          {/* <img src={props.node.image} alt="image" /> */}
-        </div>
+          defaultTabId={TABS.ANNOTATE}
+          tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
+          onSave={async (data) => {
+            try {
+              console.log("save", data)
+              const base64Data = data.imageBase64;
+              const blob = base64ToBlob(base64Data, 'image/png');
+              await props.onSave(blob);
+            } catch(err) {
+              console.log(err);
+              message.error("Save image failed: " + err.message);
+            }
+          }}
+          savingPixelRatio={0} 
+          previewPixelRatio={0} />
+        {/* <img src={props.node.image} alt="image" /> */}
       </div>
     </DraggableModal>
   )
