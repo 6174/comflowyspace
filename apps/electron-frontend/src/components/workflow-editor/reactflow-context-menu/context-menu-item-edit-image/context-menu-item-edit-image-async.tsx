@@ -9,7 +9,8 @@ const AsyncCO = lazy(async () => {
 
 export function AsyncImageEditor(props: {
   node: SDNode,
-  id: string
+  id: string,
+  onSave: (blob: Blob) => Promise<void>;
 }) {
   const [showFrontEndCode, setShowFrontEndCode] = useState(false);
   useEffect(() => {

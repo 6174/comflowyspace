@@ -1,3 +1,7 @@
 .contextMenuEditImageModal {
-  
+  :global {
+    .ant-modal-body {
+      overflow-y: hidden;
+    }
+  }
 }

@@ -24,7 +24,8 @@ export function EditImageMenuItem(props: NodeMenuProps) {
         SlotGlobalEvent.emit({
           type: GlobalEvents.open_image_editor,
           data: {
-            id: props.id
+            id: props.id,
+            image: node.fields?.image
           }
         })
         props.hide();
