@@ -55,7 +55,6 @@
       justify-content: left;
       align-items: center;
       transition: var(--transition);
-      background-color: white;
       border-radius: 8px;
       .image {
         width: 100%;
@@ -64,26 +63,28 @@
       .tag {
         line-height: 22px;
         color: black;
-        font-size: 18px;
-        margin-left: 18px;
-        margin-top: 40px;
+        font-size: 12px;
+        margin-left: 20px;
+        margin-top: 25px;
         text-transform: uppercase;
+        opacity: 0.5;
       }
       .title {
-        line-height: 28px;
+        line-height: 120%;
         color: black;
         font-weight: bold;
-        font-size: 32px;
-        margin-left: 18px;
-        margin-top: 6px;
-        max-width: 300px;
+        font-size: 24px;
+        margin-left: 20px;
+        margin-top: 4px;
+        max-width: 240px;
       }
       .subtitle {
         margin-top: 6px;
-        line-height: 22px;
+        line-height: 140%;
         color: black;
-        font-size: 16px;
-        margin-left: 18px;
+        font-size: 12px;
+        margin-left: 20px;
+        opacity: 0.5;
       }
       &:hover {
         transform: scale(1.02);
