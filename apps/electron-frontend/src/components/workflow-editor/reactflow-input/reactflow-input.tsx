@@ -22,7 +22,11 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
         >
           {input[0].map((k) => {
             if (name === "image") {
-              const src = getImagePreviewUrl(k);
+              const parsedName = k.split("/");
+              let src = getImagePreviewUrl(k);
+              if (parsedName.length > 1) {
+                src = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
+              }
               return (
                 <Select.Option key={k} value={k} >
                   <div style={{ display: "flex", alignItems: "center" }}>

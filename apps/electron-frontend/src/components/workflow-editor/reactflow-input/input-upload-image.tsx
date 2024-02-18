@@ -18,7 +18,6 @@ export function InputUploadImage({widget, node, id}: {
     const graph = useAppStore(st => st.graph);
     const onNodeFieldChange = useAppStore(st => st.onNodeFieldChange);
     const value = graph[id]?.fields.image;
-
     const onChange = useCallback(async (val) => {
         try {
             await onUpdateWidgets();
@@ -30,7 +29,11 @@ export function InputUploadImage({widget, node, id}: {
 
     const [previewImage, setPreviewImage] = useState(null);
     useEffect(() => {
-        const imgsrc = getImagePreviewUrl(value);
+        const parsedName = value.split("/");
+        let imgsrc = getImagePreviewUrl(value);
+        if (parsedName.length > 1) {
+            imgsrc = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
+        }
         setPreviewImage(imgsrc);
     }, [value]);
 
@@ -88,14 +91,15 @@ export function InputUploadImage({widget, node, id}: {
      */
     const onSave = async (blob: Blob) => {
         const formData = new FormData();
-        formData.append('image', blob, `${node.fields.image.split(".")[0]}_${new Date().getTime()}.png`);
+        formData.append('image', blob, `edit_image_${node.fields.image.split(".")[0]}_${new Date().getTime().toString().substring(0, 4)}.png`);
+        formData.append('subfolder', 'clipspace');
         const response = await fetch(getUploadImageUrl(), {
             method: 'POST',
             body: formData
         });
         const data = await response.json();
         if (response.ok) {
-            onChange(data.name);
+            onChange("clipspace/" + data.name);
             message.success("Save successfully");
         } else {
             throw new Error("Save failed");

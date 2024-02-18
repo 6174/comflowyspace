@@ -250,7 +250,9 @@ export const AppState = {
       if (widget && widget.name === "LoadImage") {
         const image = sdnode.fields.image;
         const options = widget.input.required.image[0] as [string];
-        if (options.indexOf(image) < 0) {
+        const parsedImage = image.split('/');
+        // if parsedImage length > 1 , it is a image from temporary storage
+        if (options.indexOf(image) < 0 && parsedImage.length === 1) {
           error.errors.push({
             type: ComfyUIErrorTypes.image_not_in_list,
             message: `Image ${image} not in list`,
