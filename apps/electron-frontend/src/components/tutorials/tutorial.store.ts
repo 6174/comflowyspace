@@ -22,7 +22,7 @@ const useTutorialStore = create<TutorialStore>((set) => ({
   setTutorials: (tutorials) => set({ tutorials }),
   fetchTutorials: async () => {
     try {
-      const response = await fetch(`${api}/gettutorial`);
+      const response = await fetch(`${api}/get-tutorial`);
       const tutorials: Tutorial[] = await response.json();
       set({ tutorials });
     } catch(err) {

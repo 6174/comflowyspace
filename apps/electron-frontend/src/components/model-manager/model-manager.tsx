@@ -11,6 +11,7 @@ import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon, ReloadIcon } from 'ui/icons';
 import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
 import { ModelSettings } from './model-settings';
+import ModelCards from './model-recommend';
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
@@ -56,7 +57,7 @@ const ModelManagement = () => {
       </div>
       <Tabs defaultActiveKey="available" >
         <Tabs.TabPane tab="Available" key="available">
-          <ModelMarket/>
+          <ModelCards/>
         </Tabs.TabPane> 
         <Tabs.TabPane tab="Installed" key="installed">
           <InstalledModels/>
