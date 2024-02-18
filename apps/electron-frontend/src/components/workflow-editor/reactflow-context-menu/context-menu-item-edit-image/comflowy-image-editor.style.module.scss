@@ -1,0 +1,10 @@
+.contextMenuEditImageModal {
+  :global {
+    .ant-modal-body {
+      overflow-y: hidden;
+    }
+    .image-container {
+      height: 100%;
+    }
+  }
+}

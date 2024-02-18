@@ -1,6 +1,6 @@
 {
   "name": "comflowy",
-  "version": "0.0.7-alpha",
+  "version": "0.0.8-alpha",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {

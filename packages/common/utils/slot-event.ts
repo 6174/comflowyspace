@@ -135,7 +135,8 @@ export enum GlobalEvents {
   comfyui_process_error = "comfyui_process_error",
   show_missing_widgets_modal = "show_missing_widgets_modal",
   install_missing_widget = 'install_missing_widget',
-  show_comfyprocess_manager = 'show_comfyprocess_manager'
+  show_comfyprocess_manager = 'show_comfyprocess_manager',
+  open_image_editor = 'open_image_editor'
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;

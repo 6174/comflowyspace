@@ -2,17 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, message, Upload , Image} from 'antd';
-import { Widget } from '@comflowy/common/comfui-interfaces';
+import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import ImgCrop from 'antd-img-crop';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
+import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image-async';
 const { Dragger } = Upload;
 
 
-export function InputUploadImage({widget, id}: {
+export function InputUploadImage({widget, node, id}: {
     widget: Widget,
+    node: SDNode,
     id: string
 }) {
     const graph = useAppStore(st => st.graph);
@@ -32,17 +34,21 @@ export function InputUploadImage({widget, id}: {
     const customRequest = async ({file, onSuccess, onError}: any ) => {
         const formData = new FormData();
         formData.append('image', file as RcFile);
-        const response = await fetch(getUploadImageUrl(), {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
-        if (response.ok) {
-            console.log("data", data);
-            onChange(data.name);
-            onSuccess(data, file);
-        } else {
-            onError(data);
+        try {
+            const response = await fetch(getUploadImageUrl(), {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (response.ok) {
+                console.log("data", data);
+                onChange(data.name);
+                onSuccess(data, file);
+            } else {
+                onError(data);
+            }
+        } catch(err) {
+            onError(err);
         }
     }
 
@@ -72,17 +78,36 @@ export function InputUploadImage({widget, id}: {
             console.log('Dropped files', e.dataTransfer.files);
         },
     };
+
+    /**
+     * onSave Image after edited
+     * @param blob 
+     */
+    const onSave = async (blob: Blob) => {
+        const formData = new FormData();
+        formData.append('image', blob, `${node.fields.image.split(".")[0]}_${new Date().getTime()}.png`);
+        const response = await fetch(getUploadImageUrl(), {
+            method: 'POST',
+            body: formData
+        });
+        const data = await response.json();
+        if (response.ok) {
+            onChange(data.name);
+            message.success("Save successfully");
+        } else {
+            throw new Error("Save failed");
+        }
+    }
+
     return (
         <div className='upload-image-wrapper'>
-            <ImgCrop rotationSlider>
-                <Upload {...props}>
-                    <Button style={{
-                        fontSize: 10,
-                        width: "100%",
-                        display: "block"
-                    }} icon={<UploadOutlined />}>Click to Upload</Button>
-                </Upload>
-            </ImgCrop>
+            <Upload {...props}>
+                <Button style={{
+                    fontSize: 10,
+                    width: "100%",
+                    display: "block"
+                }} icon={<UploadOutlined />}>Click to Upload</Button>
+            </Upload>
             <div className="image-preview" style={{
                 display: "flex",
                 alignItems: "center",
@@ -91,6 +116,8 @@ export function InputUploadImage({widget, id}: {
             }}>
                 {previewImage && <ImageWithDownload src={previewImage} fileName={'image'}/>}
             </div>
+            <AsyncImageEditor id={id} node={node} onSave={onSave}/>
         </div>
     )
 }
+
