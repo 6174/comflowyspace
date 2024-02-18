@@ -17,12 +17,18 @@ export function InputUploadImage({widget, node, id}: {
     node: SDNode,
     id: string
 }) {
+    const onUpdateWidgets = useAppStore(st => st.onUpdateWidgets);
     const graph = useAppStore(st => st.graph);
     const onNodeFieldChange = useAppStore(st => st.onNodeFieldChange);
     const value = graph[id]?.fields.image;
 
-    const onChange = useCallback((val) => {
-        onNodeFieldChange(id, 'image', val);
+    const onChange = useCallback(async (val) => {
+        try {
+            await onUpdateWidgets();
+            onNodeFieldChange(id, 'image', val);
+        } catch(err) {
+            console.log(err);
+        }
     }, [value]);
 
     const [previewImage, setPreviewImage] = useState(null);

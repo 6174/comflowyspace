@@ -125,6 +125,7 @@ export interface AppState {
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onLoadImageWorkflow: (image: string) => void
   onChangeDragingAndResizingState: (val: boolean) => void;
+  onUpdateWidgets: () => Promise<void>;
 }
 
 export const AppState = {
@@ -344,6 +345,14 @@ export const useAppStore = create<AppState>((set, get) => ({
         editorInstance
       })
     }
+  },
+  onUpdateWidgets: async () => {
+    const widgets = await getWidgets();
+    const widgetCategory = generateWidgetCategories(widgets);
+    set({ 
+      widgets, 
+      widgetCategory
+    })
   },
   /**
    * Sync nodes and edges state from YJS Doc
