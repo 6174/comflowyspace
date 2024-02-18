@@ -9,7 +9,7 @@ import { getCondaPaths, runCommand, runCommandWithPty } from "../utils/run-comma
 import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
-import * as fsExtra from "fs-extra"
+import * as fsExtra from "fs-extra" 
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
 
 const systemType = os.type();
