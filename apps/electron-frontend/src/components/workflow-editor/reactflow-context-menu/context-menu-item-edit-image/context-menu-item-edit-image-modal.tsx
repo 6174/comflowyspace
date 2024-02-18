@@ -71,13 +71,29 @@ export default function EditImageModal(props: {
             console.log(imageInfo);
             return false;
           }}
-
           defaultTabId={TABS.ANNOTATE}
           tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
           onSave={async (data) => {
             try {
+              // console.log("save", data)
+              // const canvas = data.imageCanvas;
+              // const base64Data = data.imageBase64;
+              // const blob = base64ToBlob(base64Data, 'image/png');
+              // await props.onSave(blob);
               console.log("save", data)
-              const base64Data = data.imageBase64;
+              const canvas = data.imageCanvas;
+              const ctx = canvas.getContext('2d');
+              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              for (let i = 0; i < imageData.data.length; i += 4) {
+                const r = imageData.data[i];
+                const g = imageData.data[i + 1];
+                const b = imageData.data[i + 2];
+                if (r === 0 && g === 0 && b === 0) {
+                  imageData.data[i + 3] = 0
+                }
+              }
+              ctx.putImageData(imageData, 0, 0);
+              const base64Data = canvas.toDataURL('image/png');
               const blob = base64ToBlob(base64Data, 'image/png');
               await props.onSave(blob);
             } catch(err) {
