@@ -7,7 +7,7 @@
   :global {
     .tutorial-card-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       grid-gap: 10px;
       padding: 10px 10px 10px 0;
     }
@@ -28,6 +28,9 @@
     .p {
       margin-top: 2px;
       margin-bottom: 2px;
+      opacity: 0.5;
+      font-size: 14px;
+      padding-right: 4px;
     }
 
     .totorial-banner {
@@ -42,34 +45,35 @@
       justify-content: left;
       align-items: center;
       transition: var(--transition);
-      background-color: white;
       border-radius: 8px;
       .image {
         width: 100%;
         height: 100px;
       }
       .tag {
-        line-height: 22px;
+        line-height: 16px;
+        opacity: 0.5;
         color: black;
-        font-size: 18px;
-        margin-top: 40px;
-        margin-left: 18px;
+        font-size: 16px;
+        margin-top: 25px;
+        margin-left: 20px;
         text-transform: uppercase;
       }
       .title {
-        line-height: 22px;
+        line-height: 20px;
         color: black;
         font-weight: bold;
-        font-size: 32px;
-        margin-left: 18px;
+        font-size: 22px;
+        margin-left: 20px;
         margin-top: 10px;
       }
       .subtitle {
         margin-top: 10px;
         line-height: 22px;
-        color: black;
+        color: #141417;
+        opacity: 0.5;
         font-size: 16px;
-        margin-left: 18px;
+        margin-left: 20px;
       }
       &:hover {
         transform: scale(1.02);
@@ -78,30 +82,28 @@
 
     .tutorial-card {
       cursor: pointer;
-      height: 100px;
       background-size: 100% 100%;
       background-repeat: no-repeat;
       background-position: center;
       position: relative;
       display: flex;
-      justify-content: left;
+      justify-content: right;
       align-items: center;
       width: 100%;
-      height: 90px;
+      height: 100px;
       transition: var(--transition);
-      background-color: white;
       border-radius: 8px;
       .image {
         width: 100%;
         height: 90px;
       }
       .name {
-        width: 120px;
+        width: 130px;
         line-height: 22px;
         color: black;
         font-weight: 600;
         font-size: 18px;
-        margin-left: 18px;
+        opacity: 0.8;
       }
       &:hover {
         transform: scale(1.03);
