@@ -8,6 +8,7 @@ import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image-async';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 export function InputUploadImage({widget, node, id}: {
     widget: Widget,
@@ -91,7 +92,12 @@ export function InputUploadImage({widget, node, id}: {
      */
     const onSave = async (blob: Blob) => {
         const formData = new FormData();
-        formData.append('image', blob, `edit_image_${node.fields.image.split(".")[0]}_${new Date().getTime().toString().substring(0, 4)}.png`);
+        const parsedName = node.fields.image.split("/");
+        let realImageName = parsedName[0];
+        if (parsedName.length > 1) {
+            realImageName = parsedName[1];
+        }
+        formData.append('image', blob, `edit_image_${realImageName.split(".")[0]}_${new Date().getTime().toString().substring(0, 4)}.png`);
         formData.append('subfolder', 'clipspace');
         const response = await fetch(getUploadImageUrl(), {
             method: 'POST',
@@ -121,7 +127,20 @@ export function InputUploadImage({widget, node, id}: {
                 justifyContent: "center",
                 marginTop: 10
             }}>
-                {previewImage && <ImageWithDownload src={previewImage} fileName={'image'}/>}
+                {previewImage && <ImageWithDownload 
+                    src={previewImage} 
+                    fileName={'image'}
+                    editable={true}
+                    editHandler={() => {
+                        SlotGlobalEvent.emit({
+                            type: GlobalEvents.open_image_editor,
+                            data: {
+                                id: id,
+                                image: node.fields?.image
+                            }
+                        })
+                    }}
+                    />}
             </div>
             <AsyncImageEditor id={id} node={node} onSave={onSave}/>
         </div>

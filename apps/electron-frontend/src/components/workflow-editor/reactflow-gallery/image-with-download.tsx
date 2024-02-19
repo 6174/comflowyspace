@@ -4,13 +4,16 @@ import {
   RotateLeftOutlined,
   RotateRightOutlined,
   SwapOutlined,
+  EditOutlined,
   ZoomInOutlined,
   ZoomOutOutlined,
 } from '@ant-design/icons';
 import styles from "./gallery.module.scss";
 import { useCallback } from "react";
+import { EditIcon } from "ui/icons";
+import { EditImageIcon } from "../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image";
 
-export function ImageWithDownload(props: ImageProps & {fileName: string}) {
+export function ImageWithDownload(props: ImageProps & {fileName: string, editable?: boolean, editHandler?: () => void}) {
   const src = props.src;
   const onDownload = () => {
     fetch(src)
@@ -27,7 +30,7 @@ export function ImageWithDownload(props: ImageProps & {fileName: string}) {
       });
   };
 
-  const imageProps = {...props};
+  const { editable, editHandler, ...imageProps } = {...props};
   delete imageProps.fileName
   return (
     <Image 
@@ -41,6 +44,12 @@ export function ImageWithDownload(props: ImageProps & {fileName: string}) {
           },
         ) => (
           <Space size={12} className={`toolbar-wrapper ant-image-preview-operations ${styles.previewToolbar}`}>
+            {props.editable && (
+              <EditOutlined width={24}  className="action ant-image-preview-operations-operation" onClick={() => {
+                (document.querySelector(".ant-image-preview-close") as HTMLElement).click();
+                props.editHandler();
+              }} />
+            )}
             <DownloadOutlined  width={24} className="action ant-image-preview-operations-operation" onClick={onDownload} />
             {/* <SwapOutlined width={24} className="action ant-image-preview-operations-operation" rotate={90} onClick={onFlipY} />
             <SwapOutlined width={24} className="action ant-image-preview-operations-operation" onClick={onFlipX} />
