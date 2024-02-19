@@ -1,5 +1,6 @@
 import ZHCN from "./ZHCN";
 import ENUS from "./ENUS";
+import ALLLang from "./ALL_LANG";
 import type { i18nKey, i18nLang } from "./i18n-types";
 export * from "./i18n-types";
 
