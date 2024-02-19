@@ -1,4 +1,4 @@
-import { useAptabase } from "@aptabase/react";
+import { track } from "@/lib/tracker";
 import { exportWorkflowToJSONFile } from "@comflowy/common/comfyui-bridge/export-import";
 import { PersistedWorkflowDocument } from "@comflowy/common/storage";
 import { useAppStore } from "@comflowy/common/store";
@@ -8,7 +8,6 @@ import { useCallback } from "react";
 export default function ExportWorkflow() {
   const doc = useAppStore(st => st.doc);
   const widgets = useAppStore(st => st.widgets);
-  const { trackEvent } = useAptabase();
   const exportWorkflow = useCallback(async () => {
     const workflowMap = doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
@@ -18,7 +17,7 @@ export default function ExportWorkflow() {
     } catch(err) {
       message.error("Failed to export workflow:" + err.message, 5);
     }
-    trackEvent('export-workflow-to-json');
+    track('export-workflow-to-json');
   }, [doc, widgets])
   return (
     <div>

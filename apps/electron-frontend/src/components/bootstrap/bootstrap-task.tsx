@@ -1,5 +1,5 @@
+import { track, trackNewUserBootstrapSuccess } from "@/lib/tracker";
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
-import { useAptabase } from "@aptabase/react";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import {message} from "antd";
@@ -13,7 +13,6 @@ export function BootstrapTask(props: BootstrapTaskProps) {
   // const [messageApi, contextHolder] = message.useMessage();
   const {bootstrapTasks, setBootstrapTasks} = useDashboardState();
   const task = bootstrapTasks.find(task => task.type === props.type);
-  const { trackEvent } = useAptabase();
   const {startTask, error, success, running, messages} = useRemoteTask({
       api: getBackendUrl(`/api/add_bootstrap_task`),
       onMessage: (msg) => {
@@ -23,19 +22,22 @@ export function BootstrapTask(props: BootstrapTaskProps) {
             message.success(task.title + " success");
             task.finished = true;
             setBootstrapTasks([...bootstrapTasks]);
-            trackEvent(`bootstrap-task-${task.title}-success`);
+            track(`bootstrap-task-${task.title}-success`);
+            if (task.type === BootStrapTaskType.startComfyUI) {
+              trackNewUserBootstrapSuccess()
+            }
           }
         }
         if (msg.type === "FAILED") {
           message.error("Task failed: " + msg.error);
-          trackEvent(`bootstrap-task-${task.title}-failed`);
+          track(`bootstrap-task-${task.title}-failed`);
         }
 
         if (msg.type === "TIMEOUT" && task.type === BootStrapTaskType.startComfyUI) {
           message.error("Start ComfyUI timeout, check the comfyui process manager to find out what happened");
           task.finished = true;
           setBootstrapTasks([...bootstrapTasks]);
-          trackEvent(`bootstrap-task-${task.title}-timeout`);
+          track(`bootstrap-task-${task.title}-timeout`);
         }
       }
   });
@@ -48,6 +50,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
 
   useEffect(() => {
     startTaskAction();
+    track(`bootstrap-task-${props.type}-start`)
   }, [])
 
   return (

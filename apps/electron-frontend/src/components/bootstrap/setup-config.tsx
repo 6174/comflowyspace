@@ -1,5 +1,5 @@
 import { comfyElectronApi, isElectron, useIsElectron } from "@/lib/electron-bridge";
-import { useAptabase } from "@aptabase/react";
+import { track } from "@/lib/tracker";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { Alert, Button, Input, Space, message } from "antd";
@@ -16,9 +16,8 @@ export function SetupConfig() {
   const [selectedIfInstalledComfyUI, setSelectedIfInstalledComfyUI] = useState(false);
   const [installedComfyUI, setInstalledComfyUI] = useState(false);
 
-  const { trackEvent } = useAptabase();
   useEffect(() => {
-    trackEvent('bootstrap-setup-config');  
+    track('bootstrap-setup-config');  
   }, []);
 
   useEffect(() => {
@@ -75,11 +74,11 @@ export function SetupConfig() {
         task.finished = true;
         const isComfyUIInstalled = data.isComfyUIInstalled;
         if (isComfyUIInstalled) {
-          trackEvent('bootstrap-setup-config-success-with-comfyui-installed');
+          track('bootstrap-setup-config-success-with-comfyui-installed');
           const installComfyTask = bootstrapTasks.find(task => task.type === BootStrapTaskType.installComfyUI);
           installComfyTask.finished = true;
         } else {
-          trackEvent('bootstrap-setup-config-success-without-comfyui-installed');
+          track('bootstrap-setup-config-success-without-comfyui-installed');
         }
         setBootstrapTasks([...bootstrapTasks]);
       } else {

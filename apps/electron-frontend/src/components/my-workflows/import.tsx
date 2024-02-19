@@ -1,5 +1,5 @@
 import { openTabPage } from '@/lib/electron-bridge';
-import { useAptabase } from '@aptabase/react';
+import { track } from '@/lib/tracker';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
 import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
@@ -7,23 +7,21 @@ import { message } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 
-
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const widgets = useAppStore(st => st.widgets);
-  const { trackEvent } = useAptabase();
   const onFileSelected = async (file: File) => {
     try {
       let workflow: PersistedWorkflowDocument | null = null;
       if (file.type === 'image/png') {
         workflow = await readWorkflowFromPng(file, widgets);
-        trackEvent('import-png-workflow');
+        track('import-png-workflow');
       }
   
       if (file.type === 'application/json') {
         workflow = await readWorkflowFromFile(file, widgets);
-        trackEvent('import-json-workflow');
+        track('import-json-workflow');
       }
 
       if (workflow) {
@@ -39,7 +37,7 @@ export const ImportWorkflow = () => {
       }
 
     } catch(err) {
-      trackEvent('import-workflow-error', {
+      track('import-workflow-error', {
         error: err.message,
         stack: err.stack
       });

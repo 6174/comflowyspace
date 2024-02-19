@@ -182,9 +182,9 @@ importers:
       '@ant-design/icons':
         specifier: ^5.2.6
         version: 5.2.6(react-dom@18.2.0)(react@18.2.0)
-      '@aptabase/react':
-        specifier: ^0.3.3
-        version: 0.3.3(react@18.2.0)
+      '@aptabase/web':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@comflowy/common':
         specifier: workspace:*
         version: link:../../packages/common
@@ -245,6 +245,9 @@ importers:
       reactflow:
         specifier: ^11.10.1
         version: 11.10.1(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
+      semver:
+        specifier: ^7.6.0
+        version: 7.6.0
       ui:
         specifier: workspace:*
         version: link:../../packages/ui
@@ -747,12 +750,8 @@ packages:
       throttle-debounce: 5.0.0
     dev: false
 
-  /@aptabase/react@0.3.3(react@18.2.0):
-    resolution: {integrity: sha512-/8pSVMv5kElaVD4ukDQmPzF7sw/VsOM/P/B/4tieUZt3zmACPcVpYTFQZ0oYESSn/yTvVIU1iTeXa6zKwxi4vw==}
-    peerDependencies:
-      react: ^18.0.0
-    dependencies:
-      react: 18.2.0
+  /@aptabase/web@0.4.2:
+    resolution: {integrity: sha512-BixfHx2WzyGxwsHJwWkn5rHzN7EqgaHDgX3gcgNLnlXaxibOE8tJSOedoTy2W9ToVwlTCV69TvnacB4NMX8E1g==}
     dev: false
 
   /@babel/code-frame@7.23.4:
@@ -4524,7 +4523,7 @@ packages:
       minimatch: 3.1.2
       read-config-file: 6.2.0
       sanitize-filename: 1.6.3
-      semver: 7.5.4
+      semver: 7.6.0
       tar: 6.2.0
       temp-file: 3.4.0
     transitivePeerDependencies:
@@ -6200,7 +6199,7 @@ packages:
       lazy-val: 1.0.5
       lodash.escaperegexp: 4.1.2
       lodash.isequal: 4.5.0
-      semver: 7.5.4
+      semver: 7.6.0
       tiny-typed-emitter: 2.1.0
     transitivePeerDependencies:
       - supports-color
@@ -11657,6 +11656,13 @@ packages:
 
   /semver@7.5.4:
     resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      lru-cache: 6.0.0
+
+  /semver@7.6.0:
+    resolution: {integrity: sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==}
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
