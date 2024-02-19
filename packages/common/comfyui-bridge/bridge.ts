@@ -139,6 +139,10 @@ export function getUploadImageUrl(): string {
 }
 
 export function getImagePreviewUrl(name: string, type = "input", subfolder = ""): string {
+  const parsedName = name.split("/");
+  if (parsedName.length > 1 && subfolder === "") {
+    return getComfyUIBackendUrl(`/view?filename=${encodeURIComponent(parsedName[1])}&type=${type}&subfolder=${parsedName[0]}`)
+  }
   return getComfyUIBackendUrl(`/view?filename=${encodeURIComponent(name)}&type=${type}&subfolder=${subfolder}`)
 }
 
