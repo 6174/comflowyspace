@@ -1,8 +1,9 @@
 import ZHCN from "./ZHCN";
 import ENUS from "./ENUS";
+import ALLLang from "./ALL_LANG";
 import type { i18nKey, i18nLang } from "./i18n-types";
 export * from "./i18n-types";
-
+export const isWindow = typeof window !== 'undefined';
 /**
  * All launguages
  */
@@ -17,7 +18,10 @@ export function changeLaunguage(lang: LanguageType) {
   document.body.setAttribute("data-locale", lang as string);
   currentLang = lang;
 }
-changeLaunguage(currentLang);
+
+if (isWindow) {
+  changeLaunguage(currentLang);
+}
 
 /**
  * Tool for translation

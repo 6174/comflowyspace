@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useEffect } from 'react'
-import Link from 'next/link'
 import Head from 'next/head'
-
+import {KEYS, t} from "@comflowy/common/i18n";
 type Props = {
   children: ReactNode
   title?: string
@@ -73,7 +72,7 @@ const WorkspaceNav = () => {
             <WorkflowIcon/>
           </div>
           <a>
-            My workflows
+            {t(KEYS.myWorkflows)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {

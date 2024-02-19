@@ -6,7 +6,15 @@ import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
+import { Carousel } from 'antd';
+import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
+import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
+import { EllipsisOutlined } from '@ant-design/icons';
+import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { track } from '@/lib/tracker';
 import CoverSvg from "./default-workflow-cover.svg";
+
 function MyWorkflowsPage() {
   return (
     <div className={styles.myWorkflows}>
@@ -19,7 +27,6 @@ function MyWorkflowsPage() {
 
 function WorkflowCreateBox() {
   const router = useRouter();
-  const { trackEvent } = useAptabase();
   const createNewDoc = React.useCallback(async (open: boolean = true) => {
     const doc = await documentDatabaseInstance.createDocFromTemplate();
     if (open) {
@@ -32,7 +39,7 @@ function WorkflowCreateBox() {
       });
       message.success("Workflow created");
     }
-    trackEvent("create-new-worklfow");
+    track("create-new-worklfow");
   }, [router]);
 
   React.useEffect(() => {
@@ -81,13 +88,6 @@ function WorkflowCreateBox() {
   )
 }
 
-import { Carousel } from 'antd';
-import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
-import { EllipsisOutlined } from '@ant-design/icons';
-import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
-import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
-import { useAptabase } from '@aptabase/react';
 
 function WorkflowList() {
   const docs = (JSONDBClient.useLiveJSONDB<PersistedFullWorkflow[]>({
