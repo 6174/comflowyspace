@@ -17,7 +17,7 @@ let currentLang: LanguageType = "en-US";
 
 export function changeLaunguage(lang: LanguageType) {
   document.body.setAttribute("data-locale", lang as string);
-  let defaultLanguage = navigator.language || navigator.languages[0];
+  let defaultLanguage = localStorage.getItem('i18n') || navigator.language || navigator.languages[0];
   // If the default language is "en", then set it to "en-US"
   if (defaultLanguage.indexOf("en-") >= 0) {
     defaultLanguage = "en-US";
