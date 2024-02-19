@@ -5,7 +5,7 @@ import { SlotEvent } from "@comflowy/common/utils/slot-event";
 /**
  * ComflowyConsole
  */
-export class ComflowyConsole {
+class ComflowyConsoleKlass {
   updateEvent = new SlotEvent<ComflowyConsoleUpdateEvent>();
   state: ComflowyConsoleState = {
     logs: [],
@@ -17,16 +17,10 @@ export class ComflowyConsole {
   };
 
   /**
-   * constructor
-   */
-  constructor() {
-  }
-
-  /**
    * create log
    */
   log = (message: string, data: Partial<ComflowyConsoleLogData>) =>  {
-    this.state.logs.push({
+    const log = {
       id: uuid(),
       message,
       data: {
@@ -35,8 +29,9 @@ export class ComflowyConsole {
         createdAt: Date.now(),
         type: data.type || "runtime"
       }
-    });
-    this.updateEvent.emit({type: "UPDATE_LOG"});
+    }
+    this.state.logs.push(log);
+    this.updateEvent.emit({type: "CREATE_LOG", data: log});
   }
 
   /**
@@ -56,6 +51,8 @@ export class ComflowyConsole {
    */
   clearLogs = () => {
     this.state.logs = [];
-    this.updateEvent.emit({type: "UPDATE_LOG"})
+    this.updateEvent.emit({ type: "CLEAR_LOGS"})
   }
 }
+
+export const ComflowyConsole = new ComflowyConsoleKlass();

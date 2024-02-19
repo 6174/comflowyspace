@@ -33,6 +33,7 @@ export type ComflowyConsoleState = {
 }
 
 export type ComflowyConsoleUpdateEvent = {
-  type: "UPDATE_LOG" | "CLEAR_LOGS" | "UPDATE_ENV"
+  type: "CREATE_LOG" | "UPDATE_LOG" | "CLEAR_LOGS" | "UPDATE_ENV",
+  data?: ComflowyConsoleLog | any; 
 }
 
