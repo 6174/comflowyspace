@@ -30,7 +30,7 @@ export function onEdgeUpdateFailed(params: {
       filter: (widget: Widget) => {
         if (connectingParams.handleType === "source") {
           // search from widget outputs 
-          const inputs = Object.keys(widget.input.required);
+          const inputs = Object.keys(widget.input.required || []);
           return inputs.some(inputKey => {
             const input = widget.input.required[inputKey];
             return input[0] === connectingParams.handleId;
