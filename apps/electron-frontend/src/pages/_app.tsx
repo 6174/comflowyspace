@@ -15,7 +15,9 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(()=> {
     onInit();
     JSONDBClient.listen();
-    trackNewUser();
+    setTimeout(() => {
+      trackNewUser();
+    }, 3000);
     // Check if the platform is Windows
     if (navigator.userAgent.indexOf('Win') > -1) {
       // Add 'windows' class to the document
