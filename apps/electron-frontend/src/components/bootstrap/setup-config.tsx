@@ -1,5 +1,5 @@
 import { comfyElectronApi, isElectron, useIsElectron } from "@/lib/electron-bridge";
-import { track } from "@/lib/tracker";
+import { track, trackNewUser } from "@/lib/tracker";
 import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { Alert, Button, Input, Space, message } from "antd";
@@ -11,13 +11,14 @@ export function SetupConfig() {
   const task = bootstrapTasks.find(task => task.type === BootStrapTaskType.setupConfig);
   const [defaultValue, setDefaultValue] = useState("");
   const [value, setValue] = useState("");
-  const [sdwebuiPath, setSDWebuiPath] = useState("");
+  const [sdwebuiPath] = useState("");
   const electronEnv = useIsElectron();
   const [selectedIfInstalledComfyUI, setSelectedIfInstalledComfyUI] = useState(false);
   const [installedComfyUI, setInstalledComfyUI] = useState(false);
 
   useEffect(() => {
     track('bootstrap-setup-config');  
+    trackNewUser();
   }, []);
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import semver from 'semver';
+// import semver from 'semver';
 import { init, trackEvent } from '@aptabase/web';
 import { uuid } from '@comflowy/common';
 import { isWindow } from 'ui/utils/is-window';
@@ -15,7 +15,7 @@ if (isWindow) {
  * 1) if app version large than 0.0.8-alpha then track new user
  * 2) if there is a new user, then track new user, set localstorage to record userId, if there is already a userId, skip tracking
  */
-const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+// const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
 
 export function track(eventName: string, extra?: any) {
   trackEvent(eventName, extra);
@@ -23,7 +23,7 @@ export function track(eventName: string, extra?: any) {
 
 export function trackNewUser() {
   const userId = localStorage.getItem('userId');
-  if (semver.gte(appVersion, '0.0.8-alpha') && !userId) {
+  if (!userId) {
     const newUserId = "u" + uuid(); // Generate a unique ID for the new user
     localStorage.setItem('userId', newUserId);
     trackEvent('new-user', {

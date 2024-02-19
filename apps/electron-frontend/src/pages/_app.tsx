@@ -7,7 +7,6 @@ import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 import { DraggableModalProvider } from "ui/antd/draggable-modal";
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
 import { AsyncComfyUIProcessManager } from "@/components/comfyui-process-manager/comfyui-process-manager-async";
-import { trackNewUser } from "@/lib/tracker";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
@@ -15,9 +14,6 @@ const App = ({ Component, pageProps }: AppProps) => {
   useEffect(()=> {
     onInit();
     JSONDBClient.listen();
-    setTimeout(() => {
-      trackNewUser();
-    }, 3000);
     // Check if the platform is Windows
     if (navigator.userAgent.indexOf('Win') > -1) {
       // Add 'windows' class to the document
