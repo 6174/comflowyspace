@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react';
 import styles from "./model-manager.style.module.scss";
 import { TutorialBanner } from '../tutorials/tutorials';
 import  useTutorialStore  from '../tutorials/tutorial.store';
-
 import { Tabs, Card} from 'antd';
-import ModelMarket from './model-market';
 import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon, ReloadIcon } from 'ui/icons';
