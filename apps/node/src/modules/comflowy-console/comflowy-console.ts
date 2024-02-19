@@ -1,5 +1,5 @@
 import { uuid } from "@comflowy/common";
-import { ComflowyConsoleLogData, ComflowyConsoleState, ComflowyConsoleUpdateEvent } from "./comflowy-console.types";
+import { ComflowyConsoleLogData, ComflowyConsoleState, ComflowyConsoleUpdateEvent } from "@comflowy/common/types/comflowy-console.types";
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 
 /**
