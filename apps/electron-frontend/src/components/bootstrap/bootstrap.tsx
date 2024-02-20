@@ -21,15 +21,6 @@ const Bootstrap = () => {
   const unfinishedTasks = bootstrapTasks.filter(task => !task.finished);
   const currentTask = unfinishedTasks[0];
 
-  // const seporator = <span>...</span>
-  // const titles = useJoin<BootstrapTask>(bootstrapTasks, (task) => {
-  //   return (
-  //     <div className="task" key={task.title}>
-  //       <Button type={task.finished ? "primary" : "default"}>{task.title}</Button>
-  //     </div>
-  //   )
-  // }, seporator);
-
   let $task = null;
   let isSetup = false;
   if (currentTask) {

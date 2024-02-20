@@ -125,6 +125,7 @@ export interface AppState {
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onLoadImageWorkflow: (image: string) => void
   onChangeDragingAndResizingState: (val: boolean) => void;
+  onUpdateWidgets: () => Promise<void>;
 }
 
 export const AppState = {
@@ -249,7 +250,9 @@ export const AppState = {
       if (widget && widget.name === "LoadImage") {
         const image = sdnode.fields.image;
         const options = widget.input.required.image[0] as [string];
-        if (options.indexOf(image) < 0) {
+        const parsedImage = image.split('/');
+        // if parsedImage length > 1 , it is a image from temporary storage
+        if (options.indexOf(image) < 0 && parsedImage.length === 1) {
           error.errors.push({
             type: ComfyUIErrorTypes.image_not_in_list,
             message: `Image ${image} not in list`,
@@ -344,6 +347,14 @@ export const useAppStore = create<AppState>((set, get) => ({
         editorInstance
       })
     }
+  },
+  onUpdateWidgets: async () => {
+    const widgets = await getWidgets();
+    const widgetCategory = generateWidgetCategories(widgets);
+    set({ 
+      widgets, 
+      widgetCategory
+    })
   },
   /**
    * Sync nodes and edges state from YJS Doc

@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useEffect } from 'react'
-import Link from 'next/link'
 import Head from 'next/head'
-
+import {KEYS, t} from "@comflowy/common/i18n";
 type Props = {
   children: ReactNode
   title?: string
@@ -64,7 +63,7 @@ const WorkspaceNav = () => {
         <LogoIcon/>
         <div className="text">Comflowy</div>
       </div>
-      <div className="sub">MENU</div>
+      <div className="sub">{t(KEYS.menu)}</div>
       <div className="nav-list">
         <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`} onClick={ev => {
           changeRoute("/")
@@ -73,7 +72,7 @@ const WorkspaceNav = () => {
             <WorkflowIcon/>
           </div>
           <a>
-            My workflows
+            {t(KEYS.myWorkflows)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {
@@ -83,7 +82,7 @@ const WorkspaceNav = () => {
             <BulbIcon/>
           </div>
           <a>
-            Templates
+            {t(KEYS.templates)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/models" ? "active" : ""}`} onClick={ev => {
@@ -93,7 +92,7 @@ const WorkspaceNav = () => {
             <ModelIcon/>
           </div>
           <a>
-            Models
+            {t(KEYS.models)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`} onClick={ev => {
@@ -103,7 +102,7 @@ const WorkspaceNav = () => {
             <ExtensionIcon/>
           </div>
           <a>
-            Extensions
+            {t(KEYS.extensions)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/tutorials" ? "active" : ""}`} onClick={ev => {
@@ -113,7 +112,7 @@ const WorkspaceNav = () => {
             <TutorialIcon/>
           </div>
           <a>
-            Tutorials
+            {t(KEYS.tutorials)}
           </a>
         </div>
       </div>

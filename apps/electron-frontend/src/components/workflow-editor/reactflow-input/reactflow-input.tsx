@@ -1,6 +1,7 @@
 import { Input } from '@comflowy/common/comfui-interfaces'
 import { memo, useState, useEffect } from 'react'
 import {Input as AntInput, InputNumber, Select, Switch} from "antd";
+import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 const MAX_SELECT_NAME = 36
 
 interface InputProps {
@@ -18,13 +19,33 @@ function InputComponent({ value, name, input, onChange }: InputProps): JSX.Eleme
           value={value} 
           onChange={(value) => onChange(value)}
           popupMatchSelectWidth={false}
-          options={input[0].map((k) => {
-            return {
-              value: k,
-              label: k.length > MAX_SELECT_NAME ? `…${k.substring(k.length - MAX_SELECT_NAME + 1)}` : k,
+        >
+          {input[0].map((k) => {
+            if (name === "image") {
+              const parsedName = k.split("/");
+              let src = getImagePreviewUrl(k);
+              if (parsedName.length > 1) {
+                src = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
+              }
+              return (
+                <Select.Option key={k} value={k} >
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <img src={src} alt={k} style={{ width: 24, height: 24, marginRight: 5, borderRadius: 2 }} />
+                    {k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k}
+                  </div>
+                </Select.Option>
+              )
             }
+            return (
+              <Select.Option
+                key={k}
+                value={k}
+              >
+                {k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k}
+              </Select.Option>
+            )
           })}
-        />
+        </Select>
       </Labelled>
     )
   }

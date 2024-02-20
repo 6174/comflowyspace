@@ -7,13 +7,12 @@ import { ExtensionIcon, PlusIcon, SelectionIcon, StartIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { Widget } from "@comflowy/common/comfui-interfaces";
 import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
-import { useAptabase } from "@aptabase/react";
+import { track } from "@/lib/tracker";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
     const onChangeSelectMode = useAppStore(st => st.onChangeSelectMode);
     const onSubmit = useAppStore(st => st.onSubmit);
-    const { trackEvent } = useAptabase();
     return (
         <div className={styles.bottomCenterPanel}>
              <Space>
@@ -97,7 +96,7 @@ function ReactflowBottomCenterPanel() {
                     } else {
                         message.info("Add task to queue");
                     }
-                    trackEvent("comfyui-execute-submit");
+                    track("comfyui-execute-submit");
                 }}>
                     <StartIcon/>
                 </div>

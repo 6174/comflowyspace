@@ -15,6 +15,7 @@ import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-downlo
 import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image-async';
 
 export const NODE_IDENTIFIER = 'sdNode'
 
@@ -270,7 +271,7 @@ export const NodeComponent = memo(({
             
             <div className="node-params">
               {params.map(({ property, input }) => (
-                <InputContainer key={property} name={property} id={node.id} input={input} widget={widget} />
+                <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
               ))}
             </div>
             <InstallMissingWidget nodeError={nodeError} node={node.data.value} />

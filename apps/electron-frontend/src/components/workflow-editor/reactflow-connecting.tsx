@@ -28,20 +28,24 @@ export function onEdgeUpdateFailed(params: {
         y: event.clientY
       },
       filter: (widget: Widget) => {
-        if (connectingParams.handleType === "source") {
-          // search from widget outputs 
-          const inputs = Object.keys(widget.input.required);
-          return inputs.some(inputKey => {
-            const input = widget.input.required[inputKey];
-            return input[0] === connectingParams.handleId;
-          });
-        } else {
-          const output = (widget.output || []) as string[];
-          if (output.indexOf(handleValueType) >= 0) {
-            return true;
+        try {
+          if (connectingParams.handleType === "source") {
+            // search from widget outputs 
+            const inputs = Object.keys(widget.input.required || []);
+            return inputs.some(inputKey => {
+              const input = widget.input.required[inputKey];
+              return input[0] === connectingParams.handleId;
+            });
+          } else {
+            const output = (widget.output || []) as string[];
+            if (output.indexOf(handleValueType) >= 0) {
+              return true;
+            }
           }
+          return false;
+        } catch(err) {
+          return false;
         }
-        return false;
       },
       showCategory: false,
       onNodeCreated: (node: PersistedWorkflowNode) => {

@@ -104,6 +104,10 @@ body {
   overflow: hidden;
 }
 
+.image-preview img, .ant-image-preview-img{
+  background-color: #1f1f1f;
+}
+
 @-webkit-keyframes dashdraw {
   from {
     stroke-dashoffset: 10;

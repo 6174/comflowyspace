@@ -1,6 +1,6 @@
 {
   "name": "comflowy",
-  "version": "0.0.7-alpha",
+  "version": "0.0.8-alpha",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {
@@ -22,7 +22,8 @@
       "output": "out"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "logo.ico"
     },
     "nsis": {
       "oneClick": false,
@@ -59,7 +60,7 @@
       "mirror": "https://npmmirror.com/mirrors/electron/"
     },
     "afterSign": "./scripts/after-sign.js",
-    "npmRebuild": false,
+    "npmRebuild": true,
     "publish": [
       {
         "provider": "github",
