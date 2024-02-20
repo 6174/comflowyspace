@@ -57,7 +57,7 @@ export function PanelsContainer(props: PanelContainerProps) {
     return () => {
       dragger.removeEventListener("mousedown", onMousedown)
     }
-  }, [draggerRef])
+  }, [draggerRef, panelsVisible])
 
   const [activePanel, setActivePanel] = useState(props.panels[0]?.id);
 
