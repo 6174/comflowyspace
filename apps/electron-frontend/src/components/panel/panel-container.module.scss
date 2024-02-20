@@ -1,0 +1,25 @@
+.panelsWrapper {
+  display: flex;
+  margin: 0 10px;
+  :global {
+    .main-content {
+      flex: 1;
+    }
+
+    .gap {
+      width: 10px;
+      cursor: col-resize;
+    }
+
+    .panels {
+      min-width: 100px;
+    }
+
+    .box { 
+      background-color: var(--backgroundColor);
+      border: solid 1px var(--borderColor);
+      overflow: hidden;
+      border-radius: 12px;
+    } 
+  }
+}

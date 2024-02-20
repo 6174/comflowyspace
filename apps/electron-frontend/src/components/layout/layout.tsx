@@ -12,6 +12,7 @@ import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon } from '
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
+import { PanelsContainer } from '../panel/panel-container';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
@@ -35,16 +36,18 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
             <meta charSet="utf-8" />
             <meta name="viewport" content="initial-scale=1.0, width=device-width" />
           </Head>
-          <div id="app" className={styles.app}>
-            <WorkspaceNav/>
-            <div className="workspace-main" style={{
-              overflow: ['/models'].indexOf(path) !== -1 ? 'hidden' : 'auto',
-            }}>
-              <div className='main-inner'>
-                {children}
+          <PanelsContainer panels={[]}>
+            <div id="app" className={styles.app}>
+              <WorkspaceNav/>
+              <div className="workspace-main" style={{
+                overflow: ['/models'].indexOf(path) !== -1 ? 'hidden' : 'auto',
+              }}>
+                <div className='main-inner'>
+                  {children}
+                </div>
               </div>
             </div>
-          </div>
+          </PanelsContainer>
         </>
       )}
   </>

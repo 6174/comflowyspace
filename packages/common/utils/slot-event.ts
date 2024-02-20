@@ -136,7 +136,10 @@ export enum GlobalEvents {
   show_missing_widgets_modal = "show_missing_widgets_modal",
   install_missing_widget = 'install_missing_widget',
   show_comfyprocess_manager = 'show_comfyprocess_manager',
-  open_image_editor = 'open_image_editor'
+  open_image_editor = 'open_image_editor',
+  active_panel_changed = 'active_panel_changed',
+  close_pannels = 'close_pannels',
+  open_pannels = 'open_pannels'
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;

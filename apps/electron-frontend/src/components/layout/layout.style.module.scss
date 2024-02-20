@@ -1,12 +1,9 @@
 .app {
-    border: solid 1px var(--borderColor); 
     display: flex;
     height: calc(100vh - 10px);
     overflow: hidden;
     min-width: 900px;
     margin: 0 8px;
-    border-radius: 12px;
-    background-color: var(--backgroundColor);
     :global {
         .workspace-nav {
             width: 210px;
