@@ -4,7 +4,8 @@ export enum KEYS {
   templates = "templates",
   tutorials = "tutorials",
   models = "models",
-  extensions = "extensions"
+  extensions = "extensions",
+  menu = "menu"
 }
 
 export type i18nKey = keyof typeof KEYS;

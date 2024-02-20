@@ -92,14 +92,16 @@ export default function ModelCards() {
     setTagCounts(countCardsByTag(models));
   }, [models]);
 
-  const totalCards = Object.keys(tagCounts).length > 0 ? Object.values(tagCounts).reduce((a, b) => a + b, 0) : 0;
+  const totalCards = Object.keys(tagCounts).length > 0 ? Object.values(tagCounts).reduce((a: number, b: number) => a + b, 0) : 0;
 
-  const uniqueTags = [...new Set(models.map(model => model.tag))];
+  const uniqueTags = models.map(model => model.tag).filter((value, index, self) => self.indexOf(value) === index);
 
   return (
     <div className="model-recommend">
       <Space className='filters'>
-        <div className={` ${selectedTag === null ? 'filter-type active' : 'filter-type'} `} onClick={() => setSelectedTag(null)}>All ({totalCards})</div>
+        <div className={` ${selectedTag === null ? 'filter-type active' : 'filter-type'} `} onClick={() => setSelectedTag(null)}>
+           {`All (${totalCards})`}
+        </div>
         {
           uniqueTags.map(tag => (
             <div 
