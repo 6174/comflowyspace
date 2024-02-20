@@ -4,7 +4,8 @@ import { uuid } from '@comflowy/common';
 import { isWindow } from 'ui/utils/is-window';
 
 if (isWindow) {
-  init("A-US-4906357803", {
+  init(process.env.NEXT_PUBLIC_APTABASE_API_KEY, {
+    host: process.env.NEXT_PUBLIC_APTABASE_API_HOST,
     appVersion: process.env.NEXT_PUBLIC_APP_VERSION,
     isDebug: process.env.NODE_ENV === "development",
   });
