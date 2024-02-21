@@ -53,6 +53,14 @@ class ComflowyConsoleKlass {
     this.state.logs = [];
     this.updateEvent.emit({ type: "CLEAR_LOGS"})
   }
+
+  /**
+   * read comfy ui log message by line
+   * @param logs 
+   */
+  consumeComfyUILogMessage = (log: string) => {
+    
+  }
 }
 
 export const ComflowyConsole = new ComflowyConsoleKlass();

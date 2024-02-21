@@ -1,7 +1,6 @@
 import { PanelContainerProps } from "./panel.types";
 import styles from "./panel-container.module.scss";
 import { use, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/router";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 /**

@@ -8,25 +8,101 @@ interface LogParsingStrategy {
   parse(log: string): ComflowyConsoleLogParams[];
 }
 
-class ErrorLogParsingStrategy implements LogParsingStrategy {
+/**
+ * Strategy for parsing import results
+ */
+class ImportResultParsingStrategy implements LogParsingStrategy {
+  private currentLogLines: string[] = [];
   parse(log: string): ComflowyConsoleLogParams[] {
-    const match = /error pattern/.exec(log);
-    return match ? [{ message: match[0], data: {
-      type: "other",
-      level: "error",
-      createdAt: +new Date(),
-    } }] : [];
+    if (/Import times for custom nodes:/.test(log)) {
+      this.currentLogLines.push(log);
+      return [];
+    }
+
+    if (this.currentLogLines.length > 0) {
+      this.currentLogLines.push(log);
+      if (/Comfy UI started successfully./.test(log)) {
+        const importResults = this.currentLogLines.join(' ').split(' seconds: ');
+        const successfulImports: string[] = [];
+        const failedImports: string[] = [];
+
+        for (const result of importResults) {
+          if (result.endsWith('(IMPORT FAILED)')) {
+            failedImports.push(result.slice(0, -14)); // remove '(IMPORT FAILED)' from the end
+          } else {
+            successfulImports.push(result);
+          }
+        }
+
+        this.currentLogLines = [];
+        return [{
+          message: `Import results: ${successfulImports.length} successful, ${failedImports.length} failed`,
+          data: {
+            type: "start",
+            level: "info",
+            createdAt: +new Date(),
+            successfulImports,
+            failedImports,
+          }
+        }];
+      }
+    }
+
+    return [];
   }
 }
 
-class WarningLogParsingStrategy implements LogParsingStrategy {
+/**
+ * Strategy for parsing extension import results
+ */
+class ExtensionImportParsingStrategy implements LogParsingStrategy {
+  private currentExtension: string | null = null;
+  private currentLogParams: ComflowyConsoleLogParams | null = null;
+  private currentLogLines: string[] = [];
   parse(log: string): ComflowyConsoleLogParams[] {
-    const match = /warning pattern/.exec(log);
-    return match ? [{ message: match[0], data: {
-      type: "other",
-      level: "error",
-      createdAt: +new Date(),
-    } }] : [];
+    const importErrorMatch = /Cannot import (.*)/.exec(log);
+    if (importErrorMatch) {
+      this.currentExtension = null;
+      this.currentLogParams = null;
+      this.currentLogLines = [];
+      return [{
+        message: `Cannot import extension: ${importErrorMatch[1]}`,
+        data: {
+          type: "start",
+          level: "error",
+          createdAt: +new Date(),
+        }
+      }];
+    }
+
+    const loadingMatch = /### Loading: (.*)/.exec(log);
+    if (loadingMatch) {
+      this.currentExtension = loadingMatch[1];
+      this.currentLogParams = {
+        message: this.currentExtension,
+        data: {
+          type: "start",
+          level: "info",
+          createdAt: +new Date(),
+        }
+      };
+      this.currentLogLines = [log];
+      return [];
+    }
+
+    if (this.currentExtension) {
+      if (/Import times for custom nodes./.test(log)) {
+        this.currentLogParams!.message = this.currentLogLines.join('\n');
+        const result = this.currentLogParams;
+        this.currentExtension = null;
+        this.currentLogParams = null;
+        this.currentLogLines = [];
+        return [result!];
+      }
+      this.currentLogLines.push(log);
+    }
+
+    return [];
   }
 }
 
@@ -34,9 +110,8 @@ class WarningLogParsingStrategy implements LogParsingStrategy {
 
 export function parseComflowyLogs(logs: string): ComflowyConsoleLogParams[] {
   const strategies: LogParsingStrategy[] = [
-    new ErrorLogParsingStrategy(),
-    new WarningLogParsingStrategy(),
-    // ... more strategies ...
+    new ImportResultParsingStrategy(),
+    new ExtensionImportParsingStrategy(),
   ];
 
   const logList: ComflowyConsoleLogParams[] = [];
@@ -49,6 +124,5 @@ export function parseComflowyLogs(logs: string): ComflowyConsoleLogParams[] {
       }
     }
   }
-
   return logList;
 }

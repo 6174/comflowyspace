@@ -1,10 +1,14 @@
 import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { updateComfyUI, checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, isComfyUIAlive, startComfyUI, restartComfyUI, comfyUIProgressEvent } from '../../modules/comfyui/bootstrap';
+import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask} from '../../modules/comfyui/bootstrap';
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
 import path from 'path';
-
+import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-appdata-dir';
+import * as fsExtra from "fs-extra";
+import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
+import logger from '../../modules/utils/logger';
+import { comfyUIProgressEvent, isComfyUIAlive, restartComfyUI, startComfyUI, updateComfyUI } from '../../modules/comfyui/service';
 
 /**
  * fetch all extensions
@@ -114,10 +118,6 @@ export async function ApiBootstrap(req: Request, res: Response) {
     } 
 }
 
-import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-appdata-dir';
-import * as fsExtra from "fs-extra";
-import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
-import logger from '../../modules/utils/logger';
 
 /**
  * fetch all extensions
