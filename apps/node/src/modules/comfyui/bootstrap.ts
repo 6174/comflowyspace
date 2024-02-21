@@ -461,10 +461,6 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
         const installedExtensions = extensions.filter((extension) => extension.installed);
         const msg = "All installed extensions: " + installedExtensions.map(ext => ext.title).join(",")
         logger.info(msg)
-        comfyUIProgressEvent.emit({
-            type: "INFO",
-            message: msg
-        })
     } catch (err: any) {
         const errMsg = `Start ComfyUI error: ${err.message}, ${err.stack}`
         comfyUIProgressEvent.emit({
