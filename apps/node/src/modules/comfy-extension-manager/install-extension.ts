@@ -11,6 +11,7 @@ import { checkIfInstalled } from "../comfyui/bootstrap";
 import * as fsExtra from "fs-extra"
 import logger from "../utils/logger";
 import { URL } from 'url';
+import { removeExtension } from "./remove-extension";
 
 const appTmpDir = getAppTmpDir();
 
@@ -35,39 +36,56 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         });
         return false;
     }
-
-    // from civizai zip file
-    if (install_type === 'unzip') {
-        res = await unzipInstall(dispatcher, extension.files);
-    }
-
-    // from some.py file in github
-    if (install_type === 'copy') {
-        const js_path_name: string = extension.js_path || '.';
-        res = await copyInstall(dispatcher, extension.files, js_path_name);
-    }
-
-    // a full git repo
-    if (install_type === 'git-clone') {
-        res = await gitCloneInstall(dispatcher, extension.files);
-    }
-
-    if (extension.pip) {
+    
+    try {
+        // from civizai zip file
+        if (install_type === 'unzip') {
+            res = await unzipInstall(dispatcher, extension.files);
+        }
+    
+        // from some.py file in github
+        if (install_type === 'copy') {
+            const js_path_name: string = extension.js_path || '.';
+            res = await copyInstall(dispatcher, extension.files, js_path_name);
+        }
+    
+        // a full git repo
+        if (install_type === 'git-clone') {
+            res = await gitCloneInstall(dispatcher, extension.files);
+        }
+    
+        if (extension.pip) {
+            dispatcher({
+                message: `Start installing pip packages ${extension.title}`
+            });
+            await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
+        }
+    
+        if (res) {
+            dispatcher({
+                message: `Install extension ${extension.title} success`,
+                progress: 100,
+                data: {
+                    success: true
+                }
+            });
+        }
+    } catch (err: any) {
         dispatcher({
-            message: `Start installing pip packages ${extension.title}`
-        });
-        await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
-    }
-
-    if (res) {
-        dispatcher({
-            message: `Install extension ${extension.title} success`,
+            type: "FAILED",
+            message: `Install extension ${extension.title} failed: ${err.message}`,
             progress: 100,
             data: {
-                success: true
+                success: false
             }
         });
+        try {
+            await removeExtension(extension);
+        } catch(err) {
+            console.log(err);
+        }
     }
+
     return res;
 }
 

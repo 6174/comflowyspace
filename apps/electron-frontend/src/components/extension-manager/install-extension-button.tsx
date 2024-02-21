@@ -14,10 +14,14 @@ export function InstallExtensionButton(props: {extension: Extension}) {
             if (msg.type === "SUCCESS") {
                 await onInit();
                 message.success("Extension installed successfully");
+            } 
+            
+            if (msg.type === "FAILED") {
+                message.error("Extension install failed: " + msg.message);
             }
         }
     });
-
+ 
     const isLoading = running;
     const installExtension = useCallback(() => {
         startTask({
