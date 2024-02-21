@@ -70,9 +70,10 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
                 }
             });
         }
-    } catch (err) {
+    } catch (err: any) {
         dispatcher({
-            message: `Install extension ${extension.title} failed`,
+            type: "FAILED",
+            message: `Install extension ${extension.title} failed: ${err.message}`,
             progress: 100,
             data: {
                 success: false
