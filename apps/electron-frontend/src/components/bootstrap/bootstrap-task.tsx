@@ -8,6 +8,7 @@ import {LogViewer} from "ui/log-viewer/log-viewer";
 export type BootstrapTaskProps = {
   type: BootStrapTaskType,
 }
+import * as Sentry from "@sentry/nextjs";
 
 export function BootstrapTask(props: BootstrapTaskProps) {
   // const [messageApi, contextHolder] = message.useMessage();
@@ -23,14 +24,30 @@ export function BootstrapTask(props: BootstrapTaskProps) {
             task.finished = true;
             setBootstrapTasks([...bootstrapTasks]);
             track(`bootstrap-task-${task.title}-success`);
+
+            const error = new Error(`
+              Title: bootstrap task ${task.title} failed.
+              Logs: ${messages.join("\n")}
+            `);
+            Sentry.captureException(error);
+
             if (task.type === BootStrapTaskType.startComfyUI) {
               trackNewUserBootstrapSuccess()
             }
           }
         }
+
         if (msg.type === "FAILED") {
           message.error("Task failed: " + msg.error);
-          track(`bootstrap-task-${task.title}-failed`);
+          track(`bootstrap-task-${task.title}-failed`, {
+            error: msg.error,
+            messages: messages
+          });
+          const error = new Error(`
+            Title: bootstrap task ${task.title} failed.
+            Logs: ${messages.join("\n")}
+          `);
+          Sentry.captureException(error);
         }
 
         if (msg.type === "TIMEOUT" && task.type === BootStrapTaskType.startComfyUI) {
