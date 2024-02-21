@@ -11,7 +11,7 @@ import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
 import * as fsExtra from "fs-extra" 
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
-import { isComfyUIAlive } from "./service";
+import { isComfyUIAlive } from "./comfyui.service";
 import logger from "../utils/logger";
 
 const systemType = os.type();

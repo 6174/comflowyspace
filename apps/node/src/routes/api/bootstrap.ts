@@ -8,7 +8,7 @@ import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-app
 import * as fsExtra from "fs-extra";
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
 import logger from '../../modules/utils/logger';
-import { comfyUIProgressEvent, isComfyUIAlive, restartComfyUI, startComfyUI, updateComfyUI } from '../../modules/comfyui/service';
+import { comfyUIProgressEvent, isComfyUIAlive, restartComfyUI, startComfyUI, updateComfyUI } from '../../modules/comfyui/comfyui.service';
 
 /**
  * fetch all extensions
