@@ -428,7 +428,7 @@ export async function startComfyUI(dispatcher: TaskEventDispatcher, pip: boolean
                         message: "Comfy UI started success"
                     })
                     cevent.type = "START"
-                    cevent.message = "Comfy UI started success"
+                    cevent.message = `${event.message} \nComfy UI started success\n`; 
                     success = true;
                     resolve(null);
                 }
