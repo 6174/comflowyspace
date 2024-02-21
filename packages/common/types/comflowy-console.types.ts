@@ -19,6 +19,11 @@ export type ComflowyConsoleLog = {
   data: ComflowyConsoleLogData
 }
 
+export type ComflowyConsoleLogParams = {
+  message: string;
+  data: ComflowyConsoleLogData
+}
+
 /**
  * ComflowyConsole State
  */
