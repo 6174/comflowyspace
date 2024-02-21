@@ -1,6 +1,8 @@
 import { uuid } from "@comflowy/common";
 import { ComflowyConsoleLogData, ComflowyConsoleState, ComflowyConsoleUpdateEvent } from "@comflowy/common/types/comflowy-console.types";
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
+import { parseComflowyLogsByLine } from "./comflowy-log-parser";
+import { serve } from "./comflowy-console.service";
 
 /**
  * ComflowyConsole
@@ -15,6 +17,8 @@ class ComflowyConsoleKlass {
       installedPipPackages: []
     }
   };
+
+  serve = serve;
 
   /**
    * create log
@@ -59,8 +63,18 @@ class ComflowyConsoleKlass {
    * @param logs 
    */
   consumeComfyUILogMessage = (log: string) => {
-    
+    const logs = parseComflowyLogsByLine(log);
+    this.state.logs.push(...logs);
+    this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
   }
+
+  /**
+   * parse execution result
+   * @param result 
+   */
+  parseComfyUIExecutionResult = (result: any) => {
+  }
+
 }
 
 export const ComflowyConsole = new ComflowyConsoleKlass();

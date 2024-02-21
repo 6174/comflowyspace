@@ -12,6 +12,7 @@ import logger from './modules/utils/logger';
 import { downloadDefaultModel } from './modules/model-manager/install-model';
 
 import * as Sentry from "@sentry/node";
+import ComflowyConsole from './modules/comflowy-console';
 
 Sentry.init({
   dsn: "https://c22ceb8e2ea24010369ea2497e96fbd6@o4506737077256192.ingest.sentry.io/4506737079156736",
@@ -77,6 +78,7 @@ export async function startAppServer(params: {
   const [server, wss] = setupWebsocketHandler(app);
 
   JSONDB.serve(app, server, wss);
+  ComflowyConsole.serve(app, server, wss);
   server.listen(port, () => {
     logger.info(`Server is running at http://localhost:${port}`);
   });
