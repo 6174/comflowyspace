@@ -176,18 +176,8 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
 export async function ApiInstallPipPackages(req: Request, res: Response) {
     try {
         const {packages} = req.body;
-        console.log("install", packages);
         if (packages) {
-            const dispatcher = (event: PartialTaskEvent) => {
-                comfyuiService.comfyuiProgressEvent.emit({
-                    type: event.type == "FAILED" ? "ERROR" : "INFO",
-                    message: event.message || ""
-                })
-            }
-            await installPipPackageTask(dispatcher, {
-                packageRequirment: packages
-            });
-            await comfyuiService.restartComfyUI();
+            await comfyuiService.pipInstall(packages);
             res.send({
                 success: true,
             });

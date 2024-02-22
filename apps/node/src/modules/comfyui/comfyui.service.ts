@@ -174,17 +174,15 @@ class ComfyuiService {
   #getComfyUIRunCommand(pip: boolean = false) {
     // const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
     const command = pip ? `pip3 install -r requirements.txt; python3 main.py --enable-cors-header \r` : `python3 main.py --enable-cors-header \r`;
-    return "conda activate comflowy; " + command;
+    return `cd ${getComfyUIDir()}; conda activate comflowy; ${command}`;
   }
 
   /**
    * stopComfyUI
    */
   async stopComfyUI() {
-    if (this.#comfyuiStarted) {
-      this.pty?.kill('SIGINT');
-      this.#comfyuiStarted = false;
-    }
+    this.pty?.write('\x03');
+    this.#comfyuiStarted = false;
   }
 
   /**
@@ -220,19 +218,12 @@ class ComfyuiService {
         message: "Try Update ComfyUI"
       });
       const repoPath = getComfyUIDir();
-      await runCommand(`git pull`, (event => {
-        const cevent: ComfyUIProgressEventType = {
-          type: "INFO",
-          message: event.message
-        };
-        this.comfyuiProgressEvent.emit(cevent);
-      }), {
-        cwd: repoPath
-      });
-      await this.restartComfyUI(true);
+      this.stopComfyUI();
+      this.write(`cd ${repoPath}; git pull \r`);
+      await this.startComfyUI(true);
       logger.info("updateComfyUI: stopped");
     } catch (err: any) {
-      logger.info(err);
+      logger.error(err);
       throw new Error(`Error restarting comfyui: ${err.message}`);
     }
     return true;
@@ -245,6 +236,19 @@ class ComfyuiService {
     } catch (err: any) {
       logger.error('Error checking process:' + err.message + ":" + err.stack);
       return false;
+    }
+  }
+
+  /**
+   * pip install packages
+   */
+  async pipInstall(requirements: string) {
+    try {
+      this.stopComfyUI();
+      this.write(`conda activate comflowy; pip install ${requirements} \r`);
+      this.startComfyUI(true);
+    } catch(err: any) {
+      logger.error("pip install error" + err.message);
     }
   }
 }
