@@ -3,9 +3,9 @@ import { PartialTaskEvent, TaskEvent, TaskEventDispatcher, TaskProps, taskQueue 
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
-import { comfyUIProgressEvent, installCondaPackageTask, installPipPackageTask, restartComfyUI, stopComfyUI } from 'src/modules/comfyui/bootstrap';
-import logger from 'src/modules/utils/logger';
-import { checkAExtensionInstalled } from 'src/modules/comfy-extension-manager/check-extension-status';
+import { comfyUIProgressEvent, installCondaPackageTask, installPipPackageTask, restartComfyUI, stopComfyUI } from '../../modules/comfyui/bootstrap';
+import logger from '../../modules/utils/logger';
+import { checkAExtensionInstalled } from '../../modules/comfy-extension-manager/check-extension-status';
 
 /**
  * fetch all extensions
