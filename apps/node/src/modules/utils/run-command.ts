@@ -76,7 +76,7 @@ import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
 import logger from "./logger";
 
-const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
+export const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
 
 const appDir = getAppDataDir();
 
