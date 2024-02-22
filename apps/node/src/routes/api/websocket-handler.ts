@@ -43,8 +43,17 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
                 comfyUIMessages.forEach(message => {
                     ws.send(message);
                 });
-                ws.on('message', function incoming(message: string) {
-                    logger.info("recieved Message", message);
+                ws.on('message', function incoming(message: Buffer) {
+                    const msg = message.toString();
+                    try {
+                        const event = JSON.parse(msg);
+                        comfyuiService.inputEvent.emit({
+                            command: event.command,
+                        });
+                    } catch(err: any) {
+                        logger.error("parse message error" + err.message);
+                        console.log(err);
+                    }
                 });
                 ws.on('close', () => {
                     comfyUIClients.splice(comfyUIClients.indexOf(ws), 1);

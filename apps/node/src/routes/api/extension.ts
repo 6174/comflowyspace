@@ -3,7 +3,7 @@ import { PartialTaskEvent, TaskEvent, TaskEventDispatcher, TaskProps, taskQueue 
 import { installExtension } from '../../modules/comfy-extension-manager/install-extension';
 import { comfyExtensionManager } from '../../modules/comfy-extension-manager/comfy-extension-manager';
 import { Extension } from '../../modules/comfy-extension-manager/types';
-import { installCondaPackageTask, installPipPackageTask } from '../../modules/comfyui/bootstrap';
+import { installPipPackageTask } from '../../modules/comfyui/bootstrap';
 import logger from '../../modules/utils/logger';
 import { checkAExtensionInstalled } from '../../modules/comfy-extension-manager/check-extension-status';
 import { comfyuiService } from '../../modules/comfyui/comfyui.service';

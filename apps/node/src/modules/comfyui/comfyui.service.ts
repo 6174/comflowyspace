@@ -8,7 +8,7 @@ import { getSystemProxy } from "../utils/env";
 import { uuid } from "@comflowy/common";
 
 export type ComfyUIProgressEventType = {
-  type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
+  type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
   message: string | undefined
 }
 
@@ -38,6 +38,10 @@ class ComfyuiService {
           ComflowyConsole.consumeComfyUILogMessage(event.message);
           this.comfyuilogs += event.message;
           if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
+            this.comfyuiProgressEvent.emit({
+              type: "START_SUCCESS",
+              message: "ComfyUI Started Success"
+            })
             this.comfyUIStartedSuccessEvent.emit({
               session: this.comfyuiSessionId
             })
@@ -120,6 +124,7 @@ class ComfyuiService {
    * @param command 
    */
   write(command: string) {
+    console.log("write command", command);
     this.pty?.write(command);
   }
 
