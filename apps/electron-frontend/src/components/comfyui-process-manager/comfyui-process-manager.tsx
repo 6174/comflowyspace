@@ -200,6 +200,12 @@ const ComfyUIProcessManager = () => {
         </div>
         <div className="actions flex">
           <Space>
+            <Button onClick={() => {
+              sendJsonMessage({
+                type: "input",
+                command: "\x03"
+              });
+            }}>Stop Server</Button>
             <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
             <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
             <InstallPipActions/>
