@@ -58,7 +58,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                 const newDispatcher = (event: PartialTaskEvent) => {
                     dispatcher(event);
                     comfyuiService.comfyuiProgressEvent.emit({
-                        type: event.type == "FAILED" ? "ERROR" : "INFO",
+                        type: "OUTPUT",
                         message: event.message || ""
                     })
                 }

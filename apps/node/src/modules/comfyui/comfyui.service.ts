@@ -46,6 +46,11 @@ class ComfyuiService {
               session: this.comfyuiSessionId
             })
           }
+
+          if (event.message?.includes("Stopped server")) {
+            console.log('stop server');
+            this.#comfyuiStarted = false;
+          }
         }
       }      
     });
@@ -173,8 +178,8 @@ class ComfyuiService {
    */
   #getComfyUIRunCommand(pip: boolean = false) {
     // const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
-    const command = pip ? `pip3 install -r requirements.txt; python3 main.py --enable-cors-header \r` : `python3 main.py --enable-cors-header \r`;
-    return `cd ${getComfyUIDir()}; conda activate comflowy; ${command}`;
+    const command = pip ? `pip3 install -r requirements.txt; python3 main.py --enable-cors-header` : `python3 main.py --enable-cors-header`;
+    return `cd ${getComfyUIDir()}; conda activate comflowy; ${command} \r`;
   }
 
   /**
