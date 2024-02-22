@@ -11,8 +11,8 @@ import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
 import * as fsExtra from "fs-extra" 
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
-import { isComfyUIAlive } from "./comfyui.service";
 import logger from "../utils/logger";
+import { comfyuiService } from "./comfyui.service";
 
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
@@ -28,7 +28,7 @@ export async function checkBasicRequirements() {
         isGitInstalled = false;
     if (isSetupedConfig) {
         isComfyUIInstalled = await checkIfInstalledComfyUI();
-        isComfyUIStarted = await isComfyUIAlive();
+        isComfyUIStarted = await comfyuiService.isComfyUIAlive();
     }
     isCondaInstalled = await checkIfInstalled("conda");
     isPythonInstalled = await checkIfInstalled("python");

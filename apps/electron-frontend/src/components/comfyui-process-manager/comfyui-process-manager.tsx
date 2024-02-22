@@ -20,16 +20,10 @@ const ComfyUIProcessManager = () => {
 
   const onMessage = (ev: MessageEvent) => {
     const msg = JSON.parse(ev.data) as Message;
-    term.current && term.current.write(msg.message);
-    setMessages([...messages, msg]);
-    if (msg.message.includes("RuntimeError:")) {
-      // @TODO: there is a bug because after editor loaded, it will read all history logs and emit this event
-      // SlotGlobalEvent.emit({
-      //   type: GlobalEvents.comfyui_process_error,
-      //   data: {
-      //     message: msg.message
-      //   }
-      // });
+    console.log(msg);
+    if (msg.type === "OUTPUT") {
+      term.current && term.current.write(msg.message);
+      setMessages([...messages, msg]);
     }
 
     if (msg.message.includes("Restart ComfyUI Success")) {

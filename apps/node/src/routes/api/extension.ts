@@ -6,7 +6,7 @@ import { Extension } from '../../modules/comfy-extension-manager/types';
 import { installCondaPackageTask, installPipPackageTask } from '../../modules/comfyui/bootstrap';
 import logger from '../../modules/utils/logger';
 import { checkAExtensionInstalled } from '../../modules/comfy-extension-manager/check-extension-status';
-import { comfyUIProgressEvent, restartComfyUI, stopComfyUI } from '../../modules/comfyui/comfyui.service';
+import { comfyuiService } from '../../modules/comfyui/comfyui.service';
 
 /**
  * fetch all extensions
@@ -24,7 +24,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
             executor: async (dispatcher: TaskEventDispatcher) => {
                 const newDispatcher = (event: PartialTaskEvent) => {
                     dispatcher(event);
-                    comfyUIProgressEvent.emit({
+                    comfyuiService.comfyuiProgressEvent.emit({
                         type: event.type == "FAILED" ? "ERROR" : "INFO",
                         message: event.message || ""
                     })
@@ -38,7 +38,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                     return true;
                 }
                 await installExtension(newDispatcher, taskParams.params);
-                await restartComfyUI(dispatcher);
+                await comfyuiService.restartComfyUI();
                 return true;
             }
         };
@@ -108,7 +108,7 @@ export async function ApiRouteDisableExtensions(req: Request, res: Response) {
         const extensions = req.body.extensions as Extension[];
         logger.info("extensions", extensions);
         await comfyExtensionManager.disableExtensions(extensions);
-        await restartComfyUI();
+        await comfyuiService.restartComfyUI();
         res.send({
             success: true
         });
@@ -125,7 +125,7 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.enableExtensions(extensions);
-        await restartComfyUI();
+        await comfyuiService.restartComfyUI();
         res.send({
             success: true
         });
@@ -141,9 +141,9 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
 export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
-        await stopComfyUI();
+        await comfyuiService.stopComfyUI();
         await comfyExtensionManager.removeExtensions(extensions);
-        await restartComfyUI();
+        await comfyuiService.restartComfyUI();
         res.send({
             success: true
         });
@@ -160,7 +160,7 @@ export async function ApiRouteUpdateExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
         await comfyExtensionManager.updateExtensions(extensions);
-        await restartComfyUI();
+        await comfyuiService.restartComfyUI();
         res.send({
             success: true
         });
@@ -179,7 +179,7 @@ export async function ApiInstallPipPackages(req: Request, res: Response) {
         console.log("install", packages);
         if (packages) {
             const dispatcher = (event: PartialTaskEvent) => {
-                comfyUIProgressEvent.emit({
+                comfyuiService.comfyuiProgressEvent.emit({
                     type: event.type == "FAILED" ? "ERROR" : "INFO",
                     message: event.message || ""
                 })
@@ -187,7 +187,7 @@ export async function ApiInstallPipPackages(req: Request, res: Response) {
             await installPipPackageTask(dispatcher, {
                 packageRequirment: packages
             });
-            await restartComfyUI();
+            await comfyuiService.restartComfyUI();
             res.send({
                 success: true,
             });

@@ -8,7 +8,7 @@ import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-app
 import * as fsExtra from "fs-extra";
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
 import logger from '../../modules/utils/logger';
-import { comfyUIProgressEvent, isComfyUIAlive, restartComfyUI, startComfyUI, updateComfyUI } from '../../modules/comfyui/comfyui.service';
+import { comfyuiService } from 'src/modules/comfyui/comfyui.service';
 
 /**
  * fetch all extensions
@@ -57,7 +57,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
             executor: async (dispatcher): Promise<boolean> => {
                 const newDispatcher = (event: PartialTaskEvent) => {
                     dispatcher(event);
-                    comfyUIProgressEvent.emit({
+                    comfyuiService.comfyuiProgressEvent.emit({
                         type: event.type == "FAILED" ? "ERROR" : "INFO",
                         message: event.message || ""
                     })
@@ -92,11 +92,26 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         }
                         return await cloneComfyUI(newDispatcher);
                     case BootStrapTaskType.startComfyUI:
-                        const isComfyUIStarted = await isComfyUIAlive();
+                        const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
                         if (isComfyUIStarted) {
                             return true;
                         }
-                        return await startComfyUI(dispatcher)
+                        const disposable = comfyuiService.comfyuiProgressEvent.on((event) => {
+                            if (event.type === "OUTPUT_WARPED") {
+                                dispatcher({
+                                    message: event.message
+                                });
+                            }
+                            if (event.type === "START_SUCCESS") {
+                                dispatcher({
+                                    type: "SUCCESS",
+                                    message: event.message
+                                })
+                            }
+                        });
+                        const ret =  await comfyuiService.startComfyUI()
+                        disposable.dispose();
+                        return ret;
                     default:
                         throw new Error("No task named " + taskType)
                 }
@@ -217,7 +232,7 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
 
 export async function ApiRestartComfyUI(req: Request, res: Response) {
     try {
-        await restartComfyUI((ev) => {}, true);
+        await comfyuiService.restartComfyUI(true);
         res.send({
             success: true,
         });
@@ -232,7 +247,7 @@ export async function ApiRestartComfyUI(req: Request, res: Response) {
 
 export async function ApiUpdateComfyUIAndRestart(req: Request, res: Response) {
     try {
-        await updateComfyUI((ev) => { });
+        await comfyuiService.updateComfyUI();
         res.send({
             success: true,
         });

@@ -1,3 +1,6 @@
+import config from "@comflowy/common/config";
+import useWebSocket from "react-use-websocket";
+
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -9,7 +12,20 @@
  *    - by time range
  *    - by keyword
  */
-function ComlowyConsole() {
+export default function ComlowyConsole() {
+
+  const onMessage = (ev: MessageEvent) => {
+    console.log(onMessage);
+  }
+
+  const socketUrl = `ws://${config.host}/ws/console`;
+  const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
+    onMessage,
+    onOpen: () => console.log('opened console ws'),
+    shouldReconnect: (closeEvent) => true,
+  });
+
+
   return (
     <div className="comflowy-console">
       Comflowy-console

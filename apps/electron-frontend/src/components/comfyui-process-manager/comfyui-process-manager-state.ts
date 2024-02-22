@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 
 export type Message = {
-  type: "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
+  type: "INPUT" | "OUTPUT" | "START" | "RESTART" | "STOP" | "INFO" | "ERROR" | "WARNING",
   message: string | undefined
 }
 type State = {

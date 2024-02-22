@@ -19,7 +19,7 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
    */
   server.on("upgrade", (req: http.IncomingMessage, socket, head) => {
     const parsedUrl = url.parse(req.url as string, true);
-    if (parsedUrl.pathname === '/ws/db') {
+    if (parsedUrl.pathname === '/ws/console') {
       wss.handleUpgrade(req, socket, head, ws => {
         clients.push(ws);
         const syncState = () => {

@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import * as http from "http";
 import * as url from "url";
 import { TaskEvent, taskQueue } from "../../modules/task-queue/task-queue";
-import { ComfyUIProgressEventType, comfyUIProgressEvent } from "../../modules/comfyui/bootstrap";
+import { ComfyUIProgressEventType, comfyuiService } from "../../modules/comfyui/comfyui.service";
 import logger from "src/modules/utils/logger";
 
 // websocket handler
@@ -62,7 +62,7 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
         }
     });
 
-    comfyUIProgressEvent.on((event: ComfyUIProgressEventType) => {
+    comfyuiService.comfyuiProgressEvent.on((event: ComfyUIProgressEventType) => {
         const eventString = JSON.stringify(event);
         comfyUIMessages.push(eventString);
         comfyUIClients.forEach(client => {
