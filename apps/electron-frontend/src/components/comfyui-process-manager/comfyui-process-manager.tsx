@@ -20,7 +20,6 @@ const ComfyUIProcessManager = () => {
 
   const onMessage = (ev: MessageEvent) => {
     const msg = JSON.parse(ev.data) as Message;
-    console.log(msg);
     if (msg.type === "OUTPUT") {
       term.current && term.current.write(msg.message);
       setMessages([...messages, msg]);
