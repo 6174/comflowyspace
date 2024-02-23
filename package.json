@@ -10,13 +10,15 @@
     "dev:backend": "cd ./apps/electron-backend && pnpm run dev"
   },
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.10",
     "eslint": "^8.48.0",
     "jest": "^29.7.0",
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
     "tsconfig": "workspace:*",
-    "turbo": "latest"
+    "turbo": "latest",
+    "typescript": "^5.3.3"
   },
   "resolutions": {
     "@types/node": "^17.0.12",

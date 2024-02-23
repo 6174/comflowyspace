@@ -2,7 +2,7 @@ export type ComflowyConsoleLogType = "info" | "error" | "warn" | "log" | "debug"
 
 export type ComflowyConsoleLogData = {
   level: ComflowyConsoleLogType;
-  type: "bootstrap" | "start" | "workflowRun" | "intallExtension" | "runtime" | "other";
+  type: "bootstrap" | "start" | "workflowRun" | "intallExtension" | "runtime" | "other" | any;
   createdAt: number;
   workflowId?: string;
   workflowRunId?: string;

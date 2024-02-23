@@ -64,8 +64,12 @@ class ComflowyConsoleKlass {
    */
   consumeComfyUILogMessage = (log: string) => {
     const logs = parseComflowyLogsByLine(log);
-    this.state.logs.push(...logs);
-    this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
+    console.log("consume log", log);
+    if (logs.length > 0) {
+      this.state.logs.push(...logs);
+      console.log("new logs: ", logs);
+      this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
+    }
   }
 
   /**
