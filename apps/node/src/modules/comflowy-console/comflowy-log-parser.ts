@@ -4,8 +4,7 @@
 
 import { uuid } from "@comflowy/common";
 import { ComflowyConsoleLog, ComflowyConsoleLogType } from "@comflowy/common/types/comflowy-console.types";
-import { clear } from "console";
-import { delimiter } from "path";
+import { last } from "lodash";
 
 interface LogParsingStrategy {
   parse(log: string): ComflowyConsoleLog[];
@@ -20,23 +19,27 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
     const ret: ComflowyConsoleLog[] = [];
     if (/Import times for custom nodes:/.test(log)) {
       this.currentLogLines.push(log);
+      return [];
     }
 
     if (this.currentLogLines.length > 0) {
       if (/Starting server/.test(log)) {
         const importResults = this.currentLogLines;
+        this.currentLogLines = [];
         const successfulImports: string[] = [];
         const failedImports: string[] = [];
-
         for (const result of importResults) {
-          if (/IMPORT FAILED/.test(result)) {
-            failedImports.push(result.split("/").pop()!); // remove '(IMPORT FAILED)' from the end
-          } else if (/seconds:/.test(result)) {
-            successfulImports.push(result.split("/").pop()!);
+          const info = result.replace(/(\r|\n)/g, "");
+          if (/seconds/.test(info)) {
+            const lastChild = info.split("/").pop()!
+            if (/IMPORT FAILED/.test(info)) {
+              failedImports.push(lastChild);
+            } else  {
+              successfulImports.push(lastChild);
+            }
           }
         }
 
-        this.currentLogLines = [];
         console.log("importResults", importResults, successfulImports, failedImports);
         ret.push({
           id: uuid(),
@@ -49,8 +52,9 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
             failedImports,
           }
         });
+      } else {
+        this.currentLogLines.push(log);
       }
-      this.currentLogLines.push(log);
     }
 
     return ret;
@@ -61,7 +65,6 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
  * Strategy for parsing extension import results
  */
 class ExtensionImportParsingStrategy implements LogParsingStrategy {
-  private currentExtension: string | null = null;
   private currentLogParams: ComflowyConsoleLog | null = null;
   private currentLogLines: string[] = [];
   /**
@@ -92,14 +95,14 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
           createdAt: +new Date(),
         }
       };
-      console.log("start", this.currentLogParams);
     } else {
       if (this.currentLogParams) {
         if (this.checkExtensionsSectionEnd(log)) {
-          console.log("end", this.currentLogParams);
           this.currentLogParams!.message = this.currentLogLines.join('\n');        
           ret.push({...this.currentLogParams});
           this.clearCurrentExtensionState();
+        } else {
+          this.currentLogLines.push(log);
         }
       }
     }
@@ -107,7 +110,6 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
   }
 
   clearCurrentExtensionState() {
-    this.currentExtension = null;
     this.currentLogParams = null;
     this.currentLogLines = [];
   }
@@ -149,9 +151,14 @@ const strategies: LogParsingStrategy[] = [
 export function parseComflowyLogs(logs: string): ComflowyConsoleLog[] {
   const logList: ComflowyConsoleLog[] = [];
   for (const log of logs.split('\n')) {
+    if (log.trim() === "") {
+      continue
+    }
+    console.log("consume log", log);
     for (const strategy of strategies) {
       const result = strategy.parse(log);
-      if (result) {
+      if (result.length > 0) {
+        console.log("new logs: ", result);
         logList.push(...result);
       }
     }

@@ -1,7 +1,7 @@
 import { uuid } from "@comflowy/common";
 import { ComflowyConsoleLogData, ComflowyConsoleState, ComflowyConsoleUpdateEvent } from "@comflowy/common/types/comflowy-console.types";
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
-import { parseComflowyLogsByLine } from "./comflowy-log-parser";
+import { parseComflowyLogs, parseComflowyLogsByLine } from "./comflowy-log-parser";
 import { serve } from "./comflowy-console.service";
 
 /**
@@ -63,11 +63,9 @@ class ComflowyConsoleKlass {
    * @param logs 
    */
   consumeComfyUILogMessage = (log: string) => {
-    const logs = parseComflowyLogsByLine(log);
-    console.log("consume log", log);
+    const logs = parseComflowyLogs(log);
     if (logs.length > 0) {
       this.state.logs.push(...logs);
-      console.log("new logs: ", logs);
       this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
     }
   }
