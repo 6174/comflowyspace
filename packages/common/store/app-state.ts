@@ -677,7 +677,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         const oldSeed = sdnode.fields[seedFieldName];
         let newSeed = oldSeed;
         switch (control_after_generated) {
-          case "randomize":
+          case "randomnized":
           case ContrlAfterGeneratedValues.Randomnized:
             newSeed = Math.random() * MAX_VALUE;
             break;

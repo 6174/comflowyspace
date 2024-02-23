@@ -62,7 +62,7 @@ export const Widget = {
 }
 
 export enum ContrlAfterGeneratedValues {
-  Randomnized = "randomnized",
+  Randomnized = "randomize",
   Fixed = "fixed",
   Incremental = "incremental",
   Decremental = "decremental"
