@@ -3,7 +3,8 @@ import { captureEvent } from "@sentry/nextjs";
 import useWebSocket from "react-use-websocket";
 import { useComflowyConsoleState } from "./comflowy-console.state";
 import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
-
+import styles from "./comflowy-console.module.scss";
+import { LogTypeDefault } from "./log-types/log-type-default";
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -58,8 +59,18 @@ export default function ComlowyConsole() {
  * @returns 
  */
 function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
+  let LogCO = LogTypeDefault;
+  switch(log.data.type) {
+    case "CUSTOM_NODES_IMPORT_RESULT":
+    case "EXTENSION_LOAD_INFO":
+      LogCO = LogTypeDefault;
+      break;
+    default: 
+      LogCO = LogTypeDefault;
+      break;
+  }
   return (
-    <div key={log.id}>
+    <div key={log.id} className={styles.consoleLogCard}>
       {log.message}
     </div>
   )

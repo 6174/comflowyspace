@@ -3,8 +3,7 @@
  */
 
 import { uuid } from "@comflowy/common";
-import { ComflowyConsoleLog, ComflowyConsoleLogType } from "@comflowy/common/types/comflowy-console.types";
-import { last } from "lodash";
+import { ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
 
 interface LogParsingStrategy {
   parse(log: string): ComflowyConsoleLog[];
@@ -45,7 +44,7 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
           id: uuid(),
           message: `Import results: ${successfulImports.length} successful, ${failedImports.length} failed`,
           data: {
-            type: "IMPORT_RESULT",
+            type: ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT,
             level: "info",
             createdAt: +new Date(),
             successfulImports,
@@ -77,7 +76,7 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
    * @returns 
    */
   parse(log: string): ComflowyConsoleLog[] {
-    const {start, type} = this.checkExtensionSectionStart(log);
+    const {start, level} = this.checkExtensionSectionStart(log);
     const ret:ComflowyConsoleLog[] = [];
     if (start) {
       if (this.currentLogParams) {
@@ -90,8 +89,8 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
         id: uuid(),
         message: log,
         data: {
-          type: "EXTENSION_LOAD_INFO",
-          level: type!,
+          type: ComflowyConsoleLogTypes.EXTENSION_LOAD_INFO,
+          level: level!,
           createdAt: +new Date(),
         }
       };
@@ -120,19 +119,19 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
 
   checkExtensionSectionStart(log: string): {
     start: boolean;
-    type?: ComflowyConsoleLogType
+    level?: ComflowyConsoleLogLevel
   } {
     if (/### Loading: (.*)/.exec(log)) {
       return {
         start: true,
-        type: "info"
+        level: "info"
       }
     }
     
     if (/Traceback \(most recent call last\):/.exec(log)) {
       return {
         start: true,
-        type: "error"
+        level: "error"
       }
     }
     return {
@@ -154,11 +153,9 @@ export function parseComflowyLogs(logs: string): ComflowyConsoleLog[] {
     if (log.trim() === "") {
       continue
     }
-    console.log("consume log", log);
     for (const strategy of strategies) {
       const result = strategy.parse(log);
       if (result.length > 0) {
-        console.log("new logs: ", result);
         logList.push(...result);
       }
     }

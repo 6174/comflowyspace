@@ -1,8 +1,8 @@
-export type ComflowyConsoleLogType = "info" | "error" | "warn" | "log" | "debug" | "trace";
+export type ComflowyConsoleLogLevel = "info" | "error" | "warn" | "log" | "debug" | "trace";
 
 export type ComflowyConsoleLogData = {
-  level: ComflowyConsoleLogType;
-  type: "bootstrap" | "start" | "workflowRun" | "intallExtension" | "runtime" | "other" | any;
+  level: ComflowyConsoleLogLevel;
+  type: ComflowyConsoleLogTypes | undefined;
   createdAt: number;
   workflowId?: string;
   workflowRunId?: string;
@@ -42,3 +42,9 @@ export type ComflowyConsoleUpdateEvent = {
   data?: ComflowyConsoleLog | any; 
 }
 
+
+export enum ComflowyConsoleLogTypes {
+  CUSTOM_NODES_IMPORT_RESULT = "CUSTOM_NODES_IMPORT_RESULT",
+  EXTENSION_LOAD_INFO = "EXTENSION_LOAD_INFO",
+  DEFAULT = "DEFAULT"
+}

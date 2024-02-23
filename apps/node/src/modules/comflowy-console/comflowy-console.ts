@@ -31,7 +31,7 @@ class ComflowyConsoleKlass {
         ...data,
         level: data.level || "info",
         createdAt: Date.now(),
-        type: data.type || "runtime"
+        type: data.type
       }
     }
     this.state.logs.push(log);
