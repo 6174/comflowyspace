@@ -39,6 +39,9 @@ export function SetupConfig() {
       const ret = await comfyElectronApi.selectDirectory();
       const folder = ret[0];
       setValue(folder);
+      if (folder.trim().includes("Program Files")) {
+        message.warning("It's not recommended to install ComfyUI in Program Files folder, after Program uninstalled, the ComfyUI folder will be deleted.");
+      }
     } catch(err) {
       console.log(err);
       message.error(err);
