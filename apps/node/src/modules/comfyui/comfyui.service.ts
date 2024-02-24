@@ -169,7 +169,7 @@ class ComfyuiService {
         message: errMsg
       });
       logger.error(errMsg);
-      throw new Error(errMsg);
+      throw new Error(err.message);
     }
   }
 
