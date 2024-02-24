@@ -19,6 +19,8 @@ import { LogTypeDefault } from "./log-types/log-type-default";
 export default function ComlowyConsole() {
   const syncState = useComflowyConsoleState(st => st.syncState);
   const logs = useComflowyConsoleState(st => st.consoleState.logs);
+  const addLogs = useComflowyConsoleState(st => st.addLogs);
+  const updateEnv = useComflowyConsoleState(st => st.updateEnv);
   const onMessage = (ev: MessageEvent) => {
     const ret = ev.data;
     try {
@@ -28,6 +30,10 @@ export default function ComlowyConsole() {
           syncState(data.data);
           break;
         case "CREATE_LOG":
+          addLogs(data.data);
+          break;
+        case "UPDATE_ENV":
+          updateEnv(data.data);
           break;
       }
     } catch(err) {
@@ -43,10 +49,12 @@ export default function ComlowyConsole() {
     shouldReconnect: (closeEvent) => true,
   });
 
+  const reversedLogs = logs.slice().reverse();
+
   return (
     <div className="comflowy-console">
       Comflowy-console
-      {logs.map(log => {
+      {reversedLogs.map(log => {
         return <ConsoleLog log={log} key={log.id}/>
       })}
     </div>

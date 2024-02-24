@@ -40,16 +40,36 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
   });
 
   /**
+   * Log execute comfyui result 
+   */
+  app.post('/api/console/comfyui-execute', async (req: Request, res: Response) => {
+    try {
+      const {workflowInfo, runErrors, runResult} = req.body;
+      if (runErrors) {
+        ComflowyConsole.parseComfyUIExecutionErrors(workflowInfo, runErrors);
+      }
+      res.send({
+        success: true
+      });
+    } catch(err: any) {
+      logger.error(`${err.message} : ${err.stack}`);
+      res.status(500).send({
+        success: false
+      });
+    }
+  });
+
+  /**
    * create new log
    */
-  app.post('/console/log', async (req: Request, res: Response) => {
+  app.post('/api/console/log', async (req: Request, res: Response) => {
     try {
       ComflowyConsole.log(req.body.message, req.body.data);
       res.send({
         success: true
       });
     } catch (err: any) {
-      logger.info(err);
+      logger.error(`${err.message} : ${err.stack}`);
       res.status(500).send({
         success: false,
         error: err.message
@@ -60,7 +80,7 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
   /**
    * clear console
    * */ 
-  app.post('/console/clear', async (req: Request, res: Response) => {
+  app.post('/api/console/clear', async (req: Request, res: Response) => {
     try {
       ComflowyConsole.clearLogs();
       res.send({

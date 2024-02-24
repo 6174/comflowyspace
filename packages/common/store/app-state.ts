@@ -50,6 +50,7 @@ import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
 import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
+import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
@@ -693,8 +694,12 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     });
 
-    console.log("prompt response:", res);
-    set(AppState.attatchStaticCheckErrors(get(), res.error));
+    const newState = AppState.attatchStaticCheckErrors(get(), res.error)
+    set(newState);
+    if (newState.promptError?.error || newState.promptError?.node_errors) {
+      comflowyConsoleClient.comfyuiExecuteError(docJson, newState.promptError);
+    }
+
     return res
   },
   onNewClientId: (id) => {

@@ -24,17 +24,19 @@ export type ComflowyConsoleLogParams = {
   data: ComflowyConsoleLogData
 }
 
+export type ComflowyConsoleEnv = {
+  importFailedExtensions: string[];
+  importSuccessExtensions: string[];
+  // pip list all installed packages
+  installedPipPackages: string[];
+}
+
 /**
  * ComflowyConsole State
  */
 export type ComflowyConsoleState = {
   logs: ComflowyConsoleLog[];
-  envState: {
-    importFailedExtensions: string[];
-    importSuccessExtensions: string[];
-    // pip list all installed packages
-    installedPipPackages: string[];
-  }
+  envState: ComflowyConsoleEnv
 }
 
 export type ComflowyConsoleUpdateEvent = {
@@ -46,5 +48,7 @@ export type ComflowyConsoleUpdateEvent = {
 export enum ComflowyConsoleLogTypes {
   CUSTOM_NODES_IMPORT_RESULT = "CUSTOM_NODES_IMPORT_RESULT",
   EXTENSION_LOAD_INFO = "EXTENSION_LOAD_INFO",
-  DEFAULT = "DEFAULT"
+  DEFAULT = "DEFAULT",
+  EXECUTE_WORKFLOW_ERROR = "EXECUTE_ERROR",
+  EXECUTE_NODE_ERROR = "EXECUTE_NODE_ERROR"
 }

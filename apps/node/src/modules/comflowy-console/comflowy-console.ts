@@ -3,6 +3,7 @@ import { ComflowyConsoleLogData, ComflowyConsoleState, ComflowyConsoleUpdateEven
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import { parseComflowyLogs, parseComflowyLogsByLine } from "./comflowy-log-parser";
 import { serve } from "./comflowy-console.service";
+import { parseComflowyRunErrors } from "./comflowy-run-result-parser";
 
 /**
  * ComflowyConsole
@@ -34,8 +35,8 @@ class ComflowyConsoleKlass {
         type: data.type
       }
     }
-    this.state.logs.push(log);
-    this.updateEvent.emit({type: "CREATE_LOG", data: log});
+    this.state.logs = [...this.state.logs, log];
+    this.updateEvent.emit({type: "CREATE_LOG", data: [log]});
   }
 
   /**
@@ -65,7 +66,7 @@ class ComflowyConsoleKlass {
   consumeComfyUILogMessage = (log: string) => {
     const logs = parseComflowyLogs(log);
     if (logs.length > 0) {
-      this.state.logs.push(...logs);
+      this.state.logs = [...this.state.logs, ...logs];
       this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
     }
   }
@@ -74,9 +75,13 @@ class ComflowyConsoleKlass {
    * parse execution result
    * @param result 
    */
-  parseComfyUIExecutionResult = (result: any) => {
+  parseComfyUIExecutionErrors = (worfklowInfo: any, runErrors: any) => {
+    const logs = parseComflowyRunErrors(worfklowInfo, runErrors);
+    if (logs.length > 0) {
+      this.state.logs = [...this.state.logs, ...logs];
+      this.updateEvent.emit({ type: "CREATE_LOG", data: logs });
+    }
   }
-
 }
 
 export const ComflowyConsole = new ComflowyConsoleKlass();

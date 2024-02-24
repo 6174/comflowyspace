@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { ComflowyConsoleLogType, ComflowyConsoleState } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleEnv, ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleState } from "@comflowy/common/types/comflowy-console.types";
 
 type State = {
   consoleState: ComflowyConsoleState;
   filters: {
     workflowId?: string;
-    level?: ComflowyConsoleLogType
+    level?: ComflowyConsoleLogLevel
   }
 }
 
@@ -13,6 +13,8 @@ type Actions = {
   syncState: (consoleState: ComflowyConsoleState) => void;
   addFilter: (filter: Partial<State["filters"]>) => void;
   removeFilter: (filter: keyof State["filters"]) => void;
+  addLogs: (logs: ComflowyConsoleLog[]) => void;
+  updateEnv: (env: ComflowyConsoleEnv) => void;
 }
 
 const initialState = {
@@ -31,7 +33,32 @@ export const useComflowyConsoleState = create<State & Actions>((set, get) => ({
   ...initialState,
   syncState: (consoleState: ComflowyConsoleState) => {
     set({
-      consoleState
+      consoleState: {
+        ...get().consoleState,
+        ...consoleState
+      }
+    })
+  },
+  addLogs: (logs: ComflowyConsoleLog[]) => {
+    const oldLogs = get().consoleState.logs;
+    set({
+      consoleState: {
+        ...get().consoleState,
+        logs: [...oldLogs, ...logs]
+      }
+    })
+  },
+  updateEnv: (env: ComflowyConsoleEnv) => {
+    const consoleState = get().consoleState;
+    set({
+      consoleState: {
+        ...consoleState,
+        envState: {
+          ...consoleState.envState,
+          ...env
+        }
+      }
+    
     })
   },
   addFilter(filter: Partial<State["filters"]>) {
