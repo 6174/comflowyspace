@@ -152,10 +152,12 @@ export function setPanelVisibleToLocalStorage(visible: boolean) {
 }
 
 function getPanelKey(prefix: string): string {
-  let pathname = document.location.pathname + document.location.hash;
+  let pathname = document.location.pathname + document.location.search;
   if (['/', '/templates', '/models', '/tutorials', '/extensions'].some(key => pathname === key)) {
     pathname = 'workspace'
   }
+
   const key = `${prefix}-${pathname}`;
+  console.log(key);
   return key;
 }

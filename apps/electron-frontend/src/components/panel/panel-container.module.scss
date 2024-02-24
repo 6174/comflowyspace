@@ -1,9 +1,11 @@
 .panelsWrapper {
   display: flex;
   margin: 0 10px;
+  height: calc(100vh - 10px);
   :global {
     .main-content {
       flex: 1;
+      position: relative;
     }
 
     .gap {
