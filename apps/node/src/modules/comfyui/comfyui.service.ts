@@ -158,7 +158,7 @@ class ComfyuiService {
         });
         setTimeout(() => {
           reject(new Error("ComfyUI start timeout"));
-        }, 60 * 1000);
+        }, pip ? 60 * 1000 * 30: 60 * 1000 * 5);
       });
 
       return true;
