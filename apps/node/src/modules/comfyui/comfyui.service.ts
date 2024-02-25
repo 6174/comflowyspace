@@ -131,7 +131,7 @@ class ComfyuiService {
     let shellActivateCommand = "source ~/.zshrc;";
     if (isWindows) {
       shellActivateCommand = '. $PROFILE';
-      shellActivateCommand = `conda init powershell;`;
+      condaInitCommand = `conda init powershell;`;
     }
     return `${condaInitCommand} ${shellActivateCommand}`;
   }
