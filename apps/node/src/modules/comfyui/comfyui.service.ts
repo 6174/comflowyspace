@@ -199,7 +199,7 @@ class ComfyuiService {
    */
   #getComfyUIRunCommand(pip: boolean = false) {
     // const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
-    const command = pip ? `pip3 install -r requirements.txt; python3 main.py --enable-cors-header` : `python3 main.py --enable-cors-header`;
+    const command = pip ? `pip install -r requirements.txt; python3 main.py --enable-cors-header` : `python main.py --enable-cors-header`;
     return `cd ${getComfyUIDir()}; conda activate comflowy; ${command} \r`;
   }
 
