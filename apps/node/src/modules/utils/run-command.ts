@@ -89,6 +89,7 @@ export async function runCommandWithPty(
     const { systemProxy, systemProxyString } = await getSystemProxy();
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
+
     return new Promise((resolve, reject) => {
         try {
             const pty = nodePty.spawn(shell, [], {
@@ -100,7 +101,7 @@ export async function runCommandWithPty(
                 env: {
                     ...process.env,
                     ...systemProxy,
-                    PATH: SHELL_ENV_PATH,
+                    Path: process.env.PATH,
                     DISABLE_UPDATE_PROMPT: "true",
                     encoding: 'utf-8',
                 },

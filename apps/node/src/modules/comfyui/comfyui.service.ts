@@ -4,7 +4,7 @@ import logger from "../utils/logger";
 import { ComflowyConsole } from "../comflowy-console/comflowy-console";
 import { SHELL_ENV_PATH, getSystemPath, runCommand, shell } from "../utils/run-command";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
-import { getSystemProxy } from "../utils/env";
+import { getSystemProxy, isWindows } from "../utils/env";
 import { uuid } from "@comflowy/common";
 
 export type ComfyUIProgressEventType = {
@@ -68,19 +68,23 @@ class ComfyuiService {
     const SHELL_ENV_PATH = getSystemPath();
     console.log("shell path:", SHELL_ENV_PATH);
     try {
+
+      const env: any = {
+        ...process.env,
+        ...systemProxy,
+        PATH: SHELL_ENV_PATH,
+        Path: SHELL_ENV_PATH,
+        DISABLE_UPDATE_PROMPT: "true",
+        encoding: 'utf-8',
+      };
+
       this.pty = nodePty.spawn(shell, [], {
         name: 'xterm-color',
         // conpty will cause Error: ptyProcess.kill() will throw a error that can't be catched
         useConpty: false,
         cols: 80,
         rows: 30,
-        env: {
-          ...process.env,
-          ...systemProxy,
-          PATH: SHELL_ENV_PATH,
-          DISABLE_UPDATE_PROMPT: "true",
-          encoding: 'utf-8',
-        },
+        env,
         cwd: getComfyUIDir()
       });
 
@@ -114,10 +118,23 @@ class ComfyuiService {
         });
         logger.info("Comfyui Exit:", e.exitCode);
       });
+
+      this.pty.write(this.getCondaInitCommand());
+
     } catch(err: any) {
       throw new Error("Start Session Failed:" + err.message)
     }
   };
+
+  getCondaInitCommand(): string {
+    let condaInitCommand = "conda init zsh;";
+    let shellActivateCommand = "source ~/.zshrc;";
+    if (isWindows) {
+      shellActivateCommand = '. $PROFILE';
+      shellActivateCommand = `conda init powershell;`;
+    }
+    return `${condaInitCommand} ${shellActivateCommand}`;
+  }
 
   /**
    * stop comfyUI session
