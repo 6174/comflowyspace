@@ -78,6 +78,8 @@ class ComfyuiService {
         encoding: 'utf-8',
       };
 
+      await runCommand("conda init");
+
       this.pty = nodePty.spawn(shell, [], {
         name: 'xterm-color',
         // conpty will cause Error: ptyProcess.kill() will throw a error that can't be catched
@@ -119,22 +121,22 @@ class ComfyuiService {
         logger.info("Comfyui Exit:", e.exitCode);
       });
 
-      this.pty.write(this.getCondaInitCommand());
+      // this.pty.write(this.getCondaInitCommand());
 
     } catch(err: any) {
       throw new Error("Start Session Failed:" + err.message)
     }
   };
 
-  getCondaInitCommand(): string {
-    let condaInitCommand = "conda init zsh;";
-    let shellActivateCommand = "source ~/.zshrc;";
-    if (isWindows) {
-      shellActivateCommand = '. $PROFILE;';
-      condaInitCommand = `conda init powershell;`;
-    }
-    return `${condaInitCommand} ${shellActivateCommand}`;
-  }
+  // getCondaInitCommand(): string {
+  //   let condaInitCommand = "conda init zsh;";
+  //   let shellActivateCommand = "source ~/.zshrc;";
+  //   if (isWindows) {
+  //     shellActivateCommand = '. $PROFILE;';
+  //     condaInitCommand = `conda init powershell;`;
+  //   }
+  //   return `${condaInitCommand} ${shellActivateCommand}`;
+  // }
 
   /**
    * stop comfyUI session
