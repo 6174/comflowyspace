@@ -2,7 +2,7 @@ import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
 import { ComflowyConsole } from "../comflowy-console/comflowy-console";
-import { SHELL_ENV_PATH, runCommand, shell } from "../utils/run-command";
+import { SHELL_ENV_PATH, getSystemPath, runCommand, shell } from "../utils/run-command";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
 import { getSystemProxy } from "../utils/env";
 import { uuid } from "@comflowy/common";
@@ -65,6 +65,8 @@ class ComfyuiService {
       return
     }
     const { systemProxy } = await getSystemProxy();
+    const SHELL_ENV_PATH = getSystemPath();
+    console.log("shell path:", SHELL_ENV_PATH);
     try {
       this.pty = nodePty.spawn(shell, [], {
         name: 'xterm-color',

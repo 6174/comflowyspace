@@ -52,7 +52,7 @@ export default function ComlowyConsole() {
   const reversedLogs = logs.slice().reverse();
 
   return (
-    <div className="comflowy-console">
+    <div className={styles.comflowyConsole}>
       {reversedLogs.map(log => {
         return <ConsoleLog log={log} key={log.id}/>
       })}

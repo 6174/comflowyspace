@@ -11,6 +11,7 @@
     .gap {
       width: 10px;
       cursor: col-resize;
+      user-select: none;
     }
 
     .panels {
