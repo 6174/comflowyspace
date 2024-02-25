@@ -5,6 +5,27 @@
   box-shadow: inset 0px 1px 1px rgba(141, 147, 157, 0.15);
   border-radius: 10px;
   margin: 10px;
-  padding: 10px;
+  padding: 6px;
   word-wrap: break-word;
+  :global {
+    .log-header {
+      display: flex;
+      .log-icon {
+        height: 28px;
+        width: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .log-title {
+        margin-left: 6px;
+        flex: 1;
+        padding-top: 4px;
+        line-height: 1.4;
+        font-size: 14px;
+        color: #A6A7AB;
+        word-break: break-word;
+      }
+    }
+  }
 }

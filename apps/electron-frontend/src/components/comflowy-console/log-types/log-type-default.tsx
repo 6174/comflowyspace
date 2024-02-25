@@ -7,8 +7,8 @@ import { Log } from "./log";
  */
 export function LogTypeDefault({ log }: { log: ComflowyConsoleLog }) {
   return (
-    <Log level={log.data.level} title={log.message.slice(0, 10)} className={`log-type-default`}>
-      <MessageViewer message={log.message} />
+    <Log level={log.data.level} title={log.message} className={`log-type-default`}>
+      {/* <MessageViewer message={log.message} /> */}
     </Log>
   )
 }

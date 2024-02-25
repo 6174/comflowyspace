@@ -53,7 +53,6 @@ export default function ComlowyConsole() {
 
   return (
     <div className="comflowy-console">
-      Comflowy-console
       {reversedLogs.map(log => {
         return <ConsoleLog log={log} key={log.id}/>
       })}
@@ -79,7 +78,7 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
   }
   return (
     <div key={log.id} className={styles.consoleLogCard}>
-      {log.message}
+      <LogCO log={log}/>
     </div>
   )
 }

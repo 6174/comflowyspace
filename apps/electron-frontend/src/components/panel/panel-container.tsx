@@ -3,6 +3,8 @@ import styles from "./panel-container.module.scss";
 import { use, useEffect, useRef, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async";
+import { Tabs, TabsProps } from "antd";
+import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-process-manager-async";
 
 /**
  * PanelContainer
@@ -19,10 +21,11 @@ export function PanelsContainer(props: PanelContainerProps) {
   const draggerRef = useRef<HTMLDivElement>();
   const mainRef = useRef<HTMLDivElement>();
   const panelsRef = useRef<HTMLDivElement>();
-  const [panelsVisible, setPanelsVisible] = useState(readPanelVisibleFromLocalStorage());
-  const [panelWidth, setPanelWidth] = useState(readPanelWidthFromLocalStorage());
+  const localState = readPanelStateFromLocalStorage();
+  const [panelsVisible, setPanelsVisible] = useState(localState.panelsVisible);
+  const [panelWidth, setPanelWidth] = useState(localState.panelWidth);
   const onChangePanelWidth = (width: number) => {
-    setPanelWidthToLocalStorage(width);
+    setPanelStateToLocalStorage({panelWidth: width});
     setPanelWidth(width);
   }
 
@@ -59,14 +62,14 @@ export function PanelsContainer(props: PanelContainerProps) {
     }
   }, [draggerRef, panelsVisible])
 
-  const [activePanel, setActivePanel] = useState(props.panels[0]?.id);
+  const [activePanel, setActivePanel] = useState();
 
   useEffect(() => {
     const key = getPanelKey("panel-visible");
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === key) {
-        const visible = readPanelVisibleFromLocalStorage();
-        setPanelsVisible(visible);
+        const {panelsVisible} = readPanelStateFromLocalStorage();
+        setPanelsVisible(panelsVisible);
       }
     };
 
@@ -88,6 +91,24 @@ export function PanelsContainer(props: PanelContainerProps) {
   }, [panelsVisible]);
 
 
+  const items: TabsProps['items'] = [
+    {
+      key: 'terminal',
+      label: 'Terminal',
+      children: <AsyncComfyUIProcessManager/>,
+    },
+    {
+      key: 'messages',
+      label: 'Messages',
+      children: <AsyncComflowyConsole />,
+    },
+  ];
+
+  const onChange = (key: string) => {
+    console.log(key);
+  };
+
+  
   return (
     <div className={styles.panelsWrapper}>
       <div className="main-content box" ref={mainRef}>
@@ -100,7 +121,7 @@ export function PanelsContainer(props: PanelContainerProps) {
           <div className="panels box" ref={panelsRef} style={{
             width: panelWidth
           }}>
-            <AsyncComflowyConsole />
+            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
           </div>
         </>
       )}
@@ -108,48 +129,55 @@ export function PanelsContainer(props: PanelContainerProps) {
   )
 }
 
-export function readPanelWidthFromLocalStorage() {
-  const panelKey = getPanelKey("panel-width");
+export type PanelContainerState = {
+  activePanel?: string;
+  panelWidth?: number;
+  panelsVisible?: boolean;
+}
+
+export function readPanelStateFromLocalStorage(): PanelContainerState {
+  let ret:PanelContainerState = {
+    panelsVisible: false,
+    panelWidth: 200,
+    activePanel: undefined,
+  };
   try {
-    const width = localStorage.getItem(panelKey);
-    if (width) {
-      return Number(width);
+    const key = getPanelKey("state");
+    const rawData = localStorage.getItem(key);
+    if (rawData) {
+      const data = JSON.parse(rawData);
+      return {
+        ...ret,
+        ...data
+      }
     } else {
-      return 200;
+      localStorage.setItem(key, JSON.stringify(ret));
+    }
+    return ret;
+  } catch(err) {
+    console.log(err);
+  }
+  return ret;
+}
+
+export function setPanelStateToLocalStorage(state: Partial<PanelContainerState>) {
+  try {
+    const key = getPanelKey("state");
+    const rawData = localStorage.getItem(key);
+    if (rawData) {
+      const data = JSON.parse(rawData);
+      localStorage.setItem(key, JSON.stringify({
+        ...data,
+        ...state
+      }));
+    } else {
+      localStorage.setItem(key, JSON.stringify(state));
     }
   } catch(err) {
-    return 200;
-  }
-} 
-
-export function setPanelWidthToLocalStorage(panelWidth: number) {
-  const panelKey = getPanelKey("panel-width");
-  try {
-    localStorage.setItem(panelKey, panelWidth.toString());
-  } catch(err) {
     console.log(err);
   }
 }
 
-export function readPanelVisibleFromLocalStorage() {
-  const panelKey = getPanelKey("panel-visible");
-  try {
-    const visible = localStorage.getItem(panelKey);
-    return visible === "true";
-  } catch (err) {
-    console.log(err);
-    return false;
-  }
-}
-
-export function setPanelVisibleToLocalStorage(visible: boolean) {
-  const panelKey = getPanelKey("panel-visible");
-  try {
-    localStorage.setItem(panelKey, visible ? "true" : "false");
-  } catch (err) {
-    console.log(err);
-  }
-}
 
 function getPanelKey(prefix: string): string {
   let pathname = document.location.pathname + document.location.search;

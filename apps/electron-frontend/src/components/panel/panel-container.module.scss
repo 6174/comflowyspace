@@ -23,5 +23,27 @@
       overflow: hidden;
       border-radius: 12px;
     } 
+    .ant-tabs {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      .ant-tabs-nav {
+        padding: 0 10px;
+        user-select: none;
+        .ant-tabs-tab {
+          font-size: 14px !important;
+        }
+      }
+      .ant-tabs-content-holder {
+        flex:1;
+        .ant-tabs-content, .ant-tabs-tabpane{
+          height: 100%;
+        }
+      }
+
+      .ant-tabs-tab+.ant-tabs-tab {
+        margin: 0 0 0 16px;
+      }
+    }
   }
 }

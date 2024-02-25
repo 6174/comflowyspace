@@ -24,7 +24,6 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ConfigProvider theme={theme}>
       <DraggableModalProvider>
-        <AsyncComfyUIProcessManager />
         <JSXCO {...pageProps} />
       </DraggableModalProvider>
     </ConfigProvider>
