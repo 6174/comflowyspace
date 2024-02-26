@@ -13,10 +13,15 @@ import * as Sentry from "@sentry/nextjs";
 export function BootstrapTask(props: BootstrapTaskProps) {
   // const [messageApi, contextHolder] = message.useMessage();
   const { bootstrapTasks, setBootstrapTasks } = useDashboardState();
+  const addBootstrapMessages = useDashboardState(state => state.addBootstrapMessage);
   const task = bootstrapTasks.find(task => task.type === props.type);
   const { startTask, error, success, running, messages } = useRemoteTask({
     api: getBackendUrl(`/api/add_bootstrap_task`),
     onMessage: (msg) => {
+      if (msg.message) {
+        addBootstrapMessages(msg.message);
+      }
+
       if (msg.type === "SUCCESS") {
         if (task) {
           console.log("task success", task);
@@ -75,7 +80,6 @@ export function BootstrapTask(props: BootstrapTaskProps) {
           )
         }
       </div>
-      <LogViewer messages={messages} oneline />
     </div>
   )
 }

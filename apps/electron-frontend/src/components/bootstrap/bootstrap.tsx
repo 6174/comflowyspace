@@ -15,6 +15,7 @@ import BgSVG from "./background.svg";
 import { Spin } from "antd";
 import { openExternalURL } from '@/lib/electron-bridge';
 import { track } from '@/lib/tracker';
+import { LogViewer } from 'ui/log-viewer/log-viewer';
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();
   console.log("bootstrap", bootstrapTasks);
@@ -59,6 +60,8 @@ const Bootstrap = () => {
     }
   }
 
+  const bootstrapMessages = useDashboardState(state => state.bootstrapMessages);
+
   return (
     <div className={styles.bootstrap} style={{
       backgroundImage: `url(${BgSVG.src})`
@@ -76,6 +79,10 @@ const Bootstrap = () => {
           <>
             <Spin/> Preparing
           </>
+        )}
+
+        {currentTask?.type !== BootStrapTaskType.setupConfig && (
+          <LogViewer messages={bootstrapMessages}/>
         )}
 
         <div className="faq-link">
