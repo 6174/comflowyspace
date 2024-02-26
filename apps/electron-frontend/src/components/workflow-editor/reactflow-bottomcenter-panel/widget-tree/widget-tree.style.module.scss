@@ -101,9 +101,14 @@
             padding: 4px 6px;
             transition: var(--transition);
             margin-bottom: 4px;
-            font-size: 12px;
-            flex-direction: column;
-            align-items: baseline;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .widget-title{
+                font-size: 12px;
+                flex-direction: column;
+                align-items: baseline;
+            }
             .display_name {
                 text-align: left;
                 text-overflow: ellipsis;
@@ -117,6 +122,16 @@
                 margin-left: 4px;
                 text-overflow: ellipsis;
                 text-wrap: nowrap;
+            }
+            .pin-button {
+                width: 20px;
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 0;
+                color: white;
+                margin-left: auto;
+                display: flex;
             }
         }
 
