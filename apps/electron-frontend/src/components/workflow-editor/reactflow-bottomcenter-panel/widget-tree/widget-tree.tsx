@@ -143,19 +143,22 @@ export const WidgetTree = (props: {
             <div className="widget-list">
                 {
                     currentCategory === "Pinned" ? 
-                        Array.from(pinnedWidgets).map(widgetName => (
-                            <WidgetNode
-                                draggable={props.draggable}
-                                widget={widgets[widgetName]}
-                                key={widgetName}
-                                position={props.position}
-                                onNodeCreated={props.onNodeCreated}
-                                isPinned={true} // 因为已经在 Pinned 类别中，所以此处一定是 pinned 状态
-                                togglePin={() => {
-                                    setPinnedWidgets(prevWidgets => new Set([...prevWidgets].filter(name => name !== widgetName)));
-                                }}
-                            />
-                        )) :
+                        Array.from(pinnedWidgets).map(widgetName => {
+                            const widget = widgets[widgetName];
+                            return widget ? (
+                                <WidgetNode
+                                    draggable={props.draggable}
+                                    widget={widgets[widgetName]}
+                                    key={widgetName}
+                                    position={props.position}
+                                    onNodeCreated={props.onNodeCreated}
+                                    isPinned={true} 
+                                    togglePin={() => {
+                                        setPinnedWidgets(prevWidgets => new Set([...prevWidgets].filter(name => name !== widgetName)));
+                                    }}
+                                />
+                            ) : null;
+                        }) :
                     widgetToRender.map(categoryItem => (
                         <div className="widget-category-section" key={categoryItem.category}>
                             <div className="widget-category-section-title">{categoryItem.category}</div>
@@ -209,12 +212,12 @@ export const WidgetTree = (props: {
                                         widget={item} 
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
-                                        isPinned={pinnedWidgets.has(widget.name)}
+                                        isPinned={pinnedWidgets.has(item.name)}
                                         togglePin={() => {
-                                            if (pinnedWidgets.has(widget.name)) {
-                                                setPinnedWidgets(new Set([...pinnedWidgets].filter(name => name !== widget.name)));
+                                            if (pinnedWidgets.has(item.name)) {
+                                                setPinnedWidgets(new Set([...pinnedWidgets].filter(name => name !== item.name)));
                                             } else {
-                                                setPinnedWidgets(new Set(pinnedWidgets).add(widget.name));
+                                                setPinnedWidgets(new Set(pinnedWidgets).add(item.name));
                                             }
                                         }}
                                         />
@@ -270,9 +273,9 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
                 createNewNode(ev);
             }}
             onDragStart={draggable ? onDragStart : null}
-            onMouseEnter={() => setIsHovered(true)} // 当鼠标进入时设为 true
-            onMouseLeave={() => setIsHovered(false)} // 当鼠标离开时设为 false
-            title={widget.name}>
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)} 
+            title={widget?.name}>
             <div className= "widget-title">
                 <div className="display-name">{widget.display_name}</div>
                 <div className='class_name'>
@@ -283,7 +286,7 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
                 <div onClick={(ev) => {
                     ev.stopPropagation();
                     togglePin();
-                }} className="pin-button" style={{ float: 'right' }}> {/* 右对齐样式 */}
+                }} className="pin-button" style={{ float: 'right' }}>
                     {isPinned ? <PinFilledIcon /> : <PinIcon />}
                 </div>
             )}
