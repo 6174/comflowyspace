@@ -184,7 +184,7 @@ class ComfyuiService {
 
       return true;
     } catch (err: any) {
-      const errMsg = `Start ComfyUI error: ${err.message}, ${err.stack}`
+      const errMsg = `Start ComfyUI error: ${err.message}`
       this.comfyuiProgressEvent.emit({
         type: "ERROR",
         message: errMsg
