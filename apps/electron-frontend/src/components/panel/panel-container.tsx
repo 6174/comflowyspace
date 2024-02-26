@@ -5,6 +5,7 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async";
 import { Tabs, TabsProps } from "antd";
 import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-process-manager-async";
+import { listenElectron } from "@/lib/electron-bridge";
 
 /**
  * PanelContainer
@@ -24,6 +25,7 @@ export function PanelsContainer(props: PanelContainerProps) {
   const localState = readPanelStateFromLocalStorage();
   const [panelsVisible, setPanelsVisible] = useState(localState.panelsVisible);
   const [panelWidth, setPanelWidth] = useState(localState.panelWidth);
+  const [activePanel, setActivePanel] = useState(localState.activePanel);
   const onChangePanelWidth = (width: number) => {
     setPanelStateToLocalStorage({panelWidth: width});
     setPanelWidth(width);
@@ -62,7 +64,6 @@ export function PanelsContainer(props: PanelContainerProps) {
     }
   }, [draggerRef, panelsVisible])
 
-  const [activePanel, setActivePanel] = useState();
 
   useEffect(() => {
     const key = getPanelKey("panel-visible");
@@ -83,10 +84,19 @@ export function PanelsContainer(props: PanelContainerProps) {
         }
       }
     });
+
+    // onInit();
+    const dispose = listenElectron("action", (data) => {
+      if (data.type === "open-comfyui-process-manager") {
+        setPanelsVisible(!panelsVisible);
+      }
+    });
+
     // Clean up
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       disposable.dispose();
+      dispose();
     };
   }, [panelsVisible]);
 
@@ -105,6 +115,8 @@ export function PanelsContainer(props: PanelContainerProps) {
   ];
 
   const onChange = (key: string) => {
+    setActivePanel(key);
+    setPanelStateToLocalStorage({ activePanel: key });
     console.log(key);
   };
 
@@ -121,7 +133,7 @@ export function PanelsContainer(props: PanelContainerProps) {
           <div className="panels box" ref={panelsRef} style={{
             width: panelWidth
           }}>
-            <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+            <Tabs defaultActiveKey="1" activeKey={activePanel} items={items} onChange={onChange} />
           </div>
         </>
       )}

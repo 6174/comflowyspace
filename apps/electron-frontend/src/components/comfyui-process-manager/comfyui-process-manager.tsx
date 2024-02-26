@@ -141,16 +141,8 @@ const ComfyUIProcessManager = () => {
   }, []);
 
   useEffect(() => {
-    // onInit();
-    const dispose = listenElectron("action", (data) => {
-      if (data.type === "open-comfyui-process-manager") {
-        showModal();
-      }
-    });
-
     const dispose2 = SlotGlobalEvent.on((ev) => {
       if (ev.type === GlobalEvents.restart_comfyui) {
-        showModal();
         restart();
       }
     });
@@ -166,7 +158,6 @@ const ComfyUIProcessManager = () => {
     }
 
     return () => {
-      dispose();
       dispose2.dispose();
       dispose3.dispose();
     }
