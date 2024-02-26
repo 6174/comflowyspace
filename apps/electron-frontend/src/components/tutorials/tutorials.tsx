@@ -70,6 +70,7 @@ const Tutorials = () => {
   const sdTutorials = tutorials.filter(tutorial => tutorial.tag === 'SD Fundamentals');
   const texttoimageTutorials = tutorials.filter(tutorial => tutorial.tag === 'text-to-image');
   const imagetoimageTutorials = tutorials.filter(tutorial => tutorial.tag === 'image-to-image');
+  const blogs = tutorials.filter(tutorial => tutorial.tag === 'blog');
 
   return (
     <div className={styles.tutorials}>
@@ -97,6 +98,13 @@ const Tutorials = () => {
       <div className="p">If you'd like to learn some image-to-image generation techniques, you can check out the following sections:</div>
       <div className="tutorial-card-list">
         {imagetoimageTutorials.map((card, index) => (
+          <TutorialCard key={index} {...card} />
+        ))}
+      </div>
+      <div className="h3" >Best Practices</div>
+      <div className="p">In addition to the basic tutorials, there are also some best practice cases that you can refer to and try out:</div>
+      <div className="tutorial-card-list">
+        {blogs.map((card, index) => (
           <TutorialCard key={index} {...card} />
         ))}
       </div>
