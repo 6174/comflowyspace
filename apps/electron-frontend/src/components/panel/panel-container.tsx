@@ -1,6 +1,6 @@
 import { PanelContainerProps } from "./panel.types";
 import styles from "./panel-container.module.scss";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async";
 import { Tabs, TabsProps } from "antd";
@@ -64,6 +64,12 @@ export function PanelsContainer(props: PanelContainerProps) {
     }
   }, [draggerRef, panelsVisible])
 
+  const onPannelVisibleChange = useCallback((visible: boolean) => {
+    setPanelsVisible(visible);
+    setPanelStateToLocalStorage({
+      panelsVisible: visible
+    })
+  }, [])
 
   useEffect(() => {
     const key = getPanelKey("panel-visible");
@@ -80,7 +86,7 @@ export function PanelsContainer(props: PanelContainerProps) {
       if (ev.type === GlobalEvents.active_panel_changed) {
         setActivePanel(ev.data.id);
         if (!panelsVisible) {
-          setPanelsVisible(true);
+          onPannelVisibleChange(true)
         }
       }
     });
@@ -88,7 +94,7 @@ export function PanelsContainer(props: PanelContainerProps) {
     // onInit();
     const dispose = listenElectron("action", (data) => {
       if (data.type === "open-comfyui-process-manager") {
-        setPanelsVisible(!panelsVisible);
+        onPannelVisibleChange(!panelsVisible);
       }
     });
 

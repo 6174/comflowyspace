@@ -84,6 +84,8 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
         ret.push({...this.currentLogParams});
         this.clearCurrentExtensionState();
       }
+
+      // start a new log
       this.currentLogLines.push(log);
       this.currentLogParams = {
         id: uuid(),
@@ -106,6 +108,16 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
       }
     }
     return ret;
+  }
+
+  addExtraInfoForLog(log: ComflowyConsoleLog): ComflowyConsoleLog {
+    const level = log.data.level;
+    if (level === "error") {
+    } else {
+      const extension = /### Loading: (.*)/.exec(log.message);
+      log.data.extra.extension = extension;
+    }
+    return log;
   }
 
   clearCurrentExtensionState() {

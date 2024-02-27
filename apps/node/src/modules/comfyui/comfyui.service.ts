@@ -33,8 +33,12 @@ class ComfyuiService {
      * handling output data
      */
     this.comfyuiProgressEvent.on((event) => {
-      if (this.#comfyuiStarted) {
-        if (event.type === "OUTPUT_WARPED" && event.message) {
+      if (event.type === "OUTPUT_WARPED" && event.message) {
+        if (event.message?.includes("ComfyUI startup time")) {
+          this.#comfyuiStarted = true;
+        }
+
+        if (this.#comfyuiStarted) {
           ComflowyConsole.consumeComfyUILogMessage(event.message);
           this.comfyuilogs += event.message;
           if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
@@ -46,13 +50,12 @@ class ComfyuiService {
               session: this.comfyuiSessionId
             })
           }
-
-          if (event.message?.includes("Stopped server")) {
-            console.log('stop server');
-            this.#comfyuiStarted = false;
-          }
         }
-      }      
+
+        if (event.message?.includes("Stopped server")) {
+          this.#comfyuiStarted = false;
+        }
+      }   
     });
   }
 
@@ -66,7 +69,6 @@ class ComfyuiService {
     }
     const { systemProxy } = await getSystemProxy();
     const SHELL_ENV_PATH = getSystemPath();
-    console.log("shell path:", SHELL_ENV_PATH);
     try {
 
       const env: any = {
@@ -158,7 +160,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = false): Promise<boolean> {
+  async startComfyUI(pip: boolean = true): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -166,6 +168,7 @@ class ComfyuiService {
         return true;
       }
       this.#comfyuiStarted = true;
+      console.log("startted");
       const id = this.comfyuiSessionId = uuid();
       await this.startTerminal();
       const command = this.#getComfyUIRunCommand(pip);
@@ -197,9 +200,9 @@ class ComfyuiService {
   /**
    * Run comfyUI command
    */
-  #getComfyUIRunCommand(pip: boolean = false) {
+  #getComfyUIRunCommand(pip: boolean = true) {
     // const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
-    const command = `pip install -r requirements.txt; python3 main.py --enable-cors-header`;
+    const command = `pip install -r requirements.txt; pip install mpmath==1.3.0; python main.py --enable-cors-header`;
     return `cd ${getComfyUIDir()}; conda activate comflowy; ${command} \r`;
   }
 
