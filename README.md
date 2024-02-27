@@ -25,8 +25,8 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 
 ## Download
 
-* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha-arm64.dmg) 
-* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha.zip)**
+* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha-arm64.dmg) 
+* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha.zip)**
 
 
 ## Key Features

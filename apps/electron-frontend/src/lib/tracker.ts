@@ -13,7 +13,7 @@ if (isWindow) {
 
 /**
  * Track a new user enter app
- * 1) if app version large than 0.0.8-alpha then track new user
+ * 1) if app version large than 0.0.9-alpha then track new user
  * 2) if there is a new user, then track new user, set localstorage to record userId, if there is already a userId, skip tracking
  */
 // const appVersion = process.env.NEXT_PUBLIC_APP_VERSION;
