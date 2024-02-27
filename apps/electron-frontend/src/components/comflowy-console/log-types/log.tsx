@@ -1,5 +1,6 @@
 import { ComflowyConsoleLog, ComflowyConsoleLogLevel } from "@comflowy/common/types/comflowy-console.types";
 import { PropsWithChildren, ReactElement, useState } from "react";
+import styles from "../comflowy-console.module.scss";
 
 /**
  * log
@@ -27,7 +28,7 @@ export function Log({ level, title, log,  children, className}: {
 
   console.log("log date", log.data.createdAt);
   return (
-    <div className={`log log-${logLevel} ${open ? "open" : "close"} ${className || ""}`}>
+    <div className={`${styles.consoleLogCard} log log-${logLevel} ${open ? "open" : "close"} ${className || ""}`}>
       <div className="log-header">
         <div className="log-icon">{$levelIcon}</div>
         <div className="log-title">{title}</div>
@@ -61,7 +62,7 @@ function WarningIcon() {
   )
 }
 
-function ErrorIcon() {
+export function ErrorIcon() {
   return (
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path fillRule="evenodd" clipRule="evenodd" d="M14 25C20.0751 25 25 20.0751 25 14C25 7.92487 20.0751 3 14 3C7.92487 3 3 7.92487 3 14C3 20.0751 7.92487 25 14 25ZM18.6143 10.6018C18.9467 10.2625 18.9411 9.71804 18.6018 9.38567C18.2625 9.0533 17.718 9.05891 17.3856 9.3982L13.9874 12.8672L10.5185 9.469C10.1792 9.13663 9.63466 9.14224 9.30229 9.48154C8.96992 9.82083 8.97553 10.3653 9.31483 10.6977L12.7838 14.0959L9.38562 17.5649C9.05325 17.9042 9.05887 18.4487 9.39816 18.781C9.73746 19.1134 10.282 19.1078 10.6143 18.7685L14.0125 15.2995L17.4815 18.6977C17.8208 19.0301 18.3653 19.0245 18.6977 18.6852C19.03 18.3459 19.0244 17.8014 18.6851 17.469L15.2161 14.0708L18.6143 10.6018Z" fill="#F26344" />

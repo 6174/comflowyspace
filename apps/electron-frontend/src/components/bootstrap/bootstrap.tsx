@@ -12,10 +12,13 @@ import { SetupConfig } from './setup-config';
 import { InstallComfyUI } from './install-comfyui';
 import LogoSvg from "ui/icons/logo";
 import BgSVG from "./background.svg";
-import { Spin } from "antd";
+import { Alert, Spin } from "antd";
 import { openExternalURL } from '@/lib/electron-bridge';
 import { track } from '@/lib/tracker';
 import { LogViewer } from 'ui/log-viewer/log-viewer';
+import { Log } from '../comflowy-console/log-types/log';
+import { ComflowyConsoleLogTypes } from '@comflowy/common/types/comflowy-console.types';
+import { isWindow } from 'ui/utils/is-window';
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();
   console.log("bootstrap", bootstrapTasks);
@@ -81,17 +84,53 @@ const Bootstrap = () => {
           </>
         )}
 
-        {currentTask?.type !== BootStrapTaskType.setupConfig && (
-          <LogViewer messages={bootstrapMessages}/>
+        {bootstrapTasks.length > 0 && (
+          <>
+            {currentTask?.type !== BootStrapTaskType.setupConfig && (
+              <LogViewer messages={bootstrapMessages}/>
+            )}
+            <div className="faq-link">
+              <a onClick={ev=> {
+                openExternalURL("https://www.comflowy.com/blog/comflowy-faq");
+                track("bootstrap-faq-link-click");
+              }}>Having trouble with installation? Check out our FAQ document for help &#x2192; </a>
+            </div>
+          </>
         )}
-
-        <div className="faq-link">
-          <a onClick={ev=> {
-            openExternalURL("https://www.comflowy.com/blog/comflowy-faq");
-            track("bootstrap-faq-link-click");
-          }}>Refer to the FAQ document for assistance &#x2192; </a>
-        </div>
       </div>
+      <BootstrapErrors />
+    </div>
+  )
+}
+
+function BootstrapErrors() {
+  const errors = useDashboardState(state => state.errors);
+  const [visible, setVisible] = React.useState(false);
+  React.useEffect(() => {
+    if (isWindow) {
+      setVisible(true);
+    }
+  }, [])
+  if (!visible) {
+    return null;
+  }
+  return (
+    <div className={styles.errors}>
+      {errors.map((error, index) => (
+        <Log title={error.title} log={{
+          id: index + "",
+          message: error.message,
+          data: {
+            createdAt: error.createdAt,
+            level: 'error',
+            type: ComflowyConsoleLogTypes.BOOTSTRAP_ERROR,
+          }
+        }}>
+          <div className="full-message">
+            {error.message}
+          </div>
+        </Log>
+      ))}
     </div>
   )
 }

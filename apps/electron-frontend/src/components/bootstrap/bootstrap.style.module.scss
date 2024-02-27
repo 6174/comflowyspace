@@ -23,7 +23,6 @@
     .inner {
       width: 600px;
       padding: 24px;
-      min-height: 200px;
       border-radius: 8px;
       background: rgba(34, 35, 44, 0.75);
       backdrop-filter: blur(10px);
@@ -121,11 +120,9 @@
     }
 
     .faq-link {
-      position: absolute;
-      left: 10px;
-      bottom: -30px;
       border-bottom: solid 1px;
       opacity: .8;
+      display: inline-block;
       transition: var(--transition);
       a {
         cursor: pointer;
@@ -133,6 +130,18 @@
       &:hover {
         opacity: 1;
       }
+    }
+  }
+}
+
+.errors {
+  width: 600px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  :global {
+    .ant-alert-message {
+      font-size: 12px;
     }
   }
 }

@@ -81,8 +81,6 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
       break;
   }
   return (
-    <div key={log.id} className={styles.consoleLogCard}>
-      <LogCO log={log}/>
-    </div>
+    <LogCO key={log.id}  log={log}/>
   )
 }

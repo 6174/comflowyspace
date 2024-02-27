@@ -4,17 +4,16 @@ import { getBackendUrl } from "@comflowy/common/config";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { message } from "antd";
 import { useCallback, useEffect } from "react";
-import { LogViewer } from "ui/log-viewer/log-viewer";
 export type BootstrapTaskProps = {
   type: BootStrapTaskType,
 }
 import * as Sentry from "@sentry/nextjs";
 
 export function BootstrapTask(props: BootstrapTaskProps) {
-  // const [messageApi, contextHolder] = message.useMessage();
   const { bootstrapTasks, setBootstrapTasks } = useDashboardState();
   const addBootstrapMessages = useDashboardState(state => state.addBootstrapMessage);
   const task = bootstrapTasks.find(task => task.type === props.type);
+  const addBootstrapError = useDashboardState(state => state.addBootstrapError);
   const { startTask, error, success, running, messages } = useRemoteTask({
     api: getBackendUrl(`/api/add_bootstrap_task`),
     onMessage: (msg) => {
@@ -37,14 +36,24 @@ export function BootstrapTask(props: BootstrapTaskProps) {
 
       if (msg.type === "FAILED") {
         message.error("Task failed: " + msg.error);
+        addBootstrapError({
+          title: `${task.title} failed`,
+          type: `bootstrap-task-${task.title}-failed`,
+          message: msg.error,
+          createdAt: +new Date(),
+          data: {
+            task,
+            msg
+          }
+        });
         track(`bootstrap-task-${task.title}-failed`, {
           error: msg.error,
           messages: msg.error
         });
         const error = new Error(`
-                Title: task.title failed.
-                Logs: ${msg.error}
-            `);
+          Title: task.title failed.
+          Logs: ${msg.error}
+        `);
         Sentry.captureException(error);
       }
 

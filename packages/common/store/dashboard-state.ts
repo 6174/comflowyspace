@@ -14,6 +14,14 @@ export type EnvRequirements = {
     comfyUIVersion: string;
 }
 
+export type BootstrapError = {
+    title: string;
+    type: string;
+    message: string;
+    createdAt?: number;
+    data?: Record<string, any>;
+}
+
 type DashboardState = {
     loading: boolean;
     env?: EnvRequirements;
@@ -21,6 +29,7 @@ type DashboardState = {
     bootstraped: boolean;
     showComfyUIProcessModal: boolean;
     bootstrapMessages: string[];
+    errors: BootstrapError[];
 }
 
 export enum BootStrapTaskType {
@@ -46,6 +55,7 @@ type DashboardAction = {
     onInit: () => void,
     setBootstrapTasks: (tasks: BootstrapTask[]) => void;
     addBootstrapMessage: (message: string) => void;
+    addBootstrapError: (error: BootstrapError) => void;
 }
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
@@ -53,12 +63,21 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
     bootstraped: false,
     loading: true,
     bootstrapMessages: [],
+    errors: [],
     showComfyUIProcessModal: false,
     addBootstrapMessage: (message: string) => {
         set({
             bootstrapMessages: [
                 ...get().bootstrapMessages,
                 message
+            ]
+        })
+    },
+    addBootstrapError: (error: BootstrapError) => {
+        set({
+            errors: [
+                error,
+                ...get().errors,
             ]
         })
     },
