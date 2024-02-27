@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { use, useCallback, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
@@ -7,6 +7,7 @@ import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { PersistedWorkflowNode } from '@comflowy/common/storage';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
+import _ from 'lodash';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -33,14 +34,22 @@ export const WidgetTree = (props: {
         return firstLevelCategories.length > 0 ? firstLevelCategories[0] : '';
     });
 
-
-    useEffect(() => {
-        setPinnedWidgetsToLocalStorage(pinnedWidgets);
-    }, [pinnedWidgets]);
-
     useEffect(() => {
         setSearchValue('');
     }, [props.id]);
+
+    const togglePin = useCallback((widget: string, pin: boolean = true) => {
+        let newPinnedWidgets = [...pinnedWidgets];
+        if (pin) {
+            newPinnedWidgets.unshift(widget);
+        } else {
+            newPinnedWidgets = newPinnedWidgets.filter(w => w !== widget);
+        }
+        newPinnedWidgets = _.uniq(newPinnedWidgets)
+        setPinnedWidgetsToLocalStorage(newPinnedWidgets);
+        setPinnedWidgets(newPinnedWidgets);
+    }, [pinnedWidgets]);
+
 
     const getWidgetSearchString = (widget) => {
         return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
@@ -155,7 +164,7 @@ export const WidgetTree = (props: {
                                     onNodeCreated={props.onNodeCreated}
                                     isPinned={true} 
                                     togglePin={() => {
-                                        setPinnedWidgets([...pinnedWidgets].filter(name => name !== widgetName));
+                                        togglePin(widgetName, false);
                                     }}
                                 />
                             ) : null;
@@ -173,11 +182,7 @@ export const WidgetTree = (props: {
                                         onNodeCreated={props.onNodeCreated}
                                         isPinned={pinnedWidgets.indexOf(widget.name) >= 0}
                                         togglePin={() => {
-                                            if (pinnedWidgets.indexOf(widget.name) >= 0) {
-                                                setPinnedWidgets(prevWidgets => [...prevWidgets].filter(name => name !== widget.name));
-                                            } else {
-                                                setPinnedWidgets(prevWidgets => [...prevWidgets, widget.name]);
-                                            }
+                                            togglePin(widget.name, pinnedWidgets.indexOf(widget.name) === -1);
                                         }}
                                     />
                                 ))}
@@ -215,11 +220,7 @@ export const WidgetTree = (props: {
                                         onNodeCreated={props.onNodeCreated}
                                         isPinned={pinnedWidgets.indexOf(item.name) >= 0}
                                         togglePin={() => {
-                                            if (pinnedWidgets.indexOf(item.name) >= 0) {
-                                                setPinnedWidgets([...pinnedWidgets].filter(name => name !== item.name));
-                                            } else {
-                                                setPinnedWidgets([...pinnedWidgets, item.name]);
-                                            }
+                                            togglePin(item.name, pinnedWidgets.indexOf(item.name) === -1);
                                         }}
                                         />
                                 </div>
