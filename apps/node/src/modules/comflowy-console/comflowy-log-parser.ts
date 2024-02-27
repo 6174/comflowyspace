@@ -23,7 +23,7 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
 
     if (this.currentLogLines.length > 0) {
       if (/Starting server/.test(log)) {
-        const importResults = this.currentLogLines.join("").split("\r");
+        const importResults = this.currentLogLines;
         this.currentLogLines = [];
         const successfulImports: string[] = [];
         const failedImports: string[] = [];
@@ -114,8 +114,8 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
     const level = log.data.level;
     if (level === "error") {
     } else {
-      const extension = /### Loading: (.*)/.exec(log.message);
-      log.data.extra.extension = extension;
+      // const extension = /### Loading: (.*)/.exec(log.message);
+      // log.data.extra.extension = extension;
     }
     return log;
   }
@@ -126,19 +126,27 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
   }
 
   checkExtensionsSectionEnd(log: string): boolean {
-    return /Import times for custom nodes/.test(log)
+    if (/Import times for custom nodes/.test(log)) {
+      return true;
+    }
+
+    if (/Cannot import/.test(log)) {
+      return true;
+    }
+
+    return false;
   }
 
   checkExtensionSectionStart(log: string): {
     start: boolean;
     level?: ComflowyConsoleLogLevel
   } {
-    if (/### Loading: (.*)/.exec(log)) {
-      return {
-        start: true,
-        level: "info"
-      }
-    }
+    // if (/### Loading: (.*)/.exec(log)) {
+    //   return {
+    //     start: true,
+    //     level: "info"
+    //   }
+    // }
     
     if (/Traceback \(most recent call last\):/.exec(log)) {
       return {
