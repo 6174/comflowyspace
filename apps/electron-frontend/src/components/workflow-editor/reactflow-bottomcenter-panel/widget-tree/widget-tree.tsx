@@ -6,6 +6,7 @@ import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { PersistedWorkflowNode } from '@comflowy/common/storage';
+import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -22,11 +23,11 @@ export const WidgetTree = (props: {
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-    const [pinnedWidgets, setPinnedWidgets] = useState(new Set(JSON.parse(localStorage.getItem('pinnedWidgets') || "[]")));
+    const [pinnedWidgets, setPinnedWidgets] = useState<string[]>(getPinnedWidgetsFromLocalStorage());
     const firstLevelCategories = Object.keys(widgetCategory);
 
     const [currentCategory, setCurrentCategory] = useState(() => {
-        if (pinnedWidgets.size > 0) {
+        if (pinnedWidgets.length > 0) {
             return 'Pinned';
         } 
         return firstLevelCategories.length > 0 ? firstLevelCategories[0] : '';
@@ -34,7 +35,7 @@ export const WidgetTree = (props: {
 
 
     useEffect(() => {
-        localStorage.setItem('pinnedWidgets', JSON.stringify([...pinnedWidgets]));
+        setPinnedWidgetsToLocalStorage(pinnedWidgets);
     }, [pinnedWidgets]);
 
     useEffect(() => {
@@ -84,7 +85,7 @@ export const WidgetTree = (props: {
 
 
     const firstLevelCatogories = Object.keys(widgetCategory);
-    const [widgetToRender, setWidgetToRender] = useState<{ cagetory: string, items: Widget[] }[]>([]);
+    const [widgetToRender, setWidgetToRender] = useState<{ category: string, items: Widget[] }[]>([]);
 
     useEffect(() => {
         const widgetList = Object.keys(widgets).filter(
@@ -97,11 +98,11 @@ export const WidgetTree = (props: {
             }
         );
         const ret = groupByCategory(widgetList.map(key => widgets[key]));
-        const subcagetories = Object.keys(ret);
-        const widgetToRender = subcagetories.map((cagetory) => {
+        const subcategories = Object.keys(ret);
+        const widgetToRender = subcategories.map((category) => {
             return {
-                cagetory,
-                items: ret[cagetory]
+                category,
+                items: ret[category]
             }
         });
         setWidgetToRender(widgetToRender);
@@ -122,7 +123,7 @@ export const WidgetTree = (props: {
         <div className={`widget-category-panel ${!showCategory ? "no-category" : ""}`}>
             {showCategory && (
                 <div className="category">
-                    {pinnedWidgets.size > 0 && (
+                    {pinnedWidgets.length > 0 && (
                         <div className={`category-item ${currentCategory === "Pinned" ? "active" : ""}`} key="Pinned" onClick={() => {
                             setCurrentCategory("Pinned");
                         }}>
@@ -154,7 +155,7 @@ export const WidgetTree = (props: {
                                     onNodeCreated={props.onNodeCreated}
                                     isPinned={true} 
                                     togglePin={() => {
-                                        setPinnedWidgets(prevWidgets => new Set([...prevWidgets].filter(name => name !== widgetName)));
+                                        setPinnedWidgets([...pinnedWidgets].filter(name => name !== widgetName));
                                     }}
                                 />
                             ) : null;
@@ -170,12 +171,12 @@ export const WidgetTree = (props: {
                                         key={widget.name}
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
-                                        isPinned={pinnedWidgets.has(widget.name)}
+                                        isPinned={pinnedWidgets.indexOf(widget.name) >= 0}
                                         togglePin={() => {
-                                            if (pinnedWidgets.has(widget.name)) {
-                                                setPinnedWidgets(prevWidgets => new Set([...prevWidgets].filter(name => name !== widget.name)));
+                                            if (pinnedWidgets.indexOf(widget.name) >= 0) {
+                                                setPinnedWidgets(prevWidgets => [...prevWidgets].filter(name => name !== widget.name));
                                             } else {
-                                                setPinnedWidgets(prevWidgets => new Set(prevWidgets).add(widget.name));
+                                                setPinnedWidgets(prevWidgets => [...prevWidgets, widget.name]);
                                             }
                                         }}
                                     />
@@ -212,12 +213,12 @@ export const WidgetTree = (props: {
                                         widget={item} 
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
-                                        isPinned={pinnedWidgets.has(item.name)}
+                                        isPinned={pinnedWidgets.indexOf(item.name) >= 0}
                                         togglePin={() => {
-                                            if (pinnedWidgets.has(item.name)) {
-                                                setPinnedWidgets(new Set([...pinnedWidgets].filter(name => name !== item.name)));
+                                            if (pinnedWidgets.indexOf(item.name) >= 0) {
+                                                setPinnedWidgets([...pinnedWidgets].filter(name => name !== item.name));
                                             } else {
-                                                setPinnedWidgets(new Set(pinnedWidgets).add(item.name));
+                                                setPinnedWidgets([...pinnedWidgets, item.name]);
                                             }
                                         }}
                                         />

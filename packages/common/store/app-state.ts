@@ -838,3 +838,25 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
 
   return [true, "success"];
 }
+
+
+const PINNED_WIDGET_KEY = "pinnedWidgets";
+export function getPinnedWidgetsFromLocalStorage(): string[] {
+  try {
+    const rawData = localStorage.getItem(PINNED_WIDGET_KEY);
+    if (rawData) {
+      return JSON.parse(rawData);
+    }
+  } catch (err) {
+    console.log("parse pinned widget error", err);
+  }
+  return  []
+}
+
+export function setPinnedWidgetsToLocalStorage(pinnedWidgets: string[]) {
+  try {
+    localStorage.setItem(PINNED_WIDGET_KEY, JSON.stringify(pinnedWidgets));
+  } catch (err) {
+    console.log("set pinned widget error", err);
+  }
+}
