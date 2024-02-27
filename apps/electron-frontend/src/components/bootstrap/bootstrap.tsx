@@ -84,11 +84,9 @@ const Bootstrap = () => {
           </>
         )}
 
-        {bootstrapTasks.length > 0 && (
+        {bootstrapTasks.length > 0 && currentTask?.type !== BootStrapTaskType.setupConfig && (
           <>
-            {currentTask?.type !== BootStrapTaskType.setupConfig && (
-              <LogViewer messages={bootstrapMessages}/>
-            )}
+            <LogViewer messages={bootstrapMessages}/>
             <div className="faq-link">
               <a onClick={ev=> {
                 openExternalURL("https://www.comflowy.com/blog/comflowy-faq");
@@ -117,7 +115,7 @@ function BootstrapErrors() {
   return (
     <div className={styles.errors}>
       {errors.map((error, index) => (
-        <Log title={error.title} log={{
+        <Log key={index} title={error.title} log={{
           id: index + "",
           message: error.message,
           data: {

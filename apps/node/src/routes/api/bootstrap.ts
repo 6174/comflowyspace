@@ -62,35 +62,49 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         message: event.message || ""
                     })
                 }
+                async function withTimeout(task: Promise<any>, timeout: number, errorMessage: string): Promise<boolean> {
+                    const timeoutId = setTimeout(() => {
+                        newDispatcher({ type: 'TIMEOUT', message: errorMessage });
+                    }, timeout);
+                    const ret = await task;
+                    clearTimeout(timeoutId);
+                    return ret;
+                }
+
+                const msgTemplate = (type: string) => `${type} operation timed out. There may be an issue. Please reach out to us on Discord or refer to our FAQ for assistance.`
+                let task: Promise<any>;
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
                         const isCondaInstalled = await checkIfInstalled("conda");
                         if (isCondaInstalled) {
                             return true;
                         }
-                        return await installCondaTask(newDispatcher);
+                        return await withTimeout(installCondaTask(newDispatcher), 1000 * 60 * 20, msgTemplate("Install conda"));
                     case BootStrapTaskType.installPython:
                         const isPythonInstalled = await checkIfInstalled("python");
                         if (isPythonInstalled) {
                             return true;
                         }
-                        return await installPythonTask(newDispatcher);
+                        return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env"));
                     case BootStrapTaskType.installTorch:
-                        return await installPyTorchForGPU(newDispatcher);
+                        task = installPyTorchForGPU(newDispatcher);
+                        return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch"));
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {
                             return true;
                         }
-                        return await installCondaPackageTask(newDispatcher, {
+                        task = installCondaPackageTask(newDispatcher, {
                             packageRequirment: "git"
                         });
+                        return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Install git"));
                     case BootStrapTaskType.installComfyUI:
                         const isComfyUIInstalled = await checkIfInstalledComfyUI();
                         if (isComfyUIInstalled) {
                             return true;
                         }
-                        return await cloneComfyUI(newDispatcher);
+                        task = cloneComfyUI(newDispatcher);
+                        return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Clone comfyUI"));
                     case BootStrapTaskType.startComfyUI:
                         const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
                         if (isComfyUIStarted) {
@@ -105,6 +119,12 @@ export async function ApiBootstrap(req: Request, res: Response) {
                             if (event.type === "START_SUCCESS") {
                                 dispatcher({
                                     type: "SUCCESS",
+                                    message: event.message
+                                })
+                            }
+                            if (event.type === "TIMEOUT") {
+                                dispatcher({
+                                    type: "TIMEOUT",
                                     message: event.message
                                 })
                             }
@@ -124,6 +144,8 @@ export async function ApiBootstrap(req: Request, res: Response) {
                 taskId
             }
         });
+
+
     } catch (err: any) {
         logger.error(err.message + ":" + err.stack);
         res.send({

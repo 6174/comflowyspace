@@ -22,7 +22,7 @@ export function LogViewer(props: LogViewerProps) {
     <div className={styles.logViewer} >
       <div className="message-list">
         {messages.map((message, i) => (
-          <div key={i} className="log-viewer-message">
+          <div key={i + message} className="log-viewer-message">
             {message}
           </div>
         ))}

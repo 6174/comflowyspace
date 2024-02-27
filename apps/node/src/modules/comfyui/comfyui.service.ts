@@ -181,7 +181,10 @@ class ComfyuiService {
           }
         });
         setTimeout(() => {
-          reject(new Error("ComfyUI start timeout"));
+          this.comfyuiProgressEvent.emit({
+            type: "TIMEOUT",
+            message: "Start ComfyUI timed out"
+          });
         }, pip ? 60 * 1000 * 30: 60 * 1000 * 5);
       });
 
