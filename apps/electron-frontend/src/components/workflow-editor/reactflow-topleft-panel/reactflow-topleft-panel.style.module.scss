@@ -1,5 +1,8 @@
 .topLeftPanel {
     position: relative;
+    border-radius: 12px;
+    padding: 6px;
+    background-color: var(--backgroundColorL1);
     :global {
         .action-file-dropdown {
             .icon {
@@ -25,6 +28,9 @@
                     fill: white;
                 }
             }
+        }
+        .action:hover {
+            background-color: var(--backgroundColorL2);
         }
     }
 }
