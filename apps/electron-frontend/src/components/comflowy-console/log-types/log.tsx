@@ -1,20 +1,22 @@
-import { ComflowyConsoleLogLevel } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog, ComflowyConsoleLogLevel } from "@comflowy/common/types/comflowy-console.types";
 import { PropsWithChildren, ReactElement, useState } from "react";
 
 /**
  * log
  * @param param0 
  */
-export function Log({ level, title, children, className}: { 
-  level: ComflowyConsoleLogLevel;
+export function Log({ level, title, log,  children, className}: { 
+  level?: ComflowyConsoleLogLevel;
+  log: ComflowyConsoleLog;
   title: string;
   className?: string
 } & PropsWithChildren) {
+  const logLevel = level || log.data.level;
   const [open, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!open);
 
   let $levelIcon = <InfoIcon/>
-  switch (level) {
+  switch (logLevel) {
     case "warn":
       $levelIcon = <WarningIcon/>
       break;
@@ -22,8 +24,10 @@ export function Log({ level, title, children, className}: {
       $levelIcon = <ErrorIcon/>
       break;
   }
+
+  console.log("log date", log.data.createdAt);
   return (
-    <div className={`log log-${level} ${open ? "open" : "close"} ${className || ""}`}>
+    <div className={`log log-${logLevel} ${open ? "open" : "close"} ${className || ""}`}>
       <div className="log-header">
         <div className="log-icon">{$levelIcon}</div>
         <div className="log-title">{title}</div>
@@ -33,6 +37,9 @@ export function Log({ level, title, children, className}: {
       </div>
       <div className="log-content">
         {children}
+      </div>
+      <div className="log-meta">
+        {(new Date(log.data?.createdAt)).toLocaleTimeString()}
       </div>
     </div>
   )

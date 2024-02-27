@@ -6,12 +6,17 @@ import { Log } from "./log";
  */
 export function LogTypeCustomNodesImportInfo({log}: {log: ComflowyConsoleLog}) {
   if (log.data.level !== "error") {
-    <Log level={log.data.level} title={log.message} className={`log-type-custom-nodes-import-info`}>
-    </Log>
+    return (
+      <Log log={log}  level={log.data.level} title={"Load custom node success"} className={`log-type-custom-nodes-import-info`}>
+        <div className="full-messages">
+          {log.message}
+        </div>
+      </Log>
+    )
   }
 
   return (
-    <Log level={log.data.level} title={"Load custom node failed"} className={`log-type-custom-nodes-import-info`}>
+    <Log log={log} level={log.data.level} title={"Load custom node failed"} className={`log-type-custom-nodes-import-info`}>
       <div className="full-messages">
         {log.message}
       </div>

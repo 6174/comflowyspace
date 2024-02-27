@@ -11,6 +11,7 @@
   margin: 10px;
   padding: 6px;
   word-wrap: break-word;
+  position: relative;
   :global {
     .log-header {
       display: flex;
@@ -36,6 +37,13 @@
       font-size: 14px;
       color: #A6A7AB;
       word-break: break-word;
+    }
+    .log-meta {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 11px;
+      opacity: .4;
     }
   }
 }
