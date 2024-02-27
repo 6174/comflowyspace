@@ -25,7 +25,6 @@ app.setAboutPanelOptions({
   copyright: 'Copyright © 2024 https://www.comflowy.com',
   authors: ['@Marc Chen', '@Jimmy Wang'],
   website: 'https://www.comflowy.com',
-  iconPath: '/path/to/icon.png',
   credits: ''
 })
 
