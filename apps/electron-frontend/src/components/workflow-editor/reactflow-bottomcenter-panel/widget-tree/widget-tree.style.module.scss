@@ -145,6 +145,7 @@
 .widgetTreeOnPanel {
     position: fixed;
     bottom: 0;
+    z-index: 9999;
     :global {
         .ant-popover-inner {            
             padding: 10px;
