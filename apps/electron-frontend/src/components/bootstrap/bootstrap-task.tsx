@@ -1,6 +1,7 @@
 import { track, trackNewUserBootstrapSuccess } from "@/lib/tracker";
 import { useRemoteTask } from "@/lib/utils/use-remote-task";
 import { getBackendUrl } from "@comflowy/common/config";
+import {remoteLog} from "@comflowy/common/utils/remote-log";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { message } from "antd";
 import { useCallback, useEffect } from "react";
@@ -14,6 +15,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
   const addBootstrapMessages = useDashboardState(state => state.addBootstrapMessage);
   const task = bootstrapTasks.find(task => task.type === props.type);
   const addBootstrapError = useDashboardState(state => state.addBootstrapError);
+  const bootstrapMessages = useDashboardState(state => state.bootstrapMessages);
   const { startTask, error, success, running, messages } = useRemoteTask({
     api: getBackendUrl(`/api/add_bootstrap_task`),
     onMessage: (msg) => {
@@ -37,9 +39,10 @@ export function BootstrapTask(props: BootstrapTaskProps) {
       if (msg.type === "FAILED" || msg.type === "ERROR" || msg.type === "TIMEOUT") {
         console.log("failed", msg);
         message.error(`Task ${msg.type.toLowerCase()}: ${msg.error || msg.message}`);
+        const errorTypeName = `bootstrap-task-${task.title}-failed`
         addBootstrapError({
           title: `${task.title} failed`,
-          type: `bootstrap-task-${task.title}-failed`,
+          type: errorTypeName,
           message: msg.error || msg.message,
           createdAt: +new Date(),
           data: {
@@ -47,9 +50,13 @@ export function BootstrapTask(props: BootstrapTaskProps) {
             msg
           }
         });
-        track(`bootstrap-task-${task.title}-failed`, {
+        track(errorTypeName, {
           error: msg.error,
           messages: msg.error
+        });
+        remoteLog({
+          type: errorTypeName,
+          message: bootstrapMessages.join("\n")
         });
         const error = new Error(`
           Title: task.title failed.
