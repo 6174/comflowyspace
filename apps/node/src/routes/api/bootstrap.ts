@@ -9,6 +9,7 @@ import * as fsExtra from "fs-extra";
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
 import logger from '../../modules/utils/logger';
 import { comfyuiService } from 'src/modules/comfyui/comfyui.service';
+import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 
 /**
  * fetch all extensions
@@ -87,6 +88,11 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         }
                         return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env"));
                     case BootStrapTaskType.installTorch:
+                        const isTorchInstalled = await verifyIsTorchInstalled();
+                        if (isTorchInstalled) {
+                            return true;
+                        }
+                        return true;
                         task = installPyTorchForGPU(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch"));
                     case BootStrapTaskType.installGit:
