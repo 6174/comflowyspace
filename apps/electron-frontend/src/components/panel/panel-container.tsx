@@ -89,6 +89,10 @@ export function PanelsContainer(props: PanelContainerProps) {
           onPannelVisibleChange(true)
         }
       }
+
+      if (ev.type === GlobalEvents.toggle_panel_container) {
+        onPannelVisibleChange(!panelsVisible);
+      }
     });
 
     // onInit();

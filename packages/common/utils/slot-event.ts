@@ -139,7 +139,9 @@ export enum GlobalEvents {
   open_image_editor = 'open_image_editor',
   active_panel_changed = 'active_panel_changed',
   close_pannels = 'close_pannels',
-  open_pannels = 'open_pannels'
+  open_pannels = 'open_pannels',
+  toggle_panel_container = 'toggle_panel_container',
+
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;
