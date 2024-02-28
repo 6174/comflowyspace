@@ -92,7 +92,6 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         if (isTorchInstalled) {
                             return true;
                         }
-                        return true;
                         task = installPyTorchForGPU(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch"));
                     case BootStrapTaskType.installGit:
