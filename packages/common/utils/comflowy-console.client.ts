@@ -1,12 +1,13 @@
 import { ComfyUIExecuteError } from "../comfui-interfaces/comfy-error-types";
 import { getBackendUrl } from "../config";
-import { PersistedWorkflowDocument } from "../storage";
 
 /**
  * Client to Send requests to Comflowy Console
  */
 class ComflowyConsoleClient {
-  async comfyuiExecuteError(workflowInfo: PersistedWorkflowDocument, runErrors: ComfyUIExecuteError) {
+  async comfyuiExecuteError(workflowInfo: {
+    id: string,
+  }, runErrors: ComfyUIExecuteError) {
     try {
       await fetch(getBackendUrl('/api/console/comfyui-execute'), {
         method: 'POST',
