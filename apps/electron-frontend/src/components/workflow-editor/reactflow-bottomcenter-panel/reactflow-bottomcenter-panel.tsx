@@ -79,7 +79,7 @@ function ReactflowBottomCenterPanel() {
                         </WidgetPopover>
                     </div>
                 </Tooltip>
-                <Tooltip title={"Image related nodes"}>
+                <Tooltip title={"Add image related nodes"}>
                     <div className="action action-add-image">
                         <WidgetPopover showCategory={false} filter={(widget: Widget) => {
                             const name = (widget.category + " " + widget.name + " " + widget.display_name).toLowerCase();
