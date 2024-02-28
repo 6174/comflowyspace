@@ -1,5 +1,5 @@
 import { track, trackNewUserBootstrapSuccess } from "@/lib/tracker";
-import { useRemoteTask } from "@/lib/utils/use-remote-task";
+import { TaskEvent, useRemoteTask } from "@/lib/utils/use-remote-task";
 import { getBackendUrl } from "@comflowy/common/config";
 import {remoteLog} from "@comflowy/common/utils/remote-log";
 import { BootStrapTaskType, useDashboardState } from "@comflowy/common/store/dashboard-state";
@@ -43,7 +43,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
         addBootstrapError({
           title: `${task.title} failed`,
           type: errorTypeName,
-          message: msg.error || msg.message,
+          message: getFailedMessage(task.type, msg),
           createdAt: +new Date(),
           data: {
             task,
@@ -98,4 +98,24 @@ export function BootstrapTask(props: BootstrapTaskProps) {
       </div>
     </div>
   )
+}
+
+/**
+ * @returns {string}
+ */
+function getFailedMessage(type: string, event: TaskEvent): string {
+  let ret = event.error || event.message;
+  // const isWin = navigator.userAgent.indexOf('Win') > -1;
+  switch (type) {
+    case BootStrapTaskType.installConda:
+      ret = ret + "\n" + "You can install conda manually from https://docs.anaconda.com/free/miniconda/index.html, make sure `conda` command is available in your terminal. After that, restart Comflowy.";
+      break;
+    case BootStrapTaskType.installGit:
+      ret = ret + "\n" + "You can install git manually https://git-scm.com/download/ and make sure `git` command is available in your terminal. After that, restart Comflowy.";
+      break;
+    case BootStrapTaskType.installTorch:
+      ret = ret + "\n" + "Usually the problem is caused by network issue, you check if your network proxy settings. If you still can not solve the problem, you can contact us at discord or create an issue at https://github.com/6174/comflowyspace/issues";
+      break;
+  }
+  return ret;
 }
