@@ -128,6 +128,7 @@ export const WidgetTree = (props: {
         }
     }, [currentCategory, widgets]);
 
+    // console.log(widgetToRender, searchValue == "", showCategory, currentCategory, pinnedWidgets);
     const widgetCategoryPanel = (
         <div className={`widget-category-panel ${!showCategory ? "no-category" : ""}`}>
             {showCategory && (
@@ -152,23 +153,25 @@ export const WidgetTree = (props: {
             )}
             <div className="widget-list">
                 {
-                    currentCategory === "Pinned" ? 
-                        Array.from(pinnedWidgets).map(widgetName => {
-                            const widget = widgets[widgetName];
-                            return widget ? (
-                                <WidgetNode
-                                    draggable={props.draggable}
-                                    widget={widgets[widgetName]}
-                                    key={widgetName}
-                                    position={props.position}
-                                    onNodeCreated={props.onNodeCreated}
-                                    isPinned={true} 
-                                    togglePin={() => {
-                                        togglePin(widgetName, false);
-                                    }}
-                                />
-                            ) : null;
-                        }) :
+                    (currentCategory === "Pinned" && showCategory) && Array.from(pinnedWidgets).map(widgetName => {
+                        const widget = widgets[widgetName];
+                        return widget ? (
+                            <WidgetNode
+                                draggable={props.draggable}
+                                widget={widgets[widgetName]}
+                                key={widgetName}
+                                position={props.position}
+                                onNodeCreated={props.onNodeCreated}
+                                isPinned={true} 
+                                togglePin={() => {
+                                    togglePin(widgetName, false);
+                                }}
+                            />
+                        ) : null;
+                    })
+                }
+
+                {
                     widgetToRender.map(categoryItem => (
                         <div className="widget-category-section" key={categoryItem.category}>
                             <div className="widget-category-section-title">{categoryItem.category}</div>
@@ -193,7 +196,7 @@ export const WidgetTree = (props: {
             </div>
         </div>
     );
-
+    
     return (
         <div className={styles.widgetTree} style={{
             width: showCategory ? 360 : 280
