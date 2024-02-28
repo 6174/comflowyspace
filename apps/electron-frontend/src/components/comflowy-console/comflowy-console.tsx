@@ -2,11 +2,12 @@ import config from "@comflowy/common/config";
 import { captureEvent } from "@sentry/nextjs";
 import useWebSocket from "react-use-websocket";
 import { useComflowyConsoleState } from "./comflowy-console.state";
-import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
 import styles from "./comflowy-console.module.scss";
 import { LogTypeDefault } from "./log-types/log-type-default";
 import { LogTypeCustomNodesImportResult } from "./log-types/log-type-custom-nodes-import-result";
 import { LogTypeCustomNodesImportInfo } from "./log-types/log-type-custom-node-import-info";
+import { LogTypeExecuteNodeError } from "./log-types/log-type-node-error";
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -70,11 +71,14 @@ export default function ComlowyConsole() {
 function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
   let LogCO = LogTypeDefault;
   switch(log.data.type) {
-    case "CUSTOM_NODES_IMPORT_RESULT":
+    case ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT:
       LogCO = LogTypeCustomNodesImportResult;
       break;
-    case "EXTENSION_LOAD_INFO":
+    case ComflowyConsoleLogTypes.EXTENSION_LOAD_INFO:
       LogCO = LogTypeCustomNodesImportInfo;
+      break;
+    case ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR:
+      LogCO = LogTypeExecuteNodeError;
       break;
     default: 
       LogCO = LogTypeDefault;

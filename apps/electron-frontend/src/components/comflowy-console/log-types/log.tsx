@@ -9,7 +9,7 @@ import styles from "../comflowy-console.module.scss";
 export function Log({ level, title, log,  children, className}: { 
   level?: ComflowyConsoleLogLevel;
   log: ComflowyConsoleLog;
-  title: string;
+  title: ReactElement | string;
   className?: string
 } & PropsWithChildren) {
   const logLevel = level || log.data.level;

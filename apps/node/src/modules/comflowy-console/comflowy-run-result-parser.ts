@@ -19,11 +19,9 @@ export function parseComflowyRunErrors(worfklowInfo: PersistedWorkflowDocument, 
           level: "error",
           type: ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR,
           createdAt: Date.now(),
-          extra: {
-            worfklowId: worfklowInfo.id,
-            nodeId: id,
-            error
-          }
+          workflowId: worfklowInfo.id,
+          nodeId: id,
+          nodeError: error
         }
       }
       logList.push(log);
@@ -40,7 +38,7 @@ export function parseComflowyRunErrors(worfklowInfo: PersistedWorkflowDocument, 
         type: ComflowyConsoleLogTypes.EXECUTE_WORKFLOW_ERROR,
         createdAt: Date.now(),
         extra: {
-          worfklowId: worfklowInfo.id,
+          workflowId: worfklowInfo.id,
           error
         }
       }
