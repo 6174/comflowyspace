@@ -37,8 +37,8 @@ if (isWindow) {
 export function t(key: i18nKey): string {
   const allLang = ALLLang[key];
   if (allLang) {
-    return allLang[currentLang];
+    return allLang[currentLang] || allLang['en-US'] || key;
   }
-  const lang = languages[currentLang] || {};
+  const lang = languages[currentLang] || ENUS;
   return lang[key] || key;
 }
