@@ -33,8 +33,6 @@ function WorkflowPageNodeError({ log }: { log: ComflowyConsoleLog }) {
     return <LogTypeDefault log={log} />
   }
 
-  console.log(node);
-
   const nodeTitle = node.data.value.title || node.data.widget?.name;
   // message UX in workflow page
   let $title = (
