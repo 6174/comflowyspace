@@ -14,11 +14,12 @@ export type i18nLang = {
   [key in KEYS]: string
 };
 
-export type LanguageType = "zh-CN" | "en-US" | "ja";
+export type LanguageType = "zh-CN" | "en-US" | "ja" | "ru";
 export type i18nAllLang = {
   [key in KEYS]: {
     'en-US': string,
     'zh-CN': string,
-    'ja': string
+    'ja'?: string,
+    'ru'?: string
   }
 };

@@ -19,7 +19,29 @@ First, import the translation function and the translation key:
 import { KEYS, t } from "@comflowy/common/i18n"; 
 ```
 
-Then, locate the text that needs to be localized, and then convert the string into a key.
+Locate the text that needs to be localized:
+
+```tsx
+// ...
+  return (
+      <div className="workflow-create-box">
+        <h2>Create New Workflow</h2> 
+      </div>
+    )
+// ...
+```
+
+Then, set the key of this text into this file `packages/common/i18n/i18n-types.ts`:
+
+```tsx
+export const KEYS = {
+  // ...
+  createNewWorkflow: 'createNewWorkflow',
+  // ...
+};
+```
+
+Next, convert the string into the key:
 
 ```tsx
 // ...
@@ -31,9 +53,7 @@ Then, locate the text that needs to be localized, and then convert the string in
 // ...
 ```
 
-Next, open the localization text file: `packages/common/i18n/ALL_LANG.ts`
-
-Add the translation key and the corresponding translation text to the file. For example:
+Finally, open the localization text file: `packages/common/i18n/ALL_LANG.ts`. Add the translation key and the corresponding translation text to the file. For example:
 
 ```tsx
 const ALLLang: i18nAllLang = {
@@ -47,13 +67,3 @@ const ALLLang: i18nAllLang = {
 ```
 
 BTW if you find a typo, you can directly edit `ALL_LANG.ts` file.
-
-Finally, place the key into this file `packages/common/i18n/i18n-types.ts`:
-
-```tsx
-export const KEYS = {
-  // ...
-  createNewWorkflow: 'createNewWorkflow',
-  // ...
-};
-```

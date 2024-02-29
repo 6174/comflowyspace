@@ -9,7 +9,8 @@ const ALLLang: i18nAllLang = {
   [KEYS.myWorkflows]: {
     'en-US': "Workflows",
     'zh-CN': "工作流",
-    'ja': "私のワークフロー"
+    'ja': "私のワークフロー",
+    'ru': "Мои рабочие процессы"
   },
   [KEYS.templates]: {
     'en-US': "Templates",
