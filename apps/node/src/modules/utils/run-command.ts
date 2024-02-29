@@ -76,7 +76,7 @@ import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
 import logger from "./logger";
 
-const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
+export const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
 
 const appDir = getAppDataDir();
 
@@ -89,6 +89,7 @@ export async function runCommandWithPty(
     const { systemProxy, systemProxyString } = await getSystemProxy();
     logger.info("run command with PTY");
     const fullCommand = `${command} && echo END_OF_COMMAND\n`;
+
     return new Promise((resolve, reject) => {
         try {
             const pty = nodePty.spawn(shell, [], {
@@ -100,7 +101,7 @@ export async function runCommandWithPty(
                 env: {
                     ...process.env,
                     ...systemProxy,
-                    PATH: SHELL_ENV_PATH,
+                    Path: process.env.PATH,
                     DISABLE_UPDATE_PROMPT: "true",
                     encoding: 'utf-8',
                 },
@@ -111,14 +112,27 @@ export async function runCommandWithPty(
             
             let buffer = "";
             const disposable = pty.onData(function (data: string) {
+                // raw output data
+                dispatcher && dispatcher({
+                    message: data,
+                    data: {
+                        raw: true
+                    }
+                });
+
                 if (data.trim() === fullCommand.trim()) {
                     return;
                 }
+
+                // wrapped output data
                 buffer += data;
                 if (data.indexOf('\n') > 0) {
                     logger.info("[Log:" + buffer + "]");
                     dispatcher && dispatcher({
-                        message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", "")
+                        message: buffer.replace("&& echo END_OF_COMMAND", "").replace("END_OF_COMMAND", ""),
+                        data: {
+                            raw: false
+                        }
                     });
                     buffer = ""
                 }
@@ -197,7 +211,6 @@ export function getCondaPaths(): {
 }{
     // if user already install conda, conda_prefix is the location of conda root;
     const condaEnv = USER_CONDA_ENV_PATH;
-    console.log("conda env4", condaEnv);
     const CONDA_ROOT = condaEnv ? condaEnv.replace(new RegExp(`\\${path.sep}envs\\${path.sep}.*`), '') : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
 
     if (isWindows) {

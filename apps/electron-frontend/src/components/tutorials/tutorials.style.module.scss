@@ -7,7 +7,7 @@
   :global {
     .tutorial-card-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(246px, 1fr));
       grid-gap: 10px;
       padding: 10px 10px 10px 0;
     }
@@ -95,7 +95,7 @@
       border-radius: 8px;
       .image {
         width: 100%;
-        height: 90px;
+        height: 98px;
       }
       .name {
         width: 130px;
@@ -104,6 +104,7 @@
         font-weight: 600;
         font-size: 18px;
         opacity: 0.8;
+        margin-right: 20px;
       }
       &:hover {
         transform: scale(1.03);

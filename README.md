@@ -25,8 +25,8 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 
 ## Download
 
-* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha-arm64.dmg) 
-* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.8-alpha/comflowy-0.0.8-alpha.zip)**
+* **MacOS:**  [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha.dmg) | [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha-arm64.dmg) 
+* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.0.9-alpha/comflowy-0.0.9-alpha.zip)**
 
 
 ## Key Features
@@ -42,8 +42,9 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 ![](./assets/gallery.jpg)
 
 ## Contributing
-We are grateful to the community for contributing bug fixes and improvements. For more information please read：
+We are grateful to the community for contributing bug fixes and improvements. For more information please read:
 * [Development Guide](./DEVELEPMENT.md)
+* [Contribution Guide](./CONTRIBUTION.md)
 
 #### 😱 Found a bug?
 

@@ -1,0 +1,49 @@
+.comflowyConsole {
+  overflow: auto;
+  height: 100%;
+}
+.consoleLogCard{
+  background: rgba(37, 38, 48, 0.8);
+  border: 1px solid rgba(71, 71, 71, 0.1);
+  /* card_hl */
+  box-shadow: inset 0px 1px 1px rgba(141, 147, 157, 0.15);
+  border-radius: 10px;
+  margin: 10px;
+  padding: 6px;
+  word-wrap: break-word;
+  position: relative;
+  :global {
+    .log-header {
+      display: flex;
+      .log-icon {
+        height: 28px;
+        width: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .log-title {
+        margin-left: 6px;
+        flex: 1;
+        padding-top: 4px;
+        line-height: 1.4;
+        font-size: 14px;
+        color: #A6A7AB;
+        word-break: break-word;
+      }
+    }
+    .log-content {
+      padding-left: 34px;
+      font-size: 14px;
+      color: #A6A7AB;
+      word-break: break-word;
+    }
+    .log-meta {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 11px;
+      opacity: .4;
+    }
+  }
+}

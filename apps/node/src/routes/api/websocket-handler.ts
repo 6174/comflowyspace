@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import * as http from "http";
 import * as url from "url";
 import { TaskEvent, taskQueue } from "../../modules/task-queue/task-queue";
-import { ComfyUIProgressEventType, comfyUIProgressEvent } from "../../modules/comfyui/bootstrap";
+import { ComfyUIProgressEventType, comfyuiService } from "../../modules/comfyui/comfyui.service";
 import logger from "src/modules/utils/logger";
 
 // websocket handler
@@ -43,8 +43,17 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
                 comfyUIMessages.forEach(message => {
                     ws.send(message);
                 });
-                ws.on('message', function incoming(message: string) {
-                    logger.info("recieved Message", message);
+                ws.on('message', function incoming(message: Buffer) {
+                    const msg = message.toString();
+                    try {
+                        const event = JSON.parse(msg);
+                        comfyuiService.inputEvent.emit({
+                            command: event.command,
+                        });
+                    } catch(err: any) {
+                        logger.error("parse message error" + err.message);
+                        console.log(err);
+                    }
                 });
                 ws.on('close', () => {
                     comfyUIClients.splice(comfyUIClients.indexOf(ws), 1);
@@ -62,7 +71,7 @@ export function setupWebsocketHandler(app: Express): [http.Server, WebSocketServ
         }
     });
 
-    comfyUIProgressEvent.on((event: ComfyUIProgressEventType) => {
+    comfyuiService.comfyuiProgressEvent.on((event: ComfyUIProgressEventType) => {
         const eventString = JSON.stringify(event);
         comfyUIMessages.push(eventString);
         comfyUIClients.forEach(client => {

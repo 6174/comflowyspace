@@ -18,6 +18,15 @@
         align-items: center;
     }
 }
+
+.ant-tooltip {
+    .ant-tooltip-inner, .ant-tooltip-arrow:before {
+       background-color: #23242C;
+        font-size: 12px;
+    }
+}
+
+
 ::-webkit-scrollbar {
     width: var(--sb-size);
 }

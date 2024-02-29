@@ -20,16 +20,9 @@ const ComfyUIProcessManager = () => {
 
   const onMessage = (ev: MessageEvent) => {
     const msg = JSON.parse(ev.data) as Message;
-    term.current && term.current.write(msg.message);
-    setMessages([...messages, msg]);
-    if (msg.message.includes("RuntimeError:")) {
-      // @TODO: there is a bug because after editor loaded, it will read all history logs and emit this event
-      // SlotGlobalEvent.emit({
-      //   type: GlobalEvents.comfyui_process_error,
-      //   data: {
-      //     message: msg.message
-      //   }
-      // });
+    if (msg.type === "OUTPUT") {
+      term.current && term.current.write(msg.message);
+      setMessages([...messages, msg]);
     }
 
     if (msg.message.includes("Restart ComfyUI Success")) {
@@ -41,13 +34,14 @@ const ComfyUIProcessManager = () => {
     }
   };
 
-  const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
+  const { sendJsonMessage,  lastMessage, readyState, getWebSocket } = useWebSocket(socketUrl, {
     onMessage,
-    // onOpen: () => console.log('opened'),
+    onOpen: () => {
+    },
     shouldReconnect: (closeEvent) => true,
   });
 
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   const showModal = () => {
     setVisible(true);
@@ -61,41 +55,23 @@ const ComfyUIProcessManager = () => {
   useEffect(() => {
     const initTerminal = async () => {
       await new Promise(resolve => setTimeout(resolve, 300));
-      const {Terminal} = await import('xterm')
-      const {FitAddon} = await import ('xterm-addon-fit');
-      // const {CanvasAddon} = await import ('xterm-addon-canvas');
-      const {ImageAddon} = await import ('xterm-addon-image');
-      const {SearchAddon} = await import ('xterm-addon-search');
-      const {SerializeAddon} = await import ('xterm-addon-serialize');
-      const {Unicode11Addon} = await import ('xterm-addon-unicode11');
-      // const {WebglAddon} = await import ('xterm-addon-webgl');
-      const fitAddon = new FitAddon();
-      // const canvasAddon = new CanvasAddon();
-      const imageAddon = new ImageAddon();
-      const searchAddon = new SearchAddon();
-      const serializeAddon = new SerializeAddon();
-      const unicode11Addon = new Unicode11Addon();
-      // const webglAddon = new WebglAddon();
-      term.current = new Terminal({
-        allowProposedApi: true
+
+      const { ComflowyTerminal } = await import("./terminal");
+      const terminal = term.current = new ComflowyTerminal((command: string) => {
+        sendJsonMessage({
+          type: "input",
+          command
+        });
       });
-      term.current.loadAddon(fitAddon);
-      // term.current.loadAddon(canvasAddon);
-      term.current.loadAddon(imageAddon);
-      term.current.loadAddon(searchAddon);
-      term.current.loadAddon(serializeAddon);
-      term.current.loadAddon(unicode11Addon);
-      // term.current.loadAddon(webglAddon);
-      term.current.open(termRef.current);
-      fitAddon.fit();
+      terminal.open(termRef.current);
       const messages = useComfyUIProcessManagerState.getState().messages;
-      term.current.write(messages.map(m => m.message).join("\n"));
-      
+      messages.map(m => terminal.write(m.message));
+
       // Create a ResizeObserver instance to monitor size changes
       const resizeObserver = new ResizeObserver(() => {
         // Adjust the size of the terminal when the size of #terminal-container changes
         try {
-          fitAddon.fit();
+          terminal.fit();
         } catch(err) {
           console.log(err);
         }
@@ -165,16 +141,8 @@ const ComfyUIProcessManager = () => {
   }, []);
 
   useEffect(() => {
-    // onInit();
-    const dispose = listenElectron("action", (data) => {
-      if (data.type === "open-comfyui-process-manager") {
-        showModal();
-      }
-    });
-
     const dispose2 = SlotGlobalEvent.on((ev) => {
       if (ev.type === GlobalEvents.restart_comfyui) {
-        showModal();
         restart();
       }
     });
@@ -190,7 +158,6 @@ const ComfyUIProcessManager = () => {
     }
 
     return () => {
-      dispose();
       dispose2.dispose();
       dispose3.dispose();
     }
@@ -204,39 +171,29 @@ const ComfyUIProcessManager = () => {
     </div>
   )
   return (
-    <div>
-      <DraggableModal
-        title={$title}
-        footer={null}
-        className={styles.comfyuiProcessManager}
-        onCancel={handleCancel}
-        initialWidth={450}
-        initialHeight={380}
-        open={visible}
-      >
-        <div className="term" ref={termRef} >
-          {/* {messages.map((msg, index) => {
-            return (
-              <div className="message" key={index}>{msg.message}</div>
-            )
-          })} */}
-        </div>
-        <div className="actions flex">
-          <Space>
-            <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
-            <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
-            <InstallPipActions/>
-          </Space>
-        </div>
-        <div className="info">
-          <Space>
-            <span>ComfyUI@<a onClick={(ev) => {
-              openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
-            }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
-            <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
-          </Space>
-        </div>
-      </DraggableModal>
+    <div className={styles.comfyuiProcessManager}>
+      <div className="term" ref={termRef}> </div>
+      <div className="actions flex">
+        <Space>
+          <Button onClick={() => {
+            sendJsonMessage({
+              type: "input",
+              command: "\x03"
+            });
+          }}>Stop Server</Button>
+          <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
+          <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+          <InstallPipActions/>
+        </Space>
+      </div>
+      <div className="info">
+        <Space>
+          <span>ComfyUI@<a onClick={(ev) => {
+            openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
+          }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
+          <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
+        </Space>
+      </div>
     </div>
   )
 }

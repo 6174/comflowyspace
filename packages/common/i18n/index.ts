@@ -1,17 +1,7 @@
-import ZHCN from "./ZHCN";
-import ENUS from "./ENUS";
 import ALLLang from "./ALL_LANG";
 import type { LanguageType, i18nKey, i18nLang } from "./i18n-types";
 export * from "./i18n-types";
 export const isWindow = typeof window !== 'undefined';
-/**
- * All launguages
- */
-export const languages: { [_: string]: Partial<i18nLang> } = {
-  'zh-CN': ZHCN,
-  'en-US': ENUS,
-  'ja': ENUS
-};
 
 let currentLang: LanguageType = "en-US";
 
@@ -22,7 +12,7 @@ export function changeLaunguage(lang: LanguageType) {
   if (defaultLanguage.indexOf("en-") >= 0) {
     defaultLanguage = "en-US";
   }
-  currentLang = defaultLanguage as LanguageType;
+  currentLang = "defaultLanguage" as LanguageType;
 }
 
 if (isWindow) {
@@ -37,8 +27,7 @@ if (isWindow) {
 export function t(key: i18nKey): string {
   const allLang = ALLLang[key];
   if (allLang) {
-    return allLang[currentLang];
+    return allLang[currentLang] || allLang['en-US'] || key;
   }
-  const lang = languages[currentLang] || {};
-  return lang[key] || key;
+  return key;
 }

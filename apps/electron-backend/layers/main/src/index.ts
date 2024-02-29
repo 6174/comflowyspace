@@ -18,6 +18,16 @@ import { startAutoUpdater } from './auto-update';
 log.transports.console.format = '{level} {text}';
 log.transports.file.format = '{level} {text}';
 
+app.setAboutPanelOptions({
+  applicationName: 'Comflowy',
+  applicationVersion: '0.0.9-alpha',
+  version: '0.0.9-alpha',
+  copyright: 'Copyright © 2024 https://www.comflowy.com',
+  authors: ['@Marc Chen', '@Jimmy Wang'],
+  website: 'https://www.comflowy.com',
+  credits: ''
+})
+
 app.on('ready', async () => {
   try {
     startIPC()

@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { use, useCallback, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
-import { SearchIcon } from 'ui/icons';
+import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { PersistedWorkflowNode } from '@comflowy/common/storage';
+import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
+import _ from 'lodash';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -22,9 +24,33 @@ export const WidgetTree = (props: {
     const widgetCategory = useAppStore(st => st.widgetCategory);
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
+    const [pinnedWidgets, setPinnedWidgets] = useState<string[]>(getPinnedWidgetsFromLocalStorage());
+    const firstLevelCategories = Object.keys(widgetCategory);
+
+    const [currentCategory, setCurrentCategory] = useState(() => {
+        if (pinnedWidgets.length > 0) {
+            return 'Pinned';
+        } 
+        return firstLevelCategories.length > 0 ? firstLevelCategories[0] : '';
+    });
+
     useEffect(() => {
         setSearchValue('');
     }, [props.id]);
+
+    const togglePin = useCallback((widget: string, pin: boolean = true) => {
+        let newPinnedWidgets = [...pinnedWidgets];
+        if (pin) {
+            newPinnedWidgets.unshift(widget);
+        } else {
+            newPinnedWidgets = newPinnedWidgets.filter(w => w !== widget);
+        }
+        newPinnedWidgets = _.uniq(newPinnedWidgets)
+        setPinnedWidgetsToLocalStorage(newPinnedWidgets);
+        setPinnedWidgets(newPinnedWidgets);
+    }, [pinnedWidgets]);
+
+
     const getWidgetSearchString = (widget) => {
         return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
     }
@@ -68,15 +94,7 @@ export const WidgetTree = (props: {
 
 
     const firstLevelCatogories = Object.keys(widgetCategory);
-    const [currentCategory, setCurrentCategory] = useState("");
-    const [widgetToRender, setWidgetToRender] = useState<{ cagetory: string, items: Widget[] }[]>([]);
-
-    useEffect(() => {
-        const keys = Object.keys(widgetCategory);
-        if (keys.length > 0) {
-            setCurrentCategory(keys[0]);
-        }
-    }, [widgetCategory])
+    const [widgetToRender, setWidgetToRender] = useState<{ category: string, items: Widget[] }[]>([]);
 
     useEffect(() => {
         const widgetList = Object.keys(widgets).filter(
@@ -89,11 +107,11 @@ export const WidgetTree = (props: {
             }
         );
         const ret = groupByCategory(widgetList.map(key => widgets[key]));
-        const subcagetories = Object.keys(ret);
-        const widgetToRender = subcagetories.map((cagetory) => {
+        const subcategories = Object.keys(ret);
+        const widgetToRender = subcategories.map((category) => {
             return {
-                cagetory,
-                items: ret[cagetory]
+                category,
+                items: ret[category]
             }
         });
         setWidgetToRender(widgetToRender);
@@ -110,10 +128,18 @@ export const WidgetTree = (props: {
         }
     }, [currentCategory, widgets]);
 
+    // console.log(widgetToRender, searchValue == "", showCategory, currentCategory, pinnedWidgets);
     const widgetCategoryPanel = (
         <div className={`widget-category-panel ${!showCategory ? "no-category" : ""}`}>
             {showCategory && (
                 <div className="category">
+                    {pinnedWidgets.length > 0 && (
+                        <div className={`category-item ${currentCategory === "Pinned" ? "active" : ""}`} key="Pinned" onClick={() => {
+                            setCurrentCategory("Pinned");
+                        }}>
+                            Pinned
+                        </div>
+                    )}
                     {firstLevelCatogories.map((name) => {
                         return (
                             <div className={`category-item ${currentCategory === name ? "active" : ""}`} key={name} onClick={() => {
@@ -125,32 +151,52 @@ export const WidgetTree = (props: {
                     })}
                 </div>
             )}
-
             <div className="widget-list">
-                {widgetToRender.map((item) => {
-                    return (
-                        <div className="widget-category-section" key={item.cagetory}>
-                            <div className="widget-category-section-title">{item.cagetory}</div>
+                {
+                    (currentCategory === "Pinned" && showCategory) && Array.from(pinnedWidgets).map(widgetName => {
+                        const widget = widgets[widgetName];
+                        return widget ? (
+                            <WidgetNode
+                                draggable={props.draggable}
+                                widget={widgets[widgetName]}
+                                key={widgetName}
+                                position={props.position}
+                                onNodeCreated={props.onNodeCreated}
+                                isPinned={true} 
+                                togglePin={() => {
+                                    togglePin(widgetName, false);
+                                }}
+                            />
+                        ) : null;
+                    })
+                }
+
+                {
+                    widgetToRender.map(categoryItem => (
+                        <div className="widget-category-section" key={categoryItem.category}>
+                            <div className="widget-category-section-title">{categoryItem.category}</div>
                             <div className="widget-category-section-content">
-                                {item.items.map((widget) => {
-                                    return (
-                                        <WidgetNode 
-                                            draggable={props.draggable}
-                                            widget={widget} 
-                                            key={widget.name} 
-                                            position={props.position}
-                                            onNodeCreated={props.onNodeCreated}
-                                        />
-                                    )
-                                })}
+                                {categoryItem.items.map((widget) => (
+                                    <WidgetNode
+                                        draggable={props.draggable}
+                                        widget={widget}
+                                        key={widget.name}
+                                        position={props.position}
+                                        onNodeCreated={props.onNodeCreated}
+                                        isPinned={pinnedWidgets.indexOf(widget.name) >= 0}
+                                        togglePin={() => {
+                                            togglePin(widget.name, pinnedWidgets.indexOf(widget.name) === -1);
+                                        }}
+                                    />
+                                ))}
                             </div>
                         </div>
-                    )
-                })}
+                    ))
+                }
             </div>
         </div>
     );
-
+    
     return (
         <div className={styles.widgetTree} style={{
             width: showCategory ? 360 : 280
@@ -175,6 +221,10 @@ export const WidgetTree = (props: {
                                         widget={item} 
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
+                                        isPinned={pinnedWidgets.indexOf(item.name) >= 0}
+                                        togglePin={() => {
+                                            togglePin(item.name, pinnedWidgets.indexOf(item.name) === -1);
+                                        }}
                                         />
                                 </div>
                             )
@@ -190,12 +240,15 @@ export const WidgetTree = (props: {
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
  **/
-function WidgetNode({ widget, onNodeCreated, position, draggable }: { 
+function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togglePin }: { 
     widget: Widget,
     draggable?: boolean,
     position?: XYPosition,
-    onNodeCreated?: (node: PersistedWorkflowNode) => void  
+    onNodeCreated?: (node: PersistedWorkflowNode) => void 
+    isPinned?: boolean,
+    togglePin?: () => void 
 }) {
+
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
         const widgetInfo = JSON.stringify(widget);
         event.dataTransfer.setData('application/reactflow', widgetInfo);
@@ -215,6 +268,8 @@ function WidgetNode({ widget, onNodeCreated, position, draggable }: {
         onNodeCreated?.(node);
     }, [widget, ref]);
 
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
         <div className={`widget-node action ${draggable ? "dndnode" : ""}`}
             draggable={draggable}
@@ -223,11 +278,23 @@ function WidgetNode({ widget, onNodeCreated, position, draggable }: {
                 createNewNode(ev);
             }}
             onDragStart={draggable ? onDragStart : null}
-            title={widget.name}>
-            <div className="display-name">{widget.display_name}</div>
-            <div className='class_name'>
-                Type: {widget.name}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)} 
+            title={widget?.name}>
+            <div className= "widget-title">
+                <div className="display-name">{widget.display_name}</div>
+                <div className='class_name'>
+                    Type: {widget.name}
+                </div>
             </div>
+            {isHovered && (
+                <div onClick={(ev) => {
+                    ev.stopPropagation();
+                    togglePin();
+                }} className="pin-button" style={{ float: 'right' }}>
+                    {isPinned ? <PinFilledIcon /> : <PinIcon />}
+                </div>
+            )}
         </div>
     )
 }

@@ -4,8 +4,8 @@
   left: 8px;
   bottom: 8px;
   right: 8px;
-  background-color: var(--backgroundColor);
-  border: solid 1px var(--borderColor);
+  // background-color: var(--backgroundColor);
+  // border: solid 1px var(--borderColor);
   overflow: hidden;
   border-radius: 12px;
   :global {
@@ -264,6 +264,7 @@
         color: #000;
         opacity: .2;
         margin: 0;
+        user-select: none;
       }
     
       .react-flow__attribution a {

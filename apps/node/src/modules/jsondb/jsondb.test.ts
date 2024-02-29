@@ -1,10 +1,7 @@
 import { JSONDocMeta } from '@comflowy/common/jsondb/jsondb.types';
 import { JSONDB } from './jsondb';
 import { getAppDataDir } from '../utils/get-appdata-dir';
-import { JSONFile } from 'lowdb/node';
 import path from "path";
-import { Low } from 'lowdb';
-import * as fsExtra from "fs-extra";
 import logger from '../utils/logger';
 
 type Doc = {title: string} & JSONDocMeta;
