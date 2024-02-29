@@ -35,6 +35,11 @@ const ALLLang: i18nAllLang = {
     'en-US': 'MENU',
     'zh-CN': '菜单',
     'ja': 'メニュー'
+  },
+  [KEYS.createNewWorkflow]: {
+    'en-US': 'Create New Workflow',
+    'zh-CN': '创建新工作流',
+    'ja': '新しいワークフローを作成'
   }
 };
 

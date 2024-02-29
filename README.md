@@ -42,8 +42,9 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 ![](./assets/gallery.jpg)
 
 ## Contributing
-We are grateful to the community for contributing bug fixes and improvements. For more information please read：
+We are grateful to the community for contributing bug fixes and improvements. For more information please read:
 * [Development Guide](./DEVELEPMENT.md)
+* [Contribution Guide](./CONTRIBUTION.md)
 
 #### 😱 Found a bug?
 

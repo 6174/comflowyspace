@@ -14,6 +14,7 @@ import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { track } from '@/lib/tracker';
 import CoverSvg from "./default-workflow-cover.svg";
+import {KEYS, t} from "@comflowy/common/i18n";
 
 function MyWorkflowsPage() {
   return (
@@ -55,7 +56,7 @@ function WorkflowCreateBox() {
 
   return (
     <div className="workflow-create-box">
-      <h2>Create New Workflow</h2>
+      <h2>{t(KEYS.createNewWorkflow)}</h2>
       <p className="sub">Choose the method for creating your worklow</p>
       <Space>
         <div className="create-button" onClick={ev => {

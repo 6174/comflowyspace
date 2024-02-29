@@ -5,7 +5,8 @@ export enum KEYS {
   tutorials = "tutorials",
   models = "models",
   extensions = "extensions",
-  menu = "menu"
+  menu = "menu",
+  createNewWorkflow = "createNewWorkflow"
 }
 
 export type i18nKey = keyof typeof KEYS;
