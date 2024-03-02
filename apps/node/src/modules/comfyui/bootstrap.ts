@@ -184,7 +184,7 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
                 message: `Start installing Python=3.10.8`
             });
             await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
-            
+
             dispatcher({
                 message: `Install Python=3.10.8 finished`
             });
@@ -348,6 +348,41 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     });
 
     return true;
+}
+
+
+/**
+ * For debug purpose
+ * @param nightly 
+ * @returns 
+ */
+export async function getInstallPyTorchForGPUCommand(nightly: boolean = false): Promise<string> {
+    let installCommand = "";
+    const { PIP_PATH } = conda.getCondaPaths();
+    if (isMac) {
+        installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
+    } else {
+        try {
+            const gpuType = await getGPUType()
+            // AMD GPU
+            if (gpuType === 'amd') {
+                const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
+                installCommand = nightly
+                    ? `${PIP_PATH} install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
+                    : ` ${PIP_PATH} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
+            }
+            // NVIDIA GPU
+            else if (gpuType === 'nvidia') {
+                installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+            } else {
+                installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
+            }
+
+        } catch (error: any) {
+            return ""
+        }
+    }
+    return installCommand;
 }
 
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {

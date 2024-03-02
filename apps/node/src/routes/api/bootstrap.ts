@@ -1,5 +1,5 @@
 import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask} from '../../modules/comfyui/bootstrap';
+import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, getInstallPyTorchForGPUCommand} from '../../modules/comfyui/bootstrap';
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
@@ -72,7 +72,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                     return ret;
                 }
 
-                const msgTemplate = (type: string) => `${type} operation timed out. There may be an issue. Please reach out to us on Discord or refer to our FAQ for assistance.`
+                const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution} There may be an issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
@@ -93,7 +93,8 @@ export async function ApiBootstrap(req: Request, res: Response) {
                             return true;
                         }
                         task = installPyTorchForGPU(newDispatcher);
-                        return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch"));
+                        const command = await getInstallPyTorchForGPUCommand();
+                        return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch", `You can copy the command \`${command}\` and directly execute it in your terminal. After that, restart Comflowy.`));
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {
