@@ -35,7 +35,7 @@ class ComfyuiService {
      */
     this.comfyuiProgressEvent.on((event) => {
       if (event.type === "OUTPUT_WARPED" && event.message) {
-        if (event.message?.includes("ComfyUI startup time")) {
+        if (event.message?.includes("ComfyUI start up time")) {
           this.#comfyuiStarted = true;
         }
 
@@ -189,6 +189,7 @@ class ComfyuiService {
             type: "TIMEOUT",
             message: "Start ComfyUI timed out"
           });
+          reject(false);
         }, pip ? 60 * 1000 * 30: 60 * 1000 * 5);
       });
 
@@ -216,7 +217,7 @@ class ComfyuiService {
   /**
    * stopComfyUI
    */
-  async stopComfyUI() {
+  stopComfyUI() {
     this.pty?.write('\x03');
     this.#comfyuiStarted = false;
   }
@@ -231,7 +232,7 @@ class ComfyuiService {
         type: "RESTART",
         message: "Restart ComfyUI"
       });
-      await this.stopComfyUI();
+      this.stopComfyUI();
       await this.startComfyUI(pip);
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
