@@ -80,13 +80,13 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         if (isCondaInstalled) {
                             return true;
                         }
-                        return await withTimeout(installCondaTask(newDispatcher), 1000 * 60 * 20, msgTemplate("Install conda"));
+                        return await withTimeout(installCondaTask(newDispatcher), 1000 * 60 * 20, msgTemplate("Install conda", "You can directly install conda from https://docs.anaconda.com/free/miniconda/miniconda-install/. After that, restart Comflowy."));
                     case BootStrapTaskType.installPython:
                         const isPythonInstalled = await checkIfInstalled("python");
                         if (isPythonInstalled) {
                             return true;
                         }
-                        return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env"));
+                        return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env", "You can directly create a python env from your terminal by running `conda create -n comflowy python=3.10.8`"));
                     case BootStrapTaskType.installTorch:
                         const isTorchInstalled = await verifyIsTorchInstalled();
                         if (isTorchInstalled) {
