@@ -26,7 +26,7 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                     dispatcher(event);
                     comfyuiService.comfyuiProgressEvent.emit({
                         type: "OUTPUT",
-                        message: event.message || ""
+                        message: event.message || event.error
                     })
                 }
                 const extension = taskParams.params as Extension;

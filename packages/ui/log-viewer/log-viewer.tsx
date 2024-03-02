@@ -6,9 +6,6 @@ export type LogViewerProps = {
 }
 export function LogViewer(props: LogViewerProps) {
   const {messages = [], oneline = false} = props;
-  if (messages.length === 0) {
-    return null;
-  }
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -17,6 +14,10 @@ export function LogViewer(props: LogViewerProps) {
   }
 
   useEffect(scrollToBottom, [messages]);
+  
+  if (messages.length === 0) {
+    return null;
+  }
   
   return (
     <div className={styles.logViewer} >
