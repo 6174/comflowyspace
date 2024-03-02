@@ -67,6 +67,7 @@ export function PageCard({models, selectedTag}){
       {models.map((model) => {
         return (
           <ModelCard 
+            key={model.title + model.url}
             image={model.image} 
             title={model.title} 
             url={model.url}
@@ -105,6 +106,7 @@ export default function ModelCards() {
         {
           uniqueTags.map(tag => (
             <div 
+              key={tag}
               className={` ${selectedTag === tag ? 'filter-type active' : 'filter-type'} `}
               onClick={() => setSelectedTag(tag)}
             >
@@ -114,7 +116,7 @@ export default function ModelCards() {
         }
       </Space>
       <div className='model-card-list'>
-        <PageCard 
+        <PageCard
           models={models.filter(model => !selectedTag || model.tag === selectedTag)}
           selectedTag={selectedTag}
         />
