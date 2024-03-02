@@ -20,7 +20,7 @@ const appTmpDir = getAppTmpDir();
 const appDir = getAppDataDir();
 
 export async function checkBasicRequirements() {
-    const isSetupedConfig = await checkIsSetupedConfig();
+    let isSetupedConfig = await checkIsSetupedConfig();
     let isCondaInstalled = false, 
         isPythonInstalled = false, 
         isTorchInstalled = false,
@@ -29,6 +29,13 @@ export async function checkBasicRequirements() {
         isGitInstalled = false;
     if (isSetupedConfig) {
         isComfyUIInstalled = await checkIfInstalledComfyUI();
+        /**
+         * if user delete ComfyUI, user should re-setup the config
+         */
+        if (!isComfyUIInstalled) {
+            appConfigManager.delete(CONFIG_KEYS.appSetupConfig);
+            isSetupedConfig = false;
+        }
         isComfyUIStarted = await comfyuiService.isComfyUIAlive();
     }
     isCondaInstalled = await checkIfInstalled("conda");
