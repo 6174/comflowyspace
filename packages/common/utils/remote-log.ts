@@ -7,13 +7,13 @@ export async function remoteLog(props: {
   message: string
 }) {
   try {
-    await fetch("https://www.comflowy.com/api/create-log", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER}/api/create-log`;
+    const options = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(props)
-    });
+    }
+    await fetch(url, options);
   } catch(err) {
     console.log("create remote log error:", err);
   }

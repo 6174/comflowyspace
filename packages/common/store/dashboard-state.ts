@@ -17,6 +17,7 @@ export type EnvRequirements = {
 export type BootstrapError = {
     title: string;
     type: string;
+    level?: "warn" | "error";
     message: string;
     createdAt?: number;
     data?: Record<string, any>;

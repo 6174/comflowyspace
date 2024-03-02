@@ -5,7 +5,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { getCondaPaths, runCommand, runCommandWithPty } from "../utils/run-command";
+import { runCommand } from "../utils/run-command";
 import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -13,13 +13,14 @@ import * as fsExtra from "fs-extra"
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
 import logger from "../utils/logger";
 import { comfyuiService } from "./comfyui.service";
+import { conda } from "../utils/conda";
 
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
 const appDir = getAppDataDir();
 
 export async function checkBasicRequirements() {
-    const isSetupedConfig = await checkIsSetupedConfig();
+    let isSetupedConfig = await checkIsSetupedConfig();
     let isCondaInstalled = false, 
         isPythonInstalled = false, 
         isTorchInstalled = false,
@@ -28,10 +29,17 @@ export async function checkBasicRequirements() {
         isGitInstalled = false;
     if (isSetupedConfig) {
         isComfyUIInstalled = await checkIfInstalledComfyUI();
+        /**
+         * if user delete ComfyUI, user should re-setup the config
+         */
+        if (!isComfyUIInstalled) {
+            appConfigManager.delete(CONFIG_KEYS.appSetupConfig);
+            isSetupedConfig = false;
+        }
         isComfyUIStarted = await comfyuiService.isComfyUIAlive();
     }
     isCondaInstalled = await checkIfInstalled("conda");
-    isPythonInstalled = await checkIfInstalled("python");
+    isPythonInstalled = !!conda.env?.PYTHON_PATH;
     isGitInstalled = await checkIfInstalled("git --version");
     if (isCondaInstalled && isPythonInstalled) {
         isTorchInstalled = await verifyIsTorchInstalled()
@@ -82,7 +90,7 @@ export async function checkIfInstalledComfyUI(comfy_path?: string): Promise<bool
 
 // 检查一个程序是否已经安装
 export async function checkIfInstalled(name: string): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     try {
         if (name === "python") {
@@ -158,7 +166,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
         }
     }
     if (!success) {
-        throw new Error(`Install conda error: ${lastError.message}`)
+        throw new Error(`Install conda error: ${lastError.message}, You can directly install conda from https://docs.anaconda.com/free/miniconda/miniconda-install/. After that, restart Comflowy.`)
     }
     return true;
 }
@@ -183,9 +191,11 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
                 message: `Start installing Python=3.10.8`
             });
             await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+
             dispatcher({
                 message: `Install Python=3.10.8 finished`
             });
+            conda.updateCondaInfo();
             success = true;
             break;
         } catch (e: any) {
@@ -244,7 +254,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
 export async function installPipPackageTask(dispatcher: TaskEventDispatcher, params: {
     packageRequirment: string
 }): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     let success = false;
     let lastError = null;
@@ -280,8 +290,8 @@ export async function installPipPackageTask(dispatcher: TaskEventDispatcher, par
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
-
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
+    let installCommand = "";
     logger.info("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
@@ -292,7 +302,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     for (let i = 0; i < 3; i++) {
         if (isMac) {
             try {
-                const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
+                installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
                 await runCommand(installCommand, dispatcher);
                 success = true;
                 break;
@@ -319,13 +329,15 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                 }
                 // NVIDIA GPU
                 else if (gpuType === 'nvidia') {
-                    const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
-
+                    installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
                     await runCommand(installCommand, dispatcher);
                     success = true;
                     break;
                 } else {
-                    lastError = new Error(`Unkown GPU Type`)
+                    installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
+                    await runCommand(installCommand, dispatcher);
+                    success = true;
+                    break;
                 }
 
             } catch (error: any) {
@@ -335,7 +347,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     }
 
     if (!success) {
-        throw new Error(`PyTorch installation failed: ${lastError.message}`)
+        throw new Error(`PyTorch installation failed: ${lastError.message}. You can directly copy this command \`${installCommand}\` and execute it in your termnial, after that, restart Comflowyspace.`)
     }
 
     dispatcher({
@@ -345,10 +357,45 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     return true;
 }
 
+
+/**
+ * For debug purpose
+ * @param nightly 
+ * @returns 
+ */
+export async function getInstallPyTorchForGPUCommand(nightly: boolean = false): Promise<string> {
+    let installCommand = "";
+    const { PIP_PATH } = conda.getCondaPaths();
+    if (isMac) {
+        installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
+    } else {
+        try {
+            const gpuType = await getGPUType()
+            // AMD GPU
+            if (gpuType === 'amd') {
+                const rocmVersion = nightly ? 'rocm5.7' : 'rocm5.6';
+                installCommand = nightly
+                    ? `${PIP_PATH} install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/${rocmVersion}`
+                    : ` ${PIP_PATH} install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/${rocmVersion}`;
+            }
+            // NVIDIA GPU
+            else if (gpuType === 'nvidia') {
+                installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+            } else {
+                installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
+            }
+
+        } catch (error: any) {
+            return ""
+        }
+    }
+    return installCommand;
+}
+
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     let success = false;
     let lastError = null;
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     for (let i = 0; i < 3; i++) {
         try {

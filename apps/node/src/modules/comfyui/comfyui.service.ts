@@ -2,10 +2,11 @@ import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
 import { ComflowyConsole } from "../comflowy-console/comflowy-console";
-import { SHELL_ENV_PATH, getSystemPath, runCommand, shell } from "../utils/run-command";
+import { runCommand, shell } from "../utils/run-command";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
-import { getSystemProxy, isWindows } from "../utils/env";
+import { getSystemPath, getSystemProxy, isWindows } from "../utils/env";
 import { uuid } from "@comflowy/common";
+import { conda } from "../utils/conda";
 
 export type ComfyUIProgressEventType = {
   type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
@@ -68,7 +69,10 @@ class ComfyuiService {
       return
     }
     const { systemProxy } = await getSystemProxy();
-    const SHELL_ENV_PATH = getSystemPath();
+    const SHELL_ENV_PATH = getSystemPath({
+      CONDA_SCRIPTS_PATH: conda.info?.CONDA_SCRIPTS_PATH || "",
+      CONDA_ENV_PATH: conda.env?.CONDA_ENV_PATH || ""
+    });
     try {
 
       const env: any = {
@@ -204,8 +208,8 @@ class ComfyuiService {
    * Run comfyUI command
    */
   #getComfyUIRunCommand(pip: boolean = true) {
-    // const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
-    const command = `pip install -r requirements.txt; pip install mpmath==1.3.0; python main.py --enable-cors-header`;
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
+    const command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
     return `cd ${getComfyUIDir()}; conda activate comflowy; ${command} \r`;
   }
 

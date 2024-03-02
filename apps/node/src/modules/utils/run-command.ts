@@ -1,12 +1,6 @@
 import { ExecaChildProcess, Options, execaCommand } from "execa";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
-import * as os from "os";
-import { getSystemProxy, isMac, isWindows } from "./env";
-import { CONDA_ENV_NAME } from "../config-manager";
-
-export const OS_TYPE = os.type().toUpperCase();
-export const OS_HOME_DIRECTORY = os.homedir();
-export const SHELL_ENV_PATH = getSystemPath();
+import { getSystemPath, getSystemProxy } from "./env";
 
 export async function runCommand(
     command: string, 
@@ -24,6 +18,10 @@ export async function runCommand(
     } else {
         logger.info("run command without proxy")
     }
+    const SHELL_ENV_PATH = getSystemPath({
+        CONDA_SCRIPTS_PATH: conda.info?.CONDA_SCRIPTS_PATH || "",
+        CONDA_ENV_PATH: conda.env?.CONDA_ENV_PATH || ""
+    });
     const subProcess = execaCommand(command, {
         env: {
             ...process.env,
@@ -75,6 +73,7 @@ export async function runCommand(
 import * as nodePty from "node-pty"
 import { getAppDataDir } from "./get-appdata-dir";
 import logger from "./logger";
+import { conda } from "./conda";
 
 export const shell = process.platform === 'win32' ? 'powershell.exe' : 'zsh';
 
@@ -157,81 +156,4 @@ export async function runCommandWithPty(
             logger.error("Run command error" + err.message + err.stack);
         }
     })
-}
-
-export function getSystemPath(): string {
-    let paths;
-    let pathDelimiter;
-    const { CONDA_SCRIPTS_PATH, CONDA_ENV_PATH } = getCondaPaths();
-    if (OS_TYPE.includes('WINDOWS')) {
-        pathDelimiter = ';';
-        paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, `${CONDA_ENV_PATH}\\Scripts` ,process.env.PATH];
-    } else {
-        pathDelimiter = ':';
-        paths = ['/usr/local/bin', CONDA_SCRIPTS_PATH, , `${CONDA_ENV_PATH}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
-    }
-    return paths.join(pathDelimiter);
-}
-
-// export const CONDA_ENV_PATH = isWindows ? `C:\\tools\\Miniconda3\\envs\\${CONDA_ENV_NAME}` : `${OS_HOME_DIRECTORY}/miniconda3/envs/${CONDA_ENV_NAME}`;
-// export const CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3\\Scripts\\conda.exe' : `${OS_HOME_DIRECTORY}/miniconda3/condabin/conda`;
-// export const condaActivate = `${CONDA_PATH} init & ${CONDA_PATH} activate ${CONDA_ENV_NAME} & `;
-// export const PYTHON_PATH = isWindows ? `${CONDA_ENV_PATH}\\python.exe` : `${CONDA_ENV_PATH}/bin/python`;
-// export const PIP_PATH = isWindows ? `${CONDA_ENV_PATH}\\Scripts\\pip.exe` : `${CONDA_ENV_PATH}/bin/pip`;
-
-import { execSync } from 'child_process';
-import path from "path";
-
-function getCondaPrefixSync(): string | undefined {
-    try {
-        const result = execSync(`conda info --base`, {
-            env: {
-                ...process.env,
-                PATH: SHELL_ENV_PATH
-            },
-            encoding: 'utf-8',
-
-        });
-        return result.toString().trim();
-    } catch (err) {
-        console.log("get conda default prefix error", err);
-        return undefined
-    }
-}
-
-const USER_CONDA_ENV_PATH = process.env.CONDA_PREFIX || getCondaPrefixSync();
-
-export function getCondaPaths(): {
-    CONDA_ROOT: string,
-    CONDA_ENV_PATH: string,
-    CONDA_SCRIPTS_PATH: string,
-    CONDA_PATH: string,
-    PYTHON_PATH: string,
-    PIP_PATH: string
-}{
-    // if user already install conda, conda_prefix is the location of conda root;
-    const condaEnv = USER_CONDA_ENV_PATH;
-    const CONDA_ROOT = condaEnv ? condaEnv.replace(new RegExp(`\\${path.sep}envs\\${path.sep}.*`), '') : (isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`);
-
-    if (isWindows) {
-        const CONDA_ENV_PATH = `${CONDA_ROOT}\\envs\\${CONDA_ENV_NAME}`
-        return {
-            CONDA_ROOT,
-            CONDA_ENV_PATH,
-            CONDA_SCRIPTS_PATH: `${CONDA_ROOT}\\Scripts`,
-            CONDA_PATH: `${CONDA_ROOT}\\Scripts\\conda.exe`,
-            PYTHON_PATH: `${CONDA_ENV_PATH}\\python.exe`,
-            PIP_PATH: `${CONDA_ENV_PATH}\\Scripts\\pip.exe`
-        }
-    }
-
-    const CONDA_ENV_PATH = `${CONDA_ROOT}/envs/${CONDA_ENV_NAME}`
-    return {
-        CONDA_ROOT,
-        CONDA_ENV_PATH,
-        CONDA_SCRIPTS_PATH: `${CONDA_ROOT}/bin`,
-        CONDA_PATH: `${CONDA_ROOT}/condabin/conda`,
-        PYTHON_PATH: `${CONDA_ENV_PATH}/bin/python`,
-        PIP_PATH: `${CONDA_ENV_PATH}/bin/pip`
-    }
 }

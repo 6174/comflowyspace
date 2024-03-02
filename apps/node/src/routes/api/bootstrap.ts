@@ -1,5 +1,5 @@
 import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask} from '../../modules/comfyui/bootstrap';
+import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, getInstallPyTorchForGPUCommand} from '../../modules/comfyui/bootstrap';
 import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
@@ -72,7 +72,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                     return ret;
                 }
 
-                const msgTemplate = (type: string) => `${type} operation timed out. There may be an issue. Please reach out to us on Discord or refer to our FAQ for assistance.`
+                const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution}  If you can't go through this issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
@@ -80,20 +80,22 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         if (isCondaInstalled) {
                             return true;
                         }
-                        return await withTimeout(installCondaTask(newDispatcher), 1000 * 60 * 20, msgTemplate("Install conda"));
+                        return await withTimeout(installCondaTask(newDispatcher), 1000 * 60 * 20, msgTemplate("Install conda", "You can directly install conda from https://docs.anaconda.com/free/miniconda/miniconda-install/. After that, restart Comflowy."));
                     case BootStrapTaskType.installPython:
                         const isPythonInstalled = await checkIfInstalled("python");
                         if (isPythonInstalled) {
                             return true;
                         }
-                        return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env"));
+                        return await withTimeout(installPythonTask(newDispatcher), 1000  * 60 * 10, msgTemplate("Create python env", "You can directly create a python env from your terminal by running `conda create -n comflowy python=3.10.8`"));
                     case BootStrapTaskType.installTorch:
                         const isTorchInstalled = await verifyIsTorchInstalled();
                         if (isTorchInstalled) {
                             return true;
                         }
+                        const command = await getInstallPyTorchForGPUCommand();
+                        newDispatcher({ message: `Install command \`${command}\`, if it takes too long, you can directly copy this command and execute it in your termnial, after that, restart Comflowyspace.`})
                         task = installPyTorchForGPU(newDispatcher);
-                        return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch"));
+                        return await withTimeout(task, 1000 * 60 * 20, msgTemplate("Install torch", `You can copy the command \`${command}\` and directly execute it in your terminal. After that, restart Comflowy.`));
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {

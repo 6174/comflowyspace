@@ -7,6 +7,33 @@ export const isMac = systemType.includes("DARWIN");
 export const isLinux = systemType.includes("LINUX");
 export const appDir = getAppDataDir();
 export const tmpDir = getAppTmpDir();
+export const OS_TYPE = os.type().toUpperCase();
+export const OS_HOME_DIRECTORY = os.homedir();
+
+export let SHELL_ENV_PATH = getSystemPath({
+  CONDA_SCRIPTS_PATH: "",
+  CONDA_ENV_PATH: ""
+});
+
+export function updateShellEnvPath(env: string) {
+  SHELL_ENV_PATH = env;
+}
+
+export function getSystemPath({ CONDA_SCRIPTS_PATH, CONDA_ENV_PATH }: {
+  CONDA_SCRIPTS_PATH: string,
+  CONDA_ENV_PATH: string
+}): string {
+  let paths;
+  let pathDelimiter;
+  if (OS_TYPE.includes('WINDOWS')) {
+    pathDelimiter = ';';
+    paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, `${CONDA_ENV_PATH}\\Scripts`, `${CONDA_ENV_PATH}\\Library\\bin`,  process.env.PATH];
+  } else {
+    pathDelimiter = ':';
+    paths = ['/usr/local/bin', CONDA_SCRIPTS_PATH, , `${CONDA_ENV_PATH}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];
+  }
+  return paths.join(pathDelimiter);
+}
 
 const systemProxy: {
   http_proxy?: string;
@@ -84,6 +111,4 @@ async function parseWindowsProxySettings() {
   } catch (err) {
     console.log("read error", err);
   }
-
-  // Windows 上 SOCKS 代理需要另一个调研工具 (代理设置)，Windows 平台可能不提供 SOCK 代理设置的命令行工具
 }

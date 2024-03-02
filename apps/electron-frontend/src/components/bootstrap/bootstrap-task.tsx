@@ -43,6 +43,7 @@ export function BootstrapTask(props: BootstrapTaskProps) {
         addBootstrapError({
           title: `${task.title} failed`,
           type: errorTypeName,
+          level:  msg.type === "TIMEOUT" ? "warn" : "error",
           message: getFailedMessage(task.type, msg),
           createdAt: +new Date(),
           data: {

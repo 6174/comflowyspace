@@ -1,12 +1,13 @@
 import path from "path";
-import { SHELL_ENV_PATH, getCondaPaths, runCommand } from "../utils/run-command";
-import { appDir, isWindows } from "../utils/env";
+import { runCommand } from "../utils/run-command";
+import { appDir, getSystemPath, isWindows } from "../utils/env";
 import { spawn } from "child_process";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
 import logger from "../utils/logger";
+import { conda } from "../utils/conda";
 
 async function start() {
-  const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+  const { PIP_PATH, PYTHON_PATH, CONDA_SCRIPTS_PATH, CONDA_ENV_PATH } = conda.getCondaPaths();
 
   try {
     logger.info("start ");
@@ -18,7 +19,10 @@ async function start() {
     const proc = spawn(command, args, {
       cwd: repoPath,
       env: {
-        PATH: SHELL_ENV_PATH
+        PATH: getSystemPath({
+          CONDA_SCRIPTS_PATH,
+          CONDA_ENV_PATH
+        })
       },
       shell
     });
