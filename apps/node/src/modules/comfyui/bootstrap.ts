@@ -5,7 +5,7 @@ import { downloadUrl } from "../utils/download-url";
 import { getAppDataDir, getAppTmpDir, getComfyUIDir, getStableDiffusionDir } from "../utils/get-appdata-dir";
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { getMacArchitecture } from "../utils/get-mac-arch";
-import { getCondaPaths, runCommand, runCommandWithPty } from "../utils/run-command";
+import { runCommand } from "../utils/run-command";
 import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import { getGPUType } from "../utils/get-gpu-type";
 import { verifyIsTorchInstalled } from "./verify-torch";
@@ -13,6 +13,7 @@ import * as fsExtra from "fs-extra"
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from "../model-manager/model-paths";
 import logger from "../utils/logger";
 import { comfyuiService } from "./comfyui.service";
+import { conda } from "../utils/conda";
 
 const systemType = os.type();
 const appTmpDir = getAppTmpDir();
@@ -82,7 +83,7 @@ export async function checkIfInstalledComfyUI(comfy_path?: string): Promise<bool
 
 // 检查一个程序是否已经安装
 export async function checkIfInstalled(name: string): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     try {
         if (name === "python") {
@@ -244,7 +245,7 @@ export async function installCondaPackageTask(dispatcher: TaskEventDispatcher, p
 export async function installPipPackageTask(dispatcher: TaskEventDispatcher, params: {
     packageRequirment: string
 }): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     let success = false;
     let lastError = null;
@@ -280,7 +281,7 @@ export async function installPipPackageTask(dispatcher: TaskEventDispatcher, par
  * @returns 
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     logger.info("start installing Pytorch");
     dispatcher({
@@ -350,7 +351,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
 export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boolean> {
     let success = false;
     let lastError = null;
-    const { PIP_PATH, PYTHON_PATH } = getCondaPaths();
+    const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
 
     for (let i = 0; i < 3; i++) {
         try {
