@@ -8,22 +8,34 @@ import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-p
 import { listenElectron } from "@/lib/electron-bridge";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
+import { useRouter } from "next/router";
 
 export function PanelsContainerServerAdapter(props: PanelContainerProps) {
   const [visible, setVisible] = useState(false);
   const { bootstraped } = useDashboardState();
+  const router = useRouter();
+  const isApp = router.pathname === "/app";
   useEffect(() => {
     if (isWindow) {
       setVisible(true);
     }
   }, []);
-  if (!visible || !bootstraped) {
+  if (!visible) {
+    return (
+      <div className="">
+        loading...
+      </div>
+    )
+  }
+
+  if (!isApp && !bootstraped) {
     return (
       <div className="">
         {props.children}
       </div>
     )
   }
+  
   return <PanelsContainer {...props}/>
 }
 
