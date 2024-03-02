@@ -12,7 +12,6 @@ import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon } from '
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
-import { PanelsContainer } from '../panel/panel-container';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
