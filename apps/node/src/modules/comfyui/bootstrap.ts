@@ -320,12 +320,14 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                 // NVIDIA GPU
                 else if (gpuType === 'nvidia') {
                     const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
-
                     await runCommand(installCommand, dispatcher);
                     success = true;
                     break;
                 } else {
-                    lastError = new Error(`Unkown GPU Type`)
+                    const installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
+                    await runCommand(installCommand, dispatcher);
+                    success = true;
+                    break;
                 }
 
             } catch (error: any) {
