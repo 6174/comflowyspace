@@ -32,7 +32,7 @@ export async function checkBasicRequirements() {
         isComfyUIStarted = await comfyuiService.isComfyUIAlive();
     }
     isCondaInstalled = await checkIfInstalled("conda");
-    isPythonInstalled = await checkIfInstalled("python");
+    isPythonInstalled = !!conda.env?.PYTHON_PATH;
     isGitInstalled = await checkIfInstalled("git --version");
     if (isCondaInstalled && isPythonInstalled) {
         isTorchInstalled = await verifyIsTorchInstalled()
@@ -184,9 +184,11 @@ export async function installPythonTask(dispatcher: TaskEventDispatcher): Promis
                 message: `Start installing Python=3.10.8`
             });
             await runCommand(`conda create -c anaconda -n ${CONDA_ENV_NAME} python=3.10.8 -y`, dispatcher);
+            
             dispatcher({
                 message: `Install Python=3.10.8 finished`
             });
+            conda.updateCondaInfo();
             success = true;
             break;
         } catch (e: any) {
