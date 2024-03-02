@@ -120,7 +120,7 @@ function BootstrapErrors() {
           message: error.message,
           data: {
             createdAt: error.createdAt,
-            level: 'error',
+            level: error.level || 'error',
             type: ComflowyConsoleLogTypes.BOOTSTRAP_ERROR,
           }
         }}>

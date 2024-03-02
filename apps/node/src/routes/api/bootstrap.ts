@@ -72,7 +72,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                     return ret;
                 }
 
-                const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution} There may be an issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
+                const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution}  If you can't go through this issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
@@ -86,15 +86,16 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         if (isPythonInstalled) {
                             return true;
                         }
-                        return await withTimeout(installPythonTask(newDispatcher), 1000 * 60 * 10, msgTemplate("Create python env", "You can directly create a python env from your terminal by running `conda create -n comflowy python=3.10.8`"));
+                        return await withTimeout(installPythonTask(newDispatcher), 1000  * 60 * 10, msgTemplate("Create python env", "You can directly create a python env from your terminal by running `conda create -n comflowy python=3.10.8`"));
                     case BootStrapTaskType.installTorch:
                         const isTorchInstalled = await verifyIsTorchInstalled();
                         if (isTorchInstalled) {
                             return true;
                         }
-                        task = installPyTorchForGPU(newDispatcher);
                         const command = await getInstallPyTorchForGPUCommand();
-                        return await withTimeout(task, 1000 * 60 * 15, msgTemplate("Install torch", `You can copy the command \`${command}\` and directly execute it in your terminal. After that, restart Comflowy.`));
+                        newDispatcher({ message: `Install command \`${command}\`, if it takes too long, you can directly copy this command and execute it in your termnial, after that, restart Comflowyspace.`})
+                        task = installPyTorchForGPU(newDispatcher);
+                        return await withTimeout(task, 1000 * 60 * 20, msgTemplate("Install torch", `You can copy the command \`${command}\` and directly execute it in your terminal. After that, restart Comflowy.`));
                     case BootStrapTaskType.installGit:
                         const isGitInstall = await checkIfInstalled("git --version");
                         if (isGitInstall) {
