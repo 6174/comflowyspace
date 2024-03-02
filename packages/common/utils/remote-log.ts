@@ -7,7 +7,7 @@ export async function remoteLog(props: {
   message: string
 }) {
   try {
-    const url = 'http://127.0.0.1:3000/api/create-log';
+    const url = `${process.env.NEXT_PUBLIC_API_SERVER}/api/create-log`;
     const options = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
