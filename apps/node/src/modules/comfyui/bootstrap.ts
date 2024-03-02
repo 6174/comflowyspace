@@ -166,7 +166,7 @@ export async function installCondaTask(dispatcher: TaskEventDispatcher): Promise
         }
     }
     if (!success) {
-        throw new Error(`Install conda error: ${lastError.message}`)
+        throw new Error(`Install conda error: ${lastError.message}, You can directly install conda from https://docs.anaconda.com/free/miniconda/miniconda-install/. After that, restart Comflowy.`)
     }
     return true;
 }
@@ -291,7 +291,7 @@ export async function installPipPackageTask(dispatcher: TaskEventDispatcher, par
  */
 export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nightly: boolean = false): Promise<boolean> {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
-
+    let installCommand = "";
     logger.info("start installing Pytorch");
     dispatcher({
         message: "Start installing PyTorch..."
@@ -302,7 +302,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     for (let i = 0; i < 3; i++) {
         if (isMac) {
             try {
-                const installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
+                installCommand = `${PIP_PATH} install --pre torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/nightly/cpu`;
                 await runCommand(installCommand, dispatcher);
                 success = true;
                 break;
@@ -329,12 +329,12 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                 }
                 // NVIDIA GPU
                 else if (gpuType === 'nvidia') {
-                    const installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
+                    installCommand = `${PIP_PATH} install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu121`;
                     await runCommand(installCommand, dispatcher);
                     success = true;
                     break;
                 } else {
-                    const installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
+                    installCommand = `${PIP_PATH} install torch torchvision torchaudio`;
                     await runCommand(installCommand, dispatcher);
                     success = true;
                     break;
@@ -347,7 +347,7 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
     }
 
     if (!success) {
-        throw new Error(`PyTorch installation failed: ${lastError.message}`)
+        throw new Error(`PyTorch installation failed: ${lastError.message}. You can directly copy this command \`${installCommand}\` and execute it in your termnial, after that, restart Comflowyspace.`)
     }
 
     dispatcher({
