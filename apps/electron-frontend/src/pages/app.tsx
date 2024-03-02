@@ -24,9 +24,7 @@ export default function WorkflowEditorEntry() {
   }
   return (
     <ReactFlowProvider>
-      <PanelsContainer panels={[]}>
-        <WorkflowEditor />
-      </PanelsContainer>
+      <WorkflowEditor />
     </ReactFlowProvider>
   )
 }

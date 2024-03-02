@@ -6,6 +6,26 @@ import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async
 import { Tabs, TabsProps } from "antd";
 import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-process-manager-async";
 import { listenElectron } from "@/lib/electron-bridge";
+import { isWindow } from "ui/utils/is-window";
+import { useDashboardState } from "@comflowy/common/store/dashboard-state";
+
+export function PanelsContainerServerAdapter(props: PanelContainerProps) {
+  const [visible, setVisible] = useState(false);
+  const { bootstraped } = useDashboardState();
+  useEffect(() => {
+    if (isWindow) {
+      setVisible(true);
+    }
+  }, []);
+  if (!visible || !bootstraped) {
+    return (
+      <div className="">
+        {props.children}
+      </div>
+    )
+  }
+  return <PanelsContainer {...props}/>
+}
 
 /**
  * PanelContainer
@@ -33,12 +53,12 @@ export function PanelsContainer(props: PanelContainerProps) {
 
   useEffect(() => {
     const dragger = draggerRef.current;
-    if (!dragger) {
+    if (!dragger || !panelsVisible) {
       return;
     }
+    console.log("add hook");
     const onMousedown = (e) => {
       const startX = e.clientX;
-      const mainContent = mainRef.current;
       const panels = panelsRef.current;
 
       const startWidth = panels.offsetWidth;
@@ -130,6 +150,7 @@ export function PanelsContainer(props: PanelContainerProps) {
     console.log(key);
   };
 
+  console.log("panelvisible", panelsVisible);
   
   return (
     <div className={styles.panelsWrapper}>
