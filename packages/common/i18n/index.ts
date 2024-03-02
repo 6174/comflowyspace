@@ -12,7 +12,7 @@ export function changeLaunguage(lang: LanguageType) {
   if (defaultLanguage.indexOf("en-") >= 0) {
     defaultLanguage = "en-US";
   }
-  currentLang = "defaultLanguage" as LanguageType;
+  currentLang = defaultLanguage as LanguageType;
 }
 
 if (isWindow) {
