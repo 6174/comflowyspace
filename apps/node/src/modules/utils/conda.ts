@@ -33,8 +33,9 @@ class Conda {
    * Init conda env
    */
   updateCondaInfo () {
-    this.info = conda.getCondaPaths();;
-    this.env = getCondaEnvPaths(CONDA_ENV_NAME, this.info!);
+    this.info = getCondaInfo();
+    this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
+    console.log("update conda info", this.info, this.env);
   }
 
   getCondaPaths(): CondaInfo & CondaEnvInfo {
@@ -51,7 +52,7 @@ conda.updateCondaInfo();
 /**
  * get conda env path
  */
-export function getCondaEnvPaths(env: string, condaInfo: CondaInfo): CondaEnvInfo | undefined {
+export function getCondaEnv(env: string, condaInfo: CondaInfo): CondaEnvInfo | undefined {
   const SHELL_ENV_PATH = getSystemPath({
     CONDA_SCRIPTS_PATH: condaInfo.CONDA_SCRIPTS_PATH,
     CONDA_ENV_PATH: DEFAULT_CONDA_ENV_PATH
@@ -99,7 +100,7 @@ export function getCondaEnvPaths(env: string, condaInfo: CondaInfo): CondaEnvInf
  * Parse Conda path
  * @returns 
  */
-export function getCondaPaths(): CondaInfo {
+export function getCondaInfo(): CondaInfo {
   // if user already install conda, conda_prefix is the location of conda root;
   const conda = getCondaPrefixSync();
   const CONDA_ROOT = conda ? conda : DEFAULT_CONDA_PATH;
