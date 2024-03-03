@@ -28,6 +28,11 @@ export function PanelsContainerServerAdapter(props: PanelContainerProps) {
     )
   }
 
+  // app page use different container
+  if (isApp) {
+    return props.children;
+  }
+
   if (!isApp && !bootstraped) {
     return (
       <div className="">
@@ -35,7 +40,7 @@ export function PanelsContainerServerAdapter(props: PanelContainerProps) {
       </div>
     )
   }
-  
+
   return <PanelsContainer {...props}/>
 }
 
