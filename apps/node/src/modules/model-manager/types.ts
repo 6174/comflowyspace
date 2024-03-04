@@ -30,21 +30,23 @@ export interface FolderPaths {
 }
 
 export type MarketModel = {
-    name: string;
-    type: ModelType;
-    base: string;
-    save_path: string;
-    description: string;
-    reference: string;
-    filename: string;
-    sha?: string;
-    url: string;
+  name: string;
+  type: ModelType;
+  base: string;
+  save_path: string;
+  description: string;
+  reference: string;
+  filename: string;
+  sha?: string;
+  url: string;
 }
-  
+
 /**
  * Manage models
  */
-export type AllModels = { [key: string]: {
+export type AllModels = {
+  [key: string]: {
     name: string,
     size: string
-}[]}
+  }[]
+}
