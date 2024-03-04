@@ -72,14 +72,16 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
       "name": "Note",
       "display_name": "Note",
       "description": "Note",
-      "input": { "required": {
-        "text": [
-          "STRING",
-          {
-            "multiline": true
-          }
-        ]
-      } },
+      "input": {
+        "required": {
+          "text": [
+            "STRING",
+            {
+              "multiline": true
+            }
+          ]
+        }
+      },
       "output": [],
       "category": "utils",
     },
@@ -136,6 +138,17 @@ export async function getQueueApi(): Promise<Queue> {
 
 export function getUploadImageUrl(): string {
   return getComfyUIBackendUrl('/upload/image')
+}
+
+export function getModelImagePreviewUrl(type: 'lora' | 'checkpoints', name: string): string {
+  switch (type) {
+    case 'lora':
+      return getBackendUrl(`/static/models/loras/${name}`)
+    case 'checkpoints':
+      return getBackendUrl(`/static/models/checkpoints/${name}`)
+    default:
+      return ''
+  }
 }
 
 export function getImagePreviewUrl(name: string, type = "input", subfolder = ""): string {

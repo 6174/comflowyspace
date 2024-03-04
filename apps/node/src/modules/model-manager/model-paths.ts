@@ -115,7 +115,7 @@ export function parseExtraModelConfig(extraModelConfigFilePath: string, callback
 }
 
 export function getModelDir(type: ModelType, save_path: string = "default"): string {
-  const {BASE_PATH, MODELS_DIR, FOLDER_NAMES_AND_PATHS} = getFolderNamesAndPaths();
+  const { BASE_PATH, MODELS_DIR, FOLDER_NAMES_AND_PATHS } = getFolderNamesAndPaths();
   if (save_path !== 'default') {
     if (save_path.includes('..') || save_path.startsWith('/')) {
       console.warn(`[WARN] '${save_path}' is not allowed path. So it will be saved into 'models/etc'.`);
@@ -171,9 +171,9 @@ export function createOrUpdateExtraConfigFileFromStableDiffusion(stableDiffusion
     const fileContent = fsExtra.readFileSync(extraModelConfigFilePath, 'utf8');
     try {
       config = yaml.load(fileContent) || {};
-    } catch(err: any) {
+    } catch (err: any) {
       throw new Error("load yaml error:" + err.message)
-    } 
+    }
   }
 
   delete config[STABLE_DIFFUSION_MODEL_MAPPING_CONFIG_NAME];
@@ -196,9 +196,8 @@ export function createOrUpdateExtraConfigFileFromStableDiffusion(stableDiffusion
     // Write back to file
     const newYamlContent = yaml.dump(config);
     fsExtra.writeFileSync(extraModelConfigFilePath, newYamlContent, 'utf8');
-  } catch(err: any) {
+  } catch (err: any) {
     throw new Error("write yaml error:" + err.message)
   }
 }
 
- 

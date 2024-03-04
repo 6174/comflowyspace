@@ -1,117 +1,185 @@
-import { Input } from '@comflowy/common/comfui-interfaces'
-import { memo, useState, useEffect } from 'react'
-import {Input as AntInput, InputNumber, Select, Switch} from "antd";
-import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-const MAX_SELECT_NAME = 36
+import { Input } from '@comflowy/common/comfui-interfaces';
+import { memo, useState, useEffect } from 'react';
+import { Input as AntInput, InputNumber, Select, Switch, Image } from 'antd';
+import {
+	getImagePreviewUrl,
+	getModelImagePreviewUrl,
+} from '@comflowy/common/comfyui-bridge/bridge';
+import { imageFallBack } from '@/assets/image-fallback';
+const MAX_SELECT_NAME = 36;
 
 interface InputProps {
-  value: any
-  name: string
-  input: Input
-  onChange: (val: any) => void
+	value: any;
+	name: string;
+	input: Input;
+	onChange: (val: any) => void;
 }
 
-function InputComponent({ value, name, input, onChange }: InputProps): JSX.Element {
-  if (Input.isList(input)) {
-    return (
-      <Labelled name={name}>
-        <Select
-          value={value} 
-          onChange={(value) => onChange(value)}
-          popupMatchSelectWidth={false}
-        >
-          {input[0].map((k) => {
-            if (name === "image") {
-              const parsedName = k.split("/");
-              let src = getImagePreviewUrl(k);
-              if (parsedName.length > 1) {
-                src = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
-              }
-              return (
-                <Select.Option key={k} value={k} >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img src={src} alt={k} style={{ width: 24, height: 24, marginRight: 5, borderRadius: 2 }} />
-                    {k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k}
-                  </div>
-                </Select.Option>
-              )
-            }
-            return (
-              <Select.Option
-                key={k}
-                value={k}
-              >
-                {k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k}
-              </Select.Option>
-            )
-          })}
-        </Select>
-      </Labelled>
-    )
-  }
-  if (Input.isBool(input)) {
-    return (
-      <Labelled name={name}>
-        <Switch
-          size='small'
-          checked={value}
-          onChange={(ev) => onChange(ev)}
-        />
-      </Labelled>
-    )
-  }
+const getOptions = (
+	type: 'lora_name' | 'image' | 'ckpt_name',
+	list: string[]
+) => {
+	if (type === 'lora_name') {
+		return list.map((k) => {
+			const lora = k.replace(/\.[^.]*$/, '') + '.png';
+			const src = getModelImagePreviewUrl('lora', lora);
+			return {
+				label: k,
+				value: k,
+				image_url: src,
+			};
+		});
+	}
+	if (type === 'image') {
+		return list.map((k) => {
+			const parsedName = k.split('/');
+			let src = getImagePreviewUrl(k);
+			if (parsedName.length > 1) {
+				src = getImagePreviewUrl(parsedName[1], 'input', parsedName[0]);
+			}
+			return {
+				label: k,
+				value: k,
+				image_url: src,
+			};
+		});
+	}
+};
 
-  if (Input.isInt(input) || Input.isFloat(input)) {
-    const numberProps = input[1];
-    const isInt = Input.isInt(input) ;
-    return (
-      <Labelled name={name}>
-        <InputNumber
-          defaultValue={numberProps.default}
-          min={numberProps.min || null}
-          max={numberProps.max || null}
-          className="nodrag"
-          step={isInt ? 1 : 0.01}
-          value={value}
-          onChange={(value) => onChange(value)}
-        />
-      </Labelled>
-    )
-  }
-  if (Input.isString(input)) {
-    const args = input[1]
-    if (args.multiline === true) {
-      return (
-        <AntInput.TextArea
-          autoSize
-          placeholder={name}
-          style={{ minHeight: 128, width: "100%", marginBottom: 10 }}
-          value={value}
-          onChange={(ev) => onChange(ev.target.value)}
-        />
-      )
-    }
-    return (
-      <Labelled name={name}>
-        <AntInput type="text" value={value} onChange={(ev) => onChange(ev.target.value)} />
-      </Labelled>
-    )
-  }
+function InputComponent({
+	value,
+	name,
+	input,
+	onChange,
+}: InputProps): JSX.Element {
+	if (Input.isList(input)) {
+		if (name === 'image' || name === 'lora_name') {
+			const options = getOptions(name, input[0]);
+			return (
+				<Labelled name={name}>
+					<Select
+						style={{ width: '100%' }}
+						value={value}
+						showSearch
+						onChange={onChange}
+						options={options}
+						optionRender={(option) => (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'row',
+									gap: '10px',
+									alignItems: 'center',
+								}}>
+								<Image
+									preview={false}
+                  style={{borderRadius: '2px'}}
+									src={option.data.image_url}
+									width={50}
+									fallback={imageFallBack}
+								/>
+								<div
+									style={{
+										flex: 1,
+										whiteSpace: 'nowrap',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										fontSize: '0.7em',
+									}}>
+									{option.data.value}
+								</div>
+							</div>
+						)}
+					/>
+				</Labelled>
+			);
+		} else {
+			const options = input[0].map((k) => {
+				return {
+					value: k,
+					label: k,
+				};
+			});
+			return (
+				<Labelled name={name}>
+					<Select
+						style={{ width: '100%' }}
+						value={value}
+						showSearch
+						onChange={onChange}
+						options={options}
+					/>
+				</Labelled>
+			);
+		}
+	}
+	if (Input.isBool(input)) {
+		return (
+			<Labelled name={name}>
+				<Switch size='small' checked={value} onChange={(ev) => onChange(ev)} />
+			</Labelled>
+		);
+	}
 
-  return <></>
+	if (Input.isInt(input) || Input.isFloat(input)) {
+		const numberProps = input[1];
+		const isInt = Input.isInt(input);
+		return (
+			<Labelled name={name}>
+				<InputNumber
+					defaultValue={numberProps.default}
+					min={numberProps.min || null}
+					max={numberProps.max || null}
+					className='nodrag'
+					step={isInt ? 1 : 0.01}
+					value={value}
+					onChange={(value) => onChange(value)}
+				/>
+			</Labelled>
+		);
+	}
+	if (Input.isString(input)) {
+		const args = input[1];
+		if (args.multiline === true) {
+			return (
+				<AntInput.TextArea
+					autoSize
+					placeholder={name}
+					style={{ minHeight: 128, width: '100%', marginBottom: 10 }}
+					value={value}
+					onChange={(ev) => onChange(ev.target.value)}
+				/>
+			);
+		}
+		return (
+			<Labelled name={name}>
+				<AntInput
+					type='text'
+					value={value}
+					onChange={(ev) => onChange(ev.target.value)}
+				/>
+			</Labelled>
+		);
+	}
+
+	return <></>;
 }
 
-export default memo(InputComponent)
+export default memo(InputComponent);
 
-function Labelled({ name, children }: { name: string; children: JSX.Element }): JSX.Element {
-  return (
-    <div className="node-input-label-box">
-      <div className="node-input-label-name">
-        <div className="label" style={{
-          maxWidth: 10
-        }}>{name}</div>
-      </div>
-      {children}
-    </div>
-  )
+function Labelled({
+	name,
+	children,
+}: {
+	name: string;
+	children: JSX.Element;
+}): JSX.Element {
+	return (
+		<div className='node-input-label-box'>
+			<div className='node-input-label-name'>
+				<div className='label'>{name}</div>
+			</div>
+			{children}
+		</div>
+	);
 }

@@ -203,8 +203,10 @@
             .node-input-label-box {
                 display: flex;
                 align-items: center;
+                flex-direction: row;
+                gap: 10px;
                 .node-input-label-name {
-                    flex: 1
+                    flex: 1;
                 }
                 .ant-input-number-input-wrap, .ant-input {
                     padding: 0 10px;
