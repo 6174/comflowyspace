@@ -709,6 +709,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ nodeInProgress: { id, progress } })
   },
   onImageSave: (id, images) => {
+    const nodes = get().nodes; 
+    const node = nodes.find(node => node.id === id);
+    // preview image and other temp state
+    if (!node || node?.data?.widget.name !== "SaveImage") {
+      set((st) => ({
+        graph: {
+          ...st.graph,
+          [id]: { ...st.graph[id], images },
+        },
+      }))
+      return;
+    }
+    
+    // presistent save image to gallery
+    console.log("saved image", node, images);
     const last_edit_time = +new Date();
     // sync to state
     set((st) => ({
