@@ -6,7 +6,7 @@ import {
 	getModelImagePreviewUrl,
 } from '@comflowy/common/comfyui-bridge/bridge';
 import { imageFallBack } from '@/assets/image-fallback';
-const MAX_SELECT_NAME = 36;
+const MAX_SELECT_NAME = 30;
 
 interface InputProps {
 	value: any;
@@ -23,13 +23,15 @@ const getOptions = (
 		return list.map((k) => {
 			const lora = k.replace(/\.[^.]*$/, '') + '.png';
 			const src = getModelImagePreviewUrl('lora', lora);
+			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
 			return {
-				label: k,
+				label,
 				value: k,
 				image_url: src,
 			};
 		});
 	}
+
 	if (type === 'image') {
 		return list.map((k) => {
 			const parsedName = k.split('/');
@@ -37,8 +39,9 @@ const getOptions = (
 			if (parsedName.length > 1) {
 				src = getImagePreviewUrl(parsedName[1], 'input', parsedName[0]);
 			}
+			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
 			return {
-				label: k,
+				label,
 				value: k,
 				image_url: src,
 			};
@@ -58,9 +61,9 @@ function InputComponent({
 			return (
 				<Labelled name={name}>
 					<Select
-						style={{ width: '100%' }}
 						value={value}
 						showSearch
+						popupMatchSelectWidth={false}
 						onChange={onChange}
 						options={options}
 						optionRender={(option) => (
@@ -86,7 +89,7 @@ function InputComponent({
 										textOverflow: 'ellipsis',
 										fontSize: '0.7em',
 									}}>
-									{option.data.value}
+									{option.label}
 								</div>
 							</div>
 						)}
@@ -103,9 +106,9 @@ function InputComponent({
 			return (
 				<Labelled name={name}>
 					<Select
-						style={{ width: '100%' }}
 						value={value}
 						showSearch
+						popupMatchSelectWidth={false}
 						onChange={onChange}
 						options={options}
 					/>
@@ -177,7 +180,9 @@ function Labelled({
 	return (
 		<div className='node-input-label-box'>
 			<div className='node-input-label-name'>
-				<div className='label'>{name}</div>
+				<div className='label' style={{
+					maxWidth: 10
+				}}>{name}</div>
 			</div>
 			{children}
 		</div>
