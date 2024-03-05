@@ -19,3 +19,7 @@ ComflowySpace 的目标是让 ComfyUI & Stable Diffusion 成为普通人都能�
 ![](./assets/home.jpg)
 ![](./assets/gallery.jpg)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=6174/comflowyspace&type=Date)](https://star-history.com/#6174/comflowyspace&Date)
+

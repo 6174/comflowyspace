@@ -61,3 +61,9 @@ This project exists thanks to all the people who contributed:
 <a href="https://github.com/6174/comflowyspace/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=6174/comflowyspace" height="50px">
 </a>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=6174/comflowyspace&type=Date)](https://star-history.com/#6174/comflowyspace&Date)
+
+
