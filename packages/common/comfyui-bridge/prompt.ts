@@ -4,6 +4,7 @@ import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkfl
 import { ComfyUIError, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
+import { uuid } from '../utils'
 
 interface PromptRequest {
   client_id?: string
@@ -43,7 +44,6 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
   }
 }
 
-
 export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
   const prompt: Record<NodeId, Node> = {}
   const data: Record<NodeId, PersistedWorkflowNode> = {}
@@ -63,6 +63,11 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       }
     }
 
+    if (widget.name === "SaveImage") {
+      const filename_prefix = fields.filename_prefix || "";
+      fields.filename_prefix = `${filename_prefix}_${uuid().substring(0, 4)}`;
+    }
+
     data[id] = {
       id,
       position: node.position,
@@ -73,6 +78,8 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       class_type: node.value.widget,
       inputs: fields,
     }
+
+    
   }
 
   for (const edge of workflow.connections) {
