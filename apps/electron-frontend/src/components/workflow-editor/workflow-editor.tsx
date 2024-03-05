@@ -213,6 +213,9 @@ export default function WorkflowEditor() {
   }, []);
 
   const onCopy = React.useCallback((ev: ClipboardEvent) => {
+    if ((ev.target as HTMLElement)?.className === "node-error") {
+      return;
+    }
     const state = useAppStore.getState();
     const selectedNodes = state.nodes.filter(node => node.selected);
     const workflowMap = state.doc.getMap("workflow");
