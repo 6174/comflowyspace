@@ -162,9 +162,36 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
 
 // ... more strategies for other log types ...
 
+class LinearErrorParsingStrategy implements LogParsingStrategy {
+  private currentLogLines: string[] = [];
+
+  parse(log: string): ComflowyConsoleLog[] {
+    const ret: ComflowyConsoleLog[] = [];
+    const linearShapeErrorRegex = /RuntimeError: linear\(\):/;
+    if (linearShapeErrorRegex.test(log)) {
+      this.currentLogLines.push(log);
+      const errorMatch = linearShapeErrorRegex.exec(log);
+      if (errorMatch) {
+        const errorMessage = `RuntimeError: ${errorMatch[0]}`;
+        ret.push({
+          id: uuid(),
+          message: errorMessage,
+          data: {
+            type: ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR,
+            level: "error",
+            createdAt: +new Date(),
+          }
+        });
+      }
+    } 
+    return ret;
+  }
+}
+
 const strategies: LogParsingStrategy[] = [
   new ImportResultParsingStrategy(),
   new ExtensionImportParsingStrategy(),
+  new LinearErrorParsingStrategy(),
 ];
 
 export function parseComflowyLogs(logs: string): ComflowyConsoleLog[] {
@@ -191,6 +218,6 @@ export function parseComflowyLogsByLine(log: string): ComflowyConsoleLog[] {
       logList.push(...result);
     }
   }
-  return logList
+  return logList;
 }
 

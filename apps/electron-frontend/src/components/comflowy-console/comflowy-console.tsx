@@ -8,6 +8,7 @@ import { LogTypeDefault } from "./log-types/log-type-default";
 import { LogTypeCustomNodesImportResult } from "./log-types/log-type-custom-nodes-import-result";
 import { LogTypeCustomNodesImportInfo } from "./log-types/log-type-custom-node-import-info";
 import { LogTypeExecuteNodeError } from "./log-types/log-type-node-error";
+import { LogTypeLinearShapeError } from "./log-types/log-type-linear-shape-error";
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -78,7 +79,12 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
       LogCO = LogTypeCustomNodesImportInfo;
       break;
     case ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR:
-      LogCO = LogTypeExecuteNodeError;
+      // 你可能会根据错误信息的不同，区分展示的错误类型组件
+      if (log.message.includes("RuntimeError")) {
+        LogCO = LogTypeLinearShapeError; // 使用专门处理线性形状错误的组件
+      } else {
+        LogCO = LogTypeExecuteNodeError; // 其他执行节点错误用现有组件处理
+      }
       break;
     default: 
       LogCO = LogTypeDefault;
