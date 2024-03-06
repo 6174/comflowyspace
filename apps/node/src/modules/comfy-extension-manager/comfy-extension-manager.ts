@@ -43,6 +43,15 @@ class ComfyExtensionManager {
       doFetch: checkUpdate,
       doUpdateCheck: checkUpdate
     });
+
+    // add local extensions which is not in extension market to list
+    installedExtensions.forEach(it => {
+      const id = it.title + it.reference;
+      if (!ret.find(it2 => it2.title + it2.reference === id)) {
+        ret.push(it);
+      }
+    });
+
     sheduleUpdateMarketExtensions();
     return ret.map(it => {
       const installedExtension = installedExtensions.find(it2 => it2.title + it2.reference === it.title + it.reference);
