@@ -42,17 +42,18 @@ class ComfyuiService {
         if (this.#comfyuiStarted) {
           ComflowyConsole.consumeComfyUILogMessage(event.message);
           this.comfyuilogs += event.message;
-          if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
-            this.comfyuiProgressEvent.emit({
-              type: "START_SUCCESS",
-              message: "ComfyUI Started Success"
-            })
-            this.comfyUIStartedSuccessEvent.emit({
-              session: this.comfyuiSessionId
-            })
-          }
         }
 
+        if (event.message?.includes("To see the GUI go to: http://127.0.0.1:8188")) {
+          this.comfyuiProgressEvent.emit({
+            type: "START_SUCCESS",
+            message: "ComfyUI Started Success"
+          })
+          this.comfyUIStartedSuccessEvent.emit({
+            session: this.comfyuiSessionId
+          })
+        }
+        
         if (event.message?.includes("Stopped server")) {
           this.#comfyuiStarted = false;
         }

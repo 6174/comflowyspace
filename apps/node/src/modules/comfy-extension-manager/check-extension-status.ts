@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import simpleGit from 'simple-git';
 import { Extension, getExtensionDir } from './types';
 import logger from '../utils/logger';
-
+import * as fsExtra from "fs-extra";
 
 const js_path = '/path/to/js'; // Change this to your JS path
 
@@ -43,15 +43,13 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
         const dirPath = path.join(custom_nodes_path, dirName);
 
         if (fs.existsSync(dirPath)) {
+            item.installed = true;
             try {
                 if (doUpdateCheck && (await gitRepoHasUpdates(dirPath, doFetch, doUpdate))) {
                     item.need_update = true;
-                    item.installed = true;
-                } else {
-                    item.installed = true;
-                }
-            } catch {
-                item.installed = true;
+                } 
+            } catch (err: any) {
+                logger.error("parse error:" + err.message)
             }
         }
         
@@ -79,6 +77,19 @@ export async function checkAExtensionInstalled(item: Extension, doFetch = false,
         
         if (fs.existsSync(filePath + '.disabled')) {
             item.disabled = true;
+        }
+    } else if (item.custom_extension) {
+        item.installed = true;
+        const dirPath = path.join(custom_nodes_path, item.title);
+        try {
+            const stat = await fsExtra.stat(path.join(dirPath, '.git'));
+            if (stat.isDirectory()) {
+                if (doUpdateCheck && (await gitRepoHasUpdates(dirPath, doFetch, doUpdate))) {
+                    item.need_update = true;
+                }
+            }
+        } catch(err: any) {
+            logger.error("parse error:" + err.message)
         }
     }
 }
