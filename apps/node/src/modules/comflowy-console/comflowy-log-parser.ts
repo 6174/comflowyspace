@@ -39,18 +39,20 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
           }
         }
 
-        console.log("importResults", importResults, successfulImports, failedImports);
-        ret.push({
-          id: uuid(),
-          message: `Import results: ${successfulImports.length} successful, ${failedImports.length} failed`,
-          data: {
-            type: ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT,
-            level: "info",
-            createdAt: +new Date(),
-            successfulImports,
-            failedImports,
-          }
-        });
+        if (failedImports.length > 0) {
+          console.log("importResults", importResults, successfulImports, failedImports);
+          ret.push({
+            id: uuid(),
+            message: `Import results: ${successfulImports.length} successful, ${failedImports.length} failed`,
+            data: {
+              type: ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT,
+              level: "info",
+              createdAt: +new Date(),
+              successfulImports,
+              failedImports,
+            }
+          });
+        }
       } else {
         this.currentLogLines.push(log);
       }
