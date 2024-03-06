@@ -25,11 +25,16 @@ function WorkflowPageNodeError({ log }: { log: ComflowyConsoleLog }) {
   const nodes = useAppStore(st => st.nodes);
   const router = useRouter();
   const currentWorkflowId = router.query.id;
+
+  if (workflowId !== currentWorkflowId) {
+    return null;
+  }
+
   const node = nodes.find(n => n.id === nodeId);
   const { setViewport, setCenter, zoomIn, zoomOut } = useReactFlow();
   const storeApi = useStoreApi();
 
-  if (!node || currentWorkflowId !== workflowId) {
+  if (!node) {
     return <LogTypeDefault log={log} />
   }
 
