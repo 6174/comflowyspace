@@ -8,6 +8,7 @@ import { LogTypeDefault } from "./log-types/log-type-default";
 import { LogTypeCustomNodesImportResult } from "./log-types/log-type-custom-nodes-import-result";
 import { LogTypeCustomNodesImportInfo } from "./log-types/log-type-custom-node-import-info";
 import { LogTypeExecuteNodeError } from "./log-types/log-type-node-error";
+import { LogTypeLinearShapeError } from "./log-types/log-type-linear-shape-error";
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -78,7 +79,10 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
       LogCO = LogTypeCustomNodesImportInfo;
       break;
     case ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR:
-      LogCO = LogTypeExecuteNodeError;
+      LogCO = LogTypeExecuteNodeError; 
+      break;
+    case ComflowyConsoleLogTypes.LINEAR_SHAPE_ERROR:
+      LogCO = LogTypeLinearShapeError; 
       break;
     default: 
       LogCO = LogTypeDefault;

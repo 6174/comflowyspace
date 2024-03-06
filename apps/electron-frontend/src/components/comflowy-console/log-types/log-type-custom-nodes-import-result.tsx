@@ -10,8 +10,9 @@ export function LogTypeCustomNodesImportResult({log}: {log: ComflowyConsoleLog})
   const importFailedExtensions = log.data.failedImports || [];
   return (
     <Log log={log} level={importFailedExtensions.length > 0 ? "warn" : "info"} title={`Load custom nodes ${importSuccessExtensions.length} success, ${importFailedExtensions.length} failed`} className={`log-type-custom-nodes-import-result`}>
-      {importSuccessExtensions.length > 0 && <div>Successed: {importSuccessExtensions.join(", ")}</div>}
+      {/* {importSuccessExtensions.length > 0 && <div>Successed: {importSuccessExtensions.join(", ")}</div>} */}
       {importFailedExtensions.length > 0 && <div>Failed: {importFailedExtensions.join(", ")}</div>}
+      For details on the solution, please check: <a href="https://www.comflowy.com/blog/comflowy-faq#extension" target="_blank">Comflowy FAQ</a>
     </Log>
   )
 }

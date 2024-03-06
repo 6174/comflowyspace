@@ -29,7 +29,7 @@ export function parseComflowyRunErrors(worfklowInfo: PersistedWorkflowDocument, 
   });
 
   const { error } = runErrors;
-  if (error) {
+  if (error && error.message !== 'Prompt outputs failed validation') { // ignore prompt validation errors
     logList.push({
       id: uuid(),
       message: error.message,
