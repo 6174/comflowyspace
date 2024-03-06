@@ -177,7 +177,7 @@ class LinearErrorParsingStrategy implements LogParsingStrategy {
           id: uuid(),
           message: errorMessage,
           data: {
-            type: ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR,
+            type: ComflowyConsoleLogTypes.LINEAR_SHAPE_ERROR,
             level: "error",
             createdAt: +new Date(),
           }

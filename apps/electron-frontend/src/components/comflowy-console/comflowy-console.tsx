@@ -79,12 +79,10 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
       LogCO = LogTypeCustomNodesImportInfo;
       break;
     case ComflowyConsoleLogTypes.EXECUTE_NODE_ERROR:
-      // 你可能会根据错误信息的不同，区分展示的错误类型组件
-      if (log.message.includes("RuntimeError")) {
-        LogCO = LogTypeLinearShapeError; // 使用专门处理线性形状错误的组件
-      } else {
-        LogCO = LogTypeExecuteNodeError; // 其他执行节点错误用现有组件处理
-      }
+      LogCO = LogTypeExecuteNodeError; 
+      break;
+    case ComflowyConsoleLogTypes.LINEAR_SHAPE_ERROR:
+      LogCO = LogTypeLinearShapeError; 
       break;
     default: 
       LogCO = LogTypeDefault;

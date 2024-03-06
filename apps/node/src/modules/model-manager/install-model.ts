@@ -49,14 +49,14 @@ import { comfyuiService } from "../comfyui/comfyui.service";
 export async function downloadDefaultModel(): Promise<boolean> { 
     try {
         const modelConfig = {
-            "name": "v1-5-dream-shaper.ckpt",
+            "name": "v1-5-dream-shaper.safetensors",
             "type": "checkpoints",
             "base": "SD1.5",
             "sha": "879DB523C30D3B9017143D56705015E15A2CB5628762C11D086FED9538ABD7FD",
             "save_path": "default",
             "description": "Stable Diffusion 1.5 DreamShaper ",
             "reference": "https://civitai.com/models/4384?modelVersionId=128713",
-            "filename": "v1-5-dream-shaper.ckpt",
+            "filename": "v1-5-dream-shaper.safetensors",
             "url": "https://civitai.com/api/download/models/128713",
             "size": "4067.78M"
         } as MarketModel;
@@ -67,7 +67,7 @@ export async function downloadDefaultModel(): Promise<boolean> {
             return true;
         }
 
-        const fileName = "v1-5-dream-shaper.ckpt";
+        const fileName = "v1-5-dream-shaper.safetensors";
         const tmpOutputFile = path.resolve(getAppTmpDir(), fileName);
 
         console.log(tmpOutputFile, finalOutputFile);
