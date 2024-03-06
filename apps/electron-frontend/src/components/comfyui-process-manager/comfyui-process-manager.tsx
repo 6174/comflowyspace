@@ -25,7 +25,7 @@ const ComfyUIProcessManager = () => {
       setMessages([...messages, msg]);
     }
 
-    if (msg.message.includes("Restart ComfyUI Success")) {
+    if (msg.message && msg.message.includes("Restart ComfyUI Success")) {
       // console.log("trigger restart_comfyui_success");
       SlotGlobalEvent.emit({
         type: GlobalEvents.restart_comfyui_success,
