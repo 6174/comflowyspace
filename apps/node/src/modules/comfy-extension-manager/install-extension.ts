@@ -13,6 +13,7 @@ import logger from "../utils/logger";
 import { URL } from 'url';
 import { removeExtension } from "./remove-extension";
 import { conda } from "../utils/conda";
+import { getExtensionPath } from "./extension-utils";
 
 const appTmpDir = getAppTmpDir();
 
@@ -37,6 +38,21 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         });
         return false;
     }
+
+    const extensionPath = getExtensionPath(extension)!;
+    if (!extensionPath) {
+        dispatcher({
+            message: `Extension ${extension.title} is not configured corrent, please contact us :-/`
+        });
+        return false;
+    }
+
+    if (fs.existsSync(extensionPath)) {
+        dispatcher({
+            message: `Extension ${extension.title} already installed`
+        });
+        return false;
+    }
     
     try {
         // from civizai zip file
@@ -53,6 +69,9 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
         // a full git repo
         if (install_type === 'git-clone') {
             res = await gitCloneInstall(dispatcher, extension.files);
+            dispatcher({
+                message: "git clone success"
+            });
         }
     
         if (extension.pip) {
@@ -60,6 +79,19 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
                 message: `Start installing pip packages ${extension.title}`
             });
             await runCommand(`${PIP_PATH} install ${extension.pip.join(" ")}`)
+        }
+
+        /**
+         * Install dependencies by requirements definition
+         */
+        if (fs.existsSync(path.resolve(extensionPath, "requirements.txt"))) {
+            try {
+                await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatcher, {
+                    cwd: extensionPath
+                });
+            } catch(err) {
+                console.log(err);
+            }
         }
     
         if (res) {

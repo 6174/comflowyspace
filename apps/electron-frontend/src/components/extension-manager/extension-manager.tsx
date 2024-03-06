@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
 import { Button, Col, Input, Modal, Row, Space } from "antd";
-import { InstallExtensionButton } from "./install-extension-button";
+import { InstallExtensionButton, InstallExtensionFromGitUrl } from "./install-extension-button";
 import { CloseIcon, ExtensionIcon, MoreIcon, ReloadIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
 import { UpdateExtensionButton } from "./update-extension-button";
@@ -30,6 +30,9 @@ function ExtensionManager() {
           display: 'flex'
         }}>
           <h2> Installed Extensions </h2>
+          <div className="actions">
+            <InstallExtensionFromGitUrl/>
+          </div>
         </div>
         <p className="sub">Extensions already installed on your device</p>
         <ExtensionList extensions={installedExtensions} showFilter={false}/>
