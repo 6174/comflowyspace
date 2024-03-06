@@ -21,7 +21,6 @@ function ExtensionManager() {
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);
-  const communityExtensions = extensions.filter(ext => !ext.installed);
 
   return (
     <div className={styles.extensionManager}>
@@ -40,7 +39,7 @@ function ExtensionManager() {
       <div className="extension-market">
         <h2>Community Extensions</h2>
         <p className="sub">Install extensions from the community</p>
-        <ExtensionList extensions={communityExtensions}/>
+        <ExtensionList extensions={extensions}/>
       </div>
     </div>
   )
@@ -51,7 +50,7 @@ function ExtensionList(props: {
   showFilter?: boolean
 }) {
   const {extensions, showFilter = true} = props;
-  const [displayedExtensions, setDisplayedExtensions] = useState(extensions);
+  const [searchedExtensions, setSearchedExtensions] = useState(extensions);
   const [searchText, setSearchText] = useState('');
 
   const doFilter = useCallback(() => {
@@ -61,13 +60,14 @@ function ExtensionList(props: {
         ext.description.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    setDisplayedExtensions(filteredExtensions);
+    setSearchedExtensions(filteredExtensions);
   }, [extensions, searchText]);
 
   useEffect(() => {
     doFilter();
   }, [extensions])
 
+  const displayedExtensions = (searchText?.trim() !== "") ? searchedExtensions : extensions;
   return (
     <div className='extension-list'>
       <Row>
