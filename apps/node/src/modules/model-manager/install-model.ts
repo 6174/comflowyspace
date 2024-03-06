@@ -1,6 +1,6 @@
 import { TaskEventDispatcher } from "../task-queue/task-queue";
 import { downloadUrl, downloadUrlPro } from "../utils/download-url";
-import { getModelPath } from "./model-paths";
+import { getModelDir, getModelPath } from "./model-paths";
 import * as fs from "fs";
 import { MarketModel } from "./types";
 import { isWindows } from "../utils/env";
@@ -49,17 +49,19 @@ import { comfyuiService } from "../comfyui/comfyui.service";
 export async function downloadDefaultModel(): Promise<boolean> { 
     try {
         const modelConfig = {
-            "name": "v1-5-dream-shaper.ckpt",
+            "name": "v1-5-dream-shaper.safetensors",
             "type": "checkpoints",
             "base": "SD1.5",
             "sha": "879DB523C30D3B9017143D56705015E15A2CB5628762C11D086FED9538ABD7FD",
             "save_path": "default",
             "description": "Stable Diffusion 1.5 DreamShaper ",
             "reference": "https://civitai.com/models/4384?modelVersionId=128713",
-            "filename": "v1-5-dream-shaper.ckpt",
+            "filename": "v1-5-dream-shaper.safetensors",
             "url": "https://civitai.com/api/download/models/128713",
             "size": "4067.78M"
         } as MarketModel;
+
+        bugfixForWrongModelName(modelConfig);
 
         const finalOutputFile = getModelPath(modelConfig);
 
@@ -67,7 +69,7 @@ export async function downloadDefaultModel(): Promise<boolean> {
             return true;
         }
 
-        const fileName = "v1-5-dream-shaper.ckpt";
+        const fileName = "v1-5-dream-shaper.safetensors";
         const tmpOutputFile = path.resolve(getAppTmpDir(), fileName);
 
         console.log(tmpOutputFile, finalOutputFile);
@@ -112,4 +114,16 @@ export async function downloadDefaultModel(): Promise<boolean> {
         logger.error("Download default model error" + err.message + ":" + err.stack)
     }
     return false;
+}
+
+function bugfixForWrongModelName(modelConfig: MarketModel) {
+    try {
+        const modelDir = getModelDir(modelConfig.type, modelConfig.save_path);
+        const wrongInstallModel = path.join(modelDir, "v1-5-dream-shaper.ckpt");
+        if (fs.existsSync(wrongInstallModel)) {
+            fs.renameSync(wrongInstallModel, getModelPath(modelConfig));
+        }
+    } catch(err: any) {
+        logger.error("bugfixForWrongModelName error" + err.message + ":" + err.stack)
+    }
 }
