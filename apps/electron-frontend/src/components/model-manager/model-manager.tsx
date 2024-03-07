@@ -10,6 +10,7 @@ import { FolderIcon, ReloadIcon } from 'ui/icons';
 import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
 import { ModelSettings } from './model-settings';
 import ModelCards from './model-recommend';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
@@ -27,14 +28,14 @@ const ModelManagement = () => {
       <div style={{
         display: 'flex'
       }}>
-        <h2> Model Management </h2>
+        <h2> {t(KEYS.modelManagement)} </h2>
         <div className="actions">
           {isElectronEnv  && 
             <div className="open-button">
               <Button size='small' onClick={() => {
                 openDirectory(modelPath);
               }}> 
-                <FolderIcon/> Model Folder
+                <FolderIcon/> {t(KEYS.modelFolder)}
               </Button>
             </div>
           }
@@ -43,7 +44,7 @@ const ModelManagement = () => {
             <Button size='small' loading={loading} disabled={loading} onClick={() => {
               onInit();
             }}> 
-              <ReloadIcon /> Refresh
+              <ReloadIcon /> {t(KEYS.refresh)}
             </Button>
           </div>
         </div>
@@ -54,10 +55,13 @@ const ModelManagement = () => {
         ))}
       </div>
       <Tabs defaultActiveKey="available" >
-        <Tabs.TabPane tab="Available" key="available">
+        <Tabs.TabPane 
+          tab={t(KEYS.available)} 
+          key="available"
+        >
           <ModelCards/>
         </Tabs.TabPane> 
-        <Tabs.TabPane tab="Installed" key="installed">
+        <Tabs.TabPane tab={t(KEYS.installed)} key="installed">
           <InstalledModels/>
         </Tabs.TabPane> 
       </Tabs>

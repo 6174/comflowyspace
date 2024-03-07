@@ -20,7 +20,7 @@ function MyWorkflowsPage() {
   return (
     <div className={styles.myWorkflows}>
       <WorkflowCreateBox/>
-      <h2>My Workflows</h2>
+      <h2>{t(KEYS.myWorkflows)}</h2>
       <WorkflowList/>
     </div>
   )
@@ -57,7 +57,7 @@ function WorkflowCreateBox() {
   return (
     <div className="workflow-create-box">
       <h2>{t(KEYS.createNewWorkflow)}</h2>
-      <p className="sub">Choose the method for creating your worklow</p>
+      <p className="sub">{t(KEYS.chooseMethod)}</p>
       <Space>
         <div className="create-button" onClick={ev => {
           createNewDoc();
@@ -66,8 +66,8 @@ function WorkflowCreateBox() {
             <NewIcon/>
           </div>
           <div className="info">
-            <div className="title">New workflow</div>
-            <div className="description">Create default workflow</div>
+            <div className="title">{t(KEYS.newWorkflow)}</div>
+            <div className="description">{t(KEYS.createDefaultWorkflow)}</div>
           </div>
         </div>
         <ImportWorkflow/>
@@ -78,8 +78,8 @@ function WorkflowCreateBox() {
             <TemplateIcon/>
           </div>
           <div className="info">
-            <div className="title">Template</div>
-            <div className="description">Select a template to start</div>
+            <div className="title">{t(KEYS.template)}</div>
+            <div className="description">{t(KEYS.selectTemplate)}</div>
           </div>
         </div>
         {/* <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
@@ -134,11 +134,12 @@ function WorkflowList() {
 
         const deleteItem = async () => {
           modal.confirm({
-            title: 'Do you want to delete this item?',
-            okText: 'Yes',
+            title: t(KEYS.deleteWorkflow),
+            okText: t(KEYS.yes),
             onOk: async () => {
               const ret = await documentDatabaseInstance.deleteDocSoft(doc.id); 
             },
+            cancelText: t(KEYS.cancel),
             onCancel() { },
           });
         }
@@ -195,7 +196,7 @@ function WorkflowList() {
                       ev.stopPropagation();
                       deleteItem();
                     }}>
-                      <DeleteIcon/> Remove
+                      <DeleteIcon/> {t(KEYS.remove)}
                     </div>
                   </div>
                 )} title={null} >

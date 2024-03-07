@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './tutorials.style.module.scss';
 import { openExternalURL } from '@/lib/electron-bridge';
 import  useTutorialStore  from './tutorial.store';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 interface TutorialCardProps {
   image: string;
@@ -74,35 +75,35 @@ const Tutorials = () => {
 
   return (
     <div className={styles.tutorials}>
-      <h2>Tutorials</h2>
+      <h2>{t(KEYS.tutorials)}</h2>
       <div className="tutorial-banner-list">
         {getstartedTutorials.map((card, index) => (
           <TutorialBanner key={index} {...card} />
         ))}
       </div>
-      <div className="h3" >Fundamentals</div>
-      <div className="p">I strongly suggest that you first learn the fundamentals of Stable Diffusion. This will give you a better understanding of the principles behind AI image generation, and you will be able to use Comflowy more effectively:</div>
+      <div className="h3" >{t(KEYS.fundamentals)}</div>
+      <div className="p">{t(KEYS.fundamentalsDesc)}</div>
       <div className="tutorial-card-list">
         {sdTutorials.map((card, index) => (
           <TutorialCard key={index} {...card} />
         ))}
       </div>
-      <div className="h3">Text-to-image</div>
-      <div className="p">If you're interested in further learning about text-to-image generation techniques, you can check out the following sections:</div>
+      <div className="h3">{t(KEYS.textToImage)}</div>
+      <div className="p">{t(KEYS.textToImageDesc)}</div>
       <div className="tutorial-card-list">
         {texttoimageTutorials.map((card, index) => (
           <TutorialCard key={index} {...card} />
         ))}
       </div>
-      <div className="h3" >Image-to-image</div>
-      <div className="p">If you'd like to learn some image-to-image generation techniques, you can check out the following sections:</div>
+      <div className="h3">{t(KEYS.imageToImage)}</div>
+      <div className="p">{t(KEYS.imageToImageDesc)}</div>
       <div className="tutorial-card-list">
         {imagetoimageTutorials.map((card, index) => (
           <TutorialCard key={index} {...card} />
         ))}
       </div>
-      <div className="h3" >Best Practices</div>
-      <div className="p">In addition to the basic tutorials, there are also some best practice cases that you can refer to and try out:</div>
+      <div className="h3">{t(KEYS.bestPractices)}</div>
+      <div className="p">{t(KEYS.bestPracticesDesc)}</div>
       <div className="tutorial-card-list">
         {blogs.map((card, index) => (
           <TutorialCard key={index} {...card} />

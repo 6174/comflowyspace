@@ -20,8 +20,8 @@ log.transports.file.format = '{level} {text}';
 
 app.setAboutPanelOptions({
   applicationName: 'Comflowy',
-  applicationVersion: '0.0.9-alpha',
-  version: '0.0.9-alpha',
+  applicationVersion: '0.1.0-alpha',
+  version: '0.1.0-alpha',
   copyright: 'Copyright © 2024 https://www.comflowy.com',
   authors: ['@Marc Chen', '@Jimmy Wang'],
   website: 'https://www.comflowy.com',
@@ -31,13 +31,13 @@ app.setAboutPanelOptions({
 app.on('ready', async () => {
   try {
     startIPC()
-    log.info('Start Server');  
+    log.info('Start Server');
     showLoadingScreen();
     // run next frontend service
     await startAppServer({
       port: APP_SERVER_PORT,
       staticFolder: isDev ? null : path.resolve(__dirname, "../../renderer/out")
-    }); 
+    });
     log.info('create main window');
     // start desktop window
     await windowManger.createMainWindow();

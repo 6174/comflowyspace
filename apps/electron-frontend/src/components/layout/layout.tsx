@@ -72,7 +72,7 @@ const WorkspaceNav = () => {
             <WorkflowIcon/>
           </div>
           <a>
-            {t(KEYS.myWorkflows)}
+            {t(KEYS.workflows)}
           </a>
         </div>
         <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {
