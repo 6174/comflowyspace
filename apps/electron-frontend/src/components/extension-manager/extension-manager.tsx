@@ -9,6 +9,7 @@ import { UpdateExtensionButton } from "./update-extension-button";
 import { DisableExtensionButton } from "./disable-extension-button";
 import { openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
+import {KEYS, t} from "@comflowy/common/i18n";
 
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
@@ -28,17 +29,17 @@ function ExtensionManager() {
         <div style={{
           display: 'flex'
         }}>
-          <h2> Installed Extensions </h2>
+          <h2> {t(KEYS.installedExtensions)} </h2>
           <div className="actions">
             <InstallExtensionFromGitUrl/>
           </div>
         </div>
-        <p className="sub">Extensions already installed on your device</p>
+        <p className="sub">{t(KEYS.extensionsInstalled)}</p>
         <ExtensionList extensions={installedExtensions} showFilter={false}/>
       </div>
       <div className="extension-market">
-        <h2>Community Extensions</h2>
-        <p className="sub">Install extensions from the community</p>
+        <h2>{t(KEYS.communityExtensions)}</h2>
+        <p className="sub">{t(KEYS.installExtensionsFromCommunity)}</p>
         <ExtensionList extensions={extensions}/>
       </div>
     </div>
@@ -74,7 +75,7 @@ function ExtensionList(props: {
         {showFilter && 
           <Col span={12} style={{ marginBottom: 16 }}>
             <Input
-              placeholder="Search Extensions"
+              placeholder={t(KEYS.searchExtensions)}
               value={searchText}
               onChange={e => setSearchText(e.target.value)}
               onPressEnter={doFilter}
@@ -83,7 +84,7 @@ function ExtensionList(props: {
         }
       </Row>
       <p className="sub">
-        Total extensions: {displayedExtensions.length}
+        {t(KEYS.totalExtensions)}: {displayedExtensions.length}
       </p>
       <div className="result">
         {displayedExtensions.map((ext, index) => {

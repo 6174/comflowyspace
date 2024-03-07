@@ -9,6 +9,8 @@ import { listenElectron, openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import {WarningIcon} from "ui/icons";
+import {KEYS, t} from "@comflowy/common/i18n";
+
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
   const setMessages = useComfyUIProcessManagerState(state => state.setMessages);
@@ -180,9 +182,9 @@ const ComfyUIProcessManager = () => {
               type: "input",
               command: "\x03"
             });
-          }}>Stop Server</Button>
-          <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
-          <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+          }}>{t(KEYS.stopServer)}</Button>
+          <Button loading={restarting} disabled={restarting} onClick={restart}>{t(KEYS.restart)}</Button>
+          <Button loading={updating} disabled={updating} onClick={update}>{t(KEYS.update)}</Button>
           <InstallPipActions/>
         </Space>
       </div>
@@ -279,17 +281,18 @@ function InstallPipActions() {
     <div className="install-pip-packages">
       <Button disabled={processing} loading={processing} danger={missingModules.length > 0} onClick={() => {
         showModal();
-      }}>Pip Install {missingModules.length > 0 ? toolTip : ""}</Button>
+      }}>{t(KEYS.pipInstall)} {missingModules.length > 0 ? toolTip : ""}</Button>
       <Modal  
-        title={"Install Pip Packages"}
-        okText="Install"
+        title={t(KEYS.installPip)}
+        okText={t(KEYS.install)}
+        cancelText={t(KEYS.cancel)}
         okButtonProps={{loading: processing, disabled: processing}}
         onOk={handleValueSubmit}
         onCancel={handleCancel}
         open={visible}>
         <div className="content">
           <Input 
-            placeholder="Input python packages eg `numbpy pandas tensorflow`"
+            placeholder={t(KEYS.pipPlaceholder)}
             value={value} 
             style={{width: "100%"}}
             onChange={handleValueChange} 

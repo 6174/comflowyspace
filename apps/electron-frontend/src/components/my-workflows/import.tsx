@@ -6,6 +6,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -72,8 +73,8 @@ export const ImportWorkflow = () => {
           <ImageIcon/>
       </div>
       <div className="info">
-        <div className="title">Import</div>
-        <div className="description">Create from an image or JSON</div>
+        <div className="title">{t(KEYS.import)}</div>
+        <div className="description">{t(KEYS.createFromImageOrJson)}</div>
       </div>
     </div>
   );

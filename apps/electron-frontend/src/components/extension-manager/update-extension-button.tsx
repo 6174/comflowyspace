@@ -2,6 +2,7 @@ import config, { getBackendUrl } from "@comflowy/common/config";
 import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { Button, message } from "antd";
 import { useCallback, useState } from "react";
+import {KEYS, t} from "@comflowy/common/i18n";
 
 export function UpdateExtensionButton(props: {extension: Extension}) {
     const {extension} = props;
@@ -23,7 +24,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             const ret = await res.json();
             if (ret.success) {
                 await onInit();
-                message.success("Success");
+                message.success(t(KEYS.success));
             } else {
                 message.error(ret.error)
             }
@@ -43,7 +44,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
                 if (!running) {
                     action();
                 }
-            }}>Update</Button>
+            }}>{t(KEYS.update)}</Button>
         </div>
     )
 }

@@ -5,6 +5,7 @@ import { Modal, message } from 'antd';
 import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { openExternalURL, openTabPage } from '@/lib/electron-bridge';
 import { useAppStore } from '@comflowy/common/store';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 const Templates = () => {
   const {templates, onInit} = useTemplatesState();
@@ -15,8 +16,8 @@ const Templates = () => {
 
   return (
     <div className={styles.templates}>
-      <h2>Templates</h2>
-      <p className="sub">Choose a template for creating your worklow</p>
+      <h2>{t(KEYS.templates)}</h2>
+      <p className="sub">{t(KEYS.chooseTemplate)}</p>
       <div className="template-card-list">
         {templates.map((template) => {
           return <TemplateCard key={template.name} template={template} />
