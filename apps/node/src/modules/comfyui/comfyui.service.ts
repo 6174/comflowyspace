@@ -85,7 +85,7 @@ class ComfyuiService {
         encoding: 'utf-8',
       };
 
-      await runCommand("conda init");
+      // await runCommand("conda init");
 
       this.pty = nodePty.spawn(shell, [], {
         name: 'xterm-color',
@@ -93,7 +93,7 @@ class ComfyuiService {
         useConpty: false,
         cols: 80,
         rows: 30,
-        env,
+
         cwd: getComfyUIDir()
       });
 
@@ -213,7 +213,7 @@ class ComfyuiService {
   #getComfyUIRunCommand(pip: boolean = true) {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
     const command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
-    return `cd ${getComfyUIDir()}; conda activate comflowy; ${command} \r`;
+    return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 
   /**
@@ -283,8 +283,9 @@ class ComfyuiService {
    */
   async pipInstall(requirements: string) {
     try {
+      const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
       this.stopComfyUI();
-      this.write(`conda activate comflowy; pip install ${requirements} \r`);
+      this.write(`${PIP_PATH} install ${requirements} \r`);
       this.startComfyUI(true);
     } catch(err: any) {
       logger.error("pip install error" + err.message);
