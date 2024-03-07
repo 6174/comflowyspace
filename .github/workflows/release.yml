@@ -31,7 +31,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         NODE_ENV: production
-      run: 
+      run: |
         cd ./apps/electron-package
         npm run compile
         npm run make
