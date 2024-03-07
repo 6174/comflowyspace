@@ -93,7 +93,7 @@ class ComfyuiService {
         useConpty: false,
         cols: 80,
         rows: 30,
-
+        env,
         cwd: getComfyUIDir()
       });
 
