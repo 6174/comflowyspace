@@ -246,6 +246,54 @@ const ALLLang: i18nAllLang = {
     'zh-CN': '您是否要删除此工作流？',
     'ja': 'このワークフローを削除しますか？',
     'ru': 'Вы хотите удалить этот рабочий процесс?'
+  },
+  [KEYS.fundamentals]: {
+    'en-US': 'Fundamentals',
+    'zh-CN': '基础',
+    'ja': '基本',
+    'ru': 'Основы'
+  },
+  [KEYS.fundamentalsDesc]: {
+    'en-US': 'I strongly suggest that you first learn the fundamentals of Stable Diffusion. This will give you a better understanding of the principles behind AI image generation, and you will be able to use Comflowy more effectively:',
+    'zh-CN': '我强烈建议你先学习稳定扩散的基础知识。这将使你更好地理解 AI 图像生成背后的原理，并让你能够更好地使用 Comflowy：',
+    'ja': 'まず、Stable Diffusion の基本を学ぶことを強くお勧めします。これにより、AI 画像生成の原則をよりよく理解し、Comflowy をより効果的に使用できるようになります：',
+    'ru': 'Я настоятельно рекомендую вам сначала изучить основы стабильной диффузии. Это позволит вам лучше понять принципы создания изображений с использованием искусственного интеллекта, и вы сможете использовать Comflowy более эффективно:'
+  },
+  [KEYS.textToImage]: {
+    'en-US': 'Text To Image',
+    'zh-CN': '文本转图像',
+    'ja': 'テキストから画像',
+    'ru': 'Текст в изображение'
+  },
+  [KEYS.textToImageDesc]: {
+    'en-US': 'If you\'re interested in further learning about text-to-image generation techniques, you can check out the following sections:',
+    'zh-CN': '如果您对进一步了解文本到图像生成技术感兴趣，你可以查看以下部分：',
+    'ja': 'テキストから画像を生成する技術についてさらに学びたい場合は、次のセクションをご覧ください：',
+    'ru': 'Если вас интересует дальнейшее изучение техник генерации текста в изображение, вы можете ознакомиться с следующими разделами:'
+  },
+  [KEYS.imageToImage]: {
+    'en-US': 'Image To Image',
+    'zh-CN': '图像转图像',
+    'ja': '画像から画像',
+    'ru': 'Изображение в изображение'
+  },
+  [KEYS.imageToImageDesc]: {
+    'en-US': 'If you\'d like to learn some image-to-image generation techniques, you can check out the following sections:',
+    'zh-CN': '如果你想了解一些图像到图像生成技术，你可以查看以下部分：',
+    'ja': 'いくつかの画像から画像を生成する技術を学びたい場合は、次のセクションをご覧ください：',
+    'ru': 'Если вы хотите изучить некоторые техники генерации изображений в изображения, вы можете ознакомиться с следующими разделами:'
+  },
+  [KEYS.bestPractices]: {
+    'en-US': 'Best Practices',
+    'zh-CN': '最佳实践',
+    'ja': 'ベストプラクティス',
+    'ru': 'Лучшие практики'
+  },
+  [KEYS.bestPracticesDesc]: {
+    'en-US': 'In addition to the basic tutorials, there are also some best practice cases that you can refer to and try out:',
+    'zh-CN': '除了基础教程外，还有一些最佳实践案例供你参考和尝试：',
+    'ja': '基本的なチュートリアルに加えて、参照して試してみることができるベストプラクティスのケースもあります：',
+    'ru': 'Помимо основных учебных пособий, есть также некоторые лучшие практические случаи, на которые вы можете ссылаться и попробовать:'
   }
 };
 

@@ -40,6 +40,14 @@ export enum KEYS {
   searchExtensions = "searchExtensions",
   installExtensionsFromGithub = "installExtensionsFromGithub",
   inputGithubUrl = "inputGithubUrl",
+  fundamentals = "fundamentals",
+  fundamentalsDesc = "fundamentalsDesc",
+  textToImage = "textToImage",
+  textToImageDesc = "textToImageDesc",
+  imageToImage = "imageToImage",
+  imageToImageDesc = "imageToImageDesc",
+  bestPractices = "bestPractices",
+  bestPracticesDesc = "bestPracticesDesc",
 }
 
 export type i18nKey = keyof typeof KEYS;
