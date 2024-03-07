@@ -100,17 +100,18 @@ export function InstallExtensionFromGitUrl() {
     return (
         <>
             <Modal 
-                title="Install Extension From Github" 
+                title={t(KEYS.installExtensionsFromGithub)} 
                 open={visible}
+                cancelText={t(KEYS.cancel)}
                 onCancel={handleCancel}
                 okButtonProps={{
                     loading: running,
                     disabled: running,
                 }}
-                okText="Install"
+                okText={t(KEYS.install)}
                 onOk={handleOk}
             >
-                <Input value={url} style={{width: "100%"}} placeholder="Input extension github url" onChange={handleUrlChange} />
+                <Input value={url} style={{width: "100%"}} placeholder={t(KEYS.inputGithubUrl)} onChange={handleUrlChange} />
             </Modal>
             <Button size='small' onClick={() => {
                 showModal();

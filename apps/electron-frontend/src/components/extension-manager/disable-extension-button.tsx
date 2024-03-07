@@ -2,6 +2,7 @@ import config, { getBackendUrl } from "@comflowy/common/config";
 import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { Button, message } from "antd";
 import { useCallback, useState } from "react";
+import {KEYS, t} from "@comflowy/common/i18n";
 
 export function DisableExtensionButton(props: {extension: Extension}) {
     const {extension} = props;
@@ -26,7 +27,7 @@ export function DisableExtensionButton(props: {extension: Extension}) {
             const ret = await res.json();
             if (ret.success) {
                 onDisableExtension(extension, disable);
-                message.success("Success");
+                message.success(t(KEYS.success));
             } else {
                 message.error(ret.error)
             }
@@ -45,7 +46,7 @@ export function DisableExtensionButton(props: {extension: Extension}) {
                 if (!running) {
                     diableExtension(!disabled);
                 }
-            }}>{disabled ? "Enable" : "Disable"}</Button>
+            }}>{disabled ? t(KEYS.enable) : t(KEYS.disable)}</Button>
         </div>
     )
 }

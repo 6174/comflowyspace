@@ -17,6 +17,11 @@ export enum KEYS {
   selectTemplate = "selectTemplate",
   remove = "remove",
   yes = "yes",
+  cancel = "cancel",
+  disable = "disable",
+  enable = "enable",
+  update = "update",
+  success = "success",
   deleteWorkflow = "deleteWorkflow",
   chooseTemplate = "chooseTemplate",
   modelManagement = "modelManagement",
@@ -24,6 +29,7 @@ export enum KEYS {
   refresh = "refresh",
   settings = "settings",
   available = "available",
+  install = "install",
   installed = "installed",
   installedExtensions = "installedExtensions",
   extensionsInstalled = "extensionsInstalled",
@@ -32,6 +38,8 @@ export enum KEYS {
   installFromGitUrl = "installFromGitUrl",
   totalExtensions = "totalExtensions",
   searchExtensions = "searchExtensions",
+  installExtensionsFromGithub = "installExtensionsFromGithub",
+  inputGithubUrl = "inputGithubUrl",
 }
 
 export type i18nKey = keyof typeof KEYS;

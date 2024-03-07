@@ -73,6 +73,12 @@ const ALLLang: i18nAllLang = {
     'ja': '利用可能',
     'ru': 'Доступно'
   },
+  [KEYS.install]: {
+    'en-US': 'Install',
+    'zh-CN': '安装',
+    'ja': 'インストール',
+    'ru': 'Установить'
+  },
   [KEYS.installed]: {
     'en-US': 'Installed',
     'zh-CN': '已安装',
@@ -111,7 +117,7 @@ const ALLLang: i18nAllLang = {
   },
   [KEYS.installFromGitUrl]: {
     'en-US': 'Install from Github URL',
-    'zh-CN': '从 Github URL 安装',
+    'zh-CN': '通过 Github URL 安装',
     'ja': 'Github URL からインストール',
     'ru': 'Установить из Github URL'
   },
@@ -127,6 +133,18 @@ const ALLLang: i18nAllLang = {
     'ja': '拡張機能を検索',
     'ru': 'Поиск расширений'
   },
+  [KEYS.installExtensionsFromGithub]: {
+    'en-US': 'Install Extensions From Github',
+    'zh-CN': '从 Github 安装插件',
+    'ja': 'Github から拡張機能をインストール',
+    'ru': 'Установить расширения из Github'
+  },
+  [KEYS.inputGithubUrl]: {
+    'en-US': 'Input extension Github url',
+    'zh-CN': '输入插件 Github url',
+    'ja': '拡張機能の Github URL を入力',
+    'ru': 'Введите URL расширения Github'
+  },
   [KEYS.menu]: {
     'en-US': 'MENU',
     'zh-CN': '菜单',
@@ -135,9 +153,39 @@ const ALLLang: i18nAllLang = {
   },
   [KEYS.yes]: {
     'en-US': 'Yes',
-    'zh-CN': '是',
+    'zh-CN': '确定',
     'ja': 'はい',
     'ru': 'Да'
+  },
+  [KEYS.cancel]: {
+    'en-US': 'Cancel',
+    'zh-CN': '取消',
+    'ja': 'キャンセル',
+    'ru': 'Отмена'
+  },
+  [KEYS.disable]: {
+    'en-US': 'Disable',
+    'zh-CN': '禁用',
+    'ja': '無効にする',
+    'ru': 'Отключить'
+  },
+  [KEYS.enable]: {
+    'en-US': 'Enable',
+    'zh-CN': '启用',
+    'ja': '有効にする',
+    'ru': 'Включить'
+  },
+  [KEYS.update]: {
+    'en-US': 'Update',
+    'zh-CN': '更新',
+    'ja': '更新',
+    'ru': 'Обновить'
+  },
+  [KEYS.success]: {
+    'en-US': 'Success',
+    'zh-CN': '成功',
+    'ja': '成功',
+    'ru': 'Успех'
   },
   [KEYS.createNewWorkflow]: {
     'en-US': 'Create New Workflow',

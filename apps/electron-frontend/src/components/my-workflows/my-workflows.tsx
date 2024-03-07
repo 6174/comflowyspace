@@ -139,6 +139,7 @@ function WorkflowList() {
             onOk: async () => {
               const ret = await documentDatabaseInstance.deleteDocSoft(doc.id); 
             },
+            cancelText: t(KEYS.cancel),
             onCancel() { },
           });
         }
