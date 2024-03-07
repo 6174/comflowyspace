@@ -20,6 +20,7 @@ export function PanelsContainerServerAdapter(props: PanelContainerProps) {
       setVisible(true);
     }
   }, []);
+
   if (!visible) {
     return (
       <div className="">
@@ -30,14 +31,14 @@ export function PanelsContainerServerAdapter(props: PanelContainerProps) {
 
   // app page use different container
   if (isApp) {
-    return props.children;
+    return <>{props.children}</>;
   }
 
   if (!isApp && !bootstraped) {
     return (
-      <div className="">
+      <>
         {props.children}
-      </div>
+      </>
     )
   }
 
