@@ -4,6 +4,7 @@ import { Extension, useExtensionsState } from "@comflowy/common/store/extension-
 import { Button, Input, Modal, Space, message } from "antd";
 import { useCallback, useState } from "react";
 import { start } from "repl";
+import {KEYS, t} from "@comflowy/common/i18n";
 
 export function InstallExtensionButton(props: {extension: Extension}) {
     const {extension} = props;
@@ -114,7 +115,7 @@ export function InstallExtensionFromGitUrl() {
             <Button size='small' onClick={() => {
                 showModal();
             }}> 
-                Install From Github
+                {t(KEYS.installFromGitUrl)}
             </Button>
         </>
     )

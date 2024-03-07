@@ -4,6 +4,7 @@ import { SettingsIcon } from 'ui/icons';
 import { comfyElectronApi, isElectron, useIsElectron } from '@/lib/electron-bridge';
 import { getBackendUrl } from '@comflowy/common/config';
 import { isWindow } from 'ui/utils/is-window';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 export const ModelSettings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -65,7 +66,7 @@ export const ModelSettings = () => {
   return (
     <div className='setting-button'>
       <Button size="small" onClick={handleSettingIconClick}>
-        <SettingsIcon /> Settings 
+        <SettingsIcon /> {t(KEYS.settings)} 
       </Button>
       <Modal
         title="Settings"

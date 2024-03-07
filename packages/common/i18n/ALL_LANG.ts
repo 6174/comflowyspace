@@ -25,6 +25,12 @@ const ALLLang: i18nAllLang = {
     'ja': "テンプレート",
     'ru': "Шаблон"
   },
+  [KEYS.chooseTemplate]: {
+    'en-US': "Choose a template for creating your worklow",
+    'zh-CN': "请选择一个模板来创建工作流",
+    'ja': "テンプレートを選択して開始",
+    'ru': "Выберите шаблон для начала"
+  },
   [KEYS.tutorials]: {
     'en-US': "Tutorials",
     'zh-CN': "教程",
@@ -37,11 +43,89 @@ const ALLLang: i18nAllLang = {
     'ja': 'モデル',
     'ru': 'Модели'
   },
+  [KEYS.modelManagement]: {
+    'en-US': 'Model Management',
+    'zh-CN': '模型管理',
+    'ja': 'モデル管理',
+    'ru': 'Управление моделями'
+  },
+  [KEYS.modelFolder]: {
+    'en-US': 'Model Folder',
+    'zh-CN': '模型文件夹',
+    'ja': 'モデルフォルダ',
+    'ru': 'Папка моделей'
+  },
+  [KEYS.refresh]: {
+    'en-US': 'Refresh',
+    'zh-CN': '刷新',
+    'ja': 'リフレッシュ',
+    'ru': 'Обновить'
+  },
+  [KEYS.settings]: {
+    'en-US': 'Settings',
+    'zh-CN': '设置',
+    'ja': '設定',
+    'ru': 'Настройки'
+  },
+  [KEYS.available]: {
+    'en-US': 'Available',
+    'zh-CN': '可用',
+    'ja': '利用可能',
+    'ru': 'Доступно'
+  },
+  [KEYS.installed]: {
+    'en-US': 'Installed',
+    'zh-CN': '已安装',
+    'ja': 'インストール済み',
+    'ru': 'Установлено'
+  },
   [KEYS.extensions]: {
     'en-US': 'Extensions',
-    'zh-CN': '扩展',
+    'zh-CN': '插件',
     'ja': '拡張機能',
     'ru': 'Расширения'
+  },
+  [KEYS.installedExtensions]: {
+    'en-US': 'Installed Extensions',
+    'zh-CN': '已安装的插件',
+    'ja': 'インストール済みの拡張機能',
+    'ru': 'Установленные расширения'
+  },
+  [KEYS.extensionsInstalled]: {
+    'en-US': 'Extensions already installed on your device',
+    'zh-CN': '设备上已安装的插件',
+    'ja': 'デバイスにすでにインストールされている拡張機能',
+    'ru': 'Расширения уже установлены на вашем устройстве'
+  },
+  [KEYS.communityExtensions]: {
+    'en-US': 'Community Extensions',
+    'zh-CN': '社区插件',
+    'ja': 'コミュニティの拡張機能',
+    'ru': 'Расширения сообщества'
+  },
+  [KEYS.installExtensionsFromCommunity]: {
+    'en-US': 'Install extensions from the community',
+    'zh-CN': '从社区安装插件',
+    'ja': 'コミュニティから拡張機能をインストール',
+    'ru': 'Установить расширения из сообщества'
+  },
+  [KEYS.installFromGitUrl]: {
+    'en-US': 'Install from Github URL',
+    'zh-CN': '从 Github URL 安装',
+    'ja': 'Github URL からインストール',
+    'ru': 'Установить из Github URL'
+  },
+  [KEYS.totalExtensions]: {
+    'en-US': 'Total Extensions',
+    'zh-CN': '总插件数',
+    'ja': '合計拡張機能',
+    'ru': 'Всего расширений'
+  },
+  [KEYS.searchExtensions]: {
+    'en-US': 'Search Extensions',
+    'zh-CN': '搜索插件',
+    'ja': '拡張機能を検索',
+    'ru': 'Поиск расширений'
   },
   [KEYS.menu]: {
     'en-US': 'MENU',

@@ -18,6 +18,20 @@ export enum KEYS {
   remove = "remove",
   yes = "yes",
   deleteWorkflow = "deleteWorkflow",
+  chooseTemplate = "chooseTemplate",
+  modelManagement = "modelManagement",
+  modelFolder = "modelFolder",
+  refresh = "refresh",
+  settings = "settings",
+  available = "available",
+  installed = "installed",
+  installedExtensions = "installedExtensions",
+  extensionsInstalled = "extensionsInstalled",
+  communityExtensions = "communityExtensions",
+  installExtensionsFromCommunity = "installExtensionsFromCommunity",
+  installFromGitUrl = "installFromGitUrl",
+  totalExtensions = "totalExtensions",
+  searchExtensions = "searchExtensions",
 }
 
 export type i18nKey = keyof typeof KEYS;
