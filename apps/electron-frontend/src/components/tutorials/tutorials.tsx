@@ -75,7 +75,7 @@ const Tutorials = () => {
 
   return (
     <div className={styles.tutorials}>
-      <h2>{t(KEYS.totorials)}</h2>
+      <h2>{t(KEYS.tutorials)}</h2>
       <div className="tutorial-banner-list">
         {getstartedTutorials.map((card, index) => (
           <TutorialBanner key={index} {...card} />
