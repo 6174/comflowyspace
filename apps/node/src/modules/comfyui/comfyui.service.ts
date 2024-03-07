@@ -131,7 +131,8 @@ class ComfyuiService {
       // this.pty.write(this.getCondaInitCommand());
 
     } catch(err: any) {
-      throw new Error("Start Session Failed:" + err.message)
+      logger.error(`Start Termnal Failed: ${err.message}, ${err.stack}`);
+      throw new Error("Start Session Failed:" + err.message + err.stack);
     }
   };
 
@@ -196,7 +197,7 @@ class ComfyuiService {
 
       return true;
     } catch (err: any) {
-      const errMsg = `Start ComfyUI error: ${err.message}`
+      const errMsg = `Start ComfyUI error: ${err.message} ${err.stack}`
       this.comfyuiProgressEvent.emit({
         type: "ERROR",
         message: errMsg
