@@ -294,6 +294,36 @@ const ALLLang: i18nAllLang = {
     'zh-CN': '除了基础教程外，还有一些最佳实践案例供你参考和尝试：',
     'ja': '基本的なチュートリアルに加えて、参照して試してみることができるベストプラクティスのケースもあります：',
     'ru': 'Помимо основных учебных пособий, есть также некоторые лучшие практические случаи, на которые вы можете ссылаться и попробовать:'
+  },
+  [KEYS.stopServer]: {
+    'en-US': 'Stop Server',
+    'zh-CN': '停止服务器',
+    'ja': 'サーバーを停止',
+    'ru': 'Остановить сервер'
+  },
+  [KEYS.restart]: {
+    'en-US': 'Restart',
+    'zh-CN': '重启',
+    'ja': '再起動',
+    'ru': 'Перезапустить'
+  },
+  [KEYS.pipInstall]: {
+    'en-US': 'Pip Install',
+    'zh-CN': 'Pip 安装',
+    'ja': 'Pip インストール',
+    'ru': 'Pip установка'
+  },
+  [KEYS.installPip]: {
+    'en-US': 'Install Pip Packages',
+    'zh-CN': '安装 Pip 包',
+    'ja': 'Pip パッケージをインストール',
+    'ru': 'Установить пакеты Pip'
+  },
+  [KEYS.pipPlaceholder]: {
+    'en-US': 'Input pip package name e.g. numbpy pandas tensorflow',
+    'zh-CN': '输入 pip 包名称，例如 numbpy pandas tensorflow',
+    'ja': 'pip パッケージ名を入力してください 例：numbpy pandas tensorflow',
+    'ru': 'Введите имя пакета pip, например numbpy pandas tensorflow'
   }
 };
 

@@ -48,6 +48,11 @@ export enum KEYS {
   imageToImageDesc = "imageToImageDesc",
   bestPractices = "bestPractices",
   bestPracticesDesc = "bestPracticesDesc",
+  stopServer = "stopServer",
+  restart = "restart",
+  pipInstall = "pipInstall",
+  installPip = "installPip",
+  pipPlaceholder = "pipPlaceholder",
 }
 
 export type i18nKey = keyof typeof KEYS;
