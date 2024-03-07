@@ -243,7 +243,7 @@ const ALLLang: i18nAllLang = {
   },
   [KEYS.deleteWorkflow]: {
     'en-US': 'Do you want to delete this workflow?',
-    'zh-CN': '您是否要删除此工作流？',
+    'zh-CN': '你是否要删除此工作流？',
     'ja': 'このワークフローを削除しますか？',
     'ru': 'Вы хотите удалить этот рабочий процесс?'
   },
@@ -267,7 +267,7 @@ const ALLLang: i18nAllLang = {
   },
   [KEYS.textToImageDesc]: {
     'en-US': 'If you\'re interested in further learning about text-to-image generation techniques, you can check out the following sections:',
-    'zh-CN': '如果您对进一步了解文本到图像生成技术感兴趣，你可以查看以下部分：',
+    'zh-CN': '如果你对进一步了解文本到图像生成技术感兴趣，你可以查看以下部分：',
     'ja': 'テキストから画像を生成する技術についてさらに学びたい場合は、次のセクションをご覧ください：',
     'ru': 'Если вас интересует дальнейшее изучение техник генерации текста в изображение, вы можете ознакомиться с следующими разделами:'
   },
