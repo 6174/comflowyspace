@@ -102,6 +102,14 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         }
       }
 
+      if (widget.input.optional) {
+        for (const [property, input] of Object.entries(widget.input.optional)) {
+          if (!inputKeys.includes(property)) {
+            params.push(property);
+          }
+        }
+      }
+
       if (node.type === "KSampler") {
         params.splice(1, 0, "control_after_generated")
       }
