@@ -42,6 +42,7 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
+  console.log(node);
   const params: {property: string, input: Input}[] = []
   const nodeId = node.id;
   const inputs = node.data.value.inputs || [];
@@ -56,6 +57,14 @@ export const NodeComponent = memo(({
   for (const [property, input] of Object.entries(widget.input.required)) {
     if (!inputKeys.includes(property)) {
       params.push({ property, input })
+    }
+  }
+
+  if (widget.input.optional) {
+    for (const [property, input] of Object.entries(widget.input.optional)) {
+      if (!inputKeys.includes(property)) {
+        params.push({ property, input })
+      }
     }
   }
 

@@ -9,7 +9,10 @@ export interface Widget {
   display_name?: string
   description?: string
   category: string
-  input: { required: Record<PropertyKey, Input> }
+  input: { 
+    required: Record<PropertyKey, Input>,
+    optional?: Record<PropertyKey, Input>,
+  }
   output: FlowPropsKey[]
 }
 

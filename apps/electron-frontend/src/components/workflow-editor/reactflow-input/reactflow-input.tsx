@@ -10,6 +10,7 @@ const MAX_SELECT_NAME = 30;
 
 interface InputProps {
 	value: any;
+	defaultValue?: any;
 	name: string;
 	input: Input;
 	onChange: (val: any) => void;
@@ -51,6 +52,7 @@ const getOptions = (
 
 function InputComponent({
 	value,
+	defaultValue,
 	name,
 	input,
 	onChange,
@@ -62,6 +64,7 @@ function InputComponent({
 				<Labelled name={name}>
 					<Select
 						value={value}
+						defaultValue={defaultValue}
 						showSearch
 						popupMatchSelectWidth={false}
 						onChange={onChange}
@@ -107,6 +110,7 @@ function InputComponent({
 				<Labelled name={name}>
 					<Select
 						value={value}
+						defaultValue={defaultValue}
 						showSearch
 						popupMatchSelectWidth={false}
 						onChange={onChange}

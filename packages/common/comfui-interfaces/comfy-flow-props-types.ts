@@ -50,7 +50,7 @@ type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
 export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
-export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload: boolean}] | FlowProps
+export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload?: boolean, default?: string}] | FlowProps
 
 export const Input = {
   getTypeName(i: Input): string {
