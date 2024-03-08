@@ -149,7 +149,7 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
     //   }
     // }
     
-    if (/Cannot import/.exec(log)) {
+    if (/Cannot import /.exec(log)) {
       return {
         start: true,
         level: "error"

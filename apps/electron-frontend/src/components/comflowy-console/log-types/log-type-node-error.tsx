@@ -3,6 +3,7 @@ import { Log } from "./log";
 import { useRouter } from "next/router";
 import { useAppStore } from "@comflowy/common/store";
 import { LogTypeDefault } from "./log-type-default";
+import { openExternalURL } from '@/lib/electron-bridge';
 
 /**
  * Log type for custom nodes import result
@@ -57,6 +58,12 @@ function WorkflowPageNodeError({ log }: { log: ComflowyConsoleLog }) {
     <Log log={log} level={log.data.level} title={$title} className={`log-type-node-error`}>
       <div className="full-messages">
         {log.message}
+        <br />
+        Please check: 
+        <a 
+        onClick={() => openExternalURL("https://www.comflowy.com/blog/comflowy-faq#extension")} 
+        target="_blank"
+        > Comflowy FAQ</a>
       </div>
     </Log>
   )

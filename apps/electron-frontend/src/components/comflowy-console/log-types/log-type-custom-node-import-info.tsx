@@ -1,4 +1,5 @@
 import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
+import { openExternalURL } from '@/lib/electron-bridge';
 import { Log } from "./log";
 
 /**
@@ -19,6 +20,12 @@ export function LogTypeCustomNodesImportInfo({log}: {log: ComflowyConsoleLog}) {
     <Log log={log} level={log.data.level} title={"Load custom node failed"} className={`log-type-custom-nodes-import-info`}>
       <div className="full-messages">
         {log.message}
+        <br />
+        Please check: 
+      <a 
+        onClick={() => openExternalURL("https://www.comflowy.com/blog/how-to-install-comfyui-extension")} 
+        target="_blank"
+        > How to install ComfyUI extension?</a>
       </div>
     </Log>
   )
