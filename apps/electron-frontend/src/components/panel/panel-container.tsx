@@ -9,6 +9,7 @@ import { listenElectron } from "@/lib/electron-bridge";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { useRouter } from "next/router";
+import { ControlBoard } from "../workflow-editor/reactflow-controlboard/control-board";
 
 export function PanelsContainerServerAdapter(props: PanelContainerProps) {
   const [visible, setVisible] = useState(false);
@@ -42,7 +43,7 @@ export function PanelsContainerServerAdapter(props: PanelContainerProps) {
     )
   }
 
-  return <PanelsContainer {...props}/>
+  return <PanelsContainer {...props} isAppPage={false}/>
 }
 
 /**
@@ -149,18 +150,41 @@ export function PanelsContainer(props: PanelContainerProps) {
   }, [panelsVisible]);
 
 
-  const items: TabsProps['items'] = [
-    {
-      key: 'terminal',
-      label: 'Terminal',
-      children: <AsyncComfyUIProcessManager/>,
-    },
-    {
-      key: 'messages',
-      label: 'Messages',
-      children: <AsyncComflowyConsole />,
-    },
-  ];
+  let items: TabsProps['items'];
+
+  if (props.isAppPage) {
+    items = [
+      {
+        key: "Controlboard",
+        label: 'Controlboard',
+        children: <ControlBoard />
+      },
+      {
+        key: 'terminal',
+        label: 'Terminal',
+        children: <AsyncComfyUIProcessManager />,
+      },
+      {
+        key: 'messages',
+        label: 'Messages',
+        children: <AsyncComflowyConsole />,
+      }
+    ]
+  } else {
+    items = [
+      {
+        key: 'terminal',
+        label: 'Terminal',
+        children: <AsyncComfyUIProcessManager />,
+      },
+      {
+        key: 'messages',
+        label: 'Messages',
+        children: <AsyncComflowyConsole />,
+      },
+    ];
+  }
+
 
   const onChange = (key: string) => {
     setActivePanel(key);

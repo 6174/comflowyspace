@@ -20,8 +20,10 @@ export function ControlBoard() {
     }
   }, [controlboardConfig, nodes]);
   
+  console.log("controlboardConfig", controlboardConfig);
   return (
     <div className={styles.controlboard}>
+      control board is here
       <div className="control-board-main">
 
       </div>
