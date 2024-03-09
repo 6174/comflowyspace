@@ -9,7 +9,7 @@ import { JSONDocMeta } from '../jsondb/jsondb.types';
 import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
 import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
 import { useAppStore } from '../store/app-state';
-import { ControlBoardConfig } from 'comfui-interfaces/comfy-controlboard-types';
+import { ControlBoardConfig } from 'workflow-editor/controlboard';
 
 export type PersistedWorkflowNode = {
   id: string;

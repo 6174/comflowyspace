@@ -15,8 +15,7 @@ import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-downlo
 import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces/comfy-error-types';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
-import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image-async';
-
+import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -42,65 +41,12 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
-  console.log(node);
-  const params: {property: string, input: Input}[] = []
-  const nodeId = node.id;
-  const inputs = node.data.value.inputs || [];
-  const outputs = node.data.value.outputs || [];
-  const nodeTitle = node.data.value.title || widget?.name;
-  const inputKeys = inputs.map(input => input.name);
-
-  if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
-    widget.input.required.upload = ["IMAGEUPLOAD"];
-  }
-
-  for (const [property, input] of Object.entries(widget.input.required)) {
-    if (!inputKeys.includes(property)) {
-      params.push({ property, input })
-    }
-  }
-
-  if (widget.input.optional) {
-    for (const [property, input] of Object.entries(widget.input.optional)) {
-      if (!inputKeys.includes(property)) {
-        params.push({ property, input })
-      }
-    }
-  }
-
-  // If it is a primitive node , add according primitive type params
-  if (Widget.isPrimitive(widget.name)) {
-    const paramType = node.data.value.outputs[0].type;
-    const extraInfo: any = {};
-    if (paramType === "STRING") {
-      extraInfo.multiline = true;
-    } else if (paramType === "BOOLEAN") {
-      extraInfo.default = true;
-    }
-    params.push({
-      property: paramType,
-      input: [paramType as any, extraInfo]
-    })
-  }
-
-  // if it has a seed, add seed control_after_generated param
-  const seedFieldName = Widget.findSeedFieldName(widget);
-  if (seedFieldName) {
-    const index = params.findIndex(param => param.property === seedFieldName);
-    params.splice(index + 1, 0, {
-      property: "control_after_generated",
-      input: [ContrlAfterGeneratedValuesOptions]
-    });
-  }
-
+  const { inputs, title, outputs, params } = getNodeRenderInfo(node);
   const isInProgress = progressBar !== undefined
   const [minHeight, setMinHeight] = useState(100);
   const [minWidth] = useState(240);
-
   const mainRef = useRef<HTMLDivElement>();
-
   const onNodesChange = useAppStore(st => st.onNodesChange);
-  const undoManager = useAppStore(st => st.undoManager);
   const updateMinHeight = useCallback(async () => {
     if (mainRef.current) {
       await new Promise((resolve) => {
@@ -118,7 +64,7 @@ export const NodeComponent = memo(({
       if (!dimensions || dimensions.height < height - 2) {
         onNodesChange([{
           type: "dimensions",
-          id: nodeId,
+          id: node.id,
           dimensions: {
             width: !!dimensions ? dimensions.width : width,
             height
@@ -127,8 +73,7 @@ export const NodeComponent = memo(({
       }
       setMinHeight(height);
     }
-  }, [setMinHeight, nodeId, imagePreviews]);
-  
+  }, [setMinHeight, node.id, imagePreviews]);
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
   const [resizing, setResizing] = useState(false);
   useEffect(() => {
@@ -183,7 +128,6 @@ export const NodeComponent = memo(({
 
   const invisible = transform < 0.2;
 
-  
   const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
     const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
     return {
@@ -242,7 +186,7 @@ export const NodeComponent = memo(({
           <div className="node-header">
             <h2 className="node-title">
               {getWidgetIcon(widget)} 
-              {nodeTitle} 
+              {title} 
               {isPositive && <span>{"("}Positive{")"}</span>} 
               {isNegative && <span>{"("}Negative{")"}</span>} 
               <NodeError nodeError={nodeError}/>

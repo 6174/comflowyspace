@@ -51,7 +51,7 @@ import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
 import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
-import { ControlBoardConfig } from 'comfui-interfaces/comfy-controlboard-types';
+import { ControlBoardConfig } from '../workflow-editor/controlboard';
 
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
@@ -108,6 +108,7 @@ export interface AppState {
   onDuplicateNodes: (ids: NodeId[]) => void
   onChangeSelectMode: (mode: SelectionMode) => void;
   onSelectNodes: (ids: string[]) => void;
+  onChangeControlBoard: (config: ControlBoardConfig) => void;
 
   nodeInProgress?: NodeInProgress
   promptError?: ComfyUIExecuteError
@@ -380,7 +381,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         edges: [],
         controlboard: workflow.controlboard
       }
-      
+
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
@@ -450,6 +451,18 @@ export const useAppStore = create<AppState>((set, get) => ({
     const st = get();
     const {doc} = st;
     WorkflowDocumentUtils.onNodesChange(doc, changes);
+    AppState.persistUpdateDoc(st, doc)
+  },
+  onChangeControlBoard: (config: ControlBoardConfig) => {
+    set((st) => {
+      return {
+        ...st,
+        controlboard: config
+      }
+    })
+    const st = get();
+    const {doc} = st;
+    WorkflowDocumentUtils.updateControlBoard(doc, config);
     AppState.persistUpdateDoc(st, doc)
   },
   onChangeDragingAndResizingState: (value: boolean) => {
