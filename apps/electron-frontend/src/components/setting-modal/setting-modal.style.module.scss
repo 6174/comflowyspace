@@ -56,7 +56,33 @@
       display: flex;
       align-items: center;
       .general-language-title{
+        font-size: 18px;
         margin-right: 20px;
+      }
+    }
+    .general-sdpath {
+      margin-top: 20px;
+      .gerneral-sdpath-title{
+        font-size: 18px;
+      }
+      .general-sdpath-content{
+        color: #C5C5D3;
+        font-size: 14px;
+        margin: 4px 0 8px 0;
+      }
+    }
+    .general-sdpath-button{
+      border: 0.5px solid #a2a2ae;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 130px;
+      padding: 6px 4px 6px 8px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      &:hover {
+        color: var(--primaryColor);
+        border-color: var(--primaryColor);
       }
     }
     .about-link-title {
@@ -75,16 +101,22 @@
         margin-top: 20px;
       }
       p {
+        font-size: 14px;
         margin-top: 4px;
       }
       .about-community-button {
+        font-size: 14px;
         border: 1px solid #FFF;
         border-radius: 8px;
         cursor: pointer;
-        width: 200px;
+        width: 180px;
         padding: 6px 4px 6px 8px;
-        margin-top: 20px;
+        margin-top: 10px;
         margin-bottom: 20px;
+        &:hover {
+          color: var(--primaryColor);
+          border-color: var(--primaryColor);
+        }
       }
     }
     

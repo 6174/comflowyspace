@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space} from 'antd';
+import React, { useState, useCallback } from 'react';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button} from 'antd';
 import type { MenuProps } from 'antd';
-import { openExternalURL } from '@/lib/electron-bridge';
+import { openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
 import { changeLaunguage , currentLang} from '@comflowy/common/i18n';
 import LogoIcon from 'ui/icons/logo';
@@ -10,6 +10,7 @@ import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, Setting
 const SettingsModal = ({ isVisible, handleClose }) => {
   const [activeMenuKey, setActiveMenuKey] = useState('general');
   const { Header, Content, Footer, Sider } = Layout;
+  const [sdwebuiPath, setSdwebuiPath] = useState('');
 
   const onMenuItemClick = ({ key }) => {
     setActiveMenuKey(key);
@@ -28,6 +29,19 @@ const SettingsModal = ({ isVisible, handleClose }) => {
     changeLaunguage(value);
     window.location.reload();
   };
+
+  const selectFolder = useCallback(async () => {
+    try {
+      const ret = await comfyElectronApi.selectDirectory();
+      const folder = ret[0];
+      setSdwebuiPath(folder);
+    } catch (err) {
+      console.log(err);
+      message.error(err);
+    }
+  }, []);
+
+  const electronEnv = useIsElectron();
 
   return (
     <Modal
@@ -78,6 +92,12 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                       { value: 'ja-JP', label: 'Japanese' },
                     ]}
                   />
+                </div>
+                <div className='general-sdpath'>
+                  <div className='gerneral-sdpath-title'>SD WebUI Path</div>
+                  <div className='general-sdpath-content'>If you already installed Stable Diffusion WebUI, you can choose the SD WebUI path to reuse models.</div>
+                  <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" style={{ width: 400, height:40}} />
+                  {electronEnv && <div type="link" onClick={selectFolder} className='general-sdpath-button'>Change Location</div>}
                 </div>
               </div>
             }
