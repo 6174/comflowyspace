@@ -5,58 +5,60 @@
  */
 import {type Node} from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
-import styles from "./control-board.module.scss";
-import { useEffect } from "react";
-import { ControlBoardNodeConfig, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import styles from "./controlboard.module.scss";
+import { ControlBoardNodeConfig } from "@comflowy/common/workflow-editor/controlboard";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
-import { ComfyUINodeError } from "@comflowy/common/comfui-interfaces/comfy-error-types";
-import { PreviewImage } from "@comflowy/common/comfui-interfaces";
 import { NodeError } from "../reactflow-node/reactflow-node";
 
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); // Assuming you have a setter for controlboard in your store
+  const doNotHaveConfig = !controlboardConfig;
 
-  useEffect(() => {
-    if (!controlboardConfig && nodes.length > 0) {
-      // Create controlboard info based on nodes
-      const newControlboardConfig = ControlBoardUtils.createControlboardInfoFromNodes(nodes); // Assuming you have a function to create controlboard info
-      onChangeControlBoard(newControlboardConfig);
-    }
-  }, [controlboardConfig, nodes]);
-  
   console.log("controlboardConfig", controlboardConfig);
   const nodesToRenderHere: ControlBoardNodeProps[] = [];
 
-  (controlboardConfig?.nodes || []).forEach(nodeControl => {
-    const node = nodes.find(n => n.id === nodeControl.id);
-    if (node) {
+  /**
+   * if do not have config: 
+   *  - render all nodes
+   * else:
+   *  - render all nessessary nodes
+   */
+  if (doNotHaveConfig) { 
+    nodes.forEach(node => {
       nodesToRenderHere.push({
-        nodeControl,
         node
-      })
-    }
-  });
+      });
+    })
+  } else {
+    (controlboardConfig?.nodes || []).forEach(nodeControl => {
+      const node = nodes.find(n => n.id === nodeControl.id);
+      if (node) {
+        nodesToRenderHere.push({
+          nodeControl,
+          node
+        })
+      }
+    });
+  }
   
   return (
     <div className={styles.controlboard}>
-      control board is here
       <div className="control-board-main">
         {nodesToRenderHere.map(props => <ControlBoardNode {...props} key={props.node.id}/>)}
       </div>
       <div className="control-board-actions">
-
       </div>
     </div>
   )
 }
 
 type ControlBoardNodeProps = {
-  nodeControl: ControlBoardNodeConfig;
+  nodeControl?: ControlBoardNodeConfig;
   node: Node,
 }
 
@@ -67,11 +69,16 @@ export function ControlBoardNode({nodeControl, node}: ControlBoardNodeProps) {
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
-  const {fields} = nodeControl;
+  const controlFields = nodeControl?.fields;
   const paramsToRender = params.filter(param => {
-    return fields.includes(param.property);
+    if (!controlFields) {
+      return true;
+    }
+    return controlFields.includes(param.property);
   });
-
+  if (paramsToRender.length === 0) {
+    return null;
+  }
   return (
     <div className={`${nodeStyles.reactFlowNode}`}>
       <div className="node-header">

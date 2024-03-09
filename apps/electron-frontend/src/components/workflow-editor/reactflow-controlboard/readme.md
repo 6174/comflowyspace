@@ -5,8 +5,11 @@ WorkflowData will add a `ControlBoard` type property, this data structure will d
 # How this work in code level
 
 1. When user loaded the workflow , the contrlboard field is undefined
-2. When user click controlboard panel, the app will auto create a controlboard data from current workflow info
-   - User can click edit button to change which field should be visible and the order
+   - if user did not edit controlboard config, show all config
+   - if user changed the config, only show user selected config fields
+  
+2. User can click edit button to change which field should be visible and the order
+
 3. When the workflow changed
   - Create new node: 
     - control board will not auto add the node fields, user can add it by hand

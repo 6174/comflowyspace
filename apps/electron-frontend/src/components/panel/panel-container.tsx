@@ -9,7 +9,7 @@ import { listenElectron } from "@/lib/electron-bridge";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { useRouter } from "next/router";
-import { ControlBoard } from "../workflow-editor/reactflow-controlboard/control-board";
+import { ControlBoard } from "../workflow-editor/reactflow-controlboard/controlboard";
 
 export function PanelsContainerServerAdapter(props: PanelContainerProps) {
   const [visible, setVisible] = useState(false);
