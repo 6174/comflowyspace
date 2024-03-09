@@ -334,7 +334,7 @@ function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element 
   )
 }
 
-function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
+export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
   const [visible, setVisible] = useState(false);
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
