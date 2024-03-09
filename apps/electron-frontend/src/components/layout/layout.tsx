@@ -7,9 +7,10 @@ type Props = {
 }
 import styles from "./layout.style.module.scss";
 import SettingsModal from '../setting-modal/setting-modal'; 
+import { openExternalURL } from '@/lib/electron-bridge';
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
-import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon } from 'ui/icons'
+import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, Terminal, QuestionIcon } from 'ui/icons'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
@@ -125,9 +126,17 @@ const WorkspaceNav = () => {
             {t(KEYS.tutorials)}
           </a>
         </div>
-        <div onClick={showSettingsModal}>
+        <div className="workspace-nav-bottom-item">
+          <div onClick={showSettingsModal}>
+            <div className="icon" style={{ cursor: 'pointer' }}>
+              <SettingsIcon/>
+            </div>
+          </div>
           <div className="icon" style={{ cursor: 'pointer' }}>
-            <SettingsIcon/>
+            <Terminal/>
+          </div>
+          <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} target="_blank" className="icon" style={{ cursor: 'pointer' }}>
+            <QuestionIcon />
           </div>
         </div>
         <SettingsModal

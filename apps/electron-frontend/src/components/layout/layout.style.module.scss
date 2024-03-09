@@ -97,6 +97,19 @@
                     }
                 }
             }
+            .workspace-nav-bottom-item {
+                display: flex;
+                justify-content: space-between;
+                
+                .icon {
+                    svg {
+                        * {
+                            fill: #A8A9AF;
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
         }
         .workspace-main {
             height: 100%;
