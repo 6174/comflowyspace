@@ -3,22 +3,19 @@ import type { LanguageType, i18nKey, i18nLang } from "./i18n-types";
 export * from "./i18n-types";
 export const isWindow = typeof window !== 'undefined';
 
-let currentLang: LanguageType = "en-US";
-
-export function changeLaunguage(lang: LanguageType) {
-  document.body.setAttribute("data-locale", lang as string);
-  let defaultLanguage = localStorage.getItem('i18n') || navigator.language || navigator.languages[0];
-  // If the default language is "en", then set it to "en-US"
-  if (defaultLanguage.indexOf("en-") >= 0) {
-    defaultLanguage = "en-US";
-  }
-  currentLang = defaultLanguage as LanguageType;
-}
+export let currentLang: LanguageType = "en-US";
 
 if (isWindow) {
-  changeLaunguage(currentLang);
+  const storedLang = localStorage.getItem('i18n') || "en-US";
+  currentLang = storedLang as LanguageType;
+  document.body.setAttribute("data-locale", currentLang);
 }
 
+export function changeLaunguage(lang: LanguageType) {
+  document.body.setAttribute("data-locale", lang);
+  currentLang = lang;
+  localStorage.setItem('i18n', lang);
+}
 /**
  * Tool for translation
  * @param key 

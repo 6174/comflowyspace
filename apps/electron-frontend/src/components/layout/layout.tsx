@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect } from 'react'
+import React, { ReactNode, useState, useCallback, useEffect } from 'react'
 import Head from 'next/head'
 import {KEYS, t} from "@comflowy/common/i18n";
 type Props = {
@@ -6,9 +6,10 @@ type Props = {
   title?: string
 }
 import styles from "./layout.style.module.scss";
+import SettingsModal from '../setting-modal/setting-modal'; 
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
-import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon } from 'ui/icons'
+import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon } from 'ui/icons'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
@@ -54,6 +55,15 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
 const WorkspaceNav = () => {
   const route = useRouter();
   const path = route.pathname;
+  const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
+
+  const showSettingsModal = () => {
+    setIsSettingsModalVisible(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalVisible(false);
+  };
   const changeRoute = useCallback((url) => {
     route.push(url);
   }, [route])
@@ -115,6 +125,15 @@ const WorkspaceNav = () => {
             {t(KEYS.tutorials)}
           </a>
         </div>
+        <div onClick={showSettingsModal}>
+          <div className="icon" style={{ cursor: 'pointer' }}>
+            <SettingsIcon/>
+          </div>
+        </div>
+        <SettingsModal
+          isVisible={isSettingsModalVisible}
+          handleClose={closeSettingsModal}
+        />
       </div>
     </div>
   )

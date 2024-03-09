@@ -55,7 +55,7 @@ Please [report all bugs](https://github.com/6174/comflowyspace/issues)! We are h
 #### 🤔 Missing a certain feature?
 If you think we are missing a feature, please feel free to submit an [Issue](https://github.com/6174/comflowyspace/issues). We will take it into serious consideration.
 
-We also outline our development plans in the [Project](https://github.com/users/6174/projects/2). We also welcome everyone to build with us. If you are interested in this, please join our [Discord](https://discord.gg/xqB9VyEX) and get in touch with us.
+We also outline our development plans in the [Project](https://github.com/users/6174/projects/2). We also welcome everyone to build with us. If you are interested in this, please join our [Discord](https://discord.com/invite/cj623WvcVx) and get in touch with us.
 
 ## Thanks
 This project exists thanks to all the people who contributed:
