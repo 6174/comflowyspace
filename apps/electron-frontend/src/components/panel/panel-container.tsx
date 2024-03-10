@@ -182,7 +182,7 @@ export function PanelsContainer(props: PanelContainerProps) {
           <div className="panels box" ref={panelsRef} style={{
             width: panelWidth
           }}>
-            <Tabs defaultActiveKey="1" activeKey={activePanel} items={items} onChange={onChange} />
+            <Tabs defaultActiveKey="controlboard" activeKey={activePanel} items={items} onChange={onChange} />
             <div className="close-action">
               <div className="action" onClick={ev => {
                 onPannelVisibleChange(false);
