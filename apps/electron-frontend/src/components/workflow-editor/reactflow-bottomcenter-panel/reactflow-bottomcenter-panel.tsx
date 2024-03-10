@@ -12,6 +12,7 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 import { useQueueState } from "@comflowy/common/store/comfyui-queue-state";
+import { isWindows } from "ui/utils/is-windows";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
@@ -84,9 +85,37 @@ export function RunButton() {
     const currentPromptId = useQueueState(st => st.currentPromptId);
     const running = currentPromptId && currentPromptId !== "";
     console.log("change promptId", currentPromptId);
+
+    const doSubmit = async () => {
+        // setRunning(true);
+        const ret = await onSubmit();
+        console.log("submit queue", ret);
+        if (ret.error) {
+            message.error(ret.error.error.message + " " + ret.error.error.details, 3)
+        } else {
+            message.info("Add task to queue");
+        }
+        track("comfyui-execute-submit");
+    }
+
+    useEffect(() => {
+        function handleKeyDown(event: KeyboardEvent) {
+            if ((event.metaKey || event.ctrlKey) && event.key === 'e') {
+                doSubmit();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        // 在组件卸载时移除事件监听器
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [running]);
+
     if (running) {
         return (
-            <Tooltip title={"Click to stop execution"}>
+            <Tooltip title={"Click to stop execution()"}>
                 <div className="action action-stop" onClick={ev => {
                     // setRunning(false);
                     onInterruptQueue();
@@ -98,20 +127,20 @@ export function RunButton() {
     }
 
     return (
-        <Tooltip title={"Click to execute workflow"}>
-            <div className="action action-Run" onClick={async ev => {
-                // setRunning(true);
-                const ret = await onSubmit();
-                console.log("submit queue", ret);
-                if (ret.error) {
-                    message.error(ret.error.error.message + " " + ret.error.error.details, 3)
-                } else {
-                    message.info("Add task to queue");
-                }
-                track("comfyui-execute-submit");
+        <Tooltip title={`Click to run workflow (${getCommandString()})`}>
+            <div className="action action-Run" onClick={ev => {
+                doSubmit();
             }}>
                 <StartIcon />
             </div>
         </Tooltip>
     )
+}
+
+function getCommandString() {
+    if (isWindows()) {
+        return '^Ctrl + e'
+    } else {
+        return '⌘Command + E'
+    }
 }
