@@ -8,6 +8,7 @@ type Props = {
 import styles from "./layout.style.module.scss";
 import SettingsModal from '../setting-modal/setting-modal'; 
 import { openExternalURL } from '@/lib/electron-bridge';
+import { Divider } from 'antd';
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
 import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, Terminal, QuestionIcon } from 'ui/icons'
@@ -126,26 +127,47 @@ const WorkspaceNav = () => {
             {t(KEYS.tutorials)}
           </a>
         </div>
+      </div>
+      <div style={{
+         position: "fixed", 
+         bottom: 8,
+         left: 11,
+         width: 216
+      }}>
+        <Divider
+          style={{ 
+            color: "#252837",
+            margin: "0 0 8px 0" 
+          }}
+        />
         <div className="workspace-nav-bottom-item">
           <div onClick={showSettingsModal}>
-            <div className="icon" style={{ cursor: 'pointer' }}>
+            <div className="icon" style={{ 
+              cursor: 'pointer',
+              paddingLeft: 22
+              }}>
               <SettingsIcon/>
             </div>
           </div>
           <div className="icon" style={{ cursor: 'pointer' }}>
             <Terminal/>
           </div>
-          <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} target="_blank" className="icon" style={{ cursor: 'pointer' }}>
+          <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} target="_blank" className="icon" 
+          style={{ 
+            cursor: 'pointer',
+            paddingRight: 22
+            }}
+          >
             <QuestionIcon />
           </div>
+          </div>
+            <SettingsModal
+              isVisible={isSettingsModalVisible}
+              handleClose={closeSettingsModal}
+            />
         </div>
-        <SettingsModal
-          isVisible={isSettingsModalVisible}
-          handleClose={closeSettingsModal}
-        />
       </div>
-    </div>
-  )
+    )
 }
 
 export default Layout
