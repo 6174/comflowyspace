@@ -6,12 +6,13 @@
 import {type Node} from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
 import styles from "./controlboard.module.scss";
-import { ControlBoardNodeConfig } from "@comflowy/common/workflow-editor/controlboard";
+import { ControlBoardNodeConfig, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node";
+import { Button, Space } from "antd";
 
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
@@ -29,7 +30,7 @@ export function ControlBoard() {
    *  - render all nessessary nodes
    */
   if (doNotHaveConfig) { 
-    nodes.forEach(node => {
+    ControlBoardUtils.autoSortNodes(nodes).forEach(node => {
       nodesToRenderHere.push({
         node
       });
@@ -52,6 +53,10 @@ export function ControlBoard() {
         {nodesToRenderHere.map(props => <ControlBoardNode {...props} key={props.node.id}/>)}
       </div>
       <div className="control-board-actions">
+        <Space>
+          <Button>Setting</Button>
+          <Button>Share</Button>
+        </Space>
       </div>
     </div>
   )
@@ -80,7 +85,7 @@ export function ControlBoardNode({nodeControl, node}: ControlBoardNodeProps) {
     return null;
   }
   return (
-    <div className={`${nodeStyles.reactFlowNode}`}>
+    <div className={`${nodeStyles.reactFlowNode} control-node`}>
       <div className="node-header">
         <div className="node-title">
           <h2 className="node-title">
