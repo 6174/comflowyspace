@@ -6,5 +6,6 @@ export type Panel = {
 
 export type PanelContainerProps = {
   panels: Panel[];
+  isAppPage: boolean;
   children: React.ReactNode;
 }

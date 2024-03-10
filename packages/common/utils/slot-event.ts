@@ -126,7 +126,6 @@ export class SlotEvent<T = void> implements IDisposable {
   }
 }
 
-
 export enum GlobalEvents {
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",

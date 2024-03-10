@@ -6,6 +6,7 @@ import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XY
 import * as Y from "yjs";
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../storage";
 import { NodeId, PreviewImage } from "../comfui-interfaces";
+import { ControlBoardConfig } from "workflow-editor/controlboard";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;
@@ -39,10 +40,18 @@ const WorkflowDocumentUtils = {
             connectionsArray.push([{
                 ...conn,
                 id: conn.id || createConnectionId(),
-            }]);  
+            }]);
         });
         workflowMap.set("connections", connectionsArray);
+
+        if (json.controlboard) {
+            workflowMap.set("controlboard", json.controlboard);
+        }
         return doc;
+    },
+    updateControlBoard(doc: Y.Doc, controlboard: ControlBoardConfig) {
+        const workflowMap = doc.getMap("workflow");
+        workflowMap.set("controlboard", controlboard);
     },
     updateByJson(doc: Y.Doc, json: PersistedWorkflowDocument) {
         const workflowMap = doc.getMap("workflow");

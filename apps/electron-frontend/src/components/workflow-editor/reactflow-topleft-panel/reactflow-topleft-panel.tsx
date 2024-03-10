@@ -79,40 +79,6 @@ export function UndoRedo() {
     )
 }
 
-let triggered = false;
-export function RefreshPageButton() {
-    const [visible, setVisible] = useState(false);
-    const handleVisibleChange = (visible: boolean) => {
-        setVisible(visible);
-    };
-    const onInit = useAppStore(st => st.onInit);
-    const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
-    const updateErrorCheck = useAppStore(st => st.updateErrorCheck);
-    const triggerSyncup = useCallback(async () => {
-        if (triggered) {
-            return;
-        }
-        triggered = true;
-        await onInit();
-        onSyncFromYjsDoc();
-        updateErrorCheck();
-        message.success("Success");
-        triggered = false;
-    }, []);
-    return (
-        <Popover
-            open={visible}
-            onOpenChange={handleVisibleChange}
-            title={null}
-            content={<div style={{ fontSize: 12 }}>Click to refresh ComfyUI state</div>}
-            trigger={"hover"}
-            placement="bottom">
-            <div className="action action-refresh" onClick={triggerSyncup}>
-                <ReloadIcon />
-            </div>
-        </Popover>
-    )
-}
 
 import MenuStyles from "../reactflow-context-menu/reactflow-context-menu.module.scss";
 import { ImportWorkflow } from "./action-import";

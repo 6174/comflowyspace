@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Modal, Space } from "antd";
+import { Button, Modal, Space, Tooltip } from "antd";
 import { useQueueState } from '@comflowy/common/store/comfyui-queue-state';
 import styles from "./reactflow-queue.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
@@ -86,15 +86,13 @@ export const QueueEntry = React.memo(() => {
   }, [setVisible]);
 
   return (
-    <div className="action action-queue">
-      <div onClick={showModal} style={{
-        display: "flex",
-        alignItems: "center"
-      }}>
-        <QueueIcon/>
-        Queue
-      </div>
-      <DraggableModal
+    <>
+      <Tooltip title="Execution Queue">
+        <div className="action action-queue" onClick={showModal} >
+          <QueueIcon />
+        </div>
+      </Tooltip>
+       <DraggableModal
         title="Queue"
         open={visible}
         className={styles.queueWrapper}
@@ -114,6 +112,6 @@ export const QueueEntry = React.memo(() => {
         </div>
         <Queue/>
       </DraggableModal>
-    </div>
+    </>
   )
 });
