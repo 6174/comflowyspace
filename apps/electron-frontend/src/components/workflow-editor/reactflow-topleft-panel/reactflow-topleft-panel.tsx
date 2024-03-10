@@ -1,5 +1,5 @@
 import { useAppStore } from "@comflowy/common/store";
-import { Button, Input, Menu, Popover, Space, message } from "antd"
+import { Button, Input, Menu, Popover, Space, Tooltip, message } from "antd"
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-topleft-panel.style.module.scss";
 import { useCallback, useEffect, useState } from "react";
@@ -185,9 +185,11 @@ function ChangeTitle() {
             placement='bottom'
             onOpenChange={handleVisibleChange}
         >
-            <div className="action action-file-name">
-                {title || "Untitled"}
-            </div>
+            <Tooltip title={"Click to edit title"}>
+                <div className="action action-file-name">
+                    {title || "Untitled"}
+                </div>
+            </Tooltip>
         </Popover>
     );
 
