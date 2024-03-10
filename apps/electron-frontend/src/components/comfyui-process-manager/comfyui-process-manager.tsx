@@ -43,7 +43,7 @@ const ComfyUIProcessManager = () => {
     shouldReconnect: (closeEvent) => true,
   });
 
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   const showModal = () => {
     setVisible(true);
@@ -143,6 +143,12 @@ const ComfyUIProcessManager = () => {
   }, []);
 
   useEffect(() => {
+    const dispose = listenElectron("action", (data) => {
+      if (data.type === "open-comfyui-process-manager") {
+        showModal();
+      }
+    });
+
     const dispose2 = SlotGlobalEvent.on((ev) => {
       if (ev.type === GlobalEvents.restart_comfyui) {
         restart();
@@ -160,6 +166,7 @@ const ComfyUIProcessManager = () => {
     }
 
     return () => {
+      dispose();
       dispose2.dispose();
       dispose3.dispose();
     }
@@ -173,29 +180,45 @@ const ComfyUIProcessManager = () => {
     </div>
   )
   return (
-    <div className={styles.comfyuiProcessManager}>
-      <div className="term" ref={termRef}> </div>
-      <div className="actions flex">
-        <Space>
-          <Button onClick={() => {
-            sendJsonMessage({
-              type: "input",
-              command: "\x03"
-            });
-          }}>{t(KEYS.stopServer)}</Button>
-          <Button loading={restarting} disabled={restarting} onClick={restart}>{t(KEYS.restart)}</Button>
-          <Button loading={updating} disabled={updating} onClick={update}>{t(KEYS.update)}</Button>
-          <InstallPipActions/>
-        </Space>
-      </div>
-      <div className="info">
-        <Space>
-          <span>ComfyUI@<a onClick={(ev) => {
-            openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
-          }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
-          <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
-        </Space>
-      </div>
+    <div>
+      <DraggableModal
+        title={$title}
+        footer={null}
+        className={styles.comfyuiProcessManager}
+        onCancel={handleCancel}
+        initialWidth={450}
+        initialHeight={380}
+        open={visible}
+      >
+        <div className="term" ref={termRef} >
+          {/* {messages.map((msg, index) => {
+            return (
+              <div className="message" key={index}>{msg.message}</div>
+            )
+          })} */}
+        </div>
+        <div className="actions flex">
+          <Space>
+            <Button onClick={() => {
+              sendJsonMessage({
+                type: "input",
+                command: "\x03"
+              });
+            }}>Stop Server</Button>
+            <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
+            <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+            <InstallPipActions />
+          </Space>
+        </div>
+        <div className="info">
+          <Space>
+            <span>ComfyUI@<a onClick={(ev) => {
+              openExternalURL(`https://github.com/comfyanonymous/ComfyUI/commit/${env?.comfyUIVersion}`)
+            }}>{env?.comfyUIVersion.slice(0, 10)}</a></span>
+            <span>Comflowy@{process.env.NEXT_PUBLIC_APP_VERSION}</span>
+          </Space>
+        </div>
+      </DraggableModal>
     </div>
   )
 }

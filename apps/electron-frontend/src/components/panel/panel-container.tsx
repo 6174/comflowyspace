@@ -134,18 +134,10 @@ export function PanelsContainer(props: PanelContainerProps) {
       }
     });
 
-    // onInit();
-    const dispose = listenElectron("action", (data) => {
-      if (data.type === "open-comfyui-process-manager") {
-        onPannelVisibleChange(!panelsVisible);
-      }
-    });
-
     // Clean up
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       disposable.dispose();
-      dispose();
     };
   }, [panelsVisible]);
 
@@ -160,11 +152,6 @@ export function PanelsContainer(props: PanelContainerProps) {
         children: <ControlBoard />
       },
       {
-        key: 'terminal',
-        label: 'Terminal',
-        children: <AsyncComfyUIProcessManager />,
-      },
-      {
         key: 'messages',
         label: 'Messages',
         children: <AsyncComflowyConsole />,
@@ -172,11 +159,6 @@ export function PanelsContainer(props: PanelContainerProps) {
     ]
   } else {
     items = [
-      {
-        key: 'terminal',
-        label: 'Terminal',
-        children: <AsyncComfyUIProcessManager />,
-      },
       {
         key: 'messages',
         label: 'Messages',
