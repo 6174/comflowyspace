@@ -24,7 +24,7 @@ export default function ReactflowTopRightPanel() {
                         SlotGlobalEvent.emit({
                             type: GlobalEvents.toggle_panel_container,
                             data: {
-                                panel: "notifications"
+                                panel: "messages"
                             }
                         })
                     }}>
@@ -39,7 +39,7 @@ export default function ReactflowTopRightPanel() {
                                     </clipPath>
                                 </defs>
                             </svg>
-                            Notifications
+                            Messages
                         </Space>
                     </div>
                 </Tooltip>

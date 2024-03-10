@@ -3,13 +3,22 @@
     height: calc(100vh - 10px);
     overflow: hidden;
     min-width: 900px;
-    margin-left: 8px;
     :global {
         .workspace-nav {
             width: 210px;
-            padding: 20px;
             height: 100%;
             border-right: solid 1px var(--borderColor);
+            display: flex;
+            flex-direction: column;
+            .nav-main{
+                flex: 1;
+                padding: 20px;
+            }
+            .nav-footer {
+                flex: 0;
+                padding: 6px;
+                border-top: solid 1px var(--borderColor);
+            }
             .logo {
                 margin-top: 6px;
                 display: flex;
@@ -99,8 +108,15 @@
             }
             .workspace-nav-bottom-item {
                 display: flex;
-                justify-content: space-between;
-                
+                .item {
+                    flex: 1;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    .action {
+                        width: 28px;
+                    }
+                }
                 .icon {
                     svg {
                         width: 24px;

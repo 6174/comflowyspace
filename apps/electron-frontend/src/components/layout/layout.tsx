@@ -8,13 +8,14 @@ type Props = {
 import styles from "./layout.style.module.scss";
 import SettingsModal from '../setting-modal/setting-modal'; 
 import { openExternalURL } from '@/lib/electron-bridge';
-import { Divider } from 'antd';
+import { Divider, Tooltip } from 'antd';
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
-import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, Terminal, QuestionIcon } from 'ui/icons'
+import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, TerminalIcon, QuestionIcon } from 'ui/icons'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
@@ -71,103 +72,106 @@ const WorkspaceNav = () => {
   }, [route])
   return (
     <div className="workspace-nav">
-      <div className="logo">
-        <LogoIcon/>
-        <div className="text">Comflowy</div>
-      </div>
-      <div className="sub">{t(KEYS.menu)}</div>
-      <div className="nav-list">
-        <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`} onClick={ev => {
-          changeRoute("/")
-        }}>
-          <div className="icon">
-            <WorkflowIcon/>
-          </div>
-          <a>
-            {t(KEYS.workflows)}
-          </a>
+      <div className="nav-main">
+        <div className="logo">
+          <LogoIcon/>
+          <div className="text">Comflowy</div>
         </div>
-        <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {
-          changeRoute("/templates")
-        }}>
-          <div className="icon">
-            <BulbIcon/>
-          </div>
-          <a>
-            {t(KEYS.templates)}
-          </a>
-        </div>
-        <div className={`workspace-nav-item ${path === "/models" ? "active" : ""}`} onClick={ev => {
-          changeRoute("/models")
-        }}>
-          <div className="icon">
-            <ModelIcon/>
-          </div>
-          <a>
-            {t(KEYS.models)}
-          </a>
-        </div>
-        <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`} onClick={ev => {
-          changeRoute("/extensions")
-        }}>
-          <div className="icon">
-            <ExtensionIcon/>
-          </div>
-          <a>
-            {t(KEYS.extensions)}
-          </a>
-        </div>
-        <div className={`workspace-nav-item ${path === "/tutorials" ? "active" : ""}`} onClick={ev => {
-          changeRoute("/tutorials")
-        }}>
-          <div className="icon">
-            <TutorialIcon/>
-          </div>
-          <a>
-            {t(KEYS.tutorials)}
-          </a>
-        </div>
-      </div>
-      <div style={{
-         position: "fixed", 
-         bottom: 9,
-         left: 11,
-         width: 216
-      }}>
-        <Divider
-          style={{ 
-            color: "#252837",
-            margin: "0 0 6px 0" 
-          }}
-        />
-        <div className="workspace-nav-bottom-item">
-          <div onClick={showSettingsModal}>
-            <div className="icon" style={{ 
-              cursor: 'pointer',
-              paddingLeft: 22
-              }}>
-              <SettingsIcon/>
+        <div className="sub">{t(KEYS.menu)}</div>
+        <div className="nav-list">
+          <div className={`workspace-nav-item ${path === "/" ? "active" : ""}`} onClick={ev => {
+            changeRoute("/")
+          }}>
+            <div className="icon">
+              <WorkflowIcon/>
             </div>
+            <a>
+              {t(KEYS.workflows)}
+            </a>
           </div>
-          <div className="icon" style={{ cursor: 'pointer' }}>
-            <Terminal/>
+          <div className={`workspace-nav-item ${path === "/templates" ? "active" : ""}`} onClick={ev => {
+            changeRoute("/templates")
+          }}>
+            <div className="icon">
+              <BulbIcon/>
+            </div>
+            <a>
+              {t(KEYS.templates)}
+            </a>
           </div>
-          <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} target="_blank" className="icon" 
-          style={{ 
-            cursor: 'pointer',
-            paddingRight: 22
-            }}
-          >
-            <QuestionIcon />
+          <div className={`workspace-nav-item ${path === "/models" ? "active" : ""}`} onClick={ev => {
+            changeRoute("/models")
+          }}>
+            <div className="icon">
+              <ModelIcon/>
+            </div>
+            <a>
+              {t(KEYS.models)}
+            </a>
           </div>
+          <div className={`workspace-nav-item ${path === "/extensions" ? "active" : ""}`} onClick={ev => {
+            changeRoute("/extensions")
+          }}>
+            <div className="icon">
+              <ExtensionIcon/>
+            </div>
+            <a>
+              {t(KEYS.extensions)}
+            </a>
           </div>
-            <SettingsModal
-              isVisible={isSettingsModalVisible}
-              handleClose={closeSettingsModal}
-            />
+          <div className={`workspace-nav-item ${path === "/tutorials" ? "active" : ""}`} onClick={ev => {
+            changeRoute("/tutorials")
+          }}>
+            <div className="icon">
+              <TutorialIcon/>
+            </div>
+            <a>
+              {t(KEYS.tutorials)}
+            </a>
+          </div>
         </div>
       </div>
-    )
+      <div className='nav-footer'>
+        <div className="workspace-nav-bottom-item">
+          <div className="item">
+            <Tooltip title="App Settings">
+              <div className="action" onClick={showSettingsModal}>
+                <div className="icon"><SettingsIcon /></div>
+              </div>
+            </Tooltip>
+          </div>
+          
+          <div className="item">
+            <Tooltip title="App Settings">
+              <div className="action" onClick={ev => {
+                SlotGlobalEvent.emit({
+                  type: GlobalEvents.show_comfyprocess_manager,
+                  data: null
+                })
+              }}>
+                <div className="icon">
+                  <TerminalIcon />
+                </div>
+              </div>
+            </Tooltip>
+          </div>
+
+          <div className="item">
+            <Tooltip title="Get help from Discord Server">
+              <div className="action" onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} >
+                <div className="icon">
+                  <QuestionIcon />
+                </div>
+              </div>
+            </Tooltip>
+          </div>
+        </div>
+        <SettingsModal
+          isVisible={isSettingsModalVisible}
+          handleClose={closeSettingsModal}
+        />
+      </div>
+  </div>)
 }
 
 export default Layout
