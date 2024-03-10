@@ -140,6 +140,7 @@ export enum GlobalEvents {
   close_pannels = 'close_pannels',
   open_pannels = 'open_pannels',
   toggle_panel_container = 'toggle_panel_container',
+  show_notification_modal = 'show_notification_modal',
 
 }
 
