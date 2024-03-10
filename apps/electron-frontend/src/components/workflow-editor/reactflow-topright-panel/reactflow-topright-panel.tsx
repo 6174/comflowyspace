@@ -2,8 +2,11 @@ import { Badge, Space, Tooltip } from "antd";
 import styles from "./reactflow-topright-panel.style.module.scss";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useUnreadLogs } from "@/components/comflowy-console/comflowy-console";
+import { useRouter } from "next/router";
 export default function ReactflowTopRightPanel() {
-    const unreadLogs = useUnreadLogs();
+    const router = useRouter();
+    const currentWorkflowId = router.query.id;
+    const unreadLogs = useUnreadLogs(currentWorkflowId as string);
     return (
         <div className={styles.topRightPanel}>
             <Space>

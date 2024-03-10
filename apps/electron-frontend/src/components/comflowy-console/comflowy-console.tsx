@@ -130,9 +130,11 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
   )
 }
 
-export function useUnreadLogs() {
+export function useUnreadLogs(workflowId?: string) {
   const logs = useComflowyConsoleState(st => st.consoleState.logs);
   console.log("logs", logs);
-  const unreadLogs = logs.filter(log => !log.readed);
+  const unreadLogs = logs.filter(log => {
+    return !log.readed && (!workflowId || log.data?.workflowId === workflowId);
+  });
   return unreadLogs;
 }
