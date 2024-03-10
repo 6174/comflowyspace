@@ -21,6 +21,7 @@ import { onEdgeUpdateFailed } from './reactflow-connecting';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
+import { ReactflowDynamicRunButton } from './reactflow-dynamic-run-button/reactflow-dynamic-run-button';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeContainer,
@@ -428,6 +429,7 @@ export default function WorkflowEditor() {
       <ReactflowExtensionController/>
       { widgetTreeContext && <WidgetTreeOnPanel context={widgetTreeContext}/>}
       <MissingWidgetsPopoverEntry/>
+      <ReactflowDynamicRunButton/>
     </div>
   )
 }

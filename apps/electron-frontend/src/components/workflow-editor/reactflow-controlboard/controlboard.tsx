@@ -14,6 +14,8 @@ import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node";
 import { Button, Space } from "antd";
 import { EditControlBoardEntry } from "./controlboard-editor";
+import { useEffect, useRef } from "react";
+import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
@@ -21,10 +23,21 @@ export function ControlBoard() {
   const graph = useAppStore(st => st.graph);
   console.log("controlboardConfig", controlboardConfig);
   const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes, graph);
-  
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.addEventListener("scroll", ev => {
+        SlotGlobalEvent.emit({
+          type: GlobalEvents.update_dynamic_run_button_position,
+          data: null
+        })
+      });
+    }
+  }, [ref]);
   return (
     <div className={styles.controlboard}>
-      <div className="control-board-main">
+      <div className="control-board-main" ref={ref}>
         {nodesToRenderHere.map(props => <ControlBoardNode {...props} key={props.node.id}/>)}
       </div>
       <div className="control-board-actions">

@@ -141,6 +141,8 @@ export enum GlobalEvents {
   open_pannels = 'open_pannels',
   toggle_panel_container = 'toggle_panel_container',
   show_notification_modal = 'show_notification_modal',
+  show_dynamic_run_button = 'show_dynamic_run_button',
+  update_dynamic_run_button_position = 'update_dynamic_run_button_position',
 
 }
 

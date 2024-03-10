@@ -1,0 +1,18 @@
+.dynamicRunButton {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  :global {
+    .inner {
+      padding: 10px;
+      background-color: var(--backgroundColor);
+      border: solid 1px var(--borderColor);
+      overflow: hidden;
+      border-radius: 12px;
+      button {
+        font-size: 12px;
+      }
+    }
+  }
+}
