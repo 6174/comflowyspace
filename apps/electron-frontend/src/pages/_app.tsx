@@ -8,6 +8,7 @@ import { DraggableModalProvider } from "ui/antd/draggable-modal";
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
 import { AsyncComfyUIProcessManager } from "@/components/comfyui-process-manager/comfyui-process-manager-async";
 import { NotificationModal } from "@/components/my-workflows/notification-modal";
+import { ConsoleSocketController } from "@/components/comflowy-console/comflowy-console";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const JSXCO = Component as any;
@@ -28,6 +29,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <AsyncComfyUIProcessManager />
         <NotificationModal/>
         <JSXCO {...pageProps} />
+        <ConsoleSocketController />
       </DraggableModalProvider>
     </ConfigProvider>
   );

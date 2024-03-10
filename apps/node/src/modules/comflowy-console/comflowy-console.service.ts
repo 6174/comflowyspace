@@ -95,6 +95,27 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
     }
   });
 
+  /**
+   * mark as read
+   */
+  app.post('/api/console/log/read', async (req: Request, res: Response) => {
+    try {
+      if (!req.body.logId) {
+        throw new Error("logId is required");
+      }
+      ComflowyConsole.markAsRead(req.body.logId);
+      res.send({
+        success: true
+      });
+    } catch (err: any) {
+      logger.info(err);
+      res.status(500).send({
+        success: false,
+        error: err.message
+      });
+    }
+  });
+
   ComflowyConsole.updateEvent.on((ev: ComflowyConsoleUpdateEvent) => {
     if (ev.type === "CREATE_LOG") {
       const data = JSON.stringify(ev);
@@ -102,6 +123,11 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
     }
 
     if (ev.type === "CLEAR_LOGS") {
+      const data = JSON.stringify(ev);
+      broadcast(data);
+    }
+
+    if (ev.type === "UPDATE_LOG") {
       const data = JSON.stringify(ev);
       broadcast(data);
     }

@@ -9,6 +9,8 @@ import { LogTypeCustomNodesImportResult } from "./log-types/log-type-custom-node
 import { LogTypeCustomNodesImportInfo } from "./log-types/log-type-custom-node-import-info";
 import { LogTypeExecuteNodeError } from "./log-types/log-type-node-error";
 import { LogTypeLinearShapeError } from "./log-types/log-type-linear-shape-error";
+import { useEffect, useRef } from "react";
+import { comflowyConsoleClient } from "@comflowy/common/utils/comflowy-console.client";
 /**
  * Comflowy Console Component
  * 1) start a websocket connetion with backend console module , and sync state from backend 
@@ -21,9 +23,24 @@ import { LogTypeLinearShapeError } from "./log-types/log-type-linear-shape-error
  *    - by keyword
  */
 export default function ComlowyConsole() {
-  const syncState = useComflowyConsoleState(st => st.syncState);
   const logs = useComflowyConsoleState(st => st.consoleState.logs);
+  
+ 
+  const reversedLogs = logs.slice().reverse();
+
+  return (
+    <div className={styles.comflowyConsole}>
+      {reversedLogs.map(log => {
+        return <ConsoleLog log={log} key={log.id}/>
+      })}
+    </div>
+  )
+}
+
+export function ConsoleSocketController() {
+  const syncState = useComflowyConsoleState(st => st.syncState);
   const addLogs = useComflowyConsoleState(st => st.addLogs);
+  const updateLog = useComflowyConsoleState(st => st.updateLog);
   const updateEnv = useComflowyConsoleState(st => st.updateEnv);
   const onMessage = (ev: MessageEvent) => {
     const ret = ev.data;
@@ -39,8 +56,11 @@ export default function ComlowyConsole() {
         case "UPDATE_ENV":
           updateEnv(data.data);
           break;
+        case "UPDATE_LOG":
+          updateLog(data.data);
+          break;
       }
-    } catch(err) {
+    } catch (err) {
       console.log("parse error", err);
       // captureEvent(err);
     }
@@ -53,15 +73,7 @@ export default function ComlowyConsole() {
     shouldReconnect: (closeEvent) => true,
   });
 
-  const reversedLogs = logs.slice().reverse();
-
-  return (
-    <div className={styles.comflowyConsole}>
-      {reversedLogs.map(log => {
-        return <ConsoleLog log={log} key={log.id}/>
-      })}
-    </div>
-  )
+  return <></>
 }
 
 /**
@@ -70,6 +82,7 @@ export default function ComlowyConsole() {
  * @returns 
  */
 function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
+  const logRef = useRef<HTMLDivElement>(null);
   let LogCO = LogTypeDefault;
   switch(log.data.type) {
     case ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT:
@@ -88,7 +101,38 @@ function ConsoleLog({log}: {log: ComflowyConsoleLog}) {
       LogCO = LogTypeDefault;
       break;
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        console.log("mark as read", log);
+        if (!log.readed) {
+          comflowyConsoleClient.markLogAsRead(log.id);
+        }
+      }
+    });
+
+    if (logRef.current) {
+      observer.observe(logRef.current);
+    }
+
+    // 清理函数
+    return () => {
+      if (logRef.current) {
+        observer.unobserve(logRef.current);
+      }
+    }
+  }, [log.id]);
   return (
-    <LogCO key={log.id}  log={log}/>
+    <div ref={logRef}>
+      <LogCO key={log.id}  log={log}/>
+    </div>
   )
+}
+
+export function useUnreadLogs() {
+  const logs = useComflowyConsoleState(st => st.consoleState.logs);
+  console.log("logs", logs);
+  const unreadLogs = logs.filter(log => !log.readed);
+  return unreadLogs;
 }

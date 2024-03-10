@@ -40,6 +40,22 @@ class ComflowyConsoleClient {
       console.log(err);
     }
   }
+
+  async markLogAsRead(logId: string) {
+    try {
+      fetch(getBackendUrl('/api/console/log/read'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          logId,
+        })
+      })
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }
 
 export const comflowyConsoleClient = new ComflowyConsoleClient();
