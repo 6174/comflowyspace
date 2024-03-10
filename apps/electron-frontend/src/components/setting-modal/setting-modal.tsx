@@ -5,7 +5,7 @@ import { openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
 import { changeLaunguage , currentLang} from '@comflowy/common/i18n';
 import LogoIcon from 'ui/icons/logo';
-import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon } from 'ui/icons'
+import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons'
 
 const SettingsModal = ({ isVisible, handleClose }) => {
   const [activeMenuKey, setActiveMenuKey] = useState('general');
@@ -68,11 +68,15 @@ const SettingsModal = ({ isVisible, handleClose }) => {
             className='sider-menu'
             >
               <Menu.Item key="general" className='sider-menu-item'>
-                <WorkflowIcon/>
+                <div className='sider-menu-item-icon'>
+                  <PersonIcon/>
+                </div>
                 <a>General</a>
               </Menu.Item>
               <Menu.Item key="about" className='sider-menu-item'>
-                <BulbIcon/>
+                <div className='sider-menu-item-icon'>
+                  <InfoIcon/>
+                </div>
                 <a>About</a>
               </Menu.Item>
             </Menu>
@@ -119,7 +123,9 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                   <div className='about-link-title'>Links</div>
                   <div className='about-link-list'>
                     <a onClick={() => openExternalURL("https://www.comflowy.com/change-log")} target="_blank">• Product change log</a>
-                    <a onClick={() => openExternalURL("https://github.com/6174/comflowyspace")} target="_blank">• Github</a>
+                    <div>
+                      <a onClick={() => openExternalURL("https://github.com/6174/comflowyspace")} target="_blank">• Github </a><span>← If you like Comflowy, give our repo a ⭐</span>
+                    </div>
                   </div> 
                 </div>
                 <div className='about-community'>

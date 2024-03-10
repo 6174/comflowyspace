@@ -21,6 +21,14 @@
         .ant-menu-title-content{
           display: flex;
           align-items: center;
+          .sider-menu-item-icon{
+            display: flex;
+            align-items: center;
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
           a {
             margin-left: 6px;
           }
