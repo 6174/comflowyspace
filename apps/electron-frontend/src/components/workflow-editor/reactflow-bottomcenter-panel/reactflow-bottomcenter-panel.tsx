@@ -2,7 +2,7 @@ import { Space, Tooltip, message } from "antd";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
-import { memo, useCallback } from "react";
+import { memo, use, useCallback, useEffect, useState } from "react";
 import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { Widget } from "@comflowy/common/comfui-interfaces";
@@ -11,6 +11,7 @@ import { track } from "@/lib/tracker";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
+import { useQueueState } from "@comflowy/common/store/comfyui-queue-state";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
@@ -78,9 +79,28 @@ export function RefreshPageButton() {
 
 export function RunButton() {
     const onSubmit = useAppStore(st => st.onSubmit);
+    const onInterruptQueue = useQueueState(st => st.onInterruptQueue);
+    // const queue = useQueueState(st => st.queue);
+    const currentPromptId = useQueueState(st => st.currentPromptId);
+    const running = currentPromptId && currentPromptId !== "";
+    console.log("change promptId", currentPromptId);
+    if (running) {
+        return (
+            <Tooltip title={"Click to stop execution"}>
+                <div className="action action-stop" onClick={ev => {
+                    // setRunning(false);
+                    onInterruptQueue();
+                }}>
+                    <div className="stop-square"></div>
+                </div>
+            </Tooltip>
+        )
+    }
+
     return (
-        <Tooltip title={"Execute workflow"}>
+        <Tooltip title={"Click to execute workflow"}>
             <div className="action action-Run" onClick={async ev => {
+                // setRunning(true);
                 const ret = await onSubmit();
                 console.log("submit queue", ret);
                 if (ret.error) {

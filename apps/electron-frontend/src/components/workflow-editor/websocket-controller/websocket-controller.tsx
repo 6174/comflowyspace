@@ -18,6 +18,8 @@ export function WsController(props: {clientId: string}): JSX.Element {
   const nodeIdInProgress = nodeInProgress?.id;
   const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
   const [timestamp, setTimestamp] = useState(Date.now());
+  const onChangeCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
+
   useWebSocket(socketUrl, {
     queryParams: clientId ? { clientId, timestamp } : {},
     onMessage: (ev) => {
@@ -27,6 +29,13 @@ export function WsController(props: {clientId: string}): JSX.Element {
         data: msg
       });
       console.log("msg", msg)
+
+      if (Message.isExecutingStart(msg) || Message.isProgress(msg)) {
+        if (msg.data?.prompt_id) {
+          onChangeCurrentPromptId(msg.data.prompt_id);
+        }
+      }
+
       if (Message.isStatus(msg)) {
         if (msg.data.sid !== undefined) {
           onNewClientId(msg.data.sid)
@@ -45,11 +54,13 @@ export function WsController(props: {clientId: string}): JSX.Element {
       } else if (Message.isExecuted(msg)) {
         track('comfyui-executed-success');
         const images = msg.data.output.images
+        onChangeCurrentPromptId("");
         if (Array.isArray(images)) {
           onImageSave(msg.data.node, images)
         }
-      } else if (Message.isExecutingInterrupted) {
+      } else if (Message.isExecutingInterrupted(msg)) {
         track('comfyui-executed-interrupted');
+        onChangeCurrentPromptId("");
         SlotGlobalEvent.emit({
           type: GlobalEvents.execution_interrupted,
           data: null
