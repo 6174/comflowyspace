@@ -6,46 +6,21 @@
 import {type Node} from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
 import styles from "./controlboard.module.scss";
-import { ControlBoardNodeConfig, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import { ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node";
 import { Button, Space } from "antd";
+import { EditControlBoardEntry } from "./controlboard-editor";
 
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
-  const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); // Assuming you have a setter for controlboard in your store
-  const doNotHaveConfig = !controlboardConfig;
 
   console.log("controlboardConfig", controlboardConfig);
-  const nodesToRenderHere: ControlBoardNodeProps[] = [];
-
-  /**
-   * if do not have config: 
-   *  - render all nodes
-   * else:
-   *  - render all nessessary nodes
-   */
-  if (doNotHaveConfig) { 
-    ControlBoardUtils.autoSortNodes(nodes).forEach(node => {
-      nodesToRenderHere.push({
-        node
-      });
-    })
-  } else {
-    (controlboardConfig?.nodes || []).forEach(nodeControl => {
-      const node = nodes.find(n => n.id === nodeControl.id);
-      if (node) {
-        nodesToRenderHere.push({
-          nodeControl,
-          node
-        })
-      }
-    });
-  }
+  const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes);
   
   return (
     <div className={styles.controlboard}>
@@ -54,17 +29,12 @@ export function ControlBoard() {
       </div>
       <div className="control-board-actions">
         <Space>
-          <Button>Setting</Button>
-          <Button>Share</Button>
+          <EditControlBoardEntry/>
+          <Button size="small" disabled>Share</Button>
         </Space>
       </div>
     </div>
   )
-}
-
-type ControlBoardNodeProps = {
-  nodeControl?: ControlBoardNodeConfig;
-  node: Node,
 }
 
 export function ControlBoardNode({nodeControl, node}: ControlBoardNodeProps) {

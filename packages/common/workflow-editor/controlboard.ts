@@ -19,6 +19,11 @@ export type ControlBoardNodeConfig = {
   apiOutputFieldsNameMapping?: Record<string, string>;
 }
 
+export type ControlBoardNodeProps = {
+  nodeControl?: ControlBoardNodeConfig;
+  node: Node,
+}
+
 export const ControlBoardUtils = {
   createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {
     const nodeList = nodes.map(node => {
@@ -33,7 +38,35 @@ export const ControlBoardUtils = {
       nodes: nodeList
     }
   },
-  autoSortNodes(nodes: Node[]) {
+  getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: Node[]): ControlBoardNodeProps[] {
+    const nodesToRender: ControlBoardNodeProps[] = [];
+
+    /**
+     * if do not have config: 
+     *  - render all nodes
+     * else:
+     *  - render all nessessary nodes
+     */
+    if (!controlboardConfig) {
+      ControlBoardUtils.autoSortNodes(nodes).forEach(node => {
+        nodesToRender.push({
+          node
+        });
+      })
+    } else {
+      (controlboardConfig?.nodes || []).forEach(nodeControl => {
+        const node = nodes.find(n => n.id === nodeControl.id);
+        if (node) {
+          nodesToRender.push({
+            nodeControl,
+            node
+          })
+        }
+      });
+    }
+    return nodesToRender;
+  },
+  autoSortNodes(nodes: Node[]): Node[] {
     return nodes.sort((a, b) => {
       const widgeta = (a.data.widget.name + a.data.widget.display_name).toLowerCase();
       const widgetb = (b.data.widget.name + b.data.widget.display_name).toLowerCase();
