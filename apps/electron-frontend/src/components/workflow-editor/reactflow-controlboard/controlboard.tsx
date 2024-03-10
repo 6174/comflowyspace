@@ -3,7 +3,7 @@
  * - ControlBoard component is a wrapper for the control board of the workflow editor
  * - It read appstate nodes and controlboard data to render the control board, follow rules write in "./readme.md"
  */
-import {type Node} from "reactflow";
+import {useStoreApi, type Node, useReactFlow} from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
 import styles from "./controlboard.module.scss";
 import { ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
@@ -18,9 +18,9 @@ import { EditControlBoardEntry } from "./controlboard-editor";
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
-
+  const graph = useAppStore(st => st.graph);
   console.log("controlboardConfig", controlboardConfig);
-  const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes);
+  const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes, graph);
   
   return (
     <div className={styles.controlboard}>
@@ -54,17 +54,26 @@ export function ControlBoardNode({nodeControl, node}: ControlBoardNodeProps) {
   if (paramsToRender.length === 0) {
     return null;
   }
+  const { setCenter} = useReactFlow();
   return (
     <div className={`${nodeStyles.reactFlowNode} control-node`}>
       <div className="node-header">
         <div className="node-title">
-          <h2 className="node-title">
-            {getWidgetIcon(widget)}
-            {title}
-            {isPositive && <span>{"("}Positive{")"}</span>}
-            {isNegative && <span>{"("}Negative{")"}</span>}
-            <NodeError nodeError={nodeError} />
-          </h2>
+          <div className="node-title action" onClick={ev => {
+            setCenter(node.position.x + (node.width || 100) / 2, node.position.y + (node.height || 100) / 2, {
+              zoom: 1,
+              duration: 800
+            })
+            ev.preventDefault();
+          }}>
+            <div className="inner">
+              {getWidgetIcon(widget)}
+              {title}
+              {isPositive && <span>{"("}Positive{")"}</span>}
+              {isNegative && <span>{"("}Negative{")"}</span>}
+              <NodeError nodeError={nodeError} />
+            </div>
+          </div>
         </div>
         <div className="node-control"></div>
       </div>

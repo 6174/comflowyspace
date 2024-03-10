@@ -23,6 +23,14 @@
       border-radius: 0;
       padding: 10px;
       height: auto;
+      .node-title {
+        justify-content: left;
+        display: inline-block !important;
+        .inner {
+          display: flex;
+          align-items: center;
+        }
+      }
     }
   }
 }
