@@ -55,7 +55,9 @@ export function NotificationModalEntry() {
         <div className="action" onClick={() => {
           showModal();
         }}>
-          <NotificationIcon />
+          <div className="icon">
+            <NotificationIcon />
+          </div>
         </div>
       </Tooltip>
     </div>

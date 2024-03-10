@@ -16,6 +16,7 @@ import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { NotificationModalEntry } from '../my-workflows/notification-modal';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
@@ -155,15 +156,15 @@ const WorkspaceNav = () => {
               </div>
             </Tooltip>
           </div>
-
           <div className="item">
-            <Tooltip title="Get help from Discord Server">
+            <NotificationModalEntry/>
+            {/* <Tooltip title="Get help from Discord Server">
               <div className="action" onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} >
                 <div className="icon">
                   <QuestionIcon />
                 </div>
               </div>
-            </Tooltip>
+            </Tooltip> */}
           </div>
         </div>
         <SettingsModal

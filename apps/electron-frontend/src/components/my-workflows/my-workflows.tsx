@@ -86,9 +86,6 @@ function WorkflowCreateBox() {
         {/* <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
         <Button type="primary" className='icon-button'> <PlusIcon/> Create From Template</Button> */}
       </Space>
-      <div className="actions">
-        <NotificationModalEntry/>
-      </div>
     </div>
   )
 }
