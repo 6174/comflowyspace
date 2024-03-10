@@ -68,7 +68,7 @@ export const GalleryEntry = React.memo(() => {
       <DraggableModal
         title={
           <div style={{
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
             height: 20
           }}
