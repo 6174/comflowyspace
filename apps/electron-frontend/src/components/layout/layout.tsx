@@ -130,7 +130,7 @@ const WorkspaceNav = () => {
       </div>
       <div style={{
          position: "fixed", 
-         bottom: 8,
+         bottom: 6,
          left: 11,
          width: 216
       }}>
