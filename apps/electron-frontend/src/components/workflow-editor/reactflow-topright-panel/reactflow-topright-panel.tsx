@@ -9,7 +9,7 @@ export default function ReactflowTopRightPanel() {
                     <div className="action action-toggle-controlboard" onClick={ev => {
                         ev.preventDefault();
                         SlotGlobalEvent.emit({
-                            type: GlobalEvents.toggle_panel_container,
+                            type: GlobalEvents.active_panel_changed,
                             data: {
                                 panel: "controlboard"
                             }
@@ -22,7 +22,7 @@ export default function ReactflowTopRightPanel() {
                     <div className="action action-toggle-terminal" onClick={ev => {
                         ev.preventDefault();
                         SlotGlobalEvent.emit({
-                            type: GlobalEvents.toggle_panel_container,
+                            type: GlobalEvents.active_panel_changed,
                             data: {
                                 panel: "messages"
                             }

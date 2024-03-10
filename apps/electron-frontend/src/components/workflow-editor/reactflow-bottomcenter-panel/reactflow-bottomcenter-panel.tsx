@@ -3,7 +3,7 @@ import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
 import { memo, useCallback } from "react";
-import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon } from "ui/icons";
+import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { Widget } from "@comflowy/common/comfui-interfaces";
 import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
@@ -42,6 +42,16 @@ function ReactflowBottomCenterPanel() {
                         </Space>
                     </div>
                 </ExtensionListPopover>
+                <Tooltip title={"ComfyUI Process Terminal"}>
+                    <div className="action action-open-terminal" onClick={ev => {
+                        SlotGlobalEvent.emit({
+                            type: GlobalEvents.show_comfyprocess_manager,
+                            data: null
+                        })
+                    }}>
+                        <TerminalIcon />
+                    </div>
+                </Tooltip>
                 <GalleryEntry/>
                 <QueueEntry />
                 <RunButton/>
