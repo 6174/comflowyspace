@@ -130,14 +130,14 @@ const WorkspaceNav = () => {
       </div>
       <div style={{
          position: "fixed", 
-         bottom: 6,
+         bottom: 9,
          left: 11,
          width: 216
       }}>
         <Divider
           style={{ 
             color: "#252837",
-            margin: "0 0 8px 0" 
+            margin: "0 0 6px 0" 
           }}
         />
         <div className="workspace-nav-bottom-item">
