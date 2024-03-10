@@ -26,9 +26,7 @@ const App = ({ Component, pageProps }: AppProps) => {
     <ConfigProvider theme={theme}>
       <DraggableModalProvider>
         <AsyncComfyUIProcessManager />
-        <PanelsContainerServerAdapter panels={[]} isAppPage={false}>
-          <JSXCO {...pageProps} />
-        </PanelsContainerServerAdapter>
+        <JSXCO {...pageProps} />
       </DraggableModalProvider>
     </ConfigProvider>
   );

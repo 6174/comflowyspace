@@ -142,7 +142,7 @@ export function PanelsContainer(props: PanelContainerProps) {
   }, [panelsVisible]);
 
 
-  let items: TabsProps['items'];
+  let items: TabsProps['items'] = [];
 
   if (props.isAppPage) {
     items = [
@@ -157,16 +157,7 @@ export function PanelsContainer(props: PanelContainerProps) {
         children: <AsyncComflowyConsole />,
       }
     ]
-  } else {
-    items = [
-      {
-        key: 'messages',
-        label: 'Messages',
-        children: <AsyncComflowyConsole />,
-      },
-    ];
-  }
-
+  } 
 
   const onChange = (key: string) => {
     setActivePanel(key);

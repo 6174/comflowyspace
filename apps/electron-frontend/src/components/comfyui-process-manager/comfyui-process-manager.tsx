@@ -176,7 +176,7 @@ const ComfyUIProcessManager = () => {
   const env = useDashboardState(state => state.env);
   const $title = (
     <div className="title">
-      <div>ComfyUI Process Manager</div>
+      <div>ComfyUI Process Terminal</div>
     </div>
   )
   return (

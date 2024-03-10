@@ -142,7 +142,7 @@ const WorkspaceNav = () => {
           </div>
           
           <div className="item">
-            <Tooltip title="App Settings">
+            <Tooltip title="ComfyUI Process Terminal">
               <div className="action" onClick={ev => {
                 SlotGlobalEvent.emit({
                   type: GlobalEvents.show_comfyprocess_manager,
