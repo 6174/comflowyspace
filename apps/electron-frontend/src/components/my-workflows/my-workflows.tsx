@@ -2,7 +2,7 @@ import * as React from 'react'
 import styles from "./my-workflows.style.module.scss";
 import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/common/storage';
 import { Button, Modal, Popover, Space, message } from 'antd';
-import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon} from "ui/icons";
+import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon, NotificationIcon} from "ui/icons";
 import { useRouter } from 'next/router';
 import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
@@ -85,6 +85,19 @@ function WorkflowCreateBox() {
         {/* <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
         <Button type="primary" className='icon-button'> <PlusIcon/> Create From Template</Button> */}
       </Space>
+
+      <div className="actions">
+        <div className="action" onClick={() => {
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.toggle_panel_container,
+            data: {
+              panel: "notifications"
+            }
+          })
+        }}>
+          <NotificationIcon/>
+        </div>
+      </div>
     </div>
   )
 }
@@ -210,6 +223,5 @@ function WorkflowList() {
     </div>
   );
 }
-
 
 export default MyWorkflowsPage;
