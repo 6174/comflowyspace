@@ -4,6 +4,7 @@ import {create} from 'zustand';
 
 type QueueState = {
   queue: Queue,
+  // fetch queue info loading state
   loading: boolean;
 };
 

@@ -298,7 +298,7 @@ export default function WorkflowEditor() {
 
   return (
     <div className={styles.workflowEditor}>
-      <WsController/>
+      {id && id !== "" && <WsController clientId={id as string}/>}
       <ReactFlow
         ref={ref}
         nodes={nodesWithStyle}

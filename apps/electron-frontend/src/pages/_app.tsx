@@ -6,7 +6,6 @@ import "../styles/global.scss";
 import {useDashboardState} from "@comflowy/common/store/dashboard-state";
 import { DraggableModalProvider } from "ui/antd/draggable-modal";
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
-import { PanelsContainerServerAdapter } from "@/components/panel/panel-container";
 import { AsyncComfyUIProcessManager } from "@/components/comfyui-process-manager/comfyui-process-manager-async";
 import { NotificationModal } from "@/components/my-workflows/notification-modal";
 
