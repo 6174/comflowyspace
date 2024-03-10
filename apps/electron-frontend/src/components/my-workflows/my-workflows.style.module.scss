@@ -4,7 +4,14 @@
         .workflow-create-box {
             margin-bottom: 20px;
             margin-right: 16px;
+            position: relative;
+            .actions {
+                position: absolute;
+                top: 4px;
+                right: 0px;
+            }
         }
+        
         .create-button {
             user-select: none;
             display: flex;

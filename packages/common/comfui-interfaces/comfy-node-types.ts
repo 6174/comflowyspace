@@ -6,9 +6,12 @@ export const NODE_GROUP = 'Group';
 export type NodeId = string
 
 /**
- * Stable Diffusion Node Interface
+ * Stable Diffusion Node Type
  */
 export interface SDNode {
+  id?: NodeId;
+  // for flow container node
+  nodeType?: "flow" | "node";
   widget: WidgetKey
   fields: Record<PropertyKey, any>
   inputs: ComfyUIWorkflowNodeInput[]
@@ -20,6 +23,7 @@ export interface SDNode {
   properties?: any;
   isPositive?: boolean;
   isNegative?: boolean;
+  flowId?: string;
 }
 
 export type SDNodeColorOption = {

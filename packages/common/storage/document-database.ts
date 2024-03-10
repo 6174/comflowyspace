@@ -9,6 +9,7 @@ import { JSONDocMeta } from '../jsondb/jsondb.types';
 import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
 import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
 import { useAppStore } from '../store/app-state';
+import { ControlBoardConfig } from 'workflow-editor/controlboard';
 
 export type PersistedWorkflowNode = {
   id: string;
@@ -34,6 +35,7 @@ export type PersistedWorkflowDocument = {
   version?: number;
   groups?: any[];
   connections: PersistedWorkflowConnection[];
+  controlboard?: ControlBoardConfig;
 }
 
 export type PersistedFullWorkflow = {

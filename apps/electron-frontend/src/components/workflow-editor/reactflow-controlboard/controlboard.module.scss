@@ -1,0 +1,28 @@
+.controlboard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  :global {
+    .control-board-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .control-board-actions {
+      padding: 10px;
+    }
+
+    .upload-image-wrapper {
+      height: auto !important;
+    }
+
+    .control-node {
+      border-bottom: solid 1px var(--borderColor);
+      border-radius: 0;
+      padding: 10px;
+      height: auto;
+    }
+  }
+}
