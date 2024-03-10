@@ -186,8 +186,8 @@ const ComfyUIProcessManager = () => {
         footer={null}
         className={styles.comfyuiProcessManager}
         onCancel={handleCancel}
-        initialWidth={450}
-        initialHeight={380}
+        initialWidth={650}
+        initialHeight={480}
         open={visible}
       >
         <div className="term" ref={termRef} >

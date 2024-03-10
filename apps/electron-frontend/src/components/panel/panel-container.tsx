@@ -208,7 +208,7 @@ export type PanelContainerState = {
 export function readPanelStateFromLocalStorage(): PanelContainerState {
   let ret:PanelContainerState = {
     panelsVisible: false,
-    panelWidth: 200,
+    panelWidth: 400,
     activePanel: undefined,
   };
   try {
