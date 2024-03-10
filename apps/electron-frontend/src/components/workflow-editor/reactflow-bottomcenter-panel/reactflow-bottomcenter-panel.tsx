@@ -115,7 +115,7 @@ export function RunButton() {
 
     if (running) {
         return (
-            <Tooltip title={"Click to stop execution()"}>
+            <Tooltip title={"Click to stop execution"}>
                 <div className="action action-stop" onClick={ev => {
                     // setRunning(false);
                     onInterruptQueue();
