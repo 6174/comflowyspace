@@ -6,6 +6,7 @@ import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node";
 import { useStoreApi, type Node, useReactFlow } from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
+import { Checkbox } from "antd";
 
 export function ControlBoardNode({ nodeControl, node, onChangeNodeControl }: ControlBoardNodeProps) {
   const { id, title, params, widget } = getNodeRenderInfo(node as any);
@@ -14,35 +15,17 @@ export function ControlBoardNode({ nodeControl, node, onChangeNodeControl }: Con
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
   const controlFields = nodeControl?.fields;
 
-  if (!onChangeNodeControl) {
-    const paramsToRender = params.filter(param => {
-      if (!controlFields) {
-        return true;
-      }
-      return controlFields.includes(param.property);
-    });
-    if (paramsToRender.length === 0) {
-      return null;
+  const paramsToRender = params.filter(param => {
+    if (!controlFields) {
+      return true;
     }
-    return (
-      <div className={`${nodeStyles.reactFlowNode} control-node`}>
-        <NodeHeader
-          widget={widget}
-          title={title}
-          isPositive={isPositive}
-          isNegative={isNegative}
-          node={node}
-          nodeError={nodeError}
-        />
-        {paramsToRender.map(({ property, input }) => (
-          <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
-        ))}
-      </div>
-    )
+    return controlFields.includes(param.property);
+  });
+  if (paramsToRender.length === 0) {
+    return null;
   }
-
   return (
-    <div className={`${nodeStyles.reactFlowNode} editable-control-node`}>
+    <div className={`${nodeStyles.reactFlowNode} control-node`}>
       <NodeHeader
         widget={widget}
         title={title}
@@ -51,16 +34,14 @@ export function ControlBoardNode({ nodeControl, node, onChangeNodeControl }: Con
         node={node}
         nodeError={nodeError}
       />
-      {params.map(({ property, input }) => (
+      {paramsToRender.map(({ property, input }) => (
         <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
       ))}
     </div>
   )
 }
 
-
-
-function NodeHeader({ widget, title, isPositive, isNegative, node, nodeError }: Partial<NodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) {
+export function NodeHeader({ widget, title, isPositive, isNegative, node, nodeError }: Partial<NodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) {
   const { setCenter } = useReactFlow();
   return (
     <div className="node-header">

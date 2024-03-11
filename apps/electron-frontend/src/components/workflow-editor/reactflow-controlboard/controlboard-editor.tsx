@@ -1,13 +1,15 @@
 import { useAppStore } from "@comflowy/common/store";
-import { ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
-import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import styles from "./controlboard.module.scss";
-import { ControlBoardNode } from "./controlboard-node";
+import { ControlBoardNode, NodeHeader } from "./controlboard-node";
 import { DragIcon } from "ui/icons";
+import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
+import {Node} from "reactflow";
 
 /**
  * The Control Båoard Config Editor
@@ -57,8 +59,7 @@ export function EditControlBoard() {
       </div>
       <div className="control-board-actions">
         <Space>
-          <Button size="small"> Cancel </Button>
-          <Button size="small" type="primary"> Save </Button>
+          <Button size="small" type="primary"> Done </Button>
         </Space>
       </div>
     </div>
@@ -73,9 +74,9 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
   setDraggingNode: (id: string | null) => void,
   data: ControlBoardNodeProps
 }) {
+  const { title, params, widget } = getNodeRenderInfo(data.node as any);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
   const controlboardConfig = useAppStore(st => st.controlboard);
-  const { title, params, widget } = getNodeRenderInfo(data.node as any);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
     item: () => ({ id, index }),
@@ -103,6 +104,11 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
     },
   })
 
+  const isPositive = useAppStore(st => st.graph[id]?.isPositive);
+  const isNegative = useAppStore(st => st.graph[id]?.isNegative);
+  const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
+  const controlFields = data.nodeControl?.fields;
+
   return (
     <div className={`editable-control-node-wrapper ${(isDragging || draggingNodeId === id) ? "dragging" : ""}`} 
         ref={node => {
@@ -115,19 +121,39 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
       }}>
         <DragIcon/>
       </div>
-      <Checkbox style={{
-        display: "flex",
-        flex: 1
-      }} onChange={(e) => {
+      <Checkbox onChange={(e) => {
         console.log("changed me");
-      }}>
-        <ControlBoardNode node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={newCtrl => {
+      }}/>
+      <div className={`${nodeStyles.reactFlowNode} editable-control-node`}>
+        <NodeHeader
+          widget={widget}
+          title={title}
+          isPositive={isPositive}
+          isNegative={isNegative}
+          node={data.node}
+          nodeError={nodeError}
+        />
+        <NodeControlParamsEditor params={params} node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={(newCtrl) => {
           onChangeControlBoard({
             ...controlboardConfig,
             nodes: controlboardConfig?.nodes.map(n => n.id === id ? newCtrl : n) || []
           });
-        }}/>
-      </Checkbox>
+        }} />
+      </div>
+    </div>
+  )
+}
+
+
+function NodeControlParamsEditor({ params, node, nodeControl, onChangeNodeControl }: { nodeControl: ControlBoardNodeConfig, params: NodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
+  // checked = { nodeControl?.fields.includes(property) }
+  return (
+    <div className="node-control-params">
+      {params.map(({ property, input }) => (
+        <div key={property} className="param">
+          <Checkbox onChange={ev => { }}>{property}</Checkbox>
+        </div>
+      ))}
     </div>
   )
 }
