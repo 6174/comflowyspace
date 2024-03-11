@@ -21,7 +21,7 @@ export function ControlBoardNode({ nodeControl, node, onChangeNodeControl }: Con
     }
     return controlFields.includes(param.property);
   });
-  if (!nodeControl.select || paramsToRender.length === 0) {
+  if (!nodeControl || !nodeControl?.select || paramsToRender.length === 0) {
     return null;
   }
   return (
