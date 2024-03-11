@@ -3,50 +3,15 @@ import { ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workf
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Modal } from "antd";
 import { useCallback, useEffect, useState } from "react";
-
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import styles from "./controlboard.module.scss";
-/**
- * @description Editor entry for the control board config data
- */
-export function EditControlBoardEntry() {
-  const [visible, setVisible] = useState(false);
-  const showModal = () => {
-    setVisible(true);
-  };
-
-  const handleOk = e => {
-    console.log(e);
-    setVisible(false);
-  };
-
-  const handleCancel = useCallback(e => {
-    console.log(e);
-    setVisible(false);
-  }, [setVisible]);
-
-  return (
-    <>
-      <Modal 
-        title="Edit Control Board"
-        open={visible}
-        onOk={handleOk}
-        okText={"Save"}
-        onCancel={handleCancel}
-      >
-        <EditControlBoard/>
-      </Modal>
-      <Button size="small" onClick={showModal}>Settings</Button>
-    </>
-  )
-}
 
 /**
  * The Control Båoard Config Editor
  * @returns 
  */
-function EditControlBoard() {
+export function EditControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); // Assuming you have a setter for controlboard in your store

@@ -13,7 +13,8 @@ import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node";
 import { Button, Space } from "antd";
-import { EditControlBoardEntry } from "./controlboard-editor";
+import { EditControlBoard } from "./controlboard-editor";
+import { useState } from "react";
 
 export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
@@ -21,15 +22,21 @@ export function ControlBoard() {
   const graph = useAppStore(st => st.graph);
   console.log("controlboardConfig", controlboardConfig);
   const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes, graph);
-  
+  const [editing, setEditing] = useState(false);
+
+  if (editing) {
+    return <EditControlBoard /> 
+  }
   return (
     <div className={styles.controlboard}>
       <div className="control-board-main">
-        {nodesToRenderHere.map(props => <ControlBoardNode {...props} key={props.node.id}/>)}
+        {nodesToRenderHere.map(props => <ControlBoardNode {...props} key={props.node.id} />)}
       </div>
       <div className="control-board-actions">
         <Space>
-          <EditControlBoardEntry/>
+          <Button size="small" onClick={ev => {
+            setEditing(true);
+          }}>Edit</Button>
           <Button size="small" disabled>Share</Button>
         </Space>
       </div>
