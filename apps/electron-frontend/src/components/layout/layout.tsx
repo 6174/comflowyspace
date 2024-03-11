@@ -135,7 +135,7 @@ const WorkspaceNav = () => {
       <div className='nav-footer'>
         <div className="workspace-nav-bottom-item">
           <div className="item">
-            <Tooltip title="App Settings">
+            <Tooltip title={t(KEYS.appSettings)}>
               <div className="action" onClick={showSettingsModal}>
                 <div className="icon"><SettingsIcon /></div>
               </div>
@@ -143,7 +143,7 @@ const WorkspaceNav = () => {
           </div>
           
           <div className="item">
-            <Tooltip title="ComfyUI Process Terminal">
+            <Tooltip title={t(KEYS.comfyUIProcessTerminal)}>
               <div className="action" onClick={ev => {
                 SlotGlobalEvent.emit({
                   type: GlobalEvents.show_comfyprocess_manager,

@@ -5,7 +5,8 @@ import { comfyElectronApi, openExternalURL, useIsElectron} from '@/lib/electron-
 import styles from './setting-modal.style.module.scss'; 
 import { LanguageType, changeLaunguage , currentLang} from '@comflowy/common/i18n';
 import LogoIcon from 'ui/icons/logo';
-import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons'
+import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
+import {KEYS, t} from "@comflowy/common/i18n";
 
 const SettingsModal = ({ isVisible, handleClose }) => {
   const [activeMenuKey, setActiveMenuKey] = useState('general');
@@ -18,9 +19,9 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   const languageMap = {
     'en-US': 'English',
-    'zh-CN': 'Chinese',
-    'ja': 'Japanese',
-    'ru': 'Russion',
+    'zh-CN': '中文',
+    'ja': '日本語',
+    'ru': 'русский',
   };
 
   const currentLanguage = languageMap[currentLang] || 'English';
@@ -46,7 +47,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   return (
     <Modal
-      title="Settings"
+      title={t(KEYS.settings)}
       visible={isVisible}
       onCancel={handleClose}
       footer={null}
@@ -71,13 +72,13 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                 <div className='sider-menu-item-icon'>
                   <PersonIcon/>
                 </div>
-                <a>General</a>
+                <a>{t(KEYS.general)}</a>
               </Menu.Item>
               <Menu.Item key="about" className='sider-menu-item'>
                 <div className='sider-menu-item-icon'>
                   <InfoIcon/>
                 </div>
-                <a>About</a>
+                <a>{t(KEYS.about)}</a>
               </Menu.Item>
             </Menu>
         </Sider>
@@ -86,24 +87,24 @@ const SettingsModal = ({ isVisible, handleClose }) => {
             {activeMenuKey === 'general' && 
               <div>
                 <div className='general-language'>
-                  <div className='general-language-title'>Language</div>
+                  <div className='general-language-title'>{t(KEYS.language)}</div>
                   <Select
                     defaultValue={currentLanguage}
                     style={{ width: 120 }}
                     onChange={handleChange}
                     options={[
                       { value: 'en-US', label: 'English' },
-                      { value: 'zh-CN', label: 'Chinese' },
-                      { value: 'ja', label: 'Japanese' },
-                      { value: 'ru', label: 'Russion' },
+                      { value: 'zh-CN', label: '中文' },
+                      { value: 'ja', label: '日本語' },
+                      { value: 'ru', label: 'русский' },
                     ]}
                   />
                 </div>
                 <div className='general-sdpath'>
-                  <div className='gerneral-sdpath-title'>SD WebUI Path</div>
-                  <div className='general-sdpath-content'>If you already installed Stable Diffusion WebUI, you can choose the SD WebUI path to reuse models.</div>
+                  <div className='gerneral-sdpath-title'>{t(KEYS.sdWebUIPath)}</div>
+                  <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
                   <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" style={{ width: 400, height:40}} />
-                  {electronEnv && <div onClick={selectFolder} className='general-sdpath-button'>Change Location</div>}
+                  {electronEnv && <div onClick={selectFolder} className='general-sdpath-button'>{t(KEYS.changeLocation)}</div>}
                 </div>
               </div>
             }
@@ -115,26 +116,26 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                   </div>
                   <div>
                     <div className='about-content-title'>Comflowy</div>
-                    <div>Version {process.env.NEXT_PUBLIC_APP_VERSION}</div>
+                    <div>{t(KEYS.version)} {process.env.NEXT_PUBLIC_APP_VERSION}</div>
                   </div>
                 </div>
                 <Divider/>
                 <div className='about-link'>
-                  <div className='about-link-title'>Links</div>
+                  <div className='about-link-title'>{t(KEYS.links)}</div>
                   <div className='about-link-list'>
-                    <a onClick={() => openExternalURL("https://www.comflowy.com/change-log")} target="_blank">• Product change log</a>
+                    <a onClick={() => openExternalURL("https://www.comflowy.com/change-log")} target="_blank">{t(KEYS.changelog)}</a>
                     <div>
-                      <a onClick={() => openExternalURL("https://github.com/6174/comflowyspace")} target="_blank">• Github </a><span>← If you like Comflowy, give our repo a ⭐</span>
+                      <a onClick={() => openExternalURL("https://github.com/6174/comflowyspace")} target="_blank">• Github </a><span>{t(KEYS.star)}</span>
                     </div>
                   </div> 
                 </div>
                 <div className='about-community'>
-                  <div className='about-community-title'>Community</div>
+                  <div className='about-community-title'>{t(KEYS.community)}</div>
                   <div>
-                    <p>Have an idea, feature request or found a bug? Let us know, and we'll take a look at it!</p>
+                    <p>{t(KEYS.communityDesc)}</p>
                   </div>
                   <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} className='about-community-button'>
-                    Join Discord Community
+                    {t(KEYS.joinDiscordCommunity)}
                   </div>
                 </div>
               </div>

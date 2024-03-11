@@ -43,7 +43,7 @@
       height: 100%;
       background-color: #212126;
       flex: 2;
-      padding: 20px;
+      padding: 20px 14px;
     }
     .about-content {
       display: flex;
@@ -88,6 +88,7 @@
       margin-top: 10px;
       margin-bottom: 20px;
       font-size: 14px;
+      text-align: center;
       &:hover {
         color: var(--primaryColor);
         border-color: var(--primaryColor);
@@ -115,6 +116,7 @@
       .about-community-button {
         font-size: 14px;
         border: 1px solid #FFF;
+        text-align: center;
         border-radius: 8px;
         cursor: pointer;
         width: 180px;

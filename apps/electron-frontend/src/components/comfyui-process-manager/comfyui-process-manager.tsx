@@ -177,7 +177,7 @@ const ComfyUIProcessManager = () => {
   const env = useDashboardState(state => state.env);
   const $title = (
     <div className="title">
-      <div>ComfyUI Process Terminal</div>
+      <div>{t(KEYS.comfyUIProcessTerminal)}</div>
     </div>
   )
   return (
@@ -205,9 +205,9 @@ const ComfyUIProcessManager = () => {
                 type: "input",
                 command: "\x03"
               });
-            }}>Stop Server</Button>
-            <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
-            <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+            }}>{t(KEYS.stopServer)}</Button>
+            <Button loading={restarting} disabled={restarting} onClick={restart}>{t(KEYS.restart)}</Button>
+            <Button loading={updating} disabled={updating} onClick={update}>{t(KEYS.update)}</Button>
             <InstallPipActions />
             <CopyCommand/>
           </Space>
@@ -242,7 +242,7 @@ function CopyCommand() {
       }
       setLoading(false);
       message.success("Copied to Clipboard");
-    }}>Copy Messages</Button>
+    }}>{t(KEYS.copyMessages)}</Button>
   )
 }
 
