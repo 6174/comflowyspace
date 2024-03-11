@@ -23,7 +23,7 @@ export function LogTypeCustomNodesImportInfo({log}: {log: ComflowyConsoleLog}) {
         <br />
         Please check: 
       <a 
-        onClick={() => openExternalURL("https://www.comflowy.com/blog/how-to-install-comfyui-extension")} 
+        onClick={() => openExternalURL("https://www.comflowy.com/advanced/how-to-install-comfyui-extension")} 
         target="_blank"
         > How to install ComfyUI extension?</a>
       </div>
