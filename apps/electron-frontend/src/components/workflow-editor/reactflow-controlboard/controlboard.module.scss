@@ -34,3 +34,35 @@
     }
   }
 }
+
+.editControlboard {
+  :global {
+    .control-node {
+      border-bottom: solid 1px var(--borderColor);
+      border-radius: 0;
+      padding: 10px;
+      height: auto;
+      .node-title {
+        justify-content: left;
+        display: inline-block !important;
+        .inner {
+          display: flex;
+          align-items: center;
+        }
+      }
+      transition: var(--transition);
+      &.dragging {
+        background-color: green;
+      }
+    }
+
+    .control-node-drop-target {
+      height: 4px;
+      background-color: gray;
+      &:hover {
+        background-color: var(--primaryColor);
+        height: 8px;
+      }
+    }
+  }
+}

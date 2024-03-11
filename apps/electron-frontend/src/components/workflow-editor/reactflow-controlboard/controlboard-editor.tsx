@@ -2,8 +2,11 @@ import { useAppStore } from "@comflowy/common/store";
 import { ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Modal } from "antd";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { useDrag, useDrop, DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import styles from "./controlboard.module.scss";
 /**
  * @description Editor entry for the control board config data
  */
@@ -34,7 +37,7 @@ export function EditControlBoardEntry() {
       >
         <EditControlBoard/>
       </Modal>
-      <Button size="small" disabled onClick={showModal}>Settings</Button>
+      <Button size="small" onClick={showModal}>Settings</Button>
     </>
   )
 }
@@ -47,30 +50,133 @@ function EditControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); // Assuming you have a setter for controlboard in your store
-  const doNotHaveConfig = !controlboardConfig;
-  let allNodes: ControlBoardNodeProps[] = ControlBoardUtils.autoSortNodes(nodes).map(node => {
-    return {
-      node
-    } as ControlBoardNodeProps;
-  });
-  if (!doNotHaveConfig) {
-    const nodesWithControl = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes);
-    const otherNodes = allNodes.filter(an => !nodesWithControl.find(n => n.node.id === an.node.id)) 
-    allNodes = [...nodesWithControl, ...otherNodes];
-  }
+  const [allNodes, setAllNodes] = useState<ControlBoardNodeProps[]>([]);
+
+  useEffect(() => {
+    let newAllNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
+      return {
+        node
+      } as ControlBoardNodeProps;
+    });
+    if (controlboardConfig) {
+      const nodesWithControl = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes);
+      const otherNodes = allNodes.filter(an => !nodesWithControl.find(n => n.node.id === an.node.id)) 
+      newAllNodes = [...nodesWithControl, ...otherNodes];
+    }
+    setAllNodes(newAllNodes);
+  }, [nodes, controlboardConfig]);
+
+  const [draggingNode, setDraggingNode] = useState<string | null>(null);
+  const moveNode = useCallback((dragIndex: number, hoverIndex: number) => {
+    const newAllNodes = [...allNodes];
+    const dragNode = newAllNodes[dragIndex]
+    setDraggingNode(dragNode.node.id);
+    newAllNodes.splice(dragIndex, 1)
+    newAllNodes.splice(hoverIndex, 0, dragNode)
+    setAllNodes(newAllNodes);
+  }, [allNodes]);
 
   return (
-    <div className="edit-control-board">
-      {allNodes.map(n => <DraggableControlNodeConfigItem {...n} key={n.node.id}/>)}
+    <div className={styles.editControlboard}>
+      <DndProvider backend={HTML5Backend}>
+        {allNodes && allNodes.map((n, i) => (
+          <>
+            {/* <DropTarget index={i} moveNode={moveNode} /> */}
+            <DraggableControlNodeConfigItem setDraggingNode={setDraggingNode} draggingNodeId={draggingNode} data={n} id={n.node.id} key={n.node.id} index={i} moveNode={moveNode} />
+          </>
+        ))}
+        {/* <DropTarget index={allNodes.length} moveNode={moveNode} /> */}
+      </DndProvider>
     </div>
   )
 }
 
-function DraggableControlNodeConfigItem(props: ControlBoardNodeProps) {
-  const { id, title, params, widget } = getNodeRenderInfo(props.node as any);
+function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, setDraggingNode, data }: {
+  id: string,
+  draggingNodeId: string | null,
+  index: number,
+  moveNode: (dragIndex: number, hoverIndex: number) => void,
+  setDraggingNode: (id: string | null) => void,
+  data: ControlBoardNodeProps
+}) {
+  const { title, params, widget } = getNodeRenderInfo(data.node as any);
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: 'node',
+    item: () => ({ id, index }),
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    end: () => {
+      setDraggingNode(null);
+    }
+  })
+
+  const [, drop] = useDrop({
+    accept: 'node',
+    hover(item: any, monitor: any) {
+      const dragIndex = item.index
+      const hoverIndex = index
+
+      if (dragIndex === hoverIndex) {
+        return
+      }
+
+      moveNode(dragIndex, hoverIndex)
+
+      item.index = hoverIndex
+    },
+  })
+
   return (
-    <div className="draggable-control-node-config-item">
-      node: {title}
+    <div 
+        className={`control-node ${(isDragging || draggingNodeId === id) ? "dragging" : ""}`} 
+        ref={node => {
+          drag(drop(node));
+          preview(node);
+        }}
+      >
+      node: {title} {isDragging ? "Dragging" : ""}
     </div>
+  )
+}
+
+
+/**
+ * drop target in node gap
+ * @param param0 
+ * @returns 
+ */
+function DropTarget({ index, moveNode }: any) {
+  const [dropHover, setDropHover] = useState(false);
+  const [, drop] = useDrop({
+    accept: 'node',
+    hover: (item: any) => {
+      const dragIndex = item.index
+      const hoverIndex = index
+
+      if (dragIndex === hoverIndex) {
+        return
+      }
+
+      moveNode(dragIndex, hoverIndex)
+
+      item.index = hoverIndex
+    },
+    drop(item: any, monitor: any) {
+      const dragIndex = item.index
+      const hoverIndex = index
+
+      if (dragIndex === hoverIndex) {
+        return
+      }
+
+      moveNode(dragIndex, hoverIndex)
+
+      item.index = hoverIndex
+    },
+  })
+
+  return (
+    <div ref={drop} className="control-node-drop-target" />
   )
 }
