@@ -1,11 +1,13 @@
 import { useAppStore } from "@comflowy/common/store";
 import { ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
-import { Button, Modal } from "antd";
+import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import styles from "./controlboard.module.scss";
+import { ControlBoardNode } from "./controlboard-node";
+import { DragIcon } from "ui/icons";
 
 /**
  * The Control Båoard Config Editor
@@ -14,7 +16,6 @@ import styles from "./controlboard.module.scss";
 export function EditControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
-  const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); // Assuming you have a setter for controlboard in your store
   const [allNodes, setAllNodes] = useState<ControlBoardNodeProps[]>([]);
 
   useEffect(() => {
@@ -43,15 +44,23 @@ export function EditControlBoard() {
 
   return (
     <div className={styles.editControlboard}>
-      <DndProvider backend={HTML5Backend}>
-        {allNodes && allNodes.map((n, i) => (
-          <>
-            {/* <DropTarget index={i} moveNode={moveNode} /> */}
-            <DraggableControlNodeConfigItem setDraggingNode={setDraggingNode} draggingNodeId={draggingNode} data={n} id={n.node.id} key={n.node.id} index={i} moveNode={moveNode} />
-          </>
-        ))}
-        {/* <DropTarget index={allNodes.length} moveNode={moveNode} /> */}
-      </DndProvider>
+      <div className="control-board-main">
+        <DndProvider backend={HTML5Backend}>
+          {allNodes && allNodes.map((n, i) => (
+            <>
+              {/* <DropTarget index={i} moveNode={moveNode} /> */}
+              <DraggableControlNodeConfigItem setDraggingNode={setDraggingNode} draggingNodeId={draggingNode} data={n} id={n.node.id} key={n.node.id} index={i} moveNode={moveNode} />
+            </>
+          ))}
+          {/* <DropTarget index={allNodes.length} moveNode={moveNode} /> */}
+        </DndProvider>
+      </div>
+      <div className="control-board-actions">
+        <Space>
+          <Button size="small"> Cancel </Button>
+          <Button size="small" type="primary"> Save </Button>
+        </Space>
+      </div>
     </div>
   )
 }
@@ -64,6 +73,8 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
   setDraggingNode: (id: string | null) => void,
   data: ControlBoardNodeProps
 }) {
+  const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
+  const controlboardConfig = useAppStore(st => st.controlboard);
   const { title, params, widget } = getNodeRenderInfo(data.node as any);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
@@ -93,18 +104,33 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
   })
 
   return (
-    <div 
-        className={`control-node ${(isDragging || draggingNodeId === id) ? "dragging" : ""}`} 
+    <div className={`editable-control-node-wrapper ${(isDragging || draggingNodeId === id) ? "dragging" : ""}`} 
         ref={node => {
-          drag(drop(node));
+          drop(node);
           preview(node);
         }}
       >
-      node: {title} {isDragging ? "Dragging" : ""}
+      <div className="dragger action" ref={node => {
+        drag(node);
+      }}>
+        <DragIcon/>
+      </div>
+      <Checkbox style={{
+        display: "flex",
+        flex: 1
+      }} onChange={(e) => {
+        console.log("changed me");
+      }}>
+        <ControlBoardNode node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={newCtrl => {
+          onChangeControlBoard({
+            ...controlboardConfig,
+            nodes: controlboardConfig?.nodes.map(n => n.id === id ? newCtrl : n) || []
+          });
+        }}/>
+      </Checkbox>
     </div>
   )
 }
-
 
 /**
  * drop target in node gap

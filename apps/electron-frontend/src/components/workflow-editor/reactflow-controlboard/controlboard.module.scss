@@ -36,23 +36,70 @@
 }
 
 .editControlboard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   :global {
-    .control-node {
+    .control-board-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  
+    .control-board-actions {
+      padding: 10px;
+    }
+    .editable-control-node-wrapper {
       border-bottom: solid 1px var(--borderColor);
       border-radius: 0;
       padding: 10px;
       height: auto;
-      .node-title {
-        justify-content: left;
-        display: inline-block !important;
-        .inner {
-          display: flex;
-          align-items: center;
-        }
-      }
+      display: flex;
       transition: var(--transition);
       &.dragging {
         background-color: green;
+      }
+      .dragger {
+        width: 28px;
+        height: 28px;
+        flex: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 4px;
+        svg {
+          transform: scale(1.3);
+        }
+      }
+      .editable-control-node {
+        .node-title {
+          justify-content: left;
+          display: inline-block !important;
+          .inner {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+      >.ant-checkbox-wrapper {
+        display: flex;
+        flex: 1 1 0%;
+        align-items: flex-start;
+        .ant-checkbox {
+          align-self: flex-start;
+          top: 7px;
+        }
+        >span:last-child {
+          flex: 1;
+          position: relative;
+          padding-left: 0;
+          top: -4px;
+          display: flex;
+          justify-content: flex-end;
+        }
       }
     }
 

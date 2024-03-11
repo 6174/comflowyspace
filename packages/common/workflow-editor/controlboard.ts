@@ -22,6 +22,7 @@ export type ControlBoardNodeConfig = {
 
 export type ControlBoardNodeProps = {
   nodeControl?: ControlBoardNodeConfig;
+  onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
   node: Node,
 }
 
