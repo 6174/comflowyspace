@@ -215,7 +215,7 @@ function DraggableControlNodeConfigItem({
           const newControlData = _.cloneDeep(controlboardData);
           const node = newControlData.nodes.find(n => n.id === id);
           node.fields = newNodeCtrl.fields;
-          node.select = true;
+          node.select = newNodeCtrl.select;
           onChangeControlBoard(newControlData);
         }} />
       </div>
@@ -239,8 +239,12 @@ function NodeControlParamsEditor({
             const newControl = _.cloneDeep(nodeControl);
             if (checked) {
               newControl.fields.push(property);
+              newControl.select = true;
             } else {
               newControl.fields = newControl.fields.filter(f => f !== property);
+              if (newControl.fields.length === 0) {
+                newControl.select = false;
+              }
             }
             onChangeNodeControl(newControl);
           }}>{property}</Checkbox>
