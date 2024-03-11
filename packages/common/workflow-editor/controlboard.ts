@@ -14,6 +14,7 @@ export type ControlBoardConfig = {
 export type ControlBoardNodeConfig = {
   id: string;
   fields: string[];
+  select: boolean;
   apiInputFields?: string[];
   apiInputFieldsNameMapping?: Record<string, string>;
   apiOutputFields?: string[];
@@ -28,18 +29,21 @@ export type ControlBoardNodeProps = {
 
 export const ControlBoardUtils = {
   createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {
-    const nodeList = nodes.map(node => {
-      const {params, id} = getNodeRenderInfo(node as any);
-      const fields = params.map(param => param.property);
-      return {
-        id,
-        fields
-      } as ControlBoardNodeConfig
-    });
+    const nodeList = nodes.map(ControlBoardUtils.createControlboardInfoFromNode);
     return {
       nodes: nodeList
     }
   },
+  createControlboardInfoFromNode(node: Node): ControlBoardNodeConfig {
+    const { params, id } = getNodeRenderInfo(node as any);
+    const fields = params.map(param => param.property);
+    return {
+      id,
+      fields,
+      select: true
+    } as ControlBoardNodeConfig
+  },
+
   getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: Node[], graph?: Record<string, SDNode>): ControlBoardNodeProps[] {
     const nodesToRender: ControlBoardNodeProps[] = [];
 

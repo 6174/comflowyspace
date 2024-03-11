@@ -15,14 +15,16 @@ export function ControlBoard() {
   const nodes = useAppStore(st => st.nodes);
   const controlboardConfig = useAppStore(st => st.controlboard);
   const graph = useAppStore(st => st.graph);
-  console.log("controlboardConfig", controlboardConfig);
+
   const nodesToRenderHere = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes, graph);
   const [editing, setEditing] = useState(false);
 
   if (editing) {
-    return <EditControlBoard /> 
+    return <EditControlBoard onFinish={() => {
+      setEditing(false);
+    }}/> 
   }
-  
+
   return (
     <div className={styles.controlboard}>
       <div className="control-board-main">

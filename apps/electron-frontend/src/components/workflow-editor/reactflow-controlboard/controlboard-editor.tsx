@@ -1,5 +1,5 @@
 import { useAppStore } from "@comflowy/common/store";
-import { ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
@@ -10,31 +10,71 @@ import { ControlBoardNode, NodeHeader } from "./controlboard-node";
 import { DragIcon } from "ui/icons";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import {Node} from "reactflow";
+import _ from "lodash";
 
 /**
  * The Control Båoard Config Editor
  * @returns 
  */
-export function EditControlBoard() {
+export function EditControlBoard(props: {onFinish: () => void}) {
   const nodes = useAppStore(st => st.nodes);
-  const controlboardConfig = useAppStore(st => st.controlboard);
   const [allNodes, setAllNodes] = useState<ControlBoardNodeProps[]>([]);
+  
+  /**
+   * editing controlboard data state
+   *  */ 
+  const savedControlBoardData = useAppStore(st => st.controlboard);
+  const [controlboardData, setControlBoardData] = useState<ControlBoardConfig | null>(savedControlBoardData);
+  const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
+  const triggerChangeControlBoardData = useCallback(async (data: ControlBoardConfig) => {
+    setControlBoardData(data);
+    console.log("change control data order", data)
+    onChangeControlBoard(data);
+  }, []);
+
+  // auto update controlboard data from SSOT Source
+  useEffect(() => {
+    setControlBoardData(controlboardData);
+  }, [savedControlBoardData]);
 
   useEffect(() => {
-    let newAllNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
+    let allNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
       return {
         node
       } as ControlBoardNodeProps;
     });
-    if (controlboardConfig) {
-      const nodesWithControl = ControlBoardUtils.getNodesToRender(controlboardConfig, nodes);
+    if (controlboardData) {
+      const nodesWithControl = ControlBoardUtils.getNodesToRender(_.cloneDeep(controlboardData), nodes);
       const otherNodes = allNodes.filter(an => !nodesWithControl.find(n => n.node.id === an.node.id)) 
-      newAllNodes = [...nodesWithControl, ...otherNodes];
+      const newAllNodes = [...nodesWithControl, ...otherNodes];
+      setAllNodes(newAllNodes);
+      if (otherNodes.length > 0) {
+        setControlBoardData({
+          nodes: [
+            ...controlboardData.nodes,
+            ...otherNodes.map(n => {
+              return {
+                id: n.node.id,
+                fields: [],
+                select: false
+              }
+            })
+          ]
+        })
+      }
+    } else {
+      setControlBoardData(ControlBoardUtils.createControlboardInfoFromNodes(allNodes.map(n => n.node)));
+      setAllNodes(allNodes);
     }
-    setAllNodes(newAllNodes);
-  }, [nodes, controlboardConfig]);
+  }, [nodes, controlboardData]);
 
+  console.log("control board Data", allNodes);
+
+  /**
+   * Drag Move Logic
+   */
   const [draggingNode, setDraggingNode] = useState<string | null>(null);
+
   const moveNode = useCallback((dragIndex: number, hoverIndex: number) => {
     const newAllNodes = [...allNodes];
     const dragNode = newAllNodes[dragIndex]
@@ -42,6 +82,13 @@ export function EditControlBoard() {
     newAllNodes.splice(dragIndex, 1)
     newAllNodes.splice(hoverIndex, 0, dragNode)
     setAllNodes(newAllNodes);
+
+    const controlData = {
+      nodes: newAllNodes.filter(n => n.nodeControl).map(n => n.nodeControl)
+    } as ControlBoardConfig;
+
+    triggerChangeControlBoardData(controlData);
+
   }, [allNodes]);
 
   return (
@@ -49,34 +96,52 @@ export function EditControlBoard() {
       <div className="control-board-main">
         <DndProvider backend={HTML5Backend}>
           {allNodes && allNodes.map((n, i) => (
-            <>
-              {/* <DropTarget index={i} moveNode={moveNode} /> */}
-              <DraggableControlNodeConfigItem setDraggingNode={setDraggingNode} draggingNodeId={draggingNode} data={n} id={n.node.id} key={n.node.id} index={i} moveNode={moveNode} />
-            </>
+            <DraggableControlNodeConfigItem 
+              setDraggingNode={setDraggingNode} 
+              draggingNodeId={draggingNode} 
+              data={n} 
+              id={n.node.id} 
+              key={`${n.node.id}-${i}`} 
+              index={i} 
+              moveNode={moveNode}
+              controlboardData={controlboardData}
+              onChangeControlBoard={triggerChangeControlBoardData} />
           ))}
+          {/* <DropTarget index={i} moveNode={moveNode} /> */}
           {/* <DropTarget index={allNodes.length} moveNode={moveNode} /> */}
         </DndProvider>
       </div>
       <div className="control-board-actions">
         <Space>
-          <Button size="small" type="primary"> Done </Button>
+          <Button size="small" type="primary" onClick={(ev) => {
+            props.onFinish();
+          }}> Done </Button>
         </Space>
       </div>
     </div>
   )
 }
 
-function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, setDraggingNode, data }: {
+function DraggableControlNodeConfigItem({ 
+  id, 
+  index, 
+  moveNode, 
+  draggingNodeId, 
+  setDraggingNode, 
+  data, 
+  onChangeControlBoard,
+  controlboardData
+}: {
   id: string,
   draggingNodeId: string | null,
   index: number,
   moveNode: (dragIndex: number, hoverIndex: number) => void,
   setDraggingNode: (id: string | null) => void,
-  data: ControlBoardNodeProps
+  data: ControlBoardNodeProps,
+  onChangeControlBoard: (data: ControlBoardConfig) => void,
+  controlboardData: ControlBoardConfig
 }) {
   const { title, params, widget } = getNodeRenderInfo(data.node as any);
-  const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
-  const controlboardConfig = useAppStore(st => st.controlboard);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
     item: () => ({ id, index }),
@@ -107,7 +172,10 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
-  const controlFields = data.nodeControl?.fields;
+
+  if (params.length === 0) {
+    return <></>
+  }
 
   return (
     <div className={`editable-control-node-wrapper ${(isDragging || draggingNodeId === id) ? "dragging" : ""}`} 
@@ -121,8 +189,18 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
       }}>
         <DragIcon/>
       </div>
-      <Checkbox onChange={(e) => {
-        console.log("changed me");
+      <Checkbox checked={data.nodeControl && data.nodeControl.select } onChange={(e) => {
+        const checked = e.target.checked;
+        const newControlData = _.cloneDeep(controlboardData);
+        const node = newControlData.nodes.find(n => n.id === id);
+        node.select = checked;
+        if (!checked) {
+          node.fields = [];
+        } else {
+          const {fields} = ControlBoardUtils.createControlboardInfoFromNode(data.node as any);
+          node.fields = fields;
+        }
+        onChangeControlBoard(newControlData)
       }}/>
       <div className={`${nodeStyles.reactFlowNode} editable-control-node`}>
         <NodeHeader
@@ -133,11 +211,11 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
           node={data.node}
           nodeError={nodeError}
         />
-        <NodeControlParamsEditor params={params} node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={(newCtrl) => {
-          onChangeControlBoard({
-            ...controlboardConfig,
-            nodes: controlboardConfig?.nodes.map(n => n.id === id ? newCtrl : n) || []
-          });
+        <NodeControlParamsEditor params={params} node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={(newNodeCtrl) => {
+          const newControlData = _.cloneDeep(controlboardData);
+          const node = newControlData.nodes.find(n => n.id === id);
+          node.fields = newNodeCtrl.fields;
+          onChangeControlBoard(newControlData);
         }} />
       </div>
     </div>
@@ -145,13 +223,26 @@ function DraggableControlNodeConfigItem({ id, index, moveNode, draggingNodeId, s
 }
 
 
-function NodeControlParamsEditor({ params, node, nodeControl, onChangeNodeControl }: { nodeControl: ControlBoardNodeConfig, params: NodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
-  // checked = { nodeControl?.fields.includes(property) }
+function NodeControlParamsEditor({ 
+  params,
+  node, 
+  nodeControl, 
+  onChangeNodeControl,
+}: { nodeControl: ControlBoardNodeConfig, params: NodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
   return (
     <div className="node-control-params">
       {params.map(({ property, input }) => (
         <div key={property} className="param">
-          <Checkbox onChange={ev => { }}>{property}</Checkbox>
+          <Checkbox checked={nodeControl?.fields.includes(property)} onChange={ev => {
+            const checked = ev.target.checked;
+            const newControl = _.cloneDeep(nodeControl);
+            if (checked) {
+              newControl.fields.push(property);
+            } else {
+              newControl.fields = newControl.fields.filter(f => f !== property);
+            }
+            onChangeNodeControl(newControl);
+          }}>{property}</Checkbox>
         </div>
       ))}
     </div>

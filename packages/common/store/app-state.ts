@@ -634,12 +634,13 @@ export const useAppStore = create<AppState>((set, get) => ({
    * Workflow load & persisted
    * @param workflow 
    */
-  onLoadWorkflow: (workflow) => {
+  onLoadWorkflow: (workflow: PersistedFullWorkflow) => {
     const st = get();
     const doc = WorkflowDocumentUtils.fromJson({
       id: workflow.id,
       title: workflow.title,
       nodes: workflow.snapshot.nodes,
+      controlboard: workflow.snapshot.controlboard,
       connections: workflow.snapshot.connections
     });
     console.log("load workflow", workflow);

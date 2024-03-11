@@ -43,7 +43,7 @@ export type PersistedFullWorkflow = {
   id: string;
   thumbnail?: string;
   gallery?: PreviewImage[];
-  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
+  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "controlboard" |  "connections" >; // json format
   [_: string]: any;
 } & JSONDocMeta
 
