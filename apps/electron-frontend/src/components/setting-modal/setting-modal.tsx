@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button} from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message} from 'antd';
 import type { MenuProps } from 'antd';
-import { openExternalURL, useIsElectron} from '@/lib/electron-bridge';
+import { comfyElectronApi, openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
-import { changeLaunguage , currentLang} from '@comflowy/common/i18n';
+import { LanguageType, changeLaunguage , currentLang} from '@comflowy/common/i18n';
 import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons'
 
@@ -25,7 +25,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   const currentLanguage = languageMap[currentLang] || 'English';
 
-  const handleChange = (value: string) => {
+  const handleChange = (value: LanguageType) => {
     localStorage.setItem('i18n', value);
     changeLaunguage(value);
     window.location.reload();
@@ -103,7 +103,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                   <div className='gerneral-sdpath-title'>SD WebUI Path</div>
                   <div className='general-sdpath-content'>If you already installed Stable Diffusion WebUI, you can choose the SD WebUI path to reuse models.</div>
                   <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" style={{ width: 400, height:40}} />
-                  {electronEnv && <div type="link" onClick={selectFolder} className='general-sdpath-button'>Change Location</div>}
+                  {electronEnv && <div onClick={selectFolder} className='general-sdpath-button'>Change Location</div>}
                 </div>
               </div>
             }
@@ -115,7 +115,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                   </div>
                   <div>
                     <div className='about-content-title'>Comflowy</div>
-                    <div>Version 0.1.1</div>
+                    <div>Version {process.env.NEXT_PUBLIC_APP_VERSION}</div>
                   </div>
                 </div>
                 <Divider/>
@@ -133,7 +133,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                   <div>
                     <p>Have an idea, feature request or found a bug? Let us know, and we'll take a look at it!</p>
                   </div>
-                  <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} target="_blank" className='about-community-button'>
+                  <div onClick={() => openExternalURL("https://discord.com/invite/cj623WvcVx")} className='about-community-button'>
                     Join Discord Community
                   </div>
                 </div>
