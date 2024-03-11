@@ -215,6 +215,7 @@ function DraggableControlNodeConfigItem({
           const newControlData = _.cloneDeep(controlboardData);
           const node = newControlData.nodes.find(n => n.id === id);
           node.fields = newNodeCtrl.fields;
+          node.select = true;
           onChangeControlBoard(newControlData);
         }} />
       </div>
