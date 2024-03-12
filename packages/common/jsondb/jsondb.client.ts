@@ -37,7 +37,8 @@ export class JSONDBClient<T extends JSONDocMeta> {
    * Get all documents
    */
   async getDocuments(ids?: string[]): Promise<JSONDBReponse> {
-    const response = await fetch(getBackendUrl(`/db/collection/${this.collectionName}?ids=${ids?.join(",")}`));
+    const queryString = ids ? `?ids=${ids?.join(",")}` : "";
+    const response = await fetch(getBackendUrl(`/db/collection/${this.collectionName}${queryString}`));
     return response.json(); 
   }
 

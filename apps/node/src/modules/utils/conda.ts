@@ -2,6 +2,7 @@ import { execSync } from "child_process";
 import { OS_HOME_DIRECTORY, SHELL_ENV_PATH, getSystemPath, isWindows } from "./env";
 import path from "path";
 import { CONDA_ENV_NAME } from "../config-manager";
+import logger from "./logger";
 
 export const DEFAULT_CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`;
 export const DEFAULT_CONDA_ENV_PATH = isWindows ? `${DEFAULT_CONDA_PATH}\\envs\\${CONDA_ENV_NAME}` : `${DEFAULT_CONDA_PATH}/envs/${CONDA_ENV_NAME}`;
@@ -35,7 +36,7 @@ class Conda {
   updateCondaInfo () {
     this.info = getCondaInfo();
     this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
-    console.log("update conda info", this.info, this.env);
+    logger.info("update conda info" + JSON.stringify(this.info) + JSON.stringify(this.env));
   }
 
   getCondaPaths(): CondaInfo & CondaEnvInfo {

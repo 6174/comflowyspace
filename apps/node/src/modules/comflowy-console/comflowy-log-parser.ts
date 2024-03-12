@@ -40,9 +40,9 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
         }
 
         if (failedImports.length > 0) {
-          console.log("importResults", importResults, successfulImports, failedImports);
           ret.push({
             id: uuid(),
+            readed: false,
             message: `Import results: ${successfulImports.length} successful, ${failedImports.length} failed`,
             data: {
               type: ComflowyConsoleLogTypes.CUSTOM_NODES_IMPORT_RESULT,
@@ -92,6 +92,7 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
       this.currentLogParams = {
         id: uuid(),
         message: log,
+        readed: false,
         data: {
           type: ComflowyConsoleLogTypes.EXTENSION_LOAD_INFO,
           level: level!,
@@ -176,6 +177,7 @@ class LinearErrorParsingStrategy implements LogParsingStrategy {
         const errorMessage = `RuntimeError: ${errorMatch[0]}`;
         ret.push({
           id: uuid(),
+          readed: false,
           message: errorMessage,
           data: {
             type: ComflowyConsoleLogTypes.LINEAR_SHAPE_ERROR,
