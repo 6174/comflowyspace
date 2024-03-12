@@ -35,7 +35,7 @@ const ALLLang: i18nAllLang = {
     'en-US': "Choose a template for creating your worklow",
     'zh-CN': "请选择一个模板来创建工作流",
     'ja': "テンプレートを選択して開始",
-    'ru': "Выберите шаблон для начала"
+    'ru': "Сначала выберите шаблон"
   },
   [KEYS.tutorials]: {
     'en-US': "Tutorials",
@@ -113,19 +113,19 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Community Extensions',
     'zh-CN': '社区插件',
     'ja': 'コミュニティの拡張機能',
-    'ru': 'Расширения сообщества'
+    'ru': 'Расширения от сообщества'
   },
   [KEYS.installExtensionsFromCommunity]: {
     'en-US': 'Install extensions from the community',
     'zh-CN': '从社区安装插件',
     'ja': 'コミュニティから拡張機能をインストール',
-    'ru': 'Установить расширения из сообщества'
+    'ru': 'Установить расширения от сообщества'
   },
   [KEYS.installFromGitUrl]: {
     'en-US': 'Install from Github URL',
     'zh-CN': '通过 Github URL 安装',
     'ja': 'Github URL からインストール',
-    'ru': 'Установить из Github URL'
+    'ru': 'Установить из URL на Github'
   },
   [KEYS.totalExtensions]: {
     'en-US': 'Total Extensions',
@@ -149,7 +149,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Input extension Github url',
     'zh-CN': '输入插件 Github url',
     'ja': '拡張機能の Github URL を入力',
-    'ru': 'Введите URL расширения Github'
+    'ru': 'Введите URL расширения на Github'
   },
   [KEYS.menu]: {
     'en-US': 'MENU',
@@ -191,7 +191,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Success',
     'zh-CN': '成功',
     'ja': '成功',
-    'ru': 'Успех'
+    'ru': 'Успешно'
   },
   [KEYS.createNewWorkflow]: {
     'en-US': 'Create New Workflow',
@@ -263,7 +263,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'I strongly suggest that you first learn the fundamentals of Stable Diffusion. This will give you a better understanding of the principles behind AI image generation, and you will be able to use Comflowy more effectively:',
     'zh-CN': '我强烈建议你先学习稳定扩散的基础知识。这将使你更好地理解 AI 图像生成背后的原理，并让你能够更好地使用 Comflowy：',
     'ja': 'まず、Stable Diffusion の基本を学ぶことを強くお勧めします。これにより、AI 画像生成の原則をよりよく理解し、Comflowy をより効果的に使用できるようになります：',
-    'ru': 'Я настоятельно рекомендую вам сначала изучить основы стабильной диффузии. Это позволит вам лучше понять принципы создания изображений с использованием искусственного интеллекта, и вы сможете использовать Comflowy более эффективно:'
+    'ru': 'Мы настоятельно рекомендуем вам сначала изучить основы стабильной диффузии. Это позволит вам лучше понять принципы создания изображений с использованием искусственного интеллекта, и вы сможете использовать Comflowy более эффективно:'
   },
   [KEYS.textToImage]: {
     'en-US': 'Text To Image',
@@ -275,7 +275,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'If you\'re interested in further learning about text-to-image generation techniques, you can check out the following sections:',
     'zh-CN': '如果你对进一步了解文本到图像生成技术感兴趣，你可以查看以下部分：',
     'ja': 'テキストから画像を生成する技術についてさらに学びたい場合は、次のセクションをご覧ください：',
-    'ru': 'Если вас интересует дальнейшее изучение техник генерации текста в изображение, вы можете ознакомиться с следующими разделами:'
+    'ru': 'Если вас интересует дальнейшее изучение технологии генерации текста в изображение, вы можете ознакомиться с следующими разделами:'
   },
   [KEYS.imageToImage]: {
     'en-US': 'Image To Image',
@@ -287,19 +287,19 @@ const ALLLang: i18nAllLang = {
     'en-US': 'If you\'d like to learn some image-to-image generation techniques, you can check out the following sections:',
     'zh-CN': '如果你想了解一些图像到图像生成技术，你可以查看以下部分：',
     'ja': 'いくつかの画像から画像を生成する技術を学びたい場合は、次のセクションをご覧ください：',
-    'ru': 'Если вы хотите изучить некоторые техники генерации изображений в изображения, вы можете ознакомиться с следующими разделами:'
+    'ru': 'Если вы хотите лучше изучить технологию генерации изображения в изображение, вы можете ознакомиться с следующими разделами:'
   },
   [KEYS.bestPractices]: {
     'en-US': 'Best Practices',
     'zh-CN': '最佳实践',
     'ja': 'ベストプラクティス',
-    'ru': 'Лучшие практики'
+    'ru': 'Лучшие примеры'
   },
   [KEYS.bestPracticesDesc]: {
     'en-US': 'In addition to the basic tutorials, there are also some best practice cases that you can refer to and try out:',
     'zh-CN': '除了基础教程外，还有一些最佳实践案例供你参考和尝试：',
     'ja': '基本的なチュートリアルに加えて、参照して試してみることができるベストプラクティスのケースもあります：',
-    'ru': 'Помимо основных учебных пособий, есть также некоторые лучшие практические случаи, на которые вы можете ссылаться и попробовать:'
+    'ru': 'Помимо основных примеров, есть также и другие примеры, которые вы можете посмотреть и попробовать:'
   },
   [KEYS.comfyUIProcessTerminal]: {
     'en-US': 'ComfyUI Process Terminal',
@@ -323,7 +323,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Pip Install',
     'zh-CN': 'Pip 安装',
     'ja': 'Pip インストール',
-    'ru': 'Pip установка'
+    'ru': 'Установка с помошью PIP'
   },
   [KEYS.copyMessages]: {
     'en-US': 'Copy Messages',
@@ -335,7 +335,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Install Pip Packages',
     'zh-CN': '安装 Pip 包',
     'ja': 'Pip パッケージをインストール',
-    'ru': 'Установить пакеты Pip'
+    'ru': 'Установить пакеты с помощью PIP'
   },
   [KEYS.pipPlaceholder]: {
     'en-US': 'Input pip package name e.g. numbpy pandas tensorflow',
