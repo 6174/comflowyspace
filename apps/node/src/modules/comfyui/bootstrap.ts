@@ -407,7 +407,7 @@ export async function cloneComfyUI(dispatch: TaskEventDispatcher): Promise<boole
                 dispatch({
                     message: 'Start cloning ComfyUI...'
                 });
-                await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI`, dispatch, {
+                await runCommand(`git clone https://github.com/comfyanonymous/ComfyUI.git`, dispatch, {
                     cwd: parentDir
                 });
             }
