@@ -6,7 +6,7 @@ import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XY
 import * as Y from "yjs";
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../storage";
 import { NodeId, PreviewImage } from "../comfui-interfaces";
-import { ControlBoardConfig } from "workflow-editor/controlboard";
+import { ControlBoardConfig } from "../workflow-editor/controlboard";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;
