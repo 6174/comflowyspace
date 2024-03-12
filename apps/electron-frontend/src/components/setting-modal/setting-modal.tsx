@@ -55,17 +55,15 @@ const SettingsModal = ({ isVisible, handleClose }) => {
       if (data.success) {
         message.success("success: " + data.error);
         setIsModalVisible(false);
-        handleClose(); 
       } else {
         message.error("Failed: " + data.error);
       }
+      setLoading(false);
     } catch (err) {
       console.log(err);
       message.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [setLoading, handleClose]);
+    } 
+  }, [sdwebuiPath]);
 
   const selectFolder = useCallback(async () => {
     try {
@@ -79,7 +77,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
       console.log(err);
       message.error(err);
     }
-  }, [handleModalOk, setSdwebuiPath]);
+  }, [handleModalOk]);
 
   const electronEnv = useIsElectron();
 
