@@ -4,6 +4,7 @@ import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
 import { LanguageType, changeLaunguage , currentLang} from '@comflowy/common/i18n';
+import { getBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
 import {KEYS, t} from "@comflowy/common/i18n";
@@ -12,6 +13,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
   const [activeMenuKey, setActiveMenuKey] = useState('general');
   const { Header, Content, Footer, Sider } = Layout;
   const [sdwebuiPath, setSdwebuiPath] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onMenuItemClick = ({ key }) => {
     setActiveMenuKey(key);
@@ -32,16 +34,52 @@ const SettingsModal = ({ isVisible, handleClose }) => {
     window.location.reload();
   };
 
+  const handleModalOk = useCallback(async () => {
+    // setIsModalVisible(false);
+    const api = getBackendUrl('/api/update_sdwebui');
+    try {
+      const config = {
+        stableDiffusionDir: sdwebuiPath.trim()
+      };
+      setLoading(true);
+      const ret = await fetch(api, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: config
+        })
+      });
+      const data = await ret.json();
+      if (data.success) {
+        message.success("success: " + data.error);
+        setIsModalVisible(false);
+        handleClose(); 
+      } else {
+        message.error("Failed: " + data.error);
+      }
+    } catch (err) {
+      console.log(err);
+      message.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [setLoading, handleClose]);
+
   const selectFolder = useCallback(async () => {
     try {
       const ret = await comfyElectronApi.selectDirectory();
-      const folder = ret[0];
-      setSdwebuiPath(folder);
+      if (ret && ret.length > 0) {
+        const folder = ret[0];
+        setSdwebuiPath(folder);
+        handleModalOk(folder); 
+      }
     } catch (err) {
       console.log(err);
       message.error(err);
     }
-  }, []);
+  }, [handleModalOk, setSdwebuiPath]);
 
   const electronEnv = useIsElectron();
 
@@ -103,7 +141,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                 <div className='general-sdpath'>
                   <div className='gerneral-sdpath-title'>{t(KEYS.sdWebUIPath)}</div>
                   <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
-                  <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" style={{ width: 400, height:40}} />
+                  <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height:40}} />
                   {electronEnv && <div onClick={selectFolder} className='general-sdpath-button'>{t(KEYS.changeLocation)}</div>}
                 </div>
               </div>
