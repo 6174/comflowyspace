@@ -1,51 +1,14 @@
-import {
-  type Edge,
-  type Node,
-  addEdge,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type OnConnect,
-  applyNodeChanges,
-  type XYPosition,
-  type Connection as FlowConnecton,
-  OnEdgesDelete,
-  applyEdgeChanges,
-  OnEdgeUpdateFunc,
-  OnConnectStart,
-  OnConnectEnd,
-  OnConnectStartParams,
-  NodeChange,
-  ReactFlowInstance,
-} from 'reactflow';
-import {
-  type NodeId,
-  type NodeInProgress,
-  type PropertyKey,
-  SDNode, Widget,
-  type WidgetKey,
-  NODE_IDENTIFIER,
-  Connection,
-  PreviewImage,
-  UnknownWidget,
-  ContrlAfterGeneratedValues,
-  NODE_GROUP,
-} from '../comfui-interfaces'
-
-export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
-
 import * as Y from "yjs";
+import exifr from 'exifr'
+import { create } from 'zustand'
+import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
+import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, } from '../comfui-interfaces'
 import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, throttledUpdateDocument } from "../storage";
 import { PromptResponse, createPrompt, sendPrompt } from '../comfyui-bridge/prompt';
-import { create } from 'zustand'
 import { getWidgetLibrary as getWidgets } from '../comfyui-bridge/bridge';
-import {
-  writeWorkflowToFile,
-} from '../comfyui-bridge/export-import';
-
+import { writeWorkflowToFile, } from '../comfyui-bridge/export-import';
 import { getBackendUrl } from '../config'
-import exifr from 'exifr'
-
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
@@ -53,6 +16,7 @@ import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../workflow-editor/controlboard';
 
+export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
   type: string;
@@ -68,13 +32,13 @@ export interface AppState {
   transform: number
   transforming: boolean
   unknownWidgets: Set<string>;
+  // sub workflow data mapping
+  workflowMapping: Record<string, PersistedFullWorkflow>;
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
-
   // workflow document store in yjs for undo redp
   doc: Y.Doc;
   undoManager?: Y.UndoManager;
-
   // editor state for rendering, update from Y.Doc
   nodes: Node[]
   edges: Edge[]
@@ -85,8 +49,12 @@ export interface AppState {
   draggingAndResizing: boolean;
   isConnecting: boolean;
   connectingStartParams?: OnConnectStartParams & {valueType: string};
-
   resetWorkflowEvent: SlotEvent<any>;
+  nodeInProgress?: NodeInProgress
+  promptError?: ComfyUIExecuteError
+  previewedImageIndex?: number
+
+
   // document mutation handler
   onSyncFromYjsDoc: () => void;
   updateErrorCheck: () => void;
@@ -110,9 +78,6 @@ export interface AppState {
   onSelectNodes: (ids: string[]) => void;
   onChangeControlBoard: (config: ControlBoardConfig) => void;
 
-  nodeInProgress?: NodeInProgress
-  promptError?: ComfyUIExecuteError
-  previewedImageIndex?: number
 
   onSubmit: () => Promise<PromptResponse>
   undo: () => void;
@@ -292,6 +257,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
   unknownWidgets: new Set<string>(),
+  workflowMapping: {},
 
   // temporary state
   slectionMode: "default",

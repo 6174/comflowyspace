@@ -1,6 +1,12 @@
-import { KEYS, i18nAllLang, type i18nLang } from "./i18n-types";
+import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.community]: {
+    'en-US': 'Community',
+    'zh-CN': '社区',
+    'ja': 'コミュニティ',
+    'ru': 'Сообщество'
+  },
   [KEYS.appName]: {
     'en-US': "comflowy",
     'zh-CN': "comflowy",
@@ -337,23 +343,11 @@ const ALLLang: i18nAllLang = {
     'ja': 'pip パッケージ名を入力してください 例：numbpy pandas tensorflow',
     'ru': 'Введите имя пакета pip, например numbpy pandas tensorflow'
   },
-  [KEYS.settings]: {
-    'en-US': 'Settings',
-    'zh-CN': '设置',
-    'ja': '設定',
-    'ru': 'Настройки'
-  },
   [KEYS.appSettings]: {
     'en-US': 'App Settings',
     'zh-CN': '应用设置',
     'ja': 'アプリの設定',
     'ru': 'Настройки приложения'
-  },
-  [KEYS.comfyUIProcessTerminal]: {
-    'en-US': 'ComfyUI Process Terminal',
-    'zh-CN': 'ComfyUI 进程终端',
-    'ja': 'ComfyUI プロセスターミナル',
-    'ru': 'Терминал процесса ComfyUI'
   },
   [KEYS.general]: {
     'en-US': 'General',
@@ -414,12 +408,6 @@ const ALLLang: i18nAllLang = {
     'zh-CN': '← 如果你喜欢 Comflowy，请给我们的仓库一个 ⭐',
     'ja': '← Comflowy が好きなら、リポジトリに ⭐ を付けてください',
     'ru': '← Если вам нравится Comflowy, поставьте нашему репозиторию ⭐'
-  },
-  [KEYS.community]: {
-    'en-US': 'Community',
-    'zh-CN': '社区',
-    'ja': 'コミュニティ',
-    'ru': 'Сообщество'
   },
   [KEYS.communityDesc]: {
     'en-US': 'Have an idea, feature request or found a bug? Let us know, and we\'ll take a look at it!',

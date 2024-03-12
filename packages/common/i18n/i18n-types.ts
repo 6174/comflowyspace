@@ -55,9 +55,7 @@ export enum KEYS {
   copyMessages = "copyMessages",
   installPip = "installPip",
   pipPlaceholder = "pipPlaceholder",
-  settings = "settings",
   appSettings = "appSettings",
-  comfyUIProcessTerminal = "comfyUIProcessTerminal",
   general = "general",
   about = "about",
   language = "language",
@@ -68,19 +66,19 @@ export enum KEYS {
   links = "links",
   changelog = "changelog",
   star = "star",
-  community = "Community",
+  community = "community",
   communityDesc = "communityDesc",
   joinDiscordCommunity = "joinDiscordCommunity",
 }
 
 export type i18nKey = keyof typeof KEYS;
 export type i18nLang = {
-  [key in KEYS]: string
+  [key in i18nKey]: string
 };
 
 export type LanguageType = "zh-CN" | "en-US" | "ja" | "ru";
 export type i18nAllLang = {
-  [key in KEYS]: {
+  [key in i18nKey]: {
     'en-US': string,
     'zh-CN'?: string,
     'ja'?: string,

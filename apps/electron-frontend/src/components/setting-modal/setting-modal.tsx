@@ -34,57 +34,51 @@ const SettingsModal = ({ isVisible, handleClose }) => {
     window.location.reload();
   };
 
-  const handleModalOk = useCallback(async () => {
-    // setIsModalVisible(false);
-    const api = getBackendUrl('/api/update_sdwebui');
-    try {
-      const config = {
-        stableDiffusionDir: sdwebuiPath.trim()
-      };
-      setLoading(true);
-      const ret = await fetch(api, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: config
-        })
-      });
-      const data = await ret.json();
-      if (data.success) {
-        message.success("success: " + data.error);
-        setIsModalVisible(false);
-      } else {
-        message.error("Failed: " + data.error);
-      }
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-      message.error(err);
-    } 
-  }, [sdwebuiPath]);
-
   const selectFolder = useCallback(async () => {
     try {
       const ret = await comfyElectronApi.selectDirectory();
       if (ret && ret.length > 0) {
         const folder = ret[0];
         setSdwebuiPath(folder);
-        handleModalOk(folder); 
+        const api = getBackendUrl('/api/update_sdwebui');
+        try {
+          const config = {
+            stableDiffusionDir: folder.trim()
+          };
+          setLoading(true);
+          const ret = await fetch(api, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              data: config
+            })
+          });
+          const data = await ret.json();
+          if (data.success) {
+            message.success("success: " + data.error);
+          } else {
+            message.error("Failed: " + data.error);
+          }
+          setLoading(false);
+        } catch (err) {
+          console.log(err);
+          message.error(err);
+        } 
       }
     } catch (err) {
       console.log(err);
       message.error(err);
     }
-  }, [handleModalOk]);
+  }, []);
 
   const electronEnv = useIsElectron();
 
   return (
     <Modal
       title={t(KEYS.settings)}
-      visible={isVisible}
+      open={isVisible}
       onCancel={handleClose}
       footer={null}
       className={styles.settingsModal}
