@@ -1,7 +1,7 @@
 import config, { getBackendUrl } from "@comflowy/common/config";
 import useWebSocket from "react-use-websocket";
 import useComfyUIProcessManagerState, { Message } from "./comfyui-process-manager-state";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, use, useCallback, useEffect, useRef, useState } from "react";
 import { Button, Input, Modal, Popover, Space, Tooltip, message } from "antd";
 import styles from "./comfyui-process-manager.module.scss";
 import {DraggableModal} from "ui/antd/draggable-modal";
@@ -10,6 +10,7 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import {WarningIcon} from "ui/icons";
 import {KEYS, t} from "@comflowy/common/i18n";
+import { copyToClipboard } from "ui/utils/clipboard";
 
 const ComfyUIProcessManager = () => {
   const socketUrl = `ws://${config.host}/ws/comfyui`;
@@ -176,7 +177,7 @@ const ComfyUIProcessManager = () => {
   const env = useDashboardState(state => state.env);
   const $title = (
     <div className="title">
-      <div>ComfyUI Process Manager</div>
+      <div>{t(KEYS.comfyUIProcessTerminal)}</div>
     </div>
   )
   return (
@@ -186,8 +187,8 @@ const ComfyUIProcessManager = () => {
         footer={null}
         className={styles.comfyuiProcessManager}
         onCancel={handleCancel}
-        initialWidth={450}
-        initialHeight={380}
+        initialWidth={650}
+        initialHeight={480}
         open={visible}
       >
         <div className="term" ref={termRef} >
@@ -204,10 +205,11 @@ const ComfyUIProcessManager = () => {
                 type: "input",
                 command: "\x03"
               });
-            }}>Stop Server</Button>
-            <Button loading={restarting} disabled={restarting} onClick={restart}>Restart</Button>
-            <Button loading={updating} disabled={updating} onClick={update}>Update</Button>
+            }}>{t(KEYS.stopServer)}</Button>
+            <Button loading={restarting} disabled={restarting} onClick={restart}>{t(KEYS.restart)}</Button>
+            <Button loading={updating} disabled={updating} onClick={update}>{t(KEYS.update)}</Button>
             <InstallPipActions />
+            <CopyCommand/>
           </Space>
         </div>
         <div className="info">
@@ -220,6 +222,27 @@ const ComfyUIProcessManager = () => {
         </div>
       </DraggableModal>
     </div>
+  )
+}
+
+function CopyCommand() {
+  const messages = useComfyUIProcessManagerState(state => state.messages);
+  const [loading, setLoading] = useState(false);
+  return (
+    <Button loading={loading} disabled={loading} onClick={async ev => {
+      setLoading(true);
+      try {
+        const url = getBackendUrl("/api/get_conda_env_info");
+        const ret = await fetch(url);
+        const data = await ret.json();
+        copyToClipboard(`${data?.condaInfo} \n ${data?.packageInfo} ${messages.map(m => m.message).join("\n")}`);
+      } catch (err) {
+        console.log(err);
+        copyToClipboard(`${messages.map(m => m.message).join("\n")} + ${err.message}`);
+      }
+      setLoading(false);
+      message.success("Copied to Clipboard");
+    }}>{t(KEYS.copyMessages)}</Button>
   )
 }
 

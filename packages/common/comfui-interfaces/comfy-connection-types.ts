@@ -1,9 +1,12 @@
 import { NodeId } from "./comfy-node-types";
 
 export interface MessageType {
-    status: { status: { exec_info: { queue_remaining: number } }; sid?: string }
-    executing: { node?: NodeId }
-    progress: { value: number; max: number }
+    status: { status: { exec_info: { queue_remaining: number } }; sid?: string };
+    executing: { node?: NodeId };
+    execution_start: {
+      prompt_id: string
+    };
+    progress: { value: number; max: number, node: NodeId, prompt_id: string}
     executed: { node: NodeId; output: Record<string, any> }
     execution_interrupted: { data: any }
   }
@@ -11,6 +14,7 @@ export interface MessageType {
   export interface Message<K extends keyof MessageType> {
     type: K
     data: MessageType[K]
+    prompt_id: string;
   }
   
   export const Message = {
@@ -28,6 +32,10 @@ export interface MessageType {
   
     isProgress(m: Message<keyof MessageType>): m is Message<'progress'> {
       return m.type === 'progress'
+    },
+
+    isExecutingStart(m: Message<keyof MessageType>): m is Message<'execution_start'> {
+      return m.type === 'execution_start'
     },
   
     isExecuted(m: Message<keyof MessageType>): m is Message<'executed'> {

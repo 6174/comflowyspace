@@ -141,7 +141,6 @@ export async function ApiRouteEnableExtensions(req: Request, res: Response) {
 export async function ApiRouteRemoveExtensions(req: Request, res: Response) {
     try {
         const extensions = req.body.extensions as Extension[];
-        await comfyuiService.stopComfyUI();
         await comfyExtensionManager.removeExtensions(extensions);
         await comfyuiService.restartComfyUI();
         res.send({

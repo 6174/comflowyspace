@@ -48,21 +48,37 @@ export enum KEYS {
   imageToImageDesc = "imageToImageDesc",
   bestPractices = "bestPractices",
   bestPracticesDesc = "bestPracticesDesc",
+  comfyUIProcessTerminal = "comfyUIProcessTerminal",
   stopServer = "stopServer",
   restart = "restart",
   pipInstall = "pipInstall",
+  copyMessages = "copyMessages",
   installPip = "installPip",
   pipPlaceholder = "pipPlaceholder",
+  appSettings = "appSettings",
+  general = "general",
+  about = "about",
+  language = "language",
+  sdWebUIPath = "sdWebUIPath",
+  sdWebUIPathDesc = "sdWebUIPathDesc",
+  changeLocation = "changeLocation",
+  version = "version",
+  links = "links",
+  changelog = "changelog",
+  star = "star",
+  community = "community",
+  communityDesc = "communityDesc",
+  joinDiscordCommunity = "joinDiscordCommunity",
 }
 
 export type i18nKey = keyof typeof KEYS;
 export type i18nLang = {
-  [key in KEYS]: string
+  [key in i18nKey]: string
 };
 
 export type LanguageType = "zh-CN" | "en-US" | "ja" | "ru";
 export type i18nAllLang = {
-  [key in KEYS]: {
+  [key in i18nKey]: {
     'en-US': string,
     'zh-CN'?: string,
     'ja'?: string,

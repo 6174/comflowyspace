@@ -28,6 +28,7 @@ class ComflowyConsoleKlass {
     const log = {
       id: uuid(),
       message,
+      readed: false,
       data: {
         ...data,
         level: data.level || "info",
@@ -37,6 +38,14 @@ class ComflowyConsoleKlass {
     }
     this.state.logs = [...this.state.logs, log];
     this.updateEvent.emit({type: "CREATE_LOG", data: [log]});
+  }
+
+  markAsRead = (logId: string) => {
+    const log = this.state.logs.find(log => log.id === logId);
+    if (log && !log.readed) {
+      log.readed = true;
+      this.updateEvent.emit({type: "UPDATE_LOG", data: log});
+    }
   }
 
   /**

@@ -23,6 +23,101 @@
       border-radius: 0;
       padding: 10px;
       height: auto;
+      .node-title {
+        justify-content: left;
+        display: inline-block !important;
+        .inner {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+}
+
+.editControlboard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  :global {
+    .control-board-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+      .editable-control-node-wrapper {
+        border-bottom: solid 1px var(--borderColor);
+        border-radius: 0;
+        padding: 10px;
+        height: auto;
+        display: flex;
+        transition: var(--transition);
+
+        &.dragging {
+          // background-color: green;
+        }
+
+        .dragger {
+          width: 28px;
+          height: 28px;
+          flex: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-right: 4px;
+
+          svg {
+            transform: scale(1.3);
+          }
+        }
+
+        > .ant-checkbox-wrapper {
+          flex: 0;
+
+          .ant-checkbox {
+            top: 5px;
+            align-self: auto;
+          }
+        }
+
+        .editable-control-node {
+          flex: 1;
+          position: relative;
+          top: -4px;
+
+          .node-title {
+            justify-content: left;
+            display: inline-block !important;
+
+            .inner {
+              display: flex;
+              align-items: center;
+            }
+          }
+
+          .node-control-params {
+            padding-left: 16px;
+          }
+        }
+      }
+
+      .control-node-drop-target {
+        height: 4px;
+        background-color: gray;
+
+        &:hover {
+          background-color: var(--primaryColor);
+          height: 8px;
+        }
+      }
+    }
+
+    .control-board-actions {
+      padding: 10px;
+      display: flex;
+      justify-content: flex-end;
     }
   }
 }

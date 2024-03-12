@@ -1,6 +1,12 @@
-import { KEYS, i18nAllLang, type i18nLang } from "./i18n-types";
+import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.community]: {
+    'en-US': 'Community',
+    'zh-CN': '社区',
+    'ja': 'コミュニティ',
+    'ru': 'Сообщество'
+  },
   [KEYS.appName]: {
     'en-US': "comflowy",
     'zh-CN': "comflowy",
@@ -295,6 +301,12 @@ const ALLLang: i18nAllLang = {
     'ja': '基本的なチュートリアルに加えて、参照して試してみることができるベストプラクティスのケースもあります：',
     'ru': 'Помимо основных примеров, есть также и другие примеры, которые вы можете посмотреть и попробовать:'
   },
+  [KEYS.comfyUIProcessTerminal]: {
+    'en-US': 'ComfyUI Process Terminal',
+    'zh-CN': 'ComfyUI 进程终端',
+    'ja': 'ComfyUI プロセスターミナル',
+    'ru': 'Терминал процесса ComfyUI'
+  },
   [KEYS.stopServer]: {
     'en-US': 'Stop Server',
     'zh-CN': '停止服务器',
@@ -313,6 +325,12 @@ const ALLLang: i18nAllLang = {
     'ja': 'Pip インストール',
     'ru': 'Установка с помошью PIP'
   },
+  [KEYS.copyMessages]: {
+    'en-US': 'Copy Messages',
+    'zh-CN': '复制消息',
+    'ja': 'メッセージをコピー',
+    'ru': 'Скопировать сообщения'
+  },
   [KEYS.installPip]: {
     'en-US': 'Install Pip Packages',
     'zh-CN': '安装 Pip 包',
@@ -320,10 +338,88 @@ const ALLLang: i18nAllLang = {
     'ru': 'Установить пакеты с помощью PIP'
   },
   [KEYS.pipPlaceholder]: {
-    'en-US': 'Input pip package name e.g. numpy pandas tensorflow',
-    'zh-CN': '输入 pip 包名称，例如 numpy pandas tensorflow',
-    'ja': 'pip パッケージ名を入力してください 例：numpy pandas tensorflow',
-    'ru': 'Введите имя пакета для PIP, например numpy pandas tensorflow'
+    'en-US': 'Input pip package name e.g. numbpy pandas tensorflow',
+    'zh-CN': '输入 pip 包名称，例如 numbpy pandas tensorflow',
+    'ja': 'pip パッケージ名を入力してください 例：numbpy pandas tensorflow',
+    'ru': 'Введите имя пакета pip, например numbpy pandas tensorflow'
+  },
+  [KEYS.appSettings]: {
+    'en-US': 'App Settings',
+    'zh-CN': '应用设置',
+    'ja': 'アプリの設定',
+    'ru': 'Настройки приложения'
+  },
+  [KEYS.general]: {
+    'en-US': 'General',
+    'zh-CN': '通用',
+    'ja': '一般',
+    'ru': 'Общие'
+  },
+  [KEYS.about]: {
+    'en-US': 'About',
+    'zh-CN': '关于',
+    'ja': '約',
+    'ru': 'О нас'
+  },
+  [KEYS.language]: {
+    'en-US': 'Language',
+    'zh-CN': '显示语言',
+    'ja': '言語',
+    'ru': 'Язык'
+  },
+  [KEYS.sdWebUIPath]: {
+    'en-US': 'SD Web UI Path',
+    'zh-CN': 'SD Web UI 路径',
+    'ja': 'SD Web UI パス',
+    'ru': 'Путь SD Web UI'
+  },
+  [KEYS.sdWebUIPathDesc]: {
+    'en-US': 'If you already installed SD WebUI, you can choose the SD WebUI path to reuse models.',
+    'zh-CN': '如果你已经安装了 SD WebUI，你可以选择 SD WebUI 路径来复用模型。',
+    'ja': 'すでに SD WebUI をインストールしている場合、SD WebUI パスを選択してモデルを再利用できます。',
+    'ru': 'Если вы уже установили SD WebUI, вы можете выбрать путь SD WebUI для повторного использования моделей.'
+  },
+  [KEYS.changeLocation]: {
+    'en-US': 'Change Location',
+    'zh-CN': '更改路径',
+    'ja': '場所を変更',
+    'ru': 'Изменить местоположение'
+  },
+  [KEYS.version]: {
+    'en-US': 'Version: ',
+    'zh-CN': '版本：',
+    'ja': 'バージョン：',
+    'ru': 'Версия: '
+  },
+  [KEYS.links]: {
+    'en-US': 'Links',
+    'zh-CN': '链接',
+    'ja': 'リンク',
+    'ru': 'Ссылки'
+  },
+  [KEYS.changelog]: {
+    'en-US': '• Product change log',
+    'zh-CN': '• 产品更新日志',
+    'ja': '• 製品の変更履歴',
+    'ru': '• Журнал изменений продукта'
+  },
+  [KEYS.star]: {
+    'en-US': '← If you like Comflowy, give our repo a ⭐',
+    'zh-CN': '← 如果你喜欢 Comflowy，请给我们的仓库一个 ⭐',
+    'ja': '← Comflowy が好きなら、リポジトリに ⭐ を付けてください',
+    'ru': '← Если вам нравится Comflowy, поставьте нашему репозиторию ⭐'
+  },
+  [KEYS.communityDesc]: {
+    'en-US': 'Have an idea, feature request or found a bug? Let us know, and we\'ll take a look at it!',
+    'zh-CN': '有想法、功能请求或发现了一个 bug？告诉我们，我们会帮你解决！',
+    'ja': 'アイデア、機能のリクエスト、バグを見つけましたか？お知らせください、私たちが見てみます！',
+    'ru': 'Есть идея, запрос функции или найдена ошибка? Дайте нам знать, и мы посмотрим на это!'
+  },
+  [KEYS.joinDiscordCommunity]: {
+    'en-US': 'Join Discord Community',
+    'zh-CN': '加入 Discord 社区',
+    'ja': 'Discord コミュニティに参加',
+    'ru': 'Присоединиться к сообществу Discord'
   }
 };
 

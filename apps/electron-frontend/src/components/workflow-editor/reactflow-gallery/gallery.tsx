@@ -59,14 +59,16 @@ export const GalleryEntry = React.memo(() => {
   return (
     <>
       <Tooltip title="Saved Image Gallery">
-        <div className="action action-gallery" onClick={showModal}>
+        <div className="action action-gallery" style={{
+          transform: "scale(.9)"
+        }} onClick={showModal}>
           <GalleryIcon />
         </div>
       </Tooltip>
       <DraggableModal
         title={
           <div style={{
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
             height: 20
           }}

@@ -27,7 +27,7 @@ export function getSystemPath({ CONDA_SCRIPTS_PATH, CONDA_ENV_PATH }: {
   let pathDelimiter;
   if (OS_TYPE.includes('WINDOWS')) {
     pathDelimiter = ';';
-    paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, `${CONDA_ENV_PATH}\\Scripts`, `${CONDA_ENV_PATH}\\Library\\bin`,  process.env.PATH];
+    paths = ['C:\\Windows\\system32', 'C:\\Windows', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0', 'C:\\Program Files (x86)', CONDA_SCRIPTS_PATH, `${CONDA_ENV_PATH}\\Scripts`, `${CONDA_ENV_PATH}\\Library\\bin`,  process.env.PATH];
   } else {
     pathDelimiter = ':';
     paths = ['/usr/local/bin', CONDA_SCRIPTS_PATH, , `${CONDA_ENV_PATH}/bin`, '/usr/bin', '/sbin', '/usr/sbin', process.env.PATH];

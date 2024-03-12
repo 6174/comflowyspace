@@ -13,6 +13,7 @@ type Actions = {
   syncState: (consoleState: ComflowyConsoleState) => void;
   addFilter: (filter: Partial<State["filters"]>) => void;
   removeFilter: (filter: keyof State["filters"]) => void;
+  updateLog: (log: ComflowyConsoleLog) => void;
   addLogs: (logs: ComflowyConsoleLog[]) => void;
   updateEnv: (env: ComflowyConsoleEnv) => void;
 }
@@ -45,6 +46,16 @@ export const useComflowyConsoleState = create<State & Actions>((set, get) => ({
       consoleState: {
         ...get().consoleState,
         logs: [...oldLogs, ...logs]
+      }
+    })
+  },
+  updateLog: (log: ComflowyConsoleLog) => {
+    const consoleState = get().consoleState;
+    const logs = consoleState.logs.map(l => l.id === log.id ? log : l);
+    set({
+      consoleState: {
+        ...consoleState,
+        logs
       }
     })
   },

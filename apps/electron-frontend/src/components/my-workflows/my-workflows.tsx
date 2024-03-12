@@ -15,6 +15,7 @@ import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event
 import { track } from '@/lib/tracker';
 import CoverSvg from "./default-workflow-cover.svg";
 import {KEYS, t} from "@comflowy/common/i18n";
+import { NotificationModalEntry } from './notification-modal';
 
 function MyWorkflowsPage() {
   return (
@@ -85,19 +86,6 @@ function WorkflowCreateBox() {
         {/* <Button className='icon-button' onClick={createNewDoc}> <PlusIcon/> Create New</Button>
         <Button type="primary" className='icon-button'> <PlusIcon/> Create From Template</Button> */}
       </Space>
-
-      <div className="actions">
-        <div className="action" onClick={() => {
-          SlotGlobalEvent.emit({
-            type: GlobalEvents.toggle_panel_container,
-            data: {
-              panel: "notifications"
-            }
-          })
-        }}>
-          <NotificationIcon/>
-        </div>
-      </div>
     </div>
   )
 }

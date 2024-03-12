@@ -16,6 +16,7 @@ export type ComflowyConsoleLogData = {
 export type ComflowyConsoleLog = {
   id: string;
   message: string;
+  readed: boolean;
   data: ComflowyConsoleLogData
 }
 
@@ -36,7 +37,7 @@ export type ComflowyConsoleEnv = {
  */
 export type ComflowyConsoleState = {
   logs: ComflowyConsoleLog[];
-  envState: ComflowyConsoleEnv
+  envState: ComflowyConsoleEnv;
 }
 
 export type ComflowyConsoleUpdateEvent = {

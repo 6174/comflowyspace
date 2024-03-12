@@ -27,6 +27,10 @@
 }
 
 
+.ant-badge-count {
+    transform: scale(0.8) translate(9px, -9px) !important;
+}
+
 ::-webkit-scrollbar {
     width: var(--sb-size);
 }

@@ -29,11 +29,12 @@ const nodeTypes = {
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
   const onInitExtensionState = useExtensionsState((st) => st.onInit);
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onNewClientId, onChangeDragingAndResizingState} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
     selectionMode: st.slectionMode,
+    onNewClientId: st.onNewClientId,
     onEdgesUpdate: st.onEdgeUpdate,
     onEdgeUpdateStart: st.onEdgeUpdateStart,
     onEdgeUpdateEnd: st.onEdgeUpdateEnd,
@@ -298,7 +299,7 @@ export default function WorkflowEditor() {
 
   return (
     <div className={styles.workflowEditor}>
-      <WsController/>
+      {id && id !== "" && <WsController clientId={id as string}/>}
       <ReactFlow
         ref={ref}
         nodes={nodesWithStyle}
@@ -398,6 +399,9 @@ export default function WorkflowEditor() {
             setReactFlowInstance(instance);
             await onInitExtensionState(false);
             await onInit(instance);
+            if (id) {
+              onNewClientId(id as string);
+            }
             setInited(true);
           } catch(err) {
             message.error("App init failed: " + err.message);

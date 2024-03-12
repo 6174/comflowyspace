@@ -123,7 +123,7 @@ export function PanelsContainer(props: PanelContainerProps) {
 
     const disposable = SlotGlobalEvent.on((ev) => {
       if (ev.type === GlobalEvents.active_panel_changed) {
-        setActivePanel(ev.data.id);
+        setActivePanel(ev.data.panel);
         if (!panelsVisible) {
           onPannelVisibleChange(true)
         }
@@ -131,6 +131,9 @@ export function PanelsContainer(props: PanelContainerProps) {
 
       if (ev.type === GlobalEvents.toggle_panel_container) {
         onPannelVisibleChange(!panelsVisible);
+        if (ev.data?.panel) {
+          setActivePanel(ev.data?.panel);
+        }
       }
     });
 
@@ -142,12 +145,12 @@ export function PanelsContainer(props: PanelContainerProps) {
   }, [panelsVisible]);
 
 
-  let items: TabsProps['items'];
+  let items: TabsProps['items'] = [];
 
   if (props.isAppPage) {
     items = [
       {
-        key: "Controlboard",
+        key: "controlboard",
         label: 'Controlboard',
         children: <ControlBoard />
       },
@@ -157,16 +160,7 @@ export function PanelsContainer(props: PanelContainerProps) {
         children: <AsyncComflowyConsole />,
       }
     ]
-  } else {
-    items = [
-      {
-        key: 'messages',
-        label: 'Messages',
-        children: <AsyncComflowyConsole />,
-      },
-    ];
-  }
-
+  } 
 
   const onChange = (key: string) => {
     setActivePanel(key);
@@ -188,7 +182,16 @@ export function PanelsContainer(props: PanelContainerProps) {
           <div className="panels box" ref={panelsRef} style={{
             width: panelWidth
           }}>
-            <Tabs defaultActiveKey="1" activeKey={activePanel} items={items} onChange={onChange} />
+            <Tabs defaultActiveKey="controlboard" activeKey={activePanel} items={items} onChange={onChange} />
+            <div className="close-action">
+              <div className="action" onClick={ev => {
+                onPannelVisibleChange(false);
+              }}>
+                <svg width="24" height="24" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.125 13.5049C6.125 14.0674 6.52051 14.4629 7.10059 14.4629H15.2832L17.1377 14.375L14.5537 16.7217L12.7695 18.5322C12.5938 18.708 12.4883 18.9453 12.4883 19.2178C12.4883 19.7539 12.8838 20.1494 13.4287 20.1494C13.6836 20.1494 13.9209 20.0439 14.1318 19.833L19.6953 14.2168C19.8447 14.0762 19.9414 13.9004 19.9854 13.707V19.3145C19.9854 19.8506 20.3896 20.2373 20.9346 20.2373C21.4707 20.2373 21.875 19.8506 21.875 19.3145V7.7041C21.875 7.15918 21.4707 6.76367 20.9346 6.76367C20.3896 6.76367 19.9854 7.15918 19.9854 7.7041V13.3027C19.9414 13.1094 19.8447 12.9336 19.6953 12.7842L14.1318 7.16797C13.9209 6.95703 13.6836 6.86035 13.4287 6.86035C12.8838 6.86035 12.4883 7.24707 12.4883 7.7832C12.4883 8.05566 12.5938 8.29297 12.7695 8.46875L14.5537 10.2793L17.1289 12.626L15.2832 12.5381H7.10059C6.52051 12.5381 6.125 12.9336 6.125 13.5049Z" fill="white" />
+                </svg>
+              </div>
+            </div>
           </div>
         </>
       )}
@@ -204,8 +207,8 @@ export type PanelContainerState = {
 
 export function readPanelStateFromLocalStorage(): PanelContainerState {
   let ret:PanelContainerState = {
-    panelsVisible: false,
-    panelWidth: 200,
+    panelsVisible: true,
+    panelWidth: 400,
     activePanel: undefined,
   };
   try {

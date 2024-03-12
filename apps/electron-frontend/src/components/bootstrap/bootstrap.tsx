@@ -118,6 +118,7 @@ function BootstrapErrors() {
         <Log key={index} title={error.title} log={{
           id: index + "",
           message: error.message,
+          readed: true,
           data: {
             createdAt: error.createdAt,
             level: error.level || 'error',

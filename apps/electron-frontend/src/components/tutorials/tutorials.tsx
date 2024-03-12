@@ -88,13 +88,6 @@ const Tutorials = () => {
           <TutorialCard key={index} {...card} />
         ))}
       </div>
-      <div className="h3">{t(KEYS.textToImage)}</div>
-      <div className="p">{t(KEYS.textToImageDesc)}</div>
-      <div className="tutorial-card-list">
-        {texttoimageTutorials.map((card, index) => (
-          <TutorialCard key={index} {...card} />
-        ))}
-      </div>
       <div className="h3">{t(KEYS.imageToImage)}</div>
       <div className="p">{t(KEYS.imageToImageDesc)}</div>
       <div className="tutorial-card-list">

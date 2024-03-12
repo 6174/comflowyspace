@@ -26,5 +26,14 @@
             background-color: var(--backgroundColorL2);
             color: var(--primaryColor);
         }
+
+        .stop-square {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background-color: #de654b;
+            border-radius: 4px;
+            user-select: none;
+        }
     }
 }

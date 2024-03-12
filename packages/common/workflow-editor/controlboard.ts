@@ -1,5 +1,6 @@
 import { type Node } from 'reactflow';
 import { getNodeRenderInfo } from './node-rendering';
+import { SDNode } from '../comfui-interfaces';
 /**
  * Controlboard Config Data
  */
@@ -13,6 +14,7 @@ export type ControlBoardConfig = {
 export type ControlBoardNodeConfig = {
   id: string;
   fields: string[];
+  select: boolean;
   apiInputFields?: string[];
   apiInputFieldsNameMapping?: Record<string, string>;
   apiOutputFields?: string[];
@@ -21,24 +23,28 @@ export type ControlBoardNodeConfig = {
 
 export type ControlBoardNodeProps = {
   nodeControl?: ControlBoardNodeConfig;
+  onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
   node: Node,
 }
 
 export const ControlBoardUtils = {
   createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {
-    const nodeList = nodes.map(node => {
-      const {params, id} = getNodeRenderInfo(node as any);
-      const fields = params.map(param => param.property);
-      return {
-        id,
-        fields
-      } as ControlBoardNodeConfig
-    });
+    const nodeList = nodes.map(ControlBoardUtils.createControlboardInfoFromNode);
     return {
       nodes: nodeList
     }
   },
-  getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: Node[]): ControlBoardNodeProps[] {
+  createControlboardInfoFromNode(node: Node): ControlBoardNodeConfig {
+    const { params, id } = getNodeRenderInfo(node as any);
+    const fields = params.map(param => param.property);
+    return {
+      id,
+      fields,
+      select: true
+    } as ControlBoardNodeConfig
+  },
+
+  getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: Node[], graph?: Record<string, SDNode>): ControlBoardNodeProps[] {
     const nodesToRender: ControlBoardNodeProps[] = [];
 
     /**
@@ -48,7 +54,7 @@ export const ControlBoardUtils = {
      *  - render all nessessary nodes
      */
     if (!controlboardConfig) {
-      ControlBoardUtils.autoSortNodes(nodes).forEach(node => {
+      ControlBoardUtils.autoSortNodes(nodes, graph).forEach(node => {
         nodesToRender.push({
           node
         });
@@ -66,16 +72,20 @@ export const ControlBoardUtils = {
     }
     return nodesToRender;
   },
-  autoSortNodes(nodes: Node[]): Node[] {
+  autoSortNodes(nodes: Node[], graph: Record<string, SDNode> = {}): Node[] {
     return nodes.sort((a, b) => {
-      const widgeta = (a.data.widget.name + a.data.widget.display_name).toLowerCase();
-      const widgetb = (b.data.widget.name + b.data.widget.display_name).toLowerCase();
-      return getPriority(widgetb) - getPriority(widgeta);
+      return getPriority(b) - getPriority(a);
     });
 
-    function getPriority(name: string): number {
+    function getPriority(node: Node): number {
+      const name = (node.data.widget.name + node.data.widget.display_name).toLowerCase()
+      const isPositive = graph[node.id]?.isPositive;
+      const isNegative = graph[node.id]?.isNegative;
       if (name.includes('cliptextencod')) {
-        return 10
+        if (isPositive) {
+          return 11;
+        }
+        return 10;
       }
       if (name.includes('loadimage')) {
         return 9;

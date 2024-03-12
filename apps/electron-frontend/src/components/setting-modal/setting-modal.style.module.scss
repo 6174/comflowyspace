@@ -1,0 +1,134 @@
+.settingsModal {
+  :global {
+    min-width: 700px;
+    min-height: 300px;
+    .settings-layout{
+      min-width: 500px;
+      min-height: 300px;
+    }
+    .sider {
+      background-color: #212126;
+      padding-right: 6px;
+      .sider-menu {
+        padding-top: 16px;
+        padding-right: 10px;
+        background-color: #212126;
+        height: 100%;
+        .sider-menu-item{
+          padding-left: 12px !important;
+          margin-bottom: 12px;
+        }
+        .ant-menu-title-content{
+          display: flex;
+          align-items: center;
+          .sider-menu-item-icon{
+            display: flex;
+            align-items: center;
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
+          a {
+            margin-left: 6px;
+          }
+        }
+        .ant-menu-item-selected {
+            background-color: var(--primaryColor);
+            color: #FFF;
+          }
+      }
+    }
+    .settings-content {
+      height: 100%;
+      background-color: #212126;
+      flex: 2;
+      padding: 20px 14px;
+    }
+    .about-content {
+      display: flex;
+      align-items: center;
+      .logo {
+        margin-right: 14px;
+        svg {
+          width: 54px;
+          height: 54px;
+        }
+      }
+      .about-content-title {
+        font-size: 24px;
+        font-weight: 500;
+      }
+    }
+    .general-language {
+      display: flex;
+      align-items: center;
+      .general-language-title{
+        font-size: 18px;
+        margin-right: 20px;
+      }
+    }
+    .general-sdpath {
+      margin-top: 20px;
+      .gerneral-sdpath-title{
+        font-size: 18px;
+      }
+      .general-sdpath-content{
+        color: #C5C5D3;
+        font-size: 14px;
+        margin: 4px 0 8px 0;
+      }
+    }
+    .general-sdpath-button{
+      border: 0.5px solid #a2a2ae;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 130px;
+      padding: 6px 4px 6px 8px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+      &:hover {
+        color: var(--primaryColor);
+        border-color: var(--primaryColor);
+      }
+    }
+    .about-link-title {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .about-link-list {
+      display: flex;
+      flex-direction: column;
+    }
+    .about-community{
+      .about-community-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin-top: 20px;
+      }
+      p {
+        font-size: 14px;
+        margin-top: 4px;
+      }
+      .about-community-button {
+        font-size: 14px;
+        border: 1px solid #FFF;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 180px;
+        padding: 6px 4px 6px 8px;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        &:hover {
+          color: var(--primaryColor);
+          border-color: var(--primaryColor);
+        }
+      }
+    }
+    
+  }
+}

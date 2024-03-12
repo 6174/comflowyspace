@@ -131,8 +131,7 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
     if (/Import times for custom nodes/.test(log)) {
       return true;
     }
-
-    if (/Cannot import/.test(log)) {
+    if (/./.test(log)) {
       return true;
     }
 
@@ -150,7 +149,7 @@ class ExtensionImportParsingStrategy implements LogParsingStrategy {
     //   }
     // }
     
-    if (/Traceback \(most recent call last\):/.exec(log)) {
+    if (/Cannot import /.exec(log)) {
       return {
         start: true,
         level: "error"

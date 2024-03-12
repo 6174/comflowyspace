@@ -4,22 +4,31 @@ import {create} from 'zustand';
 
 type QueueState = {
   queue: Queue,
+  // fetch queue info loading state
   loading: boolean;
+  currentPromptId: string;
 };
 
 type QueueActions = {
   onQueueUpdate: () => Promise<void>;
   onClearQueue: () => Promise<void>;
   onInterruptQueue: () => Promise<void>;
-  onDeleteFromQueue: (id: number) => Promise<void>
+  onDeleteFromQueue: (id: number) => Promise<void>;
+  onChangeCurrentPromptId: (id: string) => void;
 }
 
 export const useQueueState = create<QueueState & QueueActions>((set, get) => ({
+  currentPromptId: "",
   queue: {
     queue_running: [],
     queue_pending: []
   },
   loading: false,
+  onChangeCurrentPromptId: (id) => {
+    set({
+      currentPromptId: id
+    })
+  },
   onQueueUpdate: async () => {
     set({ loading: true })
     set({ queue: await getQueue() , loading: false});

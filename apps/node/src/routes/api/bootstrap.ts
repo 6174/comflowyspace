@@ -1,6 +1,6 @@
 import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, getInstallPyTorchForGPUCommand} from '../../modules/comfyui/bootstrap';
-import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
+import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
 import path from 'path';
@@ -8,8 +8,9 @@ import { DEFAULT_COMFYUI_PATH, getComfyUIDir } from '../../modules/utils/get-app
 import * as fsExtra from "fs-extra";
 import { createOrUpdateExtraConfigFileFromStableDiffusion } from '../../modules/model-manager/model-paths';
 import logger from '../../modules/utils/logger';
-import { comfyuiService } from 'src/modules/comfyui/comfyui.service';
+import { comfyuiService } from '../../modules/comfyui/comfyui.service';
 import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
+import { runCommand } from '../../modules/utils/run-command';
 
 /**
  * fetch all extensions
@@ -30,6 +31,29 @@ export async function ApiEnvCheck(req: Request, res: Response) {
         })
     } 
 }
+
+/**
+ * get conda info
+ * @param req 
+ * @param res 
+ */
+export async function ApiGetCondaInfo(req: Request, res: Response) {
+    try {
+        const condaInfo = await runCommand("conda info");
+        const packageInfo = await runCommand(`conda list -n ${CONDA_ENV_NAME}`);
+        res.send({
+            success: true,
+            condaInfo: condaInfo.stderr + condaInfo.stdout,
+            packageInfo: packageInfo.stderr + packageInfo.stdout
+        });
+    } catch (err: any) {
+        res.send({
+            success: false,
+            error: err.message + err.stack
+        })
+    }
+}
+
 
 export enum BootStrapTaskType {
     "installConda" = "installConda",

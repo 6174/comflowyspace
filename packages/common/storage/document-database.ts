@@ -9,7 +9,7 @@ import { JSONDocMeta } from '../jsondb/jsondb.types';
 import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
 import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
 import { useAppStore } from '../store/app-state';
-import { ControlBoardConfig } from 'workflow-editor/controlboard';
+import { ControlBoardConfig } from '../workflow-editor/controlboard';
 
 export type PersistedWorkflowNode = {
   id: string;
@@ -43,7 +43,7 @@ export type PersistedFullWorkflow = {
   id: string;
   thumbnail?: string;
   gallery?: PreviewImage[];
-  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "connections" >; // json format
+  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "controlboard" |  "connections" >; // json format
   [_: string]: any;
 } & JSONDocMeta
 
