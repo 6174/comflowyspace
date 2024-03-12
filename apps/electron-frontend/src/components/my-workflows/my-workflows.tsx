@@ -92,7 +92,7 @@ function WorkflowCreateBox() {
 
 
 function WorkflowList() {
-  const docs = (JSONDBClient.useLiveJSONDB<PersistedFullWorkflow[]>({
+  const docs = (JSONDBClient.useLiveDoc<PersistedFullWorkflow[]>({
     collectionName: "workflows",
     queryFn: async (): Promise<PersistedFullWorkflow[]> => {
       try {
