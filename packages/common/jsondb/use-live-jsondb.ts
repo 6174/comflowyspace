@@ -52,10 +52,11 @@ export function useLiveDocs<T>(options:{
       const result = await options.queryFn(ids);
       setData((data) => {
         if (data) {
-          const newData = [...data, ...result];
+          const newData = [...result, ...data];
           _.uniqBy(newData, "id");
+          return newData;
         }
-        return data;
+        return result;
       });
     }
     const disposable = JSONDBClient.updateEvent.on((event: JSONDBEvent) => {

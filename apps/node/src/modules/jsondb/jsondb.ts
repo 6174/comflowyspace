@@ -133,6 +133,10 @@ export class JSONDB<DocType extends JSONDocMeta> {
     throw new Error("Doc not found")
   }
 
+  getDocs = async (ids: string[]): Promise<DocType[]> => {
+    return await Promise.all(ids.map(id => this.getDoc(id)));
+  }
+
   /**
    * Create a new doc
    * @param doc 
