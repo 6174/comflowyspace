@@ -75,9 +75,11 @@ export enum BootStrapTaskType {
  */
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const taskType = data.name as BootStrapTaskType;
-        const taskId = data.taskId;
+        const setupConfigString = appConfigManager.get(CONFIG_KEYS.modeSetupConfig);
+        const setupConfig = JSON.parse(setupConfigString || '{}');
+        const { bootstrapType } = setupConfig; 
+        const taskType = bootstrapType || (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
+        const taskId = req.body.data && req.body.data.taskId;
         const task: TaskProps = {
             taskId,
             name: taskType,
