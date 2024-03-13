@@ -6,7 +6,7 @@ import React, { useState, useRef } from 'react';
 
 export const ImportWorkflow = () => {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
-  const [setSelectedFile] = useState<File | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const persistedWorkflow = useAppStore(st => st.persistedWorkflow);
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
   

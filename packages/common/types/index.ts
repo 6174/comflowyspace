@@ -8,7 +8,7 @@ export * from "./comfy-props.types";
 export * from "./comfy-widget.types";
 export * from "./comfy-workflow.types";
 export * from "./comflowy-console.types";
-export * from "./comfy-extension.types";
+export * from "./comfy-extensions.types";
 
 export interface GalleryItem {
   prompt?: string
