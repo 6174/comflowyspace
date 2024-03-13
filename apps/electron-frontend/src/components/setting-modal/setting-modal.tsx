@@ -98,8 +98,22 @@ const SettingsModal = ({ isVisible, handleClose }) => {
         bootstrapType = 'startComfyUI';
     }
     try {
-      const api = getBackendUrl('/api/bootstrap')
-      const response = await fetch(api, {
+      const modeApi = getBackendUrl('/api/mode_setup_config');
+      const modeResponse = await fetch(modeApi, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        mode: newValue, 
+        bootstrapType: bootstrapType
+      })
+    });
+    const modeResult = await modeResponse.json();
+    if (modeResult.success) {
+      console.log('模式设置保存成功');
+      const restartApi = getBackendUrl('/api/bootstrap');
+      const restartResponse = await fetch(restartApi, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,16 +124,21 @@ const SettingsModal = ({ isVisible, handleClose }) => {
           },
         }),
       });
-      const result = await response.json();
-      if (response.ok) {
-        console.log(result);
+      const restartResult = await restartResponse.json();
+      if (restartResult.success) {
+        console.log('ComfyUI 重启成功');
       } else {
-        console.error(result.error);
+        console.error('ComfyUI 重启失败：', restartResult.error);
       }
-    } catch (error) {
-      console.error(error);
+    } else {
+      // 处理配置更新失败的情况
+      console.error('配置更新失败：', setupResult.error);
     }
-  };
+  } catch (error) {
+    console.error('更新配置或重启 ComfyUI 时出现错误：', error);
+  }
+};
+
 
   const options = [
     { label: 'Normal', value: 'normal' },

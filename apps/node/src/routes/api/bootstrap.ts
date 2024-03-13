@@ -252,6 +252,35 @@ export async function ApiSetupConfig(req: Request, res: Response) {
     } 
 }
 
+export async function ApiModeSetupConfig(req: Request, res: Response) {
+  try {
+    const { mode, bootstrapType } = req.body; 
+    if (mode && bootstrapType) { 
+      const setupString = JSON.stringify({
+        mode: mode,
+        bootstrapType: bootstrapType
+      });
+
+      appConfigManager.set(CONFIG_KEYS.modeSetupConfig, setupString);
+      res.send({
+        success: true,
+      });
+    } else {
+      
+      res.send({
+        success: false,
+        error: '缺少必要的配置参数'
+      });
+    }
+  } catch (err: any) {
+    logger.error(err.message + ":" + err.stack);
+    res.send({
+      success: false,
+      error: err.message
+    })
+  }
+}
+
 export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response) {
     try {
         const { data } = req.body;
