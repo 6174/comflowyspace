@@ -10,8 +10,6 @@ export type NodeId = string
  */
 export interface SDNode {
   id?: NodeId;
-  // for flow container node
-  nodeType?: "flow" | "node";
   widget: WidgetKey
   fields: Record<PropertyKey, any>
   inputs: ComfyUIWorkflowNodeInput[]
@@ -24,6 +22,27 @@ export interface SDNode {
   isPositive?: boolean;
   isNegative?: boolean;
   flowId?: string;
+}
+
+/**
+ * Stable Diffusion Flow Node Type
+ */
+export interface SDFlowNode {
+  id?: NodeId;
+  widget: 'Flow';
+  // inputs & outputs are dynamic fetched from the subworkflow and mixed with custom input outpt config
+  flowId: string;
+  // field values setted by the user
+  // field_key: `${NODE_ID}__${FLOW_ID}__${NODE_ID}__${FILELD_NAME}`
+  fields: Record<PropertyKey, any>;
+  custom_fields?: string[];
+  custom_inputs?: string[];
+  custom_outputs?: string[];
+  images?: PreviewImage[];
+  color?: string;
+  bgcolor?: string;
+  title?: string;
+  properties?: any;
 }
 
 export type SDNodeColorOption = {

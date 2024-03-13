@@ -15,6 +15,7 @@ import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/com
 import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../workflow-editor/controlboard';
+import { SubWorkflowStoreType, useSubWorkflowStore } from "./sub-workflows-state";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -32,8 +33,7 @@ export interface AppState {
   transform: number
   transforming: boolean
   unknownWidgets: Set<string>;
-  // sub workflow data mapping
-  workflowMapping: Record<string, PersistedFullWorkflow>;
+  subWorkflowStore: SubWorkflowStoreType;
   // full workflow meta in storage
   persistedWorkflow: PersistedFullWorkflow | null;
   // workflow document store in yjs for undo redp
@@ -53,7 +53,6 @@ export interface AppState {
   nodeInProgress?: NodeInProgress
   promptError?: ComfyUIExecuteError
   previewedImageIndex?: number
-
 
   // document mutation handler
   onSyncFromYjsDoc: () => void;
@@ -77,7 +76,6 @@ export interface AppState {
   onChangeSelectMode: (mode: SelectionMode) => void;
   onSelectNodes: (ids: string[]) => void;
   onChangeControlBoard: (config: ControlBoardConfig) => void;
-
 
   onSubmit: () => Promise<PromptResponse>
   undo: () => void;
@@ -257,8 +255,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   nodes: [],
   edges: [],
   unknownWidgets: new Set<string>(),
-  workflowMapping: {},
-
+  subWorkflowStore: useSubWorkflowStore,
   // temporary state
   slectionMode: "default",
   nodeSelection: [],

@@ -1,9 +1,9 @@
 import { SDNode, UnknownWidget, Widget } from "@comflowy/common/comfui-interfaces"
 import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
-import {shallow} from "zustand/shallow";
 import {NodeComponent} from "./reactflow-node";
 import { memo } from "react";
+import { FlowNode } from "./reactflow-flow-node";
 
 export type  FlowNodeProps = NodeProps<{
   widget: Widget;
@@ -21,6 +21,11 @@ export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
     display_name: props.data.value.widget
   };
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
+
+  if (props.data.value.widget === "Flow") {
+    return <FlowNode />
+  }
+  
   return (
     <NodeComponent
       node={props}
