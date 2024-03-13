@@ -1,5 +1,5 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
-import { Widget, type NodeId, type PropertyKey, type WidgetKey } from '../comfui-interfaces'
+import { Widget, type NodeId, type PropertyKey, type WidgetKey } from '../types'
 
 export interface Node {
   class_type: WidgetKey

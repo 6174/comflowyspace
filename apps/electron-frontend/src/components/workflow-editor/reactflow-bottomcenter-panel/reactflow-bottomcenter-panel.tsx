@@ -5,7 +5,7 @@ import { useAppStore } from "@comflowy/common/store";
 import { memo, use, useCallback, useEffect, useState } from "react";
 import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
-import { Widget } from "@comflowy/common/comfui-interfaces";
+import { Widget } from "@comflowy/common/types";
 import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
 import { track } from "@/lib/tracker";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";

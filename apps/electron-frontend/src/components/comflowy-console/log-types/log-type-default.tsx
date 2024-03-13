@@ -1,4 +1,4 @@
-import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog } from "@comflowy/common/types";
 import { MessageViewer } from "../message-viewer";
 import { Log } from "./log";
 

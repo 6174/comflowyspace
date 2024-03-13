@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, message, Upload} from 'antd';
-import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
+import { SDNode, Widget } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';

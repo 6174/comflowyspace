@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Popover, Input, Space, Button } from 'antd';
 import { NodeMenuProps } from './types';
 import { useAppStore } from '@comflowy/common/store';
-import { SDNODE_COLORS, SDNodeColorOption } from '@comflowy/common/comfui-interfaces';
+import { SDNODE_COLORS, SDNodeColorOption } from '@comflowy/common/types';
 import styles from "./reactflow-context-menu.module.scss";
 const ChangeColorMenuItem = (props: NodeMenuProps) => {
   const [visible, setVisible] = useState(false);

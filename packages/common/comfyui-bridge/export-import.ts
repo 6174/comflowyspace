@@ -1,6 +1,6 @@
 import exifr from 'exifr';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode } from '../comfui-interfaces';
-import { Widgets } from '../comfui-interfaces';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode } from '../types';
+import { Widgets } from '../types';
 import { uuid } from '../utils';
 
 /**

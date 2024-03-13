@@ -1,4 +1,4 @@
-import { PersistedWorkflowNode, Widget } from "@comflowy/common/comfui-interfaces";
+import { PersistedWorkflowNode, Widget } from "@comflowy/common/types";
 import { Connection, Edge, Node, OnConnectStartParams } from "reactflow";
 
 export function onEdgeUpdateFailed(params: {

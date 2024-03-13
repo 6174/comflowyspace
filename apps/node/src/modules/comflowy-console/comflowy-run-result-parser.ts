@@ -1,8 +1,8 @@
 /**
  * Parse comfy ui execution result - errors, warnings, logs, etc
  */
-import { ComfyUIExecuteError, PersistedWorkflowDocument, ComfyUINodeError, ComfyUIError, ComfyUIErrorTypes } from "@comflowy/common/comfui-interfaces";
-import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
+import { ComfyUIExecuteError, PersistedWorkflowDocument, ComfyUINodeError, ComfyUIError, ComfyUIErrorTypes } from "@comflowy/common/types";
+import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types";
 import { uuid } from "@comflowy/common";
 
 // ... more strategies for other log types ...

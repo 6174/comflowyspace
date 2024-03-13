@@ -1,4 +1,4 @@
-import { ComflowyConsoleLog, ComflowyConsoleLogLevel } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog, ComflowyConsoleLogLevel } from "@comflowy/common/types";
 import { PropsWithChildren, ReactElement, useState } from "react";
 import styles from "../comflowy-console.module.scss";
 

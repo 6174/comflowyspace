@@ -3,7 +3,7 @@ import { Popover, Space, Button, Switch } from 'antd';
 import { NodeMenuProps } from './types';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./reactflow-context-menu.module.scss";
-import { FlowPropsKey, Input, InputType } from '@comflowy/common/comfui-interfaces';
+import { FlowPropsKey, Input, InputType } from '@comflowy/common/types';
 import { EditIcon } from 'ui/icons';
 type InputArrayItem = { property: string; type: any; disabled: boolean; enable: boolean };
 type InputArray = InputArrayItem[];

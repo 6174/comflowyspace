@@ -2,7 +2,7 @@ import config from "@comflowy/common/config";
 import { captureEvent } from "@sentry/nextjs";
 import useWebSocket from "react-use-websocket";
 import { useComflowyConsoleState } from "./comflowy-console.state";
-import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types";
 import styles from "./comflowy-console.module.scss";
 import { LogTypeDefault } from "./log-types/log-type-default";
 import { LogTypeCustomNodesImportResult } from "./log-types/log-type-custom-nodes-import-result";

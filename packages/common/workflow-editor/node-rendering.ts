@@ -1,5 +1,5 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget } from '../comfui-interfaces';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget } from '../types';
 export type NodeRenderInfo = {
   id: string;
   title: string;

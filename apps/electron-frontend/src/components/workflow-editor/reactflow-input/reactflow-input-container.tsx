@@ -1,4 +1,4 @@
-import { Input, NodeId, SDNode, Widget } from "@comflowy/common/comfui-interfaces"
+import { Input, NodeId, SDNode, Widget } from "@comflowy/common/types"
 import { useAppStore } from "@comflowy/common/store"
 import InputComponent from "./reactflow-input";
 import { InputUploadImage } from "./input-upload-image";

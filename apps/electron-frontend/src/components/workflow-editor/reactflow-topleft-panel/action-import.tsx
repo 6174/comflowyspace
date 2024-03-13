@@ -1,4 +1,4 @@
-import { PersistedWorkflowDocument } from '@comflowy/common/comfui-interfaces';
+import { PersistedWorkflowDocument } from '@comflowy/common/types';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';

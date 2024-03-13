@@ -1,5 +1,5 @@
 import { NodeMenuProps } from "../types";
-import { SDNode } from "@comflowy/common/comfui-interfaces";
+import { SDNode } from "@comflowy/common/types";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 /**
  * Context menu item to edit an image

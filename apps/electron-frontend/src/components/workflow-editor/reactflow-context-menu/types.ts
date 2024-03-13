@@ -1,4 +1,4 @@
-import { SDNode, Widget } from "@comflowy/common/comfui-interfaces";
+import { SDNode, Widget } from "@comflowy/common/types";
 
 export type NodeMenuProps = { 
   node: SDNode, 

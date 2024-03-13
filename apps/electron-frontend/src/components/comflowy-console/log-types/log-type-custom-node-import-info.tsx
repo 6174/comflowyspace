@@ -1,4 +1,4 @@
-import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog } from "@comflowy/common/types";
 import { openExternalURL } from '@/lib/electron-bridge';
 import { Log } from "./log";
 
