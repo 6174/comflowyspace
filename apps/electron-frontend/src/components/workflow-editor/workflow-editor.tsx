@@ -5,12 +5,12 @@ import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParam
 import { NodeContainer } from './reactflow-node/reactflow-node-container';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
-import { Input, NODE_GROUP, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
+import { Input, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowDocument, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
 import { useRouter } from 'next/router';
-import { PersistedFullWorkflow, PersistedWorkflowDocument, PersistedWorkflowNode, documentDatabaseInstance } from '@comflowy/common/storage';
+import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { shallow } from 'zustand/shallow';
 import ContextMenu from './reactflow-context-menu/reactflow-context-menu';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';

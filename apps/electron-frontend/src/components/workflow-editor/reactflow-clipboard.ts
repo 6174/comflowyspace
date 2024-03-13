@@ -1,9 +1,9 @@
 import { uuid } from "@comflowy/common";
 import { useAppStore } from "@comflowy/common/store";
-import { ReactFlowInstance, XYPosition } from "reactflow";
+import { XYPosition } from "reactflow";
 import cloneDeep from "lodash";
-import { PersistedWorkflowNode } from "@comflowy/common/storage";
 import { message } from "antd";
+import { PersistedWorkflowNode } from "@comflowy/common/comfui-interfaces";
 export type EditorClipBoardData = {
   nodes: PersistedWorkflowNode[],
 }

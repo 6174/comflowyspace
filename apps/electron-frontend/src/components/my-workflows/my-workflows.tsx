@@ -1,6 +1,6 @@
 import * as React from 'react'
 import styles from "./my-workflows.style.module.scss";
-import { PersistedFullWorkflow, documentDatabaseInstance } from '@comflowy/common/storage';
+import { documentDatabaseInstance } from '@comflowy/common/storage';
 import { Button, Modal, Popover, Space, message } from 'antd';
 import {PlusIcon, NewIcon, ImageIcon, TemplateIcon, DeleteIcon, NotificationIcon} from "ui/icons";
 import { useRouter } from 'next/router';
@@ -8,7 +8,7 @@ import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
 import { Carousel } from 'antd';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-import { GalleryItem, PreviewImage } from '@comflowy/common/comfui-interfaces';
+import { GalleryItem, PersistedFullWorkflow, PreviewImage } from '@comflowy/common/comfui-interfaces';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
