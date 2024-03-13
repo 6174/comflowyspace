@@ -59,6 +59,7 @@ export enum KEYS {
   general = "general",
   about = "about",
   language = "language",
+  startupSettings = "startupSettings",
   sdWebUIPath = "sdWebUIPath",
   sdWebUIPathDesc = "sdWebUIPathDesc",
   changeLocation = "changeLocation",

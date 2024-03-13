@@ -63,7 +63,9 @@ export enum BootStrapTaskType {
     "installComfyUI" = "installComfyUI",
     "installBasicModel" = "installBasicModel",
     "installBasicExtension" = "installBasicExtension",
-    "startComfyUI" = "startComfyUI"
+    "startComfyUI" = "startComfyUI",
+    "startComfyUIFp16" = "startComfyUIFp16",
+    "startComfyUIFp32" = "startComfyUIFp32",
 }
 
 /**
@@ -163,6 +165,12 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         const ret =  await comfyuiService.startComfyUI()
                         disposable.dispose();
                         return ret;
+                    case BootStrapTaskType.startComfyUIFp16:
+                        newDispatcher({ message: "Starting ComfyUI with --force-fp16." });
+                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp16'), 1000 * 60 * 30, "Start ComfyUI with --force-fp16 timed out.");
+                    case BootStrapTaskType.startComfyUIFp32:
+                        newDispatcher({ message: "Starting ComfyUI with --force-fp32." });
+                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp32'), 1000 * 60 * 30, "Start ComfyUI with --force-fp32 timed out.");
                     default:
                         throw new Error("No task named " + taskType)
                 }

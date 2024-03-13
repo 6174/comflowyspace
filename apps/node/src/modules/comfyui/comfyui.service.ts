@@ -166,7 +166,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true): Promise<boolean> {
+  async startComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -177,7 +177,7 @@ class ComfyuiService {
       console.log("startted");
       const id = this.comfyuiSessionId = uuid();
       await this.startTerminal();
-      const command = this.#getComfyUIRunCommand(pip);
+      const command = this.#getComfyUIRunCommand(pip, mode);
       this.write(command);
   
       await new Promise((resolve, reject) => {
@@ -210,9 +210,19 @@ class ComfyuiService {
   /**
    * Run comfyUI command
    */
-  #getComfyUIRunCommand(pip: boolean = true) {
+  #getComfyUIRunCommand(pip: boolean = true, mode: "normal" | "fp16" | "fp32" = "normal") {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
-    const command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
+    // Default command with no extra options
+    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
+
+    // Adjust command based on selected mode
+    if(mode === 'fp16') {
+      command += ' --force-fp16';
+    } else if(mode === 'fp32') {
+      command += ' --force-fp32';
+    }
+    // 'normal' doesn't require extra options
+
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 
@@ -228,7 +238,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = false): Promise<boolean> {
+  async restartComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
@@ -236,7 +246,7 @@ class ComfyuiService {
       });
       this.stopComfyUI();
       await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
-      await this.startComfyUI(pip);
+      await this.startComfyUI(pip, mode);
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
         message: "Restart ComfyUI Success"

@@ -68,6 +68,7 @@ export async function startAppServer(params: {
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/setup_config', ApiSetupConfig);
   app.post('/api/update_sdwebui', ApiUpdateStableDiffusionConfig);
+  app.post('/api/bootstrap', ApiBootstrap);
   app.post('/api/restart_comfy', ApiRestartComfyUI);
   app.post('/api/update_comfy', ApiUpdateComfyUIAndRestart)
   app.get('/api/get_conda_env_info', ApiGetCondaInfo);

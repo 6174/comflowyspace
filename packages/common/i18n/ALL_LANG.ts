@@ -367,6 +367,12 @@ const ALLLang: i18nAllLang = {
     'ja': '言語',
     'ru': 'Язык'
   },
+  [KEYS.startupSettings]: {
+    'en-US': 'Startup Settings',
+    'zh-CN': '启动设置',
+    'ja': '起動設定',
+    'ru': 'Настройки запуска'
+  },
   [KEYS.sdWebUIPath]: {
     'en-US': 'SD Web UI Path',
     'zh-CN': 'SD Web UI 路径',

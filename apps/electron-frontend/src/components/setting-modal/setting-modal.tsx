@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message} from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented} from 'antd';
 import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
@@ -75,6 +75,58 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   const electronEnv = useIsElectron();
 
+  const storageKey = 'startupModeValue';
+
+  const getInitialValue = () => {
+    return localStorage.getItem(storageKey) || 'normal';
+  };
+
+  const [value, setValue] = useState(getInitialValue);
+
+  const onSegmentChange = async (newValue) => {
+    setValue(newValue);
+    localStorage.setItem(storageKey, newValue);
+    let bootstrapType;
+    switch (newValue) {
+      case 'fp16':
+        bootstrapType = 'startComfyUIFp16';
+        break;
+      case 'fp32':
+        bootstrapType = 'startComfyUIFp32';
+        break;
+      default:
+        bootstrapType = 'startComfyUI';
+    }
+    try {
+      const api = getBackendUrl('/api/bootstrap')
+      const response = await fetch(api, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            name: bootstrapType,
+          },
+        }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        console.log(result);
+      } else {
+        console.error(result.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const options = [
+    { label: 'Normal', value: 'normal' },
+    { label: 'FP16', value: 'fp16' },
+    { label: 'FP32', value: 'fp32' },
+  ];
+
   return (
     <Modal
       title={t(KEYS.settings)}
@@ -128,6 +180,14 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                       { value: 'ja', label: '日本語' },
                       { value: 'ru', label: 'русский' },
                     ]}
+                  />
+                </div>
+                <div className='general-startup-settings'>
+                  <div className='general-startup-settings-title'>{t(KEYS.startupSettings)}</div>
+                  <Segmented
+                    options={options}
+                    value={value}
+                    onChange={onSegmentChange}
                   />
                 </div>
                 <div className='general-sdpath'>
