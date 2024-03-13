@@ -2,7 +2,7 @@ import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
 import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi } from 'reactflow';
-import { NodeContainer } from './reactflow-node/reactflow-node-container';
+import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
 import { Input, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowDocument, SDNode, Widget } from '@comflowy/common/types';
@@ -23,8 +23,8 @@ import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
 
 const nodeTypes = { 
-  [NODE_IDENTIFIER]: NodeContainer,
-  [NODE_GROUP]: NodeContainer
+  [NODE_IDENTIFIER]: NodeWrapper,
+  [NODE_GROUP]: NodeWrapper
 }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);

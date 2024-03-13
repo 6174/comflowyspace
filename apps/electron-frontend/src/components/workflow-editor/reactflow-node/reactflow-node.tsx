@@ -1,21 +1,19 @@
-import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
-import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/types';
-
-import { Button, Image, Popover } from 'antd';
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { type NodeProps, Position, NodeResizeControl, Dimensions} from 'reactflow'
+import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/types';
+import { Image } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ResizeIcon } from 'ui/icons';
 import { useAppStore } from '@comflowy/common/store';
-import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
-import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/types';
-import { useExtensionsState } from '@comflowy/common/store/extension-state';
-import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { ComfyUINodeError } from '@comflowy/common/types';
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { Slot } from './reactflow-node-slot';
+import { InstallMissingWidget, NodeError } from './reactflow-node-errors';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -258,163 +256,3 @@ export const NodeComponent = memo(({
     </div>
   )
 });
-
-interface SlotProps {
-  id: string
-  label: string
-  type: HandleType
-  position: Position
-  valueType: string
-}
-
-/**
- * https://reactflow.dev/examples/nodes/connection-limit
- * @param param0 
- * @returns 
- */
-function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element {
-  const color = Input.getInputColor([label.toUpperCase()] as any);
-  const isConnecting = useAppStore(st => st.isConnecting);
-  const connectingParams = useAppStore(st => st.connectingStartParams);
-  const transform = useAppStore(st => st.transform);
-  const [connectingMe, setConnectingMe] = useState(false);
-  const isValidConnection = useCallback((connection: Connection) => {
-    const st = useAppStore.getState();
-    const [validate, message] = validateEdge(st, connection);
-    !validate && console.log("connect failed", message)
-    return validate
-  }, [])
-  useEffect(() => {
-    if (isConnecting && connectingParams) {
-      const sourceType = connectingParams.handleType;
-      if (sourceType !== type && connectingParams.valueType === valueType) {
-        setConnectingMe(true);
-      } else {
-        setConnectingMe(false);
-      }
-    } else {
-      setConnectingMe(false);
-    }
-  }, [isConnecting, connectingParams])
-
-  let transformFactor = 1;
-  const [hover, setHover] = useState(false);
-  if (hover && !isConnecting) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.2;
-  }
-
-  if (isValidConnection && isConnecting && connectingMe) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.8;
-  };
-
-  return (
-    <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
-      <Handle 
-        id={id.toUpperCase()} 
-        isConnectable={true}
-        isValidConnection={isValidConnection}
-        type={type} 
-        position={position} 
-        onMouseMove={ev => {
-          setHover(true);
-        }}
-        onMouseOut={ev => {
-          setHover(false);
-        }}
-        className="node-slot-handle" 
-        style={{
-          backgroundColor: color,
-          // visibility: (transforming || invisible)? "hidden" : "visible",
-          transform: `scale(${transformFactor})`
-        } as React.CSSProperties}/>
-      <div className="node-slot-name" style={{ marginBottom: 2 }}>
-        {type === "source" ? label.toUpperCase() : label.toLowerCase()}
-      </div>
-    </div>
-  )
-}
-
-export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
-  const [visible, setVisible] = useState(false);
-  const handleVisibleChange = (visible: boolean) => {
-    setVisible(visible);
-  };
-
-  if (!nodeError || nodeError.errors.length === 0) {
-    return null
-  }
-
-  const errorsEl = (
-    <div className={nodeStyles.nodeErrors}>
-      {nodeError.errors.map((error, index) => (
-        <div key={index} className="node-error">
-          {error.message + ":" + error.details}
-        </div>
-      ))}
-    </div>
-  )
-
-  return (
-    <div className={nodeStyles.nodeErrorWrapper}>
-      <Popover
-        title={null}
-        content={errorsEl}
-        trigger="hover"
-      >
-        Errors
-      </Popover>
-    </div>
-  )
-}
-
-function InstallMissingWidget(props: {
-  nodeError?: ComfyUINodeError;
-  node: SDNode;
-}) {
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
-  const {nodeError, node} = props;
-  const installWidget = useCallback((extension) => {
-    SlotGlobalEvent.emit({
-      type: GlobalEvents.show_missing_widgets_modal,
-      data: null
-    });
-    setTimeout(() => {
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.install_missing_widget,
-        data: extension
-      });
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.show_comfyprocess_manager,
-        data: null
-      });
-    }, 10);
-  }, []);
-
-  if (!nodeError) {
-    return null;
-  }
-
-  const widgetNotFoundError = nodeError.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found);
-
-  if (!widgetNotFoundError) {
-    return null;
-  }
-
-  const widget = node.widget;
-  const extension = extensionsNodeMap[widget];
-  if (!extension) {
-    return null
-  } else {
-    console.log("miss extension", extension, node);
-  }
-
-  return (
-    <div className="install-missing-widget nodrag">
-      <Button type="primary" onClick={ev => {
-        installWidget(extension);
-      }}>Install "{extension.title}"</Button>
-    </div>
-  )
-}
-
-

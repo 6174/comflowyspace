@@ -1,16 +1,17 @@
-import { SDNode, UnknownWidget, Widget } from "@comflowy/common/types"
+import { SDNode, SUBFLOW_WIDGET_TYPE_NAME, UnknownWidget, Widget } from "@comflowy/common/types"
 import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
 import {NodeComponent} from "./reactflow-node";
 import { memo } from "react";
-import { FlowNode } from "./reactflow-flow-node";
+import { SubFlowNode } from "./reactflow-subflow-node";
 
-export type  FlowNodeProps = NodeProps<{
+type NodeWrapperProps = NodeProps<{
   widget: Widget;
   value: SDNode;
   dimensions: Dimensions
 }>
-export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
+
+export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
   const progressBar = useAppStore(st => st.nodeInProgress?.id === props.id ? st.nodeInProgress.progress : undefined);
   const imagePreviews = useAppStore(st => st.graph[props.id]?.images || []);
   const isPositive = useAppStore(st => st.graph[props.id]?.isPositive);
@@ -22,8 +23,8 @@ export const NodeContainer = memo((props: FlowNodeProps): JSX.Element => {
   };
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
 
-  if (props.data.value.widget === "Flow") {
-    return <FlowNode />
+  if (props.data.value.widget === SUBFLOW_WIDGET_TYPE_NAME) {
+    return <SubFlowNode node={props as any}/>
   }
   
   return (

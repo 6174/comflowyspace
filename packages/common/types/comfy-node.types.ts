@@ -40,12 +40,14 @@ export interface SDNode {
   flowId?: string;
 }
 
+export const SUBFLOW_WIDGET_TYPE_NAME = 'SubFlow'
+
 /**
  * Stable Diffusion Flow Node Type
  */
-export interface SDFlowNode {
+export interface SDSubFlowNode {
   id?: NodeId;
-  widget: 'Flow';
+  widget: typeof SUBFLOW_WIDGET_TYPE_NAME;
   // inputs & outputs are dynamic fetched from the subworkflow and mixed with custom input outpt config
   flowId: string;
   // field values setted by the user
