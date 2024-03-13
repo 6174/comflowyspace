@@ -8,7 +8,7 @@ import { SDNode } from '../types';
 export type ControlBoardConfig = {
   nodes: ControlBoardNodeConfig[];
   requirements?: ControlBoardShareRequirements
-  shareAsNodeConfig?: {
+  shareAsSubflowConfig?: {
     description?: string;
     title?: string;
     nodes: ControlBoardSharedNodeConfig[]
@@ -46,7 +46,7 @@ export type ControlBoardSharedNodeConfig = {
 }
 
 export type ControlBoardNodeProps = {
-  nodeControl?: ControlBoardNodeConfig;
+  nodeControl?: ControlBoardNodeConfig | ControlBoardSharedNodeConfig;
   onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
   node: Node,
 }

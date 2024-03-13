@@ -16,6 +16,7 @@ import { ComfyUIEvents } from '../types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../workflow-editor/controlboard';
 import { SubWorkflowStoreType, useSubWorkflowStore } from "./sub-workflows-state";
+import { staticCheckWorkflowErrors } from "../workflow-editor/parse-workflow-errors";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -173,73 +174,23 @@ export const AppState = {
       snapshot: workflow
     });
   },
-  attatchStaticCheckErrors(state: AppState, error?: ComfyUIExecuteError): AppState {
+  attatchStaticCheckErrors(state: AppState, promptError?: ComfyUIExecuteError): AppState {
     // check all nodes are valid;
-    let flowError: ComfyUIExecuteError | undefined = error || state.promptError || {
-      error: {
-        message: ""
-      },
-      node_errors: {}
-    }
-    let findError = !!error;
+    promptError = promptError || state.promptError;
     const workflowMap = state.doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     const widgets = state.widgets;
-    Object.keys(workflow.nodes).forEach(id => {
-      const node = workflow.nodes[id];
-      const sdnode = node.value;
-      const widget = widgets[sdnode.widget];
-      const error = flowError!.node_errors[id] || { errors: [] };
-
-      if (["Reroute", "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
-        return;
+    const staticErrors = staticCheckWorkflowErrors(widgets, workflow);
+    const ret: ComfyUIExecuteError  = {
+      ...promptError,
+      node_errors: {
+        ...promptError?.node_errors,
+        ...staticErrors.node_errors,
       }
-
-      // clean old errors 
-      error.errors = error.errors.filter(err => {
-        return err.type !== ComfyUIErrorTypes.widget_not_found && err.type !== ComfyUIErrorTypes.image_not_in_list;
-      });
-
-      // check widget exist
-      if (!widget) {
-        error.errors.push({
-          type: ComfyUIErrorTypes.widget_not_found,
-          message: `Widget \`${sdnode.widget}\` not found`,
-          details: `${sdnode.widget}`,
-          extra_info: {
-            widget: sdnode.widget
-          }
-        });
-        findError = true;
-        flowError!.node_errors[id] = error as any;
-      }
-
-      if (widget && widget.name === "LoadImage") {
-        const image = sdnode.fields.image;
-        const options = widget.input.required.image[0] as [string];
-        const parsedImage = image.split('/');
-        // if parsedImage length > 1 , it is a image from temporary storage
-        if (options.indexOf(image) < 0 && parsedImage.length === 1) {
-          error.errors.push({
-            type: ComfyUIErrorTypes.image_not_in_list,
-            message: `Image ${image} not in list`,
-            details: `[ ${options.join(", ")} ]`,
-          });
-          findError = true;
-          flowError!.node_errors[id] = error;
-        }
-      }
-    });
-
-    if (!findError) {
-      flowError = undefined;
-    } else {
-      console.log("final Error", flowError);
     }
-
     return  {
       ...state,
-      promptError: flowError
+      promptError: ret
     }
   }
 }
@@ -305,6 +256,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     const widgets = await getWidgets();
     const widgetCategory = generateWidgetCategories(widgets);
     console.log("widgets", widgets);
+    get().subWorkflowStore.getState().setWidgets(widgets);
     set({ 
       widgets, 
       widgetCategory

@@ -24,7 +24,7 @@ export type ComfyUINodeError = {
 }
 
 export type ComfyUIExecuteError = {
-  error: ComfyUIError;
+  error?: ComfyUIError;
   node_errors: Record<string, ComfyUINodeError>;
 }
 

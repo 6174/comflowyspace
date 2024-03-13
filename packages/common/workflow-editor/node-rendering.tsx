@@ -1,7 +1,7 @@
 import { NodeProps, type Node } from 'reactflow';
 import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SDSubFlowNode } from '../types';
 import { useEffect, useState } from 'react';
-import { useSubWorkflowStore } from 'store/sub-workflows-state';
+import { useSubWorkflowStore } from '../store/sub-workflows-state';
 export type NodeRenderInfo = {
   id: string;
   title: string;
