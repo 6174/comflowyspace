@@ -4,15 +4,15 @@ import { create } from 'zustand'
 import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
 import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, } from '../comfui-interfaces'
-import { PersistedFullWorkflow, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, throttledUpdateDocument } from "../storage";
+import { throttledUpdateDocument } from "../storage";
 import { PromptResponse, createPrompt, sendPrompt } from '../comfyui-bridge/prompt';
 import { getWidgetLibrary as getWidgets } from '../comfyui-bridge/bridge';
 import { writeWorkflowToFile, } from '../comfyui-bridge/export-import';
 import { getBackendUrl } from '../config'
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
-import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces/comfy-error-types';
-import { ComfyUIEvents } from '../comfui-interfaces/comfy-event-types';
+import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../comfui-interfaces';
+import { ComfyUIEvents } from '../comfui-interfaces';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../workflow-editor/controlboard';
 import { SubWorkflowStoreType, useSubWorkflowStore } from "./sub-workflows-state";

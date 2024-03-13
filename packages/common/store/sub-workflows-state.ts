@@ -1,5 +1,5 @@
-import { PersistedFullWorkflow } from '../storage';
 import { create } from 'zustand'
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDFlowNode, SDNode } from "../comfui-interfaces";
 
 /**
  * definition of SubWorkflowsData
@@ -44,8 +44,6 @@ export const useSubWorkflowStore = create<SubWorkflowStore>((set, get) => ({
 
 export type SubWorkflowStoreType = typeof useSubWorkflowStore;
 
-import { NodeId, NodeInProgress, PreviewImage, SDFlowNode, SDNode } from "../comfui-interfaces";
-import { ComfyUIExecuteError } from 'comfui-interfaces/comfy-error-types';
 
 /**
  * Consider comflowy workflow is a tree structure 

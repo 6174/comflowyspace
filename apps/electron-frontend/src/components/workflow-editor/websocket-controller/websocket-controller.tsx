@@ -5,7 +5,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { useEffect, useState } from 'react';
 import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
-import { ComfyUIEvents } from '@comflowy/common/comfui-interfaces/comfy-event-types';
+import { ComfyUIEvents } from '@comflowy/common/comfui-interfaces';
 import { track } from '@/lib/tracker';
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;

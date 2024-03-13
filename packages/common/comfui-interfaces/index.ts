@@ -1,9 +1,12 @@
-import { PreviewImage } from "./comfy-node-types";
+import { PreviewImage } from "./comfy-props.types";
 
-export * from "./comfy-connection-types";
-export * from "./comfy-flow-props-types";
-export * from "./comfy-node-types";
-export * from "./comfy-widget-types";
+export * from "./comfy-connection.types";
+export * from "./comfy-error.types";
+export * from "./comfy-message.types";
+export * from "./comfy-node.types";
+export * from "./comfy-props.types";
+export * from "./comfy-widget.types";
+export * from "./comfy-workflow.types";
 
 export interface GalleryItem {
   prompt?: string
