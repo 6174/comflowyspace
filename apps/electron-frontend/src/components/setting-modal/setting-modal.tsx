@@ -23,7 +23,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
     'en-US': 'English',
     'zh-CN': '中文',
     'ja': '日本語',
-    'ru': 'русский',
+    'ru': 'Русский',
   };
 
   const currentLanguage = languageMap[currentLang] || 'English';
@@ -126,7 +126,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                       { value: 'en-US', label: 'English' },
                       { value: 'zh-CN', label: '中文' },
                       { value: 'ja', label: '日本語' },
-                      { value: 'ru', label: 'русский' },
+                      { value: 'ru', label: 'Русский' },
                     ]}
                   />
                 </div>
