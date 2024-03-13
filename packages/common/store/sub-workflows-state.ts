@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDFlowNode, SDNode } from "../types";
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode } from "../types";
 
 /**
  * definition of SubWorkflowsData
@@ -16,6 +16,7 @@ export interface SubWorkflowStore {
   }>;
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onNodeInProgress: (id: NodeId, progress: number) => void;
+  onLoadSubWorkfow: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
   getWorkflowNodeRenderingInfo: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
 }
 
@@ -36,6 +37,19 @@ export const useSubWorkflowStore = create<SubWorkflowStore>((set, get) => ({
       }
     }
   },
+  onLoadSubWorkfow: async (flowId: string): Promise<PersistedFullWorkflow | undefined> => {
+    const mapping = get().mapping;
+    if (mapping[flowId]) {
+      return mapping[flowId];
+    } else {
+      try {
+        // fetch subworkflow from server
+      } catch (err) {
+        console.error(err);
+        throw new Error("Load sub workflow Error");
+      }
+    }
+  },
   onNodeInProgress: (id, progress) => {
   },
   onImageSave: (id, images) => {
@@ -52,37 +66,10 @@ export type SubWorkflowStoreType = typeof useSubWorkflowStore;
  * 
  * so we need a program to parse comfyui workflow data to a flattern structure
  */
-export async function parseComflowyWorkflow(flow: PersistedFullWorkflow, subworkflowDataMapping: SubWorkflowStore): Promise<{
+export async function loadSubWorkflow(id: string, subworkflowDataMapping: SubWorkflowStore): Promise<{
   subworkflowDataMapping: SubWorkflowStore
 }> {
   return {
     subworkflowDataMapping
-  }
-}
-
-export async function parseComflowyWorkflowNode(node: SDNode, subworkflowDataMapping: SubWorkflowStore): Promise<PersistedFullWorkflow | null> {
-  const flowId = node.flowId;
-  if (flowId) {
-    const subworkflow = subworkflowDataMapping.mapping[flowId];
-    if (subworkflow) {
-      return subworkflow
-    } else {
-      try {
-
-      } catch (err) {
-        console.error(err);
-      }
-    }
-  }
-  return null;
-}
-
-export function createSDFlowNode(flow: PersistedFullWorkflow): SDFlowNode {
-  const doc = flow.snapshot;
-  const controlboard = doc.controlboard;
-  return {
-    flowId: flow.id,
-    widget: "Flow",
-    fields: {},
   }
 }

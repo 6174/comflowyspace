@@ -1,5 +1,7 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SDSubFlowNode } from '../types';
+import { useEffect, useState } from 'react';
+import { useSubWorkflowStore } from 'store/sub-workflows-state';
 export type NodeRenderInfo = {
   id: string;
   title: string;
@@ -26,7 +28,6 @@ export function getNodeRenderInfo(node: NodeProps<{
   const nodeId = node.id;
   const inputs = node.data.value.inputs || [];
   const outputs = node.data.value.outputs || [];
-  const nodeTitle = node.data.value.title || widget?.name;
   const inputKeys = inputs.map(input => input.name);
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
@@ -85,5 +86,46 @@ export function getNodeRenderInfo(node: NodeProps<{
     outputs,
     nodeColor,
     nodeBgColor
+  }
+}
+
+/**
+ * Get the info needed for render a subflow node
+ * @param node 
+ * @returns 
+ */
+export type SubFlowRenderingInfo = {
+  inputs: ComfyUIWorkflowNodeInput[];
+  outputs: ComfyUIWorkflowNodeOutput[];
+  params: any[];
+  title: string;
+  id: string;
+}
+
+export function useSubFlowNodeRenderingInfo(node: NodeProps<{
+  value: SDSubFlowNode;
+}>): SubFlowRenderingInfo {
+  const sdSubFlowNode = node.data.value;
+  const nodeId = node.id;
+  const { flowId, fields, custom_fields, images} = sdSubFlowNode;
+  const workflow = useSubWorkflowStore(st => st.mapping[flowId]);
+  const onLoadSubWorkfow = useSubWorkflowStore(st => st.onLoadSubWorkfow);
+  const [nodeTitle, setNodeTitle] = useState(sdSubFlowNode.title || "SubFlow");
+  const [inputs, setInputs] = useState([]);
+  const [outputs, setOutputs] = useState([]);
+  const [params, setParams] = useState([]);
+
+  useEffect(() => {
+    if (!workflow && flowId) {
+      onLoadSubWorkfow(flowId)
+    }
+  }, [flowId, workflow])
+
+  return {
+    id: nodeId,
+    title: nodeTitle,
+    inputs,
+    outputs,
+    params
   }
 }

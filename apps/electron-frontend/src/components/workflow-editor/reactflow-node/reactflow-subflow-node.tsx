@@ -3,6 +3,7 @@
  */
 
 import { SDSubFlowNode, Widget } from "@comflowy/common/types";
+import { useSubFlowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Dimensions, NodeProps } from "reactflow";
 
 type SubFlowNodeProps = NodeProps<{
@@ -11,13 +12,12 @@ type SubFlowNodeProps = NodeProps<{
 }>
 
 export function SubFlowNode(props: {
-  node: SubFlowNodeProps
+  node: SubFlowNodeProps,
 }) {
-  const sdSubFlowNode = props.node.data.value;
-  
+  const renderingInfo = useSubFlowNodeRenderingInfo(props.node);
   return (
     <div className="flow">
-      rendering-flowtype-of-node
+      {renderingInfo.title}
     </div>
   )
 }
