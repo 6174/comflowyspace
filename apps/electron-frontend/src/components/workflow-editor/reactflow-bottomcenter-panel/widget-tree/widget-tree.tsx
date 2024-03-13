@@ -2,10 +2,9 @@ import React, { use, useCallback, useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
-import { SDNode, Widget } from '@comflowy/common/comfui-interfaces';
+import { PersistedWorkflowNode, SDNode, Widget } from '@comflowy/common/comfui-interfaces';
 import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
 import { XYPosition } from 'reactflow';
-import { PersistedWorkflowNode } from '@comflowy/common/storage';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
 

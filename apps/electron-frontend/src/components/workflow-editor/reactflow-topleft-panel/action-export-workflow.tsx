@@ -1,6 +1,6 @@
 import { track } from "@/lib/tracker";
+import { PersistedWorkflowDocument } from "@comflowy/common/comfui-interfaces";
 import { exportWorkflowToJSONFile } from "@comflowy/common/comfyui-bridge/export-import";
-import { PersistedWorkflowDocument } from "@comflowy/common/storage";
 import { useAppStore } from "@comflowy/common/store";
 import { message } from "antd";
 import { useCallback } from "react";

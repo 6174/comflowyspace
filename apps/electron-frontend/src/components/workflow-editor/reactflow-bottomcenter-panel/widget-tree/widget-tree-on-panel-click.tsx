@@ -1,9 +1,8 @@
-import { SDNode, Widget } from "@comflowy/common/comfui-interfaces";
+import { PersistedWorkflowNode, SDNode, Widget } from "@comflowy/common/comfui-interfaces";
 import { XYPosition } from "reactflow";
 import styles from "./widget-tree.style.module.scss";
 import { WidgetTree } from "./widget-tree";
 import { useEffect, useState } from "react";
-import { PersistedWorkflowNode } from "@comflowy/common/storage";
 export interface WidgetTreeOnPanelContext {
   position: XYPosition,
   sourceConnection?: any,

@@ -1,12 +1,12 @@
+import { PersistedWorkflowDocument } from '@comflowy/common/comfui-interfaces';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
-import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
 import React, { useState, useRef } from 'react';
 
 export const ImportWorkflow = () => {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [setSelectedFile] = useState<File | null>(null);
   const persistedWorkflow = useAppStore(st => st.persistedWorkflow);
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
   

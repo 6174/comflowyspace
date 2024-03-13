@@ -1,12 +1,13 @@
 import { openTabPage } from '@/lib/electron-bridge';
 import { track } from '@/lib/tracker';
 import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comfyui-bridge/export-import';
-import { PersistedWorkflowDocument, documentDatabaseInstance } from '@comflowy/common/storage/document-database';
+import { documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 import {KEYS, t} from "@comflowy/common/i18n";
+import { PersistedWorkflowDocument } from '@comflowy/common/comfui-interfaces';
 
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

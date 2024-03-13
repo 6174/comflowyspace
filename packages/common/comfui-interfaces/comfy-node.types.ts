@@ -10,7 +10,7 @@ export type NodeId = string
  * Stable Diffusion Node Store in database
  */
 export type PersistedWorkflowNode = {
-  id: string;
+  id: NodeId;
   value: SDNode;
   selected?: boolean;
   dimensions?: {
@@ -120,7 +120,6 @@ export const SDNode = {
   } 
 }
 
-
 /**
  * Original ComfyUIWorkflowNode Data Structure
  */
@@ -142,7 +141,6 @@ export type ComfyUIWorkflowNode = {
   inputs: ComfyUIWorkflowNodeInput[];
   outputs: ComfyUIWorkflowNodeOutput[];
 }
-
 
 export type ComfyUIWorkflowGroup = {
   title: string;

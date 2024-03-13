@@ -1,3 +1,33 @@
+export enum ComfyUIErrorTypes {
+  widget_not_found = "widget_not_found",
+  value_not_in_list = "value_not_in_list",
+  image_not_in_list = "image_not_in_list"
+}
+
+export type ComfyUIError = {
+  type?: ComfyUIErrorTypes | string;
+  message: string;
+  details?: string;
+  extra_info?: {
+    input_name: string;
+    input_config: string[][] | any;
+    received_value: string;
+  } | any;
+};
+
+
+export type ComfyUINodeError = {
+  errors: ComfyUIError[];
+  dependent_outputs?: string[];
+  class_type?: string;
+  extra_info?: any;
+}
+
+export type ComfyUIExecuteError = {
+  error: ComfyUIError;
+  node_errors: Record<string, ComfyUINodeError>;
+}
+
 // {
 //   "error": {
 //     "type": "prompt_outputs_failed_validation",
@@ -56,32 +86,3 @@
 //     }
 //   }
 // }
-export enum ComfyUIErrorTypes {
-  widget_not_found = "widget_not_found",
-  value_not_in_list = "value_not_in_list",
-  image_not_in_list = "image_not_in_list"
-}
-
-export type ComfyUIError = {
-  type?: ComfyUIErrorTypes | string;
-  message: string;
-  details?: string;
-  extra_info?: {
-    input_name: string;
-    input_config: string[][] | any;
-    received_value: string;
-  } | any;
-};
-
-
-export type ComfyUINodeError = {
-  errors: ComfyUIError[];
-  dependent_outputs?: string[];
-  class_type?: string;
-  extra_info?: any;
-}
-
-export type ComfyUIExecuteError = {
-  error: ComfyUIError;
-  node_errors: Record<string, ComfyUINodeError>;
-}
