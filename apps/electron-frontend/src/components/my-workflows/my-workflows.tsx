@@ -8,7 +8,7 @@ import { openTabPage } from '@/lib/electron-bridge';
 import { ImportWorkflow } from './import';
 import { Carousel } from 'antd';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-import { GalleryItem, PersistedFullWorkflow, PreviewImage } from '@comflowy/common/comfui-interfaces';
+import { GalleryItem, PersistedFullWorkflow, PreviewImage } from '@comflowy/common/types';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { JSONDBClient } from '@comflowy/common/jsondb/jsondb.client';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';

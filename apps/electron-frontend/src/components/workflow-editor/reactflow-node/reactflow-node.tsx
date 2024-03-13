@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
-import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/comfui-interfaces';
+import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/types';
 
 import { Button, Image, Popover } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
@@ -12,7 +12,7 @@ import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
 import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
-import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/comfui-interfaces';
+import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/types';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";

@@ -1,5 +1,5 @@
 import { track } from "@/lib/tracker";
-import { PersistedWorkflowDocument } from "@comflowy/common/comfui-interfaces";
+import { PersistedWorkflowDocument } from "@comflowy/common/types";
 import { exportWorkflowToJSONFile } from "@comflowy/common/comfyui-bridge/export-import";
 import { useAppStore } from "@comflowy/common/store";
 import { message } from "antd";

@@ -4,7 +4,7 @@ import { ComflowyConsole } from './comflowy-console';
 import * as http from "http";
 import * as url from "url";
 import logger from '../utils/logger';
-import { ComflowyConsoleUpdateEvent } from '@comflowy/common/types/comflowy-console.types';
+import { ComflowyConsoleUpdateEvent } from '@comflowy/common/types';
 
 /**
  * Serve Console with websocket and http handlers

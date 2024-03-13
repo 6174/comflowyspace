@@ -1,4 +1,4 @@
-import { SDNode } from "@comflowy/common/comfui-interfaces";
+import { SDNode } from "@comflowy/common/types";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { isWindow } from "ui/utils/is-window";
 

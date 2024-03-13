@@ -1,4 +1,4 @@
-import { PersistedWorkflowDocument } from "../storage";
+import { PersistedWorkflowDocument } from "../types";
 import defaultWorkflow from "./default-workflow";
 
 export type WorkflowTemplate = Pick<PersistedWorkflowDocument, 'nodes' | 'connections' | "title">;

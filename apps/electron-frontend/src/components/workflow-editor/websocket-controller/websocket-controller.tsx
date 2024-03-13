@@ -1,11 +1,11 @@
 import config from '@comflowy/common/config';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
-import { Message } from '@comflowy/common/comfui-interfaces';
+import { Message } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
 import { useEffect, useState } from 'react';
 import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
-import { ComfyUIEvents } from '@comflowy/common/comfui-interfaces';
+import { ComfyUIEvents } from '@comflowy/common/types';
 import { track } from '@/lib/tracker';
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;
