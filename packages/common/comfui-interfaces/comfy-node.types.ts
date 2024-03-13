@@ -1,17 +1,31 @@
-import { FlowPrimitiveType, Input } from "./comfy-flow-props-types";
-import { Widget, WidgetKey } from "./comfy-widget-types"
-import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-workflow";
+import { XYPosition } from "reactflow";
+import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage } from "./comfy-props.types";
+import { Widget, WidgetKey } from "./comfy-widget.types"
+import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-props.types";
 export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
+
+/**
+ * Stable Diffusion Node Store in database
+ */
+export type PersistedWorkflowNode = {
+  id: string;
+  value: SDNode;
+  selected?: boolean;
+  dimensions?: {
+    width: number,
+    height: number
+  },
+  images?: PreviewImage[],
+  position: XYPosition
+}
 
 /**
  * Stable Diffusion Node Type
  */
 export interface SDNode {
   id?: NodeId;
-  // for flow container node
-  nodeType?: "flow" | "node";
   widget: WidgetKey
   fields: Record<PropertyKey, any>
   inputs: ComfyUIWorkflowNodeInput[]
@@ -26,59 +40,25 @@ export interface SDNode {
   flowId?: string;
 }
 
-export type SDNodeColorOption = {
-  color: string,
-  bgcolor?: string,
-  label?: string,
-}
-
-export const SDNODE_COLORS: SDNodeColorOption[] = [
-  {
-    color: '#67A166',
-    bgcolor: '#212A23',
-    label: 'Green',
-  }, {
-    color: '#2ABDAE',
-    bgcolor: '#21292A',
-    label: 'Primary',
-  }, {
-    color: '#2AAFF7',
-    bgcolor: '#21262A',
-    label: 'Blue',
-  }, {
-    color: '#6F62FA',
-    bgcolor: '#22212A',
-    label: 'Purple',
-  }, {
-    color: '#F26344',
-    bgcolor: '#271F1F',
-    label: 'Red',
-  }, {
-    color: '#F4BD50',
-    bgcolor: '#2A2621',
-    label: 'Yellow',
-  }, {
-    color: '#939393',
-    bgcolor: '#26262A',
-    label: 'Gray',
-  },
-  {
-    color: "#2E303B",
-    bgcolor: "#26272F",
-    label: 'Default',
-  },
-] 
-
-export const SDNODE_DEFAULT_COLOR = {
-  color: "#2E303B",
-  bgcolor: "#26272F",
-  label: 'Default',
-};
-
-export interface PreviewImage {
-  filename: string;
-  subfolder? : string;
-  type?: 'output'
+/**
+ * Stable Diffusion Flow Node Type
+ */
+export interface SDFlowNode {
+  id?: NodeId;
+  widget: 'Flow';
+  // inputs & outputs are dynamic fetched from the subworkflow and mixed with custom input outpt config
+  flowId: string;
+  // field values setted by the user
+  // field_key: `${NODE_ID}__${FLOW_ID}__${NODE_ID}__${FILELD_NAME}`
+  fields: Record<PropertyKey, any>;
+  custom_fields?: string[];
+  custom_inputs?: string[];
+  custom_outputs?: string[];
+  images?: PreviewImage[];
+  color?: string;
+  bgcolor?: string;
+  title?: string;
+  properties?: any;
 }
 
 export const SDNode = {
@@ -140,8 +120,32 @@ export const SDNode = {
   } 
 }
 
-export interface NodeInProgress {
-  id: NodeId
-  progress: number
+
+/**
+ * Original ComfyUIWorkflowNode Data Structure
+ */
+export type ComfyUIWorkflowNode = {
+  id: ComfyUIID;
+  type: string;
+  pos: [number, number];
+  size: [number, number];
+  flags?: {
+    pinned: boolean;
+  };
+  order?: number;
+  mode: number;
+  properties: any;
+  widgets_values: string[];
+  color: string;
+  bgcolor: string;
+  title?: string;
+  inputs: ComfyUIWorkflowNodeInput[];
+  outputs: ComfyUIWorkflowNodeOutput[];
 }
 
+
+export type ComfyUIWorkflowGroup = {
+  title: string;
+  bounding: [number, number, number, number];
+  color: string;
+}

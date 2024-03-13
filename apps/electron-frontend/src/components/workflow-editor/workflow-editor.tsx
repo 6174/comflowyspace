@@ -86,7 +86,7 @@ export default function WorkflowEditor() {
   const router = useRouter();
   const {id} = router.query;
 
-  const watchedDoc = JSONDBClient.useLiveJSONDB<PersistedFullWorkflow | null>({
+  const watchedDoc = JSONDBClient.useLiveDoc<PersistedFullWorkflow | null>({
     collectionName: "workflows",
     documentId: id as string,
     queryFn: async() => {

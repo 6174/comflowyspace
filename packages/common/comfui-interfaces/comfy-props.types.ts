@@ -1,4 +1,21 @@
+import { NodeId } from "./comfy-node.types";
+
 export type PropertyKey = string
+export type ComfyUIWorkflowNodeInput = {
+  link?: number;
+  name: string;
+  type: FlowPropsKey | "*";
+}
+
+export type ComfyUIWorkflowNodeOutput = {
+  links: number[];
+  name: string;
+  slot_index: number;
+  type: string;
+  shape?: number;
+}
+
+export type ComfyUIID = number | string;
 
 export interface NumberProps<A> {
   default?: A
@@ -145,3 +162,72 @@ export const Input = {
     return '#92939B'
   }
 }
+
+export type SDNodeColorOption = {
+  color: string,
+  bgcolor?: string,
+  label?: string,
+}
+
+export const SDNODE_COLORS: SDNodeColorOption[] = [
+  {
+    color: '#67A166',
+    bgcolor: '#212A23',
+    label: 'Green',
+  }, {
+    color: '#2ABDAE',
+    bgcolor: '#21292A',
+    label: 'Primary',
+  }, {
+    color: '#2AAFF7',
+    bgcolor: '#21262A',
+    label: 'Blue',
+  }, {
+    color: '#6F62FA',
+    bgcolor: '#22212A',
+    label: 'Purple',
+  }, {
+    color: '#F26344',
+    bgcolor: '#271F1F',
+    label: 'Red',
+  }, {
+    color: '#F4BD50',
+    bgcolor: '#2A2621',
+    label: 'Yellow',
+  }, {
+    color: '#939393',
+    bgcolor: '#26262A',
+    label: 'Gray',
+  },
+  {
+    color: "#2E303B",
+    bgcolor: "#26272F",
+    label: 'Default',
+  },
+]
+
+export const SDNODE_DEFAULT_COLOR = {
+  color: "#2E303B",
+  bgcolor: "#26272F",
+  label: 'Default',
+};
+
+export interface PreviewImage {
+  filename: string;
+  subfolder?: string;
+  type?: 'output'
+}
+
+export interface NodeInProgress {
+  id: NodeId
+  progress: number
+}
+
+export enum ContrlAfterGeneratedValues {
+  Randomnized = "randomize",
+  Fixed = "fixed",
+  Incremental = "incremental",
+  Decremental = "decremental"
+}
+
+export const ContrlAfterGeneratedValuesOptions = Object.values(ContrlAfterGeneratedValues);

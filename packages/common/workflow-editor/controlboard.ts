@@ -1,11 +1,31 @@
 import { type Node } from 'reactflow';
 import { getNodeRenderInfo } from './node-rendering';
 import { SDNode } from '../comfui-interfaces';
+
 /**
  * Controlboard Config Data
  */
 export type ControlBoardConfig = {
   nodes: ControlBoardNodeConfig[];
+  requirements?: ControlBoardShareRequirements
+  shareAsNodeConfig?: {
+    description?: string;
+    title?: string;
+    nodes: ControlBoardSharedNodeConfig[]
+  }
+}
+
+export type ControlBoardShareRequirements = {
+  requiredModels: {
+    modelHash: string;
+    modelReferece: string;
+    modelDownloadUrl: string;
+    modelSaveLocation: string;
+  }[];
+  requiredExtensions: {
+    extensionName: string;
+    extensionGithubUrl: string;
+  }[]
 }
 
 /**
@@ -15,10 +35,14 @@ export type ControlBoardNodeConfig = {
   id: string;
   fields: string[];
   select: boolean;
-  apiInputFields?: string[];
-  apiInputFieldsNameMapping?: Record<string, string>;
-  apiOutputFields?: string[];
-  apiOutputFieldsNameMapping?: Record<string, string>;
+}
+
+export type ControlBoardSharedNodeConfig = {
+  id: string;
+  fields: string[];
+  inputs: string[];
+  outputs: string[];
+  select: boolean;
 }
 
 export type ControlBoardNodeProps = {

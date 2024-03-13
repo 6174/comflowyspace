@@ -1,13 +1,13 @@
 import config, { getBackendUrl } from '../config';
 import { SlotEvent } from '../utils/slot-event';
 import { JSONDBEvent, JSONDBReponse, type JSONDocMeta } from './jsondb.types';
-import { useLiveJSONDB } from './use-live-jsondb';
+import { useLiveDoc } from './use-live-jsondb';
 
 let started = false;
 export class JSONDBClient<T extends JSONDocMeta> {
   static updateEvent = new SlotEvent<JSONDBEvent>();
 
-  static useLiveJSONDB = useLiveJSONDB;
+  static useLiveDoc = useLiveDoc;
   constructor(
     public collectionName: string
   ) {}
@@ -36,8 +36,9 @@ export class JSONDBClient<T extends JSONDocMeta> {
   /**
    * Get all documents
    */
-  async getDocuments(): Promise<JSONDBReponse> {
-    const response = await fetch(getBackendUrl(`/db/collection/${this.collectionName}`));
+  async getDocuments(ids?: string[]): Promise<JSONDBReponse> {
+    const queryString = ids ? `?ids=${ids?.join(",")}` : "";
+    const response = await fetch(getBackendUrl(`/db/collection/${this.collectionName}${queryString}`));
     return response.json(); 
   }
 

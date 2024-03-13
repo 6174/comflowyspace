@@ -65,12 +65,14 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
   app.get('/db/collection/:name', async (req: Request, res: Response) => {
     try {
       const { name } = req.params;
+      const ids = req.query.ids ? (req.query.ids as string).split(",") : undefined;
+      console.log("ids", ids, req.query);
       if (!await JSONDB.exist(name)) {
         res.status(404).send('Collection not found');
         return;
       }
       const db = await createAndListen(name);
-      const data = await db.getAllDocs();
+      const data = ids ? await db.getDocs(ids) : await db.getAllDocs();
       res.send({
         success: true,
         data

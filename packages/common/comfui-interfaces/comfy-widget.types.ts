@@ -1,4 +1,4 @@
-import { FlowPropsKey, Input } from "./comfy-flow-props-types"
+import { FlowPropsKey, Input } from "./comfy-props.types"
 
 export type WidgetKey = string
 /**
@@ -63,12 +63,3 @@ export const Widget = {
     return types.indexOf(type) >= 0;
   }
 }
-
-export enum ContrlAfterGeneratedValues {
-  Randomnized = "randomize",
-  Fixed = "fixed",
-  Incremental = "incremental",
-  Decremental = "decremental"
-}
-
-export const ContrlAfterGeneratedValuesOptions = Object.values(ContrlAfterGeneratedValues);

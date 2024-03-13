@@ -1,8 +1,5 @@
 import { NodeProps, type Node } from 'reactflow';
-import { ContrlAfterGeneratedValuesOptions, Widget } from '../comfui-interfaces/comfy-widget-types';
-import { SDNODE_DEFAULT_COLOR, SDNode } from '../comfui-interfaces/comfy-node-types';
-import { Input } from '../comfui-interfaces/comfy-flow-props-types';
-import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from '../comfui-interfaces/comfy-workflow';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget } from '../comfui-interfaces';
 export type NodeRenderInfo = {
   id: string;
   title: string;

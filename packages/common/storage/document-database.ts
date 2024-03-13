@@ -1,51 +1,11 @@
-import { PreviewImage, SDNode } from '../comfui-interfaces';
 import defaultWorkflow from '../templates/default-workflow';
-import { XYPosition, Connection } from 'reactflow';
 import { getWorkflowTemplate } from '../templates/templates';
 import { uuid } from '../utils';
 import { throttle } from 'lodash';
 import { JSONDBClient } from '../jsondb/jsondb.client';
-import { JSONDocMeta } from '../jsondb/jsondb.types';
-import { ComfyUIWorkflow } from '../comfui-interfaces/comfy-workflow';
+import { ComfyUIWorkflow, PersistedFullWorkflow, PersistedWorkflowDocument } from '../comfui-interfaces';
 import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
 import { useAppStore } from '../store/app-state';
-import { ControlBoardConfig } from '../workflow-editor/controlboard';
-
-export type PersistedWorkflowNode = {
-  id: string;
-  value: SDNode;
-  selected?: boolean;
-  dimensions?: {
-    width: number,
-    height: number
-  },
-  images?: PreviewImage[],
-  position: XYPosition
-}
-export type PersistedWorkflowConnection = ({id: string, source: string, target: string, sourceHandle: string, targetHandle: string, handleType?: string, selected?: boolean} & Connection)
-
-export type PersistedWorkflowDocument = {
-  id: string;
-  title: string;
-  nodes: Record<string, PersistedWorkflowNode>;
-  extra?: any;
-  config?: any;
-  last_link_id?: string;
-  last_node_id?: string;
-  version?: number;
-  groups?: any[];
-  connections: PersistedWorkflowConnection[];
-  controlboard?: ControlBoardConfig;
-}
-
-export type PersistedFullWorkflow = {
-  title: string;
-  id: string;
-  thumbnail?: string;
-  gallery?: PreviewImage[];
-  snapshot: Pick<PersistedWorkflowDocument, "nodes" | "controlboard" |  "connections" >; // json format
-  [_: string]: any;
-} & JSONDocMeta
 
 export class JSONDBDatabase {
   documents: JSONDBClient<PersistedFullWorkflow>

@@ -1,9 +1,8 @@
 /**
  * Parse comfy ui execution result - errors, warnings, logs, etc
  */
-import { ComfyUIExecuteError, ComfyUINodeError, ComfyUIError, ComfyUIErrorTypes } from "@comflowy/common/comfui-interfaces/comfy-error-types";
+import { ComfyUIExecuteError, PersistedWorkflowDocument, ComfyUINodeError, ComfyUIError, ComfyUIErrorTypes } from "@comflowy/common/comfui-interfaces";
 import { ComflowyConsoleLog, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
-import { PersistedWorkflowDocument } from "@comflowy/common/storage/document-database";
 import { uuid } from "@comflowy/common";
 
 // ... more strategies for other log types ...
@@ -14,6 +13,7 @@ export function parseComflowyRunErrors(worfklowInfo: PersistedWorkflowDocument, 
     nodeErrors.forEach((error) => {
       const log: ComflowyConsoleLog = {
         id: uuid(),
+        readed: false,
         message: error.message,
         data: {
           level: "error",
@@ -32,6 +32,7 @@ export function parseComflowyRunErrors(worfklowInfo: PersistedWorkflowDocument, 
   if (error && error.message !== 'Prompt outputs failed validation') { // ignore prompt validation errors
     logList.push({
       id: uuid(),
+      readed: false,
       message: error.message,
       data: {
         level: "error",

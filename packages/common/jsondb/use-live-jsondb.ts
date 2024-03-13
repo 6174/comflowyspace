@@ -2,7 +2,8 @@
 import { useState, useEffect} from 'react';
 import { JSONDBEvent } from './jsondb.types';
 import { JSONDBClient } from './jsondb.client';
-export function useLiveJSONDB<T>(options:{
+import _ from 'lodash';
+export function useLiveDoc<T>(options:{
   collectionName: string, 
   documentId?: string,
   queryFn: () => Promise<T>
@@ -35,6 +36,41 @@ export function useLiveJSONDB<T>(options:{
     }
     fetchData();
   }, [collectionVersion, docVersion, setData])
+
+  return data;
+}
+
+export function useLiveDocs<T>(options:{
+  collectionName: string, 
+  documentIds: string[],
+  queryFn: (docIds: string[]) => Promise<T[]>
+}) {
+  const {collectionName, documentIds} = options
+  const [data, setData] = useState<T[]>();
+  useEffect(() => {
+    const fetchData = async (ids: string[]) => {
+      const result = await options.queryFn(ids);
+      setData((data) => {
+        if (data) {
+          const newData = [...result, ...data];
+          _.uniqBy(newData, "id");
+          return newData;
+        }
+        return result;
+      });
+    }
+    const disposable = JSONDBClient.updateEvent.on((event: JSONDBEvent) => {
+      if (event.db === collectionName) {
+        if (documentIds.includes(event.docId)) {
+          fetchData([event.docId]);
+        }
+      }
+    });
+    fetchData(documentIds);
+    return () => {
+      disposable.dispose();
+    }
+  }, [collectionName, documentIds]);
 
   return data;
 }
