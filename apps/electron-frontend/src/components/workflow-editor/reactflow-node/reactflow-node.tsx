@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { MutableRefObject, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { type NodeProps, Position, NodeResizeControl, Dimensions} from 'reactflow'
 import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/types';
 import { Image } from 'antd';
@@ -41,98 +41,10 @@ export const NodeComponent = memo(({
 }: Props): JSX.Element => {
   const { inputs, title, outputs, params } = getNodeRenderInfo(node);
   const isInProgress = progressBar !== undefined
-  const [minHeight, setMinHeight] = useState(100);
-  const [minWidth] = useState(240);
-  const mainRef = useRef<HTMLDivElement>();
-  const onNodesChange = useAppStore(st => st.onNodesChange);
-  const updateMinHeight = useCallback(async () => {
-    if (mainRef.current) {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 100)
-      });
-      if (!mainRef.current) {
-        return
-      }
-      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
-      const width = mainRef.current.offsetWidth + 4;
-      const dimensions = node.data.dimensions
-      // console.log("dimensions", height, dimensions);
-      if (!dimensions || dimensions.height < height - 2) {
-        onNodesChange([{
-          type: "dimensions",
-          id: node.id,
-          dimensions: {
-            width: !!dimensions ? dimensions.width : width,
-            height
-          }
-        }])
-      }
-      setMinHeight(height);
-    }
-  }, [setMinHeight, node.id, imagePreviews]);
-  const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
-  const [resizing, setResizing] = useState(false);
-  useEffect(() => {
-    updateMinHeight();
-    const disposable = resetWorkflowEvent.on(async () => {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 100)
-      });
-      console.log("reset workflow event")
-      updateMinHeight();
-    })
+  const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
 
-    if (mainRef.current) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          if(entry.target === mainRef.current && !resizing) {
-            updateMinHeight(); 
-          }
-        });
-      });
-
-      resizeObserver.observe(mainRef.current);
-
-      // Cleanup
-      return () => {
-        if (resizeObserver && mainRef.current) {
-          resizeObserver.unobserve(mainRef.current);
-        }
-        disposable.dispose();
-      };
-    }
-
-    return () => {
-      disposable.dispose();
-    } 
-  }, [mainRef])
-
-  useEffect(() => {
-    if (imagePreviews.length > 0) {
-      updateMinHeight();
-    }
-  }, [imagePreviews])
-
-  const resizeIcon = (
-    <div className="resize-icon nodrag">
-      <ResizeIcon/>
-    </div>
-  )
   const transform = useAppStore(st => st.transform);
-
   const invisible = transform < 0.2;
-
-  const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
-    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-    return {
-      src: imageSrc,
-      filename: image.filename
-    }
-  });
   
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
@@ -146,6 +58,14 @@ export const NodeComponent = memo(({
     nodeBgColor = "#261E1F";
     nodeColor = "#DE654B";
   }
+
+  const imagePreviewsWithSrc = (imagePreviews || []).map((image, index) => {
+    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+    return {
+      src: imageSrc,
+      filename: image.filename
+    }
+  });
 
   return (
     <div className={`
@@ -176,7 +96,11 @@ export const NodeComponent = memo(({
         minWidth={minWidth}
         minHeight={minHeight} 
       >
-        {node.selected && resizeIcon}
+        {node.selected && (
+          <div className="resize-icon nodrag">
+            <ResizeIcon />
+          </div>
+        )}
       </NodeResizeControl>
 
       {!invisible ? (
@@ -256,3 +180,101 @@ export const NodeComponent = memo(({
     </div>
   )
 });
+
+/**
+ * Auto resize node based on content
+ * @param node 
+ * @param imagePreviews 
+ * @returns
+ */
+export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewImage[]): {
+  minHeight: number;
+  minWidth: number;
+  mainRef: MutableRefObject<HTMLDivElement>;
+  setResizing: (resizing: boolean) => void;
+} {
+  const mainRef = useRef<HTMLDivElement>();
+  const [minHeight, setMinHeight] = useState(100);
+  const [minWidth] = useState(240);
+  const onNodesChange = useAppStore(st => st.onNodesChange);
+  const [resizing, setResizing] = useState(false);
+  const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
+
+  const updateMinHeight = useCallback(async () => {
+    if (mainRef.current) {
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 100)
+      });
+      if (!mainRef.current) {
+        return
+      }
+      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
+      const width = mainRef.current.offsetWidth + 4;
+      const dimensions = node.data.dimensions
+      // console.log("dimensions", height, dimensions);
+      if (!dimensions || dimensions.height < height - 2) {
+        onNodesChange([{
+          type: "dimensions",
+          id: node.id,
+          dimensions: {
+            width: !!dimensions ? dimensions.width : width,
+            height
+          }
+        }])
+      }
+      setMinHeight(height);
+    }
+  }, [setMinHeight, node.id, imagePreviews]);
+  
+  useEffect(() => {
+    updateMinHeight();
+    const disposable = resetWorkflowEvent.on(async () => {
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null);
+        }, 100)
+      });
+      console.log("reset workflow event")
+      updateMinHeight();
+    })
+
+    if (mainRef.current) {
+      const resizeObserver = new ResizeObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.target === mainRef.current && !resizing) {
+            updateMinHeight();
+          }
+        });
+      });
+
+      resizeObserver.observe(mainRef.current);
+
+      // Cleanup
+      return () => {
+        if (resizeObserver && mainRef.current) {
+          resizeObserver.unobserve(mainRef.current);
+        }
+        disposable.dispose();
+      };
+    }
+
+    return () => {
+      disposable.dispose();
+    }
+  }, [mainRef])
+
+  useEffect(() => {
+    if (imagePreviews.length > 0) {
+      updateMinHeight();
+    }
+  }, [imagePreviews])
+
+  return {
+    minHeight,
+    minWidth,
+    mainRef,
+    setResizing
+  }
+}

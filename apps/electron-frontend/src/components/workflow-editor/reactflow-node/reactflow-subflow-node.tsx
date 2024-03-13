@@ -14,6 +14,7 @@ export function SubFlowNode(props: {
   node: SubFlowNodeProps
 }) {
   const sdSubFlowNode = props.node.data.value;
+  
   return (
     <div className="flow">
       rendering-flowtype-of-node
