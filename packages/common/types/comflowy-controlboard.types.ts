@@ -1,11 +1,6 @@
 import { SDSubFlowNode } from "./comfy-node.types"
 import {type Node} from "reactflow";
 
-export type SubFlowNodeWithControl = {
-  sdnode: SDSubFlowNode,
-  nodeControl: ControlBoardNodeConfig
-}
-
 /**
  * Controlboard Config Data
  */
@@ -15,7 +10,7 @@ export type ControlBoardConfig = {
   shareAsSubflowConfig?: {
     description?: string;
     title?: string;
-    nodes: ControlBoardSharedNodeConfig[]
+    nodes: ControlBoardSubflowNodeConfig[]
   }
 }
 
@@ -41,7 +36,7 @@ export type ControlBoardNodeConfig = {
   select: boolean;
 }
 
-export type ControlBoardSharedNodeConfig = {
+export type ControlBoardSubflowNodeConfig = {
   id: string;
   fields: string[];
   inputs: string[];
@@ -53,4 +48,9 @@ export type ControlBoardNodeProps = {
   nodeControl?: ControlBoardNodeConfig;
   onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
   node: Node,
+}
+
+export type SubFlowNodeWithControl = {
+  sdnode: SDSubFlowNode,
+  nodeControl: ControlBoardNodeConfig
 }

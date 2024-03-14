@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets } from "../types";
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, SDSubFlowNode } from "../types";
 import { JSONDBClient } from '../jsondb/jsondb.client';
 import { documentDatabaseInstance } from '../storage';
 
@@ -110,9 +110,9 @@ export function parseSubWorkflow(doc: PersistedFullWorkflow) {
   const { title, description, nodes } = shareAsSubflowConfig;
   const nodesWithControlInfo = nodes.map(node => {
     const id = node.id;
-    const sdnode = allNodes.find(n => n.id === id);
+    const perssitedNode = allNodes.find(n => n.id === id);
     return {
-      sdnode,
+      sdnode: perssitedNode?.value as SDSubFlowNode,
       nodeControl: node
     }
   });

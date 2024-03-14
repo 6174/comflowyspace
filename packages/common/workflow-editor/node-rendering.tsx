@@ -97,6 +97,7 @@ export function getNodeRenderInfo(node: NodeProps<{
 export type SubFlowRenderingInfo = {
   title: string;
   id: string;
+  nodesWithControl: SubFlowNodeWithControl[];
 }
 
 export function useSubFlowNodeRenderingInfo(node: NodeProps<{
@@ -125,5 +126,6 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
   return {
     id: nodeId,
     title: nodeTitle,
+    nodesWithControl: nodesWithControl || []
   }
 }
