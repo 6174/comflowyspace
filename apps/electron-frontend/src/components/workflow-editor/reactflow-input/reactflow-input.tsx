@@ -1,4 +1,4 @@
-import { Input } from '@comflowy/common/comfui-interfaces';
+import { Input } from '@comflowy/common/types';
 import { memo, useState, useEffect } from 'react';
 import { Input as AntInput, InputNumber, Select, Switch, Image } from 'antd';
 import {

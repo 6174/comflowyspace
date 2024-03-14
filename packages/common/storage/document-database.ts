@@ -3,7 +3,7 @@ import { getWorkflowTemplate } from '../templates/templates';
 import { uuid } from '../utils';
 import { throttle } from 'lodash';
 import { JSONDBClient } from '../jsondb/jsondb.client';
-import { ComfyUIWorkflow, PersistedFullWorkflow, PersistedWorkflowDocument } from '../comfui-interfaces';
+import { ComfyUIWorkflow, PersistedFullWorkflow, PersistedWorkflowDocument } from '../types';
 import { comfyUIWorkflowToPersistedWorkflowDocument } from '../comfyui-bridge/export-import';
 import { useAppStore } from '../store/app-state';
 

@@ -1,4 +1,4 @@
-import { ComfyUIExecuteError } from "../comfui-interfaces";
+import { ComfyUIExecuteError } from "../types";
 import { getBackendUrl } from "../config";
 
 /**

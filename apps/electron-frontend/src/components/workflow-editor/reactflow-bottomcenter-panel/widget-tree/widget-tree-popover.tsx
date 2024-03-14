@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Popover } from 'antd';
 import { WidgetTree } from "./widget-tree";
-import { Widget } from "@comflowy/common/comfui-interfaces";
+import { Widget } from "@comflowy/common/types";
 
 export const WidgetPopover = (props: {
     children: any;

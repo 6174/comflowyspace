@@ -3,7 +3,7 @@
  */
 
 import { uuid } from "@comflowy/common";
-import { ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleLogTypes } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleLogTypes } from "@comflowy/common/types";
 
 interface LogParsingStrategy {
   parse(log: string): ComflowyConsoleLog[];

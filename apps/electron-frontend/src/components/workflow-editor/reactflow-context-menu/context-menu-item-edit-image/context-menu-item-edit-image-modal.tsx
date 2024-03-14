@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DraggableModal } from "ui/antd/draggable-modal";
 import styles from "./comflowy-image-editor.style.module.scss";
-import { SDNode } from "@comflowy/common/comfui-interfaces";
+import { SDNode } from "@comflowy/common/types";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { getImagePreviewUrl } from "@comflowy/common/comfyui-bridge/bridge";
 import ComflowyImageEditor, { TABS } from "comflowy-image-editor";

@@ -40,7 +40,7 @@ import sdxlThumbnail from "./thumbnails/sdxl.png";
 import pixelAndHiResThumbnail from "./thumbnails/pixel-and-hi-res.png";
 import upscalingModelThumbnail from "./thumbnails/upscaling-model.png";
 
-import { ComfyUIWorkflow } from "@comflowy/common/comfui-interfaces";
+import { ComfyUIWorkflow } from "@comflowy/common/types";
 function getHardCodedTemplates(): Template[] {
     return [
         {

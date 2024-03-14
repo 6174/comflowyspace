@@ -17,7 +17,7 @@ import { openExternalURL } from '@/lib/electron-bridge';
 import { track } from '@/lib/tracker';
 import { LogViewer } from 'ui/log-viewer/log-viewer';
 import { Log } from '../comflowy-console/log-types/log';
-import { ComflowyConsoleLogTypes } from '@comflowy/common/types/comflowy-console.types';
+import { ComflowyConsoleLogTypes } from '@comflowy/common/types';
 import { isWindow } from 'ui/utils/is-window';
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();

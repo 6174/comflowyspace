@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDFlowNode, SDNode } from "../comfui-interfaces";
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDFlowNode, SDNode } from "../types";
 
 /**
  * definition of SubWorkflowsData

@@ -1,4 +1,4 @@
-import { SDNode, UnknownWidget, Widget } from "@comflowy/common/comfui-interfaces"
+import { SDNode, UnknownWidget, Widget } from "@comflowy/common/types"
 import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
 import {NodeComponent} from "./reactflow-node";

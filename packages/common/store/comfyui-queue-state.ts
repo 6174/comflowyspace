@@ -1,5 +1,5 @@
 import { clearQueue, deleteFromQueue, getQueueApi, interruptQueue } from '../comfyui-bridge/bridge';
-import { Queue, QueueItem } from '../comfui-interfaces';
+import { Queue, QueueItem } from '../types';
 import {create} from 'zustand';
 
 type QueueState = {

@@ -305,7 +305,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'ComfyUI Process Terminal',
     'zh-CN': 'ComfyUI 进程终端',
     'ja': 'ComfyUI プロセスターミナル',
-    'ru': 'Терминал процесса ComfyUI'
+    'ru': 'Окно терминала ComfyUI'
   },
   [KEYS.stopServer]: {
     'en-US': 'Stop Server',
@@ -338,10 +338,10 @@ const ALLLang: i18nAllLang = {
     'ru': 'Установить пакеты с помощью PIP'
   },
   [KEYS.pipPlaceholder]: {
-    'en-US': 'Input pip package name e.g. numbpy pandas tensorflow',
+    'en-US': 'Input pip package name e.g. numpy pandas tensorflow',
     'zh-CN': '输入 pip 包名称，例如 numbpy pandas tensorflow',
-    'ja': 'pip パッケージ名を入力してください 例：numbpy pandas tensorflow',
-    'ru': 'Введите имя пакета pip, например numbpy pandas tensorflow'
+    'ja': 'pip パッケージ名を入力してください 例：numpy pandas tensorflow',
+    'ru': 'Введите имя пакета для pip, например numpy pandas tensorflow'
   },
   [KEYS.appSettings]: {
     'en-US': 'App Settings',
@@ -377,13 +377,13 @@ const ALLLang: i18nAllLang = {
     'en-US': 'SD Web UI Path',
     'zh-CN': 'SD Web UI 路径',
     'ja': 'SD Web UI パス',
-    'ru': 'Путь SD Web UI'
+    'ru': 'Путь к SD Web UI'
   },
   [KEYS.sdWebUIPathDesc]: {
     'en-US': 'If you already installed SD WebUI, you can choose the SD WebUI path to reuse models.',
     'zh-CN': '如果你已经安装了 SD WebUI，你可以选择 SD WebUI 路径来复用模型。',
     'ja': 'すでに SD WebUI をインストールしている場合、SD WebUI パスを選択してモデルを再利用できます。',
-    'ru': 'Если вы уже установили SD WebUI, вы можете выбрать путь SD WebUI для повторного использования моделей.'
+    'ru': 'Если вы уже установили SD WebUI, вы можете выбрать путь к SD WebUI для повторного использования моделей.'
   },
   [KEYS.changeLocation]: {
     'en-US': 'Change Location',
@@ -419,13 +419,13 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Have an idea, feature request or found a bug? Let us know, and we\'ll take a look at it!',
     'zh-CN': '有想法、功能请求或发现了一个 bug？告诉我们，我们会帮你解决！',
     'ja': 'アイデア、機能のリクエスト、バグを見つけましたか？お知らせください、私たちが見てみます！',
-    'ru': 'Есть идея, запрос функции или найдена ошибка? Дайте нам знать, и мы посмотрим на это!'
+    'ru': 'Есть идея, запрос функции или найдена ошибка? Дайте нам знать, и мы обратим внимание на это!'
   },
   [KEYS.joinDiscordCommunity]: {
     'en-US': 'Join Discord Community',
     'zh-CN': '加入 Discord 社区',
     'ja': 'Discord コミュニティに参加',
-    'ru': 'Присоединиться к сообществу Discord'
+    'ru': 'Присоединиться к сообществу в Discord'
   }
 };
 

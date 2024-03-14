@@ -1,4 +1,4 @@
-import { PersistedWorkflowNode, SDNode, Widget } from "@comflowy/common/comfui-interfaces";
+import { PersistedWorkflowNode, SDNode, Widget } from "@comflowy/common/types";
 import { XYPosition } from "reactflow";
 import styles from "./widget-tree.style.module.scss";
 import { WidgetTree } from "./widget-tree";

@@ -1,4 +1,4 @@
-import { ComflowyConsoleLog } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleLog } from "@comflowy/common/types";
 import { Log } from "./log";
 import { useRouter } from "next/router";
 import { useAppStore } from "@comflowy/common/store";

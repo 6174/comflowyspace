@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ComflowyConsoleEnv, ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleState } from "@comflowy/common/types/comflowy-console.types";
+import { ComflowyConsoleEnv, ComflowyConsoleLog, ComflowyConsoleLogLevel, ComflowyConsoleState } from "@comflowy/common/types";
 
 type State = {
   consoleState: ComflowyConsoleState;

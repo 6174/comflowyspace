@@ -3,7 +3,7 @@ import { useAppStore } from "@comflowy/common/store";
 import { XYPosition } from "reactflow";
 import cloneDeep from "lodash";
 import { message } from "antd";
-import { PersistedWorkflowNode } from "@comflowy/common/comfui-interfaces";
+import { PersistedWorkflowNode } from "@comflowy/common/types";
 export type EditorClipBoardData = {
   nodes: PersistedWorkflowNode[],
 }

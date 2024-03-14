@@ -7,7 +7,7 @@ import { message } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ImageIcon } from 'ui/icons';
 import {KEYS, t} from "@comflowy/common/i18n";
-import { PersistedWorkflowDocument } from '@comflowy/common/comfui-interfaces';
+import { PersistedWorkflowDocument } from '@comflowy/common/types';
 
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

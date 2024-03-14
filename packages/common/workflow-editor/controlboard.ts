@@ -1,6 +1,6 @@
 import { type Node } from 'reactflow';
 import { getNodeRenderInfo } from './node-rendering';
-import { SDNode } from '../comfui-interfaces';
+import { SDNode } from '../types';
 
 /**
  * Controlboard Config Data
