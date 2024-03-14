@@ -131,8 +131,7 @@ const SettingsModal = ({ isVisible, handleClose }) => {
         console.error('ComfyUI 重启失败：', restartResult.error);
       }
     } else {
-      // 处理配置更新失败的情况
-      console.error('配置更新失败：', setupResult.error);
+      console.error('配置更新失败：', modeResult.error);
     }
   } catch (error) {
     console.error('更新配置或重启 ComfyUI 时出现错误：', error);
