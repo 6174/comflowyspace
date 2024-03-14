@@ -20,7 +20,7 @@ export interface SubWorkflowStore {
   setWidgets: (widgets: Widgets) => void;
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onNodeInProgress: (id: NodeId, progress: number) => void;
-  onLoadSubWorkfow: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
+  loadSubWorkfow: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
   parseSubWorkflow: (id: string) => void;
 }
 
@@ -32,7 +32,7 @@ export const useSubWorkflowStore = create<SubWorkflowStore>((set, get) => ({
   setWidgets: (widgets: Widgets) => {
     set({ widgets });
   },
-  onLoadSubWorkfow: async (flowId: string): Promise<PersistedFullWorkflow | undefined> => {
+  loadSubWorkfow: async (flowId: string): Promise<PersistedFullWorkflow | undefined> => {
     const mapping = get().mapping;
     if (mapping[flowId]) {
       return mapping[flowId];

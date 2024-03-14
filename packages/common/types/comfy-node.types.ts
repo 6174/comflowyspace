@@ -56,6 +56,24 @@ export interface SDNode {
 export const SUBFLOW_WIDGET_TYPE_NAME = 'SubFlow'
 
 export const SDNode = {
+  /**
+   * @param workflowId 
+   */
+  newSubflowNode: (workflowId: string): SDNode => {
+    return {
+      widget: SUBFLOW_WIDGET_TYPE_NAME,
+      inputs: [],
+      outputs: [],
+      fields: {},
+      images: [],
+      flowId: workflowId
+    }
+  },
+  /**
+   * create from a widget
+   * @param widget 
+   * @returns 
+   */
   fromWidget(widget: Widget): SDNode {
     const inputs = Object.entries(widget.input.required)
     .filter(([name, input]) => {

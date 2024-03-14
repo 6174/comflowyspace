@@ -1,11 +1,11 @@
-import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node-errors";
 import { type Node, useReactFlow } from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
-import { ControlBoardNodeProps } from "@comflowy/common/types";
+import { ControlBoardNodeProps, WorkflowNodeRenderInfo } from "@comflowy/common/types";
 
 export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
   const id = node.id;
@@ -41,7 +41,7 @@ export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
   )
 }
 
-export function NodeHeader({ widget, title, isPositive, isNegative, node, nodeError }: Partial<NodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) {
+export function NodeHeader({ widget, title, isPositive, isNegative, node, nodeError }: Partial<WorkflowNodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) {
   const { setCenter } = useReactFlow();
   return (
     <div className="node-header">

@@ -90,7 +90,7 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
   const nodeId = node.id;
   const { flowId, fields, custom_fields, images} = sdSubFlowNode;
   const workflow = useSubWorkflowStore(st => st.mapping[flowId!]);
-  const onLoadSubWorkfow = useSubWorkflowStore(st => st.onLoadSubWorkfow);
+  const loadSubWorkfow = useSubWorkflowStore(st => st.loadSubWorkfow);
   const [nodeTitle, setNodeTitle] = useState("SubFlow");
   const [nodesWithControl, setNodesWithControl] = useState<SubFlowNodeWithControl[]>();
   const widgets = useAppStore(st => st.widgets);
@@ -108,7 +108,7 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
 
   useEffect(() => {
     if (!workflow && flowId) {
-      onLoadSubWorkfow(flowId)
+      loadSubWorkfow(flowId)
     }
   }, [flowId, workflow])
 
