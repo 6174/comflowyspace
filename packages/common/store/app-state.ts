@@ -14,7 +14,7 @@ import { SlotEvent } from '../utils/slot-event';
 import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../types';
 import { ComfyUIEvents } from '../types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
-import { ControlBoardConfig } from '../workflow-editor/controlboard';
+import { ControlBoardConfig } from '../types';
 import { SubWorkflowStoreType, useSubWorkflowStore } from "./sub-workflows-state";
 import { staticCheckWorkflowErrors } from "../workflow-editor/parse-workflow-errors";
 

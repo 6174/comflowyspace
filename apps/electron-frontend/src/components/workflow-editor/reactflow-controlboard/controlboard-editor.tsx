@@ -14,7 +14,7 @@ import _ from "lodash";
 import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps } from "@comflowy/common/types";
 
 /**
- * The Control Båoard Config Editor
+ * The Control Board Config Editor
  * @returns 
  */
 export function EditControlBoard(props: {onFinish: () => void}) {
