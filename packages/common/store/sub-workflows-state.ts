@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, SDSubFlowNode } from "../types";
-import { JSONDBClient } from '../jsondb/jsondb.client';
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, PersistedWorkflowNode } from "../types";
 import { documentDatabaseInstance } from '../storage';
+import { getNodeRenderInfo } from '../workflow-editor/node-rendering';
 
 /**
  * definition of SubWorkflowsData
@@ -21,6 +21,7 @@ export interface SubWorkflowStore {
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onNodeInProgress: (id: NodeId, progress: number) => void;
   onLoadSubWorkfow: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
+  parseSubWorkflow: (id: string) => void;
 }
 
 export const useSubWorkflowStore = create<SubWorkflowStore>((set, get) => ({
@@ -49,6 +50,31 @@ export const useSubWorkflowStore = create<SubWorkflowStore>((set, get) => ({
   onNodeInProgress: (id, progress) => {
   },
   onImageSave: (id, images) => {
+  },
+  parseSubWorkflow: (id) => {
+    const st = get();
+    const doc = st.mapping[id];
+    const widgets = st.widgets;
+    const allNodes = Object.values(doc.snapshot.nodes);
+    const shareAsSubflowConfig = doc.snapshot.controlboard?.shareAsSubflowConfig!;
+    const { title, description, nodes } = shareAsSubflowConfig;
+    const nodesWithControlInfo = nodes.map(node => {
+      const id = node.id;
+      const perssitedNode = allNodes.find(n => n.id === id) as PersistedWorkflowNode;
+      const widget = widgets[perssitedNode.value.widget];
+      const {inputs, outputs, params} = getNodeRenderInfo(perssitedNode.value, widgets[perssitedNode.value.widget]);
+      return {
+        sdnode: perssitedNode?.value,
+        nodeControl: node,
+        widget
+      }
+    });
+
+    return {
+      nodesWithControlInfo,
+      title,
+      description
+    }
   }
 }));
 
@@ -95,32 +121,6 @@ export async function loadSubWorkflowToStore(subworkflowStore: SubWorkflowStore,
     mapping: {
       ...subworkflowStore.mapping,
     }
-  }
-}
-
-/**
- * 
- * @param doc 
- * @param subworkflowStore 
- * @returns 
- */
-export function parseSubWorkflow(doc: PersistedFullWorkflow) {
-  const allNodes = Object.values(doc.snapshot.nodes);
-  const shareAsSubflowConfig = doc.snapshot.controlboard?.shareAsSubflowConfig!;
-  const { title, description, nodes } = shareAsSubflowConfig;
-  const nodesWithControlInfo = nodes.map(node => {
-    const id = node.id;
-    const perssitedNode = allNodes.find(n => n.id === id);
-    return {
-      sdnode: perssitedNode?.value as SDSubFlowNode,
-      nodeControl: node
-    }
-  });
-
-  return {
-    nodesWithControlInfo,
-    title,
-    description
   }
 }
 

@@ -10,7 +10,8 @@ export const ControlBoardUtils = {
     }
   },
   createControlboardInfoFromNode(node: Node): ControlBoardNodeConfig {
-    const { params, id } = getNodeRenderInfo(node as any);
+    const id = node.id;
+    const { params } = getNodeRenderInfo(node.data.value, node.data.widget);
     const fields = params.map(param => param.property);
     return {
       id,

@@ -6,6 +6,16 @@ export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
 
+export type WorkflowNodeRenderInfo = {
+  title: string;
+  widget: Widget;
+  params: { property: string, input: Input }[];
+  inputs: ComfyUIWorkflowNodeInput[];
+  outputs: ComfyUIWorkflowNodeOutput[];
+  nodeColor: string;
+  nodeBgColor: string;
+}
+
 /**
  * Stable Diffusion Node Store in database
  */
@@ -26,7 +36,7 @@ export type PersistedWorkflowNode = {
  */
 export interface SDNode {
   id?: NodeId;
-  widget: WidgetKey
+  widget: WidgetKey;
   fields: Record<PropertyKey, any>
   inputs: ComfyUIWorkflowNodeInput[]
   outputs: ComfyUIWorkflowNodeOutput[]
@@ -37,31 +47,13 @@ export interface SDNode {
   properties?: any;
   isPositive?: boolean;
   isNegative?: boolean;
+  custom_fields?: string[];
+  custom_inputs?: string[];
+  custom_outputs?: string[];
   flowId?: string;
 }
 
 export const SUBFLOW_WIDGET_TYPE_NAME = 'SubFlow'
-
-/**
- * Stable Diffusion Flow Node Type
- */
-export interface SDSubFlowNode {
-  id?: NodeId;
-  widget: typeof SUBFLOW_WIDGET_TYPE_NAME;
-  // inputs & outputs are dynamic fetched from the subworkflow and mixed with custom input outpt config
-  flowId: string;
-  // field values setted by the user
-  // field_key: `${NODE_ID}__${FLOW_ID}__${NODE_ID}__${FILELD_NAME}`
-  fields: Record<PropertyKey, any>;
-  custom_fields?: string[];
-  custom_inputs?: string[];
-  custom_outputs?: string[];
-  images?: PreviewImage[];
-  color?: string;
-  bgcolor?: string;
-  title?: string;
-  properties?: any;
-}
 
 export const SDNode = {
   fromWidget(widget: Widget): SDNode {

@@ -1,5 +1,5 @@
-import { SDSubFlowNode } from "./comfy-node.types"
 import {type Node} from "reactflow";
+import { SDNode } from "./comfy-node.types";
 
 /**
  * Controlboard Config Data
@@ -51,6 +51,6 @@ export type ControlBoardNodeProps = {
 }
 
 export type SubFlowNodeWithControl = {
-  sdnode: SDSubFlowNode,
+  sdnode: SDNode,
   nodeControl: ControlBoardNodeConfig
 }

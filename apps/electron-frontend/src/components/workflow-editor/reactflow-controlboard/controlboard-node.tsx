@@ -1,4 +1,3 @@
-import { ControlBoardNodeProps } from "@comflowy/common/workflow-editor/controlboard";
 import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
@@ -6,9 +5,11 @@ import { getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { NodeError } from "../reactflow-node/reactflow-node-errors";
 import { type Node, useReactFlow } from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
+import { ControlBoardNodeProps } from "@comflowy/common/types";
 
 export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
-  const { id, title, params, widget } = getNodeRenderInfo(node as any);
+  const id = node.id;
+  const { title, params, widget } = getNodeRenderInfo(node.data.value, node.data.widget);
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);

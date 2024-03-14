@@ -3,7 +3,7 @@ import exifr from 'exifr'
 import { create } from 'zustand'
 import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, } from '../types'
+import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection } from '../types'
 import { throttledUpdateDocument } from "../storage";
 import { PromptResponse, createPrompt, sendPrompt } from '../comfyui-bridge/prompt';
 import { getWidgetLibrary as getWidgets } from '../comfyui-bridge/bridge';

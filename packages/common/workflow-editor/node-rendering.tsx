@@ -1,33 +1,18 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SDSubFlowNode, SubFlowNodeWithControl } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubFlowNodeWithControl, WorkflowNodeRenderInfo } from '../types';
 import { useEffect, useState } from 'react';
-import { parseSubWorkflow, useSubWorkflowStore } from '../store/sub-workflows-state';
-export type NodeRenderInfo = {
-  id: string;
-  title: string;
-  widget: Widget;
-  sdnode: SDNode;
-  params: { property: string, input: Input }[];
-  inputs: ComfyUIWorkflowNodeInput[];
-  outputs: ComfyUIWorkflowNodeOutput[];
-  nodeColor: string;
-  nodeBgColor: string;
-}
+import { useSubWorkflowStore } from '../store/sub-workflows-state';
+import { useAppStore } from '../store';
 
 /**
  * Get the info needed for render a node
  * @param node 
- * @returns 
+ * @returns
  */
-export function getNodeRenderInfo(node: NodeProps<{
-  widget: Widget;
-  value: SDNode;
-}>): NodeRenderInfo {
-  const { value, widget } = node.data;
+export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRenderInfo {
   const params: { property: string, input: Input }[] = []
-  const nodeId = node.id;
-  const inputs = node.data.value.inputs || [];
-  const outputs = node.data.value.outputs || [];
+  const inputs = node.inputs || [];
+  const outputs = node.outputs || [];
   const inputKeys = inputs.map(input => input.name);
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
@@ -50,7 +35,7 @@ export function getNodeRenderInfo(node: NodeProps<{
 
   // If it is a primitive node , add according primitive type params
   if (Widget.isPrimitive(widget.name)) {
-    const paramType = node.data.value.outputs[0].type;
+    const paramType = node.outputs[0].type;
     const extraInfo: any = {};
     if (paramType === "STRING") {
       extraInfo.multiline = true;
@@ -73,14 +58,12 @@ export function getNodeRenderInfo(node: NodeProps<{
     });
   }
 
-  let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
-  let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+  let nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
+  let nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
   return {
-    id: nodeId,
-    title: node.data.value.title || widget?.name,
+    title: node.title || widget?.name,
     widget,
-    sdnode: value,
     inputs,
     params,
     outputs,
@@ -101,21 +84,27 @@ export type SubFlowRenderingInfo = {
 }
 
 export function useSubFlowNodeRenderingInfo(node: NodeProps<{
-  value: SDSubFlowNode;
+  value: SDNode;
 }>): SubFlowRenderingInfo {
   const sdSubFlowNode = node.data.value;
   const nodeId = node.id;
   const { flowId, fields, custom_fields, images} = sdSubFlowNode;
-  const workflow = useSubWorkflowStore(st => st.mapping[flowId]);
+  const workflow = useSubWorkflowStore(st => st.mapping[flowId!]);
   const onLoadSubWorkfow = useSubWorkflowStore(st => st.onLoadSubWorkfow);
   const [nodeTitle, setNodeTitle] = useState("SubFlow");
   const [nodesWithControl, setNodesWithControl] = useState<SubFlowNodeWithControl[]>();
+  const widgets = useAppStore(st => st.widgets);
+  const parseSubWorkflow = useSubWorkflowStore(st => st.parseSubWorkflow);
 
   useEffect(() => {
-    const { nodesWithControlInfo, title } = parseSubWorkflow(workflow);
-    setNodesWithControl(nodesWithControlInfo);
-    setNodeTitle(title || "SubFlow");
-  }, [workflow]);
+    // //  = parseSubWorkflow(workflow, widgets);
+    // setNodesWithControl(nodesWithControlInfo);
+    // setNodeTitle(title || "SubFlow");
+    // const inputs = nodesWithControlInfo.reduce((acc, node) => {
+    //   const nodeInputs = [];
+    //   return acc.concat([]);
+    // }, []);
+  }, [workflow, widgets]);
 
   useEffect(() => {
     if (!workflow && flowId) {

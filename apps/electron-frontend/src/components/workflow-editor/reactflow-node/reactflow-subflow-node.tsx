@@ -1,7 +1,7 @@
 /**
  * Rendering flow type node
  */
-import { PreviewImage, SDNODE_DEFAULT_COLOR, SDSubFlowNode, Widget } from "@comflowy/common/types";
+import { PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubFlowNodeWithControl, Widget } from "@comflowy/common/types";
 import { useSubFlowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Dimensions, NodeProps } from "reactflow";
 import { ComflowyNodeResizer, useNodeAutoResize } from "./reactflow-node-resize";
@@ -14,7 +14,7 @@ import { NodeImagePreviews } from "./reactflow-node-imagepreviews";
 
 type SubFlowNodeProps = {
   node: NodeProps<{
-    value: SDSubFlowNode;
+    value: SDNode;
     dimensions: Dimensions
   }>;
   imagePreviews?: PreviewImage[]
@@ -57,7 +57,7 @@ export function SubFlowNode({
             </h2>
           </div>
           <div className="node-main" ref={mainRef}>
-            <SubflowSlots/>
+            <SubflowSlots nodesWithControl={nodesWithControl}/>
             <SubflowParams/>
           </div>
           <NodeImagePreviews imagePreviews={imagePreviews} />
@@ -73,7 +73,14 @@ export function SubFlowNode({
   )
 }
 
-function SubflowSlots() {
+function SubflowSlots({ nodesWithControl }: {
+  nodesWithControl: SubFlowNodeWithControl[]
+}) {
+
+  // const inputs = nodesWithControl.reduce((acc, node) => {
+  //   return acc.concat(node.inputs)
+  // }, []);
+
   return (
     <div className="node-slots">
       <div className="node-inputs">

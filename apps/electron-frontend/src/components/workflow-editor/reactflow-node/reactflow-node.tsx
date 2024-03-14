@@ -37,7 +37,7 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
-  const { inputs, title, outputs, params } = getNodeRenderInfo(node);
+  const { inputs, title, outputs, params } = getNodeRenderInfo(node.data.value, node.data.widget);
   const isInProgress = progressBar !== undefined
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
 
