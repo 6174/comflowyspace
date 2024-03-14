@@ -1,19 +1,17 @@
 import { memo } from 'react'
 import { type NodeProps, Position, Dimensions} from 'reactflow'
 import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/types';
-import { Image } from 'antd';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
-import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { useAppStore } from '@comflowy/common/store';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
-import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
 import { ComfyUINodeError } from '@comflowy/common/types';
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Slot } from './reactflow-node-slot';
 import { InstallMissingWidget, NodeError } from './reactflow-node-errors';
 import { ComflowyNodeResizer, useNodeAutoResize } from './reactflow-node-resize';
+import { NodeImagePreviews } from './reactflow-node-imagepreviews';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -59,13 +57,6 @@ export const NodeComponent = memo(({
     nodeColor = "#DE654B";
   }
 
-  const imagePreviewsWithSrc = (imagePreviews || []).map((image, index) => {
-    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-    return {
-      src: imageSrc,
-      filename: image.filename
-    }
-  });
 
   return (
     <div className={`
@@ -101,13 +92,6 @@ export const NodeComponent = memo(({
                 }}></div>
               </div>
               : null}
-            
-            {node.selected ? (
-              <div className="node-selected-actions">
-              </div>
-            ) : (
-              <></>
-            )}
           </div>
 
           <div className="node-main" ref={mainRef}>
@@ -132,24 +116,7 @@ export const NodeComponent = memo(({
             <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
             <div style={{ height: 10 }}></div>
           </div>
-
-          <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
-            <div className="inner">
-              <PreviewGroupWithDownload images={imagePreviewsWithSrc}>
-              {
-                imagePreviewsWithSrc.map((image, index) => {
-                  return (
-                    <Image
-                      key={image.src + index}
-                      className="node-preview-image"
-                      src={image.src}
-                    />
-                  )
-                })
-              }
-              </PreviewGroupWithDownload>
-            </div>
-          </div>
+          <NodeImagePreviews imagePreviews={imagePreviews}/>
         </div>
       ) : (
         <>
