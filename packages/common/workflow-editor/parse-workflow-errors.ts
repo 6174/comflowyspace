@@ -13,13 +13,13 @@ export function staticCheckWorkflowErrors(
   const flowError: ComfyUIExecuteError = {
     node_errors: {}
   }
-  
+
   Object.keys(workflow.nodes).forEach(id => {
     const node = workflow.nodes[id];
     const sdnode = node.value;
     const widget = widgets[sdnode.widget];
     const error = flowError.node_errors[id] || { errors: [] };
-
+  
     if (["Reroute", "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
       return;
     }

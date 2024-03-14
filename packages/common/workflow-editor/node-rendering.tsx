@@ -1,7 +1,7 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SDSubFlowNode } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SDSubFlowNode, SubFlowNodeWithControl } from '../types';
 import { useEffect, useState } from 'react';
-import { useSubWorkflowStore } from '../store/sub-workflows-state';
+import { parseSubWorkflow, useSubWorkflowStore } from '../store/sub-workflows-state';
 export type NodeRenderInfo = {
   id: string;
   title: string;
@@ -95,9 +95,6 @@ export function getNodeRenderInfo(node: NodeProps<{
  * @returns 
  */
 export type SubFlowRenderingInfo = {
-  inputs: ComfyUIWorkflowNodeInput[];
-  outputs: ComfyUIWorkflowNodeOutput[];
-  params: any[];
   title: string;
   id: string;
 }
@@ -110,10 +107,14 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
   const { flowId, fields, custom_fields, images} = sdSubFlowNode;
   const workflow = useSubWorkflowStore(st => st.mapping[flowId]);
   const onLoadSubWorkfow = useSubWorkflowStore(st => st.onLoadSubWorkfow);
-  const [nodeTitle, setNodeTitle] = useState(sdSubFlowNode.title || "SubFlow");
-  const [inputs, setInputs] = useState([]);
-  const [outputs, setOutputs] = useState([]);
-  const [params, setParams] = useState([]);
+  const [nodeTitle, setNodeTitle] = useState("SubFlow");
+  const [nodesWithControl, setNodesWithControl] = useState<SubFlowNodeWithControl[]>();
+
+  useEffect(() => {
+    const { nodesWithControlInfo, title } = parseSubWorkflow(workflow);
+    setNodesWithControl(nodesWithControlInfo);
+    setNodeTitle(title || "SubFlow");
+  }, [workflow]);
 
   useEffect(() => {
     if (!workflow && flowId) {
@@ -124,8 +125,5 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
   return {
     id: nodeId,
     title: nodeTitle,
-    inputs,
-    outputs,
-    params
   }
 }

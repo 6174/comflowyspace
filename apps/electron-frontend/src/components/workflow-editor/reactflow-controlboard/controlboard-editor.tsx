@@ -1,16 +1,17 @@
 import { useAppStore } from "@comflowy/common/store";
-import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import {ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
 import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import styles from "./controlboard.module.scss";
-import { ControlBoardNode, NodeHeader } from "./controlboard-node";
+import { NodeHeader } from "./controlboard-node";
 import { DragIcon } from "ui/icons";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import {Node} from "reactflow";
 import _ from "lodash";
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps } from "@comflowy/common/types";
 
 /**
  * The Control Båoard Config Editor
@@ -41,7 +42,7 @@ export function EditControlBoard(props: {onFinish: () => void}) {
     let allNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
       return {
         node
-      } as ControlBoardNodeProps;
+      } as unknown as ControlBoardNodeProps;
     });
     if (controlboardData) {
       const nodesWithControl = ControlBoardUtils.getNodesToRender(_.cloneDeep(controlboardData), nodes);

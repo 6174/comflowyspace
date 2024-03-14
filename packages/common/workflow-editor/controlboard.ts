@@ -1,55 +1,6 @@
 import { type Node } from 'reactflow';
 import { getNodeRenderInfo } from './node-rendering';
-import { SDNode } from '../types';
-
-/**
- * Controlboard Config Data
- */
-export type ControlBoardConfig = {
-  nodes: ControlBoardNodeConfig[];
-  requirements?: ControlBoardShareRequirements
-  shareAsSubflowConfig?: {
-    description?: string;
-    title?: string;
-    nodes: ControlBoardSharedNodeConfig[]
-  }
-}
-
-export type ControlBoardShareRequirements = {
-  requiredModels: {
-    modelHash: string;
-    modelReferece: string;
-    modelDownloadUrl: string;
-    modelSaveLocation: string;
-  }[];
-  requiredExtensions: {
-    extensionName: string;
-    extensionGithubUrl: string;
-  }[]
-}
-
-/**
- * Controlboard Node Config
- */
-export type ControlBoardNodeConfig = {
-  id: string;
-  fields: string[];
-  select: boolean;
-}
-
-export type ControlBoardSharedNodeConfig = {
-  id: string;
-  fields: string[];
-  inputs: string[];
-  outputs: string[];
-  select: boolean;
-}
-
-export type ControlBoardNodeProps = {
-  nodeControl?: ControlBoardNodeConfig | ControlBoardSharedNodeConfig;
-  onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
-  node: Node,
-}
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, SDNode } from '../types';
 
 export const ControlBoardUtils = {
   createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {

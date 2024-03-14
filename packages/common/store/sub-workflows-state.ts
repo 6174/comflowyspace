@@ -77,7 +77,7 @@ export async function loadSubWorkflowToStore(subworkflowStore: SubWorkflowStore,
   const {graph} = subworkflowStore.workflowStates[id] || {
     graph: {}
   }
-  
+
   allNodes.forEach(node => {
     subworkflowStore.relations[node.id] = id;
     graph[id] = node.value;
@@ -104,10 +104,7 @@ export async function loadSubWorkflowToStore(subworkflowStore: SubWorkflowStore,
  * @param subworkflowStore 
  * @returns 
  */
-export async function parseSubWorkflowControlboardInfo(doc: PersistedFullWorkflow, subworkflowStore: SubWorkflowStore): Promise<SubWorkflowStore> {
-  const newMapping = {...subworkflowStore.mapping};
-  newMapping[doc.id] = doc;
-
+export function parseSubWorkflow(doc: PersistedFullWorkflow) {
   const allNodes = Object.values(doc.snapshot.nodes);
   const shareAsSubflowConfig = doc.snapshot.controlboard?.shareAsSubflowConfig!;
   const { title, description, nodes } = shareAsSubflowConfig;
@@ -120,18 +117,10 @@ export async function parseSubWorkflowControlboardInfo(doc: PersistedFullWorkflo
     }
   });
 
-  const inputs = [];
-  const outputs = [];
-  const params = [];
-
-  nodesWithControlInfo.forEach(({ sdnode, nodeControl }) => {
-    const selectedInputs = nodeControl.inputs;
-    const selectedOutputs = nodeControl.outputs;
-    const selectedFields = nodeControl.fields;
-  });
-
   return {
-    ...subworkflowStore,
-    mapping: newMapping
+    nodesWithControlInfo,
+    title,
+    description
   }
 }
+

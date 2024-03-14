@@ -1,8 +1,8 @@
 import { PreviewImage } from "./comfy-props.types";
 import { ComfyUIWorkflowGroup, ComfyUIWorkflowNode, PersistedWorkflowNode } from "./comfy-node.types";
-import { ControlBoardConfig } from "../workflow-editor/controlboard";
 import { JSONDocMeta } from "../jsondb/jsondb.types";
 import { ComfyUIWorkflowConnection, PersistedWorkflowConnection } from "./comfy-connection.types";
+import { ControlBoardConfig } from "./comflowy-controlboard.types";
 
 export type PersistedFullWorkflow = {
   title: string;
