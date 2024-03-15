@@ -5,7 +5,7 @@ import { setupComfyUIProxy } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions, ApiInstallPipPackages } from './routes/api/extension';
-import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig, ApiRestartComfyUI, ApiUpdateComfyUIAndRestart, ApiGetCondaInfo } from './routes/api/bootstrap';
+import { ApiBootstrap, ApiEnvCheck, ApiSetupConfig, ApiUpdateStableDiffusionConfig, ApiRestartComfyUI, ApiUpdateComfyUIAndRestart, ApiGetCondaInfo, ApiModeSetupConfig } from './routes/api/bootstrap';
 import { JSONDB } from './modules/jsondb/jsondb';
 import { getComfyUIDir } from './modules/utils/get-appdata-dir';
 import logger from './modules/utils/logger';
@@ -68,6 +68,8 @@ export async function startAppServer(params: {
   app.post('/api/add_task', ApiRouteAddTask);
   app.post('/api/setup_config', ApiSetupConfig);
   app.post('/api/update_sdwebui', ApiUpdateStableDiffusionConfig);
+  app.post('/api/mode_setup_config', ApiModeSetupConfig);
+  app.post('/api/bootstrap', ApiBootstrap);
   app.post('/api/restart_comfy', ApiRestartComfyUI);
   app.post('/api/update_comfy', ApiUpdateComfyUIAndRestart)
   app.get('/api/get_conda_env_info', ApiGetCondaInfo);

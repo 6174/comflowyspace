@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message} from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented} from 'antd';
 import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron} from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss'; 
@@ -75,6 +75,76 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   const electronEnv = useIsElectron();
 
+  const storageKey = 'startupModeValue';
+
+  const getInitialValue = () => {
+    return localStorage.getItem(storageKey) || 'normal';
+  };
+
+  const [value, setValue] = useState(getInitialValue);
+
+  const onSegmentChange = async (newValue) => {
+    setValue(newValue);
+    localStorage.setItem(storageKey, newValue);
+    let bootstrapType;
+    switch (newValue) {
+      case 'fp16':
+        bootstrapType = 'startComfyUIFp16';
+        break;
+      case 'fp32':
+        bootstrapType = 'startComfyUIFp32';
+        break;
+      default:
+        bootstrapType = 'startComfyUI';
+    }
+    try {
+      const modeApi = getBackendUrl('/api/mode_setup_config');
+      const modeResponse = await fetch(modeApi, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        mode: newValue, 
+        bootstrapType: bootstrapType
+      })
+    });
+    const modeResult = await modeResponse.json();
+    if (modeResult.success) {
+      console.log('模式设置保存成功');
+      const restartApi = getBackendUrl('/api/bootstrap');
+      const restartResponse = await fetch(restartApi, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            name: bootstrapType,
+          },
+        }),
+      });
+      const restartResult = await restartResponse.json();
+      if (restartResult.success) {
+        console.log('ComfyUI 重启成功');
+      } else {
+        console.error('ComfyUI 重启失败：', restartResult.error);
+      }
+    } else {
+      console.error('配置更新失败：', modeResult.error);
+    }
+  } catch (error) {
+    console.error('更新配置或重启 ComfyUI 时出现错误：', error);
+  }
+};
+
+
+  const options = [
+    { label: 'Normal', value: 'normal' },
+    { label: 'FP16', value: 'fp16' },
+    { label: 'FP32', value: 'fp32' },
+  ];
+
   return (
     <Modal
       title={t(KEYS.settings)}
@@ -128,6 +198,14 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                       { value: 'ja', label: '日本語' },
                       { value: 'ru', label: 'Русский' },
                     ]}
+                  />
+                </div>
+                <div className='general-startup-settings'>
+                  <div className='general-startup-settings-title'>{t(KEYS.startupSettings)}</div>
+                  <Segmented
+                    options={options}
+                    value={value}
+                    onChange={onSegmentChange}
                   />
                 </div>
                 <div className='general-sdpath'>

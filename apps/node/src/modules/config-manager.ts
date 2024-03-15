@@ -34,7 +34,8 @@ class MyConfigManager {
 const appConfigManager = new MyConfigManager('_config');
 
 export enum CONFIG_KEYS {
-  "appSetupConfig" = "appSetupConfig"
+  "appSetupConfig" = "appSetupConfig",
+  "modeSetupConfig" = "modeSetupConfig"
 }
 
 
