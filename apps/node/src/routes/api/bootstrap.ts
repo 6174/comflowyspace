@@ -64,8 +64,7 @@ export enum BootStrapTaskType {
     "installBasicModel" = "installBasicModel",
     "installBasicExtension" = "installBasicExtension",
     "startComfyUI" = "startComfyUI",
-    "startComfyUIFp16" = "startComfyUIFp16",
-    "startComfyUIFp32" = "startComfyUIFp32",
+    "startComfyUIWithPrecision" = "startComfyUIWithPrecision",
 }
 
 /**
@@ -75,10 +74,13 @@ export enum BootStrapTaskType {
  */
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
-        const setupConfigString = appConfigManager.get(CONFIG_KEYS.modeSetupConfig);
-        const setupConfig = JSON.parse(setupConfigString || '{}');
-        const { bootstrapType } = setupConfig; 
-        const taskType = bootstrapType || (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
+        const setupFPConfigString = appConfigManager.get(CONFIG_KEYS.setupFPConfig);
+        const setupVAEConfigString = appConfigManager.get(CONFIG_KEYS.setupVAEConfig);
+        const setupFPConfig = JSON.parse(setupFPConfigString || '{}');
+        const setupVAEConfig = JSON.parse(setupVAEConfigString || '{}');
+        const setupConfig = { ...setupFPConfig, ...setupVAEConfig };
+        const { fpmode, vaemode } = setupConfig;
+        let taskType = (fpmode !== 'normal' || vaemode !== 'normal') ? BootStrapTaskType.startComfyUIWithPrecision : (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
         const taskId = req.body.data && req.body.data.taskId;
         const task: TaskProps = {
             taskId,
@@ -167,12 +169,13 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         const ret =  await comfyuiService.startComfyUI()
                         disposable.dispose();
                         return ret;
-                    case BootStrapTaskType.startComfyUIFp16:
-                        newDispatcher({ message: "Starting ComfyUI with --force-fp16." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp16'), 1000 * 60 * 30, "Start ComfyUI with --force-fp16 timed out.");
-                    case BootStrapTaskType.startComfyUIFp32:
-                        newDispatcher({ message: "Starting ComfyUI with --force-fp32." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp32'), 1000 * 60 * 30, "Start ComfyUI with --force-fp32 timed out.");
+                    case BootStrapTaskType.startComfyUIWithPrecision:
+                        if (fpmode && vaemode) {
+                            newDispatcher({ message: `Starting ComfyUI with --force-${fpmode} --${vaemode}-vae` });
+                            return await withTimeout(comfyuiService.restartComfyUI(true, fpmode, vaemode), 1000 * 60 * 30, `Start ComfyUI with --force-${fpmode} --${vaemode}-vae timed out.`);
+                        } else {
+                            throw new Error("Missing required configuration parameters");
+                        };
                     default:
                         throw new Error("No task named " + taskType)
                 }
@@ -254,16 +257,16 @@ export async function ApiSetupConfig(req: Request, res: Response) {
     } 
 }
 
-export async function ApiModeSetupConfig(req: Request, res: Response) {
+export async function ApiFPModeSetupConfig(req: Request, res: Response) {
   try {
-    const { mode, bootstrapType } = req.body; 
-    if (mode && bootstrapType) { 
+    const { fpmode, fpType } = req.body; 
+    if (fpmode && fpType) { 
       const setupString = JSON.stringify({
-        mode: mode,
-        bootstrapType: bootstrapType
+        fpmode: fpmode,
+        fpType: fpType
       });
 
-      appConfigManager.set(CONFIG_KEYS.modeSetupConfig, setupString);
+      appConfigManager.set(CONFIG_KEYS.setupFPConfig, setupString);
       res.send({
         success: true,
       });
@@ -271,7 +274,36 @@ export async function ApiModeSetupConfig(req: Request, res: Response) {
       
       res.send({
         success: false,
-        error: '缺少必要的配置参数'
+        error: 'Missing required configuration parameters'
+      });
+    }
+  } catch (err: any) {
+    logger.error(err.message + ":" + err.stack);
+    res.send({
+      success: false,
+      error: err.message
+    })
+  }
+}
+
+export async function ApiVAEModeSetupConfig(req: Request, res: Response) {
+  try {
+    const { vaemode, VAEType } = req.body; 
+    if (vaemode && VAEType) { 
+      const setupString = JSON.stringify({
+        vaemode: vaemode,
+        VAEType: VAEType
+      });
+
+      appConfigManager.set(CONFIG_KEYS.setupVAEConfig, setupString);
+      res.send({
+        success: true,
+      });
+    } else {
+      
+      res.send({
+        success: false,
+        error: 'Missing required configuration parameters'
       });
     }
   } catch (err: any) {

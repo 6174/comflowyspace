@@ -6,7 +6,7 @@ import styles from './setting-modal.style.module.scss';
 import { LanguageType, changeLaunguage , currentLang} from '@comflowy/common/i18n';
 import { getBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
-import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
+import { SettingsIcon, InfoIcon, PersonIcon, PlayCircleIcon } from 'ui/icons';
 import {KEYS, t} from "@comflowy/common/i18n";
 
 const SettingsModal = ({ isVisible, handleClose }) => {
@@ -75,43 +75,43 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 
   const electronEnv = useIsElectron();
 
-  const storageKey = 'startupModeValue';
+  const fpModeStorageKey = 'startupFPModeValue';
 
-  const getInitialValue = () => {
-    return localStorage.getItem(storageKey) || 'normal';
+  const getFPModeInitialValue = () => {
+    return localStorage.getItem(fpModeStorageKey) || 'normal';
   };
 
-  const [value, setValue] = useState(getInitialValue);
+  const [fpValue, setFPValue] = useState(getFPModeInitialValue);
 
-  const onSegmentChange = async (newValue) => {
-    setValue(newValue);
-    localStorage.setItem(storageKey, newValue);
-    let bootstrapType;
-    switch (newValue) {
+  const onFPModeChange = async (fpValue) => {
+    setFPValue(fpValue);
+    localStorage.setItem(fpModeStorageKey, fpValue);
+    let fpType;
+    switch (fpValue) {
       case 'fp16':
-        bootstrapType = 'startComfyUIFp16';
+        fpType = 'startComfyUIFp16';
         break;
       case 'fp32':
-        bootstrapType = 'startComfyUIFp32';
+        fpType = 'startComfyUIFp32';
         break;
       default:
-        bootstrapType = 'startComfyUI';
+        fpType = 'startComfyUI';
     }
     try {
-      const modeApi = getBackendUrl('/api/mode_setup_config');
+      const modeApi = getBackendUrl('/api/fpmode_setup_config');
       const modeResponse = await fetch(modeApi, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        mode: newValue, 
-        bootstrapType: bootstrapType
+        fpmode: fpValue, 
+        fpType: fpType
       })
     });
     const modeResult = await modeResponse.json();
     if (modeResult.success) {
-      console.log('模式设置保存成功');
+      console.log('Config update success');
       const restartApi = getBackendUrl('/api/bootstrap');
       const restartResponse = await fetch(restartApi, {
         method: 'POST',
@@ -120,26 +120,93 @@ const SettingsModal = ({ isVisible, handleClose }) => {
         },
         body: JSON.stringify({
           data: {
-            name: bootstrapType,
+            name: fpType,
           },
         }),
       });
       const restartResult = await restartResponse.json();
       if (restartResult.success) {
-        console.log('ComfyUI 重启成功');
+        console.log('ComfyUI restart success');
       } else {
-        console.error('ComfyUI 重启失败：', restartResult.error);
+        console.error('ComfyUI restart fail:', restartResult.error);
       }
     } else {
-      console.error('配置更新失败：', modeResult.error);
+      console.error('Config update failed:', modeResult.error);
     }
   } catch (error) {
-    console.error('更新配置或重启 ComfyUI 时出现错误：', error);
+    console.error(error);
   }
 };
 
+  const vaeModeStorageKey = 'startupVAEModeValue';
 
-  const options = [
+  const getVAEModeInitialValue = () => {
+    return localStorage.getItem(vaeModeStorageKey) || 'normal';
+  };
+
+  const [vaeValue, setVAEValue] = useState(getVAEModeInitialValue);
+
+const onVAEModeChange = async (vaeVaule) => {
+    setVAEValue(vaeVaule);
+    localStorage.setItem(vaeModeStorageKey, vaeVaule);
+    let VAEType;
+    switch (vaeVaule) {
+      case 'fp16':
+        VAEType = 'startComfyUIFp16';
+        break;
+      case 'fp32':
+        VAEType = 'startComfyUIFp32';
+        break;
+      default:
+        VAEType = 'startComfyUI';
+    }
+    try {
+      const vaeModeApi = getBackendUrl('/api/vaemode_setup_config');
+      const modeResponse = await fetch(vaeModeApi, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        vaemode: vaeVaule, 
+        VAEType: VAEType
+      })
+    });
+    const modeResult = await modeResponse.json();
+    if (modeResult.success) {
+      console.log('Config update success');
+      const restartApi = getBackendUrl('/api/bootstrap');
+      const restartResponse = await fetch(restartApi, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            name: VAEType,
+          },
+        }),
+      });
+      const restartResult = await restartResponse.json();
+      if (restartResult.success) {
+        console.log('ComfyUI restart success');
+      } else {
+        console.error('ComfyUI restart fail:', restartResult.error);
+      }
+    } else {
+      console.error('Config update failed:', modeResult.error);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  const fpOptions = [
+    { label: 'Normal', value: 'normal' },
+    { label: 'FP16', value: 'fp16' },
+    { label: 'FP32', value: 'fp32' },
+  ];
+  const VAEOptions = [
     { label: 'Normal', value: 'normal' },
     { label: 'FP16', value: 'fp16' },
     { label: 'FP32', value: 'fp32' },
@@ -174,6 +241,12 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                 </div>
                 <a>{t(KEYS.general)}</a>
               </Menu.Item>
+              <Menu.Item key="startup-settings" className='sider-menu-item'>
+                <div className='sider-menu-item-icon'>
+                  <PlayCircleIcon />
+                </div>
+                <a>{t(KEYS.startupSettings)}</a>
+              </Menu.Item>
               <Menu.Item key="about" className='sider-menu-item'>
                 <div className='sider-menu-item-icon'>
                   <InfoIcon/>
@@ -200,19 +273,31 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                     ]}
                   />
                 </div>
-                <div className='general-startup-settings'>
-                  <div className='general-startup-settings-title'>{t(KEYS.startupSettings)}</div>
-                  <Segmented
-                    options={options}
-                    value={value}
-                    onChange={onSegmentChange}
-                  />
-                </div>
                 <div className='general-sdpath'>
                   <div className='gerneral-sdpath-title'>{t(KEYS.sdWebUIPath)}</div>
                   <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
                   <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height:40}} />
                   {electronEnv && <div onClick={selectFolder} className='general-sdpath-button'>{t(KEYS.changeLocation)}</div>}
+                </div>
+              </div>
+            }
+            {activeMenuKey === 'startup-settings' && 
+              <div>
+                <div className='general-startup-settings'>
+                  <div className='general-startup-settings-title'>{t(KEYS.floatingPointPrecision)}</div>
+                  <Segmented
+                    options={fpOptions}
+                    value={fpValue}
+                    onChange={onFPModeChange}
+                  />
+                </div>
+                <div className='general-startup-settings'>
+                  <div className='general-startup-settings-title'>{t(KEYS.vaePrecision)}</div>
+                  <Segmented
+                    options={VAEOptions}
+                    value={vaeValue}
+                    onChange={onVAEModeChange}
+                  />
                 </div>
               </div>
             }
