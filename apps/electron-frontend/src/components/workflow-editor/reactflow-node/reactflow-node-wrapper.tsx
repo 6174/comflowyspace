@@ -3,7 +3,7 @@ import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
 import {NodeComponent} from "./reactflow-node";
 import { memo } from "react";
-import { SubFlowNode } from "./reactflow-subflow-node";
+import { SubflowNode } from "./reactflow-subflow-node";
 
 type NodeWrapperProps = NodeProps<{
   widget: Widget;
@@ -24,7 +24,7 @@ export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
 
   if (props.data.value.widget === SUBFLOW_WIDGET_TYPE_NAME) {
-    return <SubFlowNode node={props as any}/>
+    return <SubflowNode node={props as any}/>
   }
   
   return (

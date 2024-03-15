@@ -53,7 +53,7 @@ export interface SDNode {
   flowId?: string;
 }
 
-export const SUBFLOW_WIDGET_TYPE_NAME = 'SubFlow'
+export const SUBFLOW_WIDGET_TYPE_NAME = 'Subflow'
 
 export const SDNode = {
   /**

@@ -14,7 +14,7 @@ export interface SubflowStore {
   // node parent relations
   relations: Record<string, string>;
   workflowStates: Record<string, {
-    isRootSubFlow: boolean;
+    isRootSubflow: boolean;
     graph: Record<NodeId, SDNode>;
     promptError?: ComfyUIExecuteError;
     nodeInProgress?: NodeInProgress;
@@ -40,7 +40,7 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
     const mapping = st.mapping;
     const workflowState = st.workflowStates[flowId] || {
       graph: {},
-      isRootSubFlow: true
+      isRootSubflow: true
     };
     if (mapping[flowId]) {
       return mapping[flowId];
@@ -217,7 +217,7 @@ export async function loadSubflowToStore(subflowStore: SubflowStore, id: string)
   const allNodes = Object.values(doc.snapshot.nodes);
   const {graph} = subflowStore.workflowStates[id] || {
     graph: {},
-    isRootSubFlow: false
+    isRootSubflow: false
   }
 
   allNodes.forEach(node => {

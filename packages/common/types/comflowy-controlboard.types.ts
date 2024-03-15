@@ -50,7 +50,7 @@ export type ControlBoardNodeProps = {
   node: Node,
 }
 
-export type SubFlowNodeWithControl = {
+export type SubflowNodeWithControl = {
   sdnode: SDNode,
   nodeControl: ControlBoardNodeConfig
 }

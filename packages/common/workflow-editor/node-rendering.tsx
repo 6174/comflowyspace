@@ -1,5 +1,5 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubFlowNodeWithControl, WorkflowNodeRenderInfo } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo } from '../types';
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
 import { useAppStore } from '../store';
@@ -77,29 +77,29 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
  * @param node 
  * @returns 
  */
-export type SubFlowRenderingInfo = {
+export type SubflowRenderingInfo = {
   title: string;
   id: string;
-  nodesWithControl: SubFlowNodeWithControl[];
+  nodesWithControl: SubflowNodeWithControl[];
 }
 
-export function useSubFlowNodeRenderingInfo(node: NodeProps<{
+export function useSubflowNodeRenderingInfo(node: NodeProps<{
   value: SDNode;
-}>): SubFlowRenderingInfo {
-  const sdSubFlowNode = node.data.value;
+}>): SubflowRenderingInfo {
+  const sdSubflowNode = node.data.value;
   const nodeId = node.id;
-  const { flowId, fields, custom_fields, images} = sdSubFlowNode;
+  const { flowId, fields, custom_fields, images} = sdSubflowNode;
   const workflow = useSubflowStore(st => st.mapping[flowId!]);
   const loadSubWorkfow = useSubflowStore(st => st.loadSubWorkfow);
-  const [nodeTitle, setNodeTitle] = useState("SubFlow");
-  const [nodesWithControl, setNodesWithControl] = useState<SubFlowNodeWithControl[]>();
+  const [nodeTitle, setNodeTitle] = useState("Subflow");
+  const [nodesWithControl, setNodesWithControl] = useState<SubflowNodeWithControl[]>();
   const widgets = useAppStore(st => st.widgets);
   const parseSubflow = useSubflowStore(st => st.parseSubflow);
 
   useEffect(() => {
     // //  = parseSubflow(workflow, widgets);
     // setNodesWithControl(nodesWithControlInfo);
-    // setNodeTitle(title || "SubFlow");
+    // setNodeTitle(title || "Subflow");
     // const inputs = nodesWithControlInfo.reduce((acc, node) => {
     //   const nodeInputs = [];
     //   return acc.concat([]);

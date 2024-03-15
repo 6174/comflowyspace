@@ -1,8 +1,8 @@
 /**
  * Rendering flow type node
  */
-import { PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubFlowNodeWithControl, Widget } from "@comflowy/common/types";
-import { useSubFlowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubflowNodeWithControl, Widget } from "@comflowy/common/types";
+import { useSubflowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Dimensions, NodeProps } from "reactflow";
 import { ComflowyNodeResizer, useNodeAutoResize } from "./reactflow-node-resize";
 import nodeStyles from "./reactflow-node.style.module.scss";
@@ -12,7 +12,7 @@ import { useAppStore } from "@comflowy/common/store";
 import { NodeError } from "./reactflow-node-errors";
 import { NodeImagePreviews } from "./reactflow-node-imagepreviews";
 
-type SubFlowNodeProps = {
+type SubflowNodeProps = {
   node: NodeProps<{
     value: SDNode;
     dimensions: Dimensions
@@ -20,11 +20,11 @@ type SubFlowNodeProps = {
   imagePreviews?: PreviewImage[]
 }
 
-export function SubFlowNode({
+export function SubflowNode({
   node, 
   imagePreviews
-}: SubFlowNodeProps) {
-  const {title, id, nodesWithControl} = useSubFlowNodeRenderingInfo(node);
+}: SubflowNodeProps) {
+  const {title, id, nodesWithControl} = useSubflowNodeRenderingInfo(node);
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, imagePreviews);
 
   const isInProgress = false;
@@ -74,7 +74,7 @@ export function SubFlowNode({
 }
 
 function SubflowSlots({ nodesWithControl }: {
-  nodesWithControl: SubFlowNodeWithControl[]
+  nodesWithControl: SubflowNodeWithControl[]
 }) {
 
   // const inputs = nodesWithControl.reduce((acc, node) => {
