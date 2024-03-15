@@ -3,10 +3,12 @@ import { documentDatabaseInstance } from "@comflowy/common/storage";
 import { PersistedFullWorkflow, PersistedWorkflowNode, SUBFLOW_WIDGET_TYPE_NAME } from "@comflowy/common/types";
 import { Input, Popover, Tooltip } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SearchIcon, WorkflowIcon } from "ui/icons";
+import { FileNameIcon, SearchIcon, WorkflowIcon } from "ui/icons";
 import styles from "./create-subflow-node.module.scss";
 import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
 import { useAppStore } from "@comflowy/common/store";
+import { openTabPage } from "@/lib/electron-bridge";
+import { useRouter } from "next/router";
 /**
  * create subflow entry button
  */
@@ -39,13 +41,17 @@ export function SubflowNodeList(props: {id: number}) {
   const [searchValue, setSearchValue] = useState('');
   const [searchResult, setSearchResult] = useState([]);
   const [err, setError] = useState<string>();
+  const router = useRouter();
+  const currentDocId = router.query.id as string;
   const docs = (JSONDBClient.useLiveDoc<PersistedFullWorkflow[]>({
     collectionName: "workflows",
     queryFn: async (): Promise<PersistedFullWorkflow[]> => {
       setError(null);
       try {
         const docs = await documentDatabaseInstance.getDocs();
-        return docs;
+        return docs.filter(doc => {
+          return doc.id !== currentDocId && doc.snapshot?.controlboard?.shareAsSubflowConfig?.shared
+        });
       } catch (err) {
         console.log("fetch documents", err);
         setError(err.message);
@@ -139,6 +145,16 @@ function CreateSubflowNodeItem(props: {
   
   const [isHovered, setIsHovered] = useState(false);
   
+  const openPage = () => {
+    openTabPage({
+      name: doc.title,
+      pageName: "app",
+      query: `id=${doc.id}`,
+      id: 0,
+      type: "DOC"
+    });
+  }
+  
   return (
     <div className="subflow-node action dndnode"
       draggable
@@ -157,6 +173,14 @@ function CreateSubflowNodeItem(props: {
         <div className="title">{props.doc.title}</div>
         <div className="description">{props.doc.description}</div>
       </div>
+      {isHovered && (
+        <div onClick={(ev) => {
+          ev.stopPropagation();
+          openPage();
+        }} className="pin-button" style={{ position: "relative", top: 2}}>
+          <FileNameIcon/>
+        </div>
+      )}
     </div>
   )
 }

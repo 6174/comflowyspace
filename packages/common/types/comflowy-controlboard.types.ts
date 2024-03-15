@@ -8,6 +8,7 @@ export type ControlBoardConfig = {
   nodes: ControlBoardNodeConfig[];
   requirements?: ControlBoardShareRequirements
   shareAsSubflowConfig?: {
+    shared: boolean;
     description?: string;
     title?: string;
     nodes: ControlBoardSubflowNodeConfig[]

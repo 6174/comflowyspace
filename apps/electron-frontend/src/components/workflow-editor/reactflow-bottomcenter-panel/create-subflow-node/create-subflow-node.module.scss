@@ -8,6 +8,9 @@
     .subflow-node {
       display: flex;
       justify-content: flex-start;
+      .info {
+        flex: 1;
+      }
     }
   }
 }
