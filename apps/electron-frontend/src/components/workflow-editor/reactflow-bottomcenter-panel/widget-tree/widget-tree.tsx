@@ -7,6 +7,7 @@ import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
+import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -67,7 +68,7 @@ export const WidgetTree = (props: {
                 if (searchWords.every(word => search_string.includes(word))) {
                     return true;
                 }
-                const maxMatch = maxMatchLength(value.toLowerCase(), search_string);
+                const maxMatch = maxMatchLengthSearch(value.toLowerCase(), search_string);
                 if (maxMatch >= 4) {
                     return true;
                 }
@@ -76,8 +77,8 @@ export const WidgetTree = (props: {
 
         // Sort the widgets based on the match length with the search value
         const reOrderedWidgets = findedWidgets.sort((a, b) => {
-            const aMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[a]));
-            const bMatch = maxMatchLength(value.toLowerCase(), getWidgetSearchString(widgets[b]));
+            const aMatch = maxMatchLengthSearch(value.toLowerCase(), getWidgetSearchString(widgets[a]));
+            const bMatch = maxMatchLengthSearch(value.toLowerCase(), getWidgetSearchString(widgets[b]));
 
             // Check for exact matches and prioritize them
             if (value.toLowerCase() === widgets[a].name.toLowerCase() && value.toLowerCase() !== widgets[b].name.toLowerCase()) {
@@ -299,15 +300,3 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
 }
 
 
-function maxMatchLength(searchTerm: string, sourceString: string): number {
-    let maxMatch = 0;
-    for (let i = 0; i < sourceString.length; i++) {
-        for (let j = i + 1; j <= sourceString.length; j++) {
-            const subStr = sourceString.slice(i, j);
-            if (searchTerm.includes(subStr) && subStr.length > maxMatch) {
-                maxMatch = subStr.length;
-            }
-        }
-    }
-    return maxMatch;
-}
