@@ -11,7 +11,7 @@ import { writeWorkflowToFile, } from '../comfyui-bridge/export-import';
 import { getBackendUrl } from '../config'
 import { uuid } from '../utils';
 import { SlotEvent } from '../utils/slot-event';
-import { ComfyUIErrorTypes, ComfyUIExecuteError } from '../types';
+import { ComfyUIExecuteError } from '../types';
 import { ComfyUIEvents } from '../types';
 import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../types';
@@ -580,7 +580,7 @@ export const useAppStore = create<AppState>((set, get) => ({
    */
   onResetFromPersistedWorkflow: async (workflow: PersistedWorkflowDocument): Promise<void> => {
     console.log("Reset workflow", workflow);
-    
+
     set({
       nodes: [],
       edges: [],
@@ -637,68 +637,94 @@ export const useAppStore = create<AppState>((set, get) => ({
       comflowyConsoleClient.comfyuiExecuteError(docJson, newState.promptError);
     }
 
+    // pass node_errors to subworkflows
+    if (newState.promptError?.node_errors) {
+      state.subWorkflowStore.getState().handleSubmitErrors(newState.promptError);
+    }
+
     return res
   },
   onNewClientId: (id) => {
     set({ clientId: id })
   },
   onNodeInProgress: (id, progress) => {
-    set({ nodeInProgress: { id, progress } })
+    const {graph, subWorkflowStore} = get();
+    if (graph[id]) {
+      set({ nodeInProgress: { id, progress } })
+    } else {
+      subWorkflowStore.getState().onNodeInProgress(id, progress);
+    }
   },
   onImageSave: (id, images) => {
-    const nodes = get().nodes; 
+    const st = get();
+    const {nodes, graph, subWorkflowStore} = st;
     const node = nodes.find(node => node.id === id);
-    // preview image and other temp state
-    if (!node || node?.data?.widget.name !== "SaveImage") {
+
+    /**
+     * if find node in graph, the node is in main workflow, save to state and storage
+     * else if the node is a subworkflow‘s sub node, then set the state to the subworkflow
+     */
+    if (graph[id]) {
+      st.editorEvent.emit({ type: ComfyUIEvents.ImageSave, data: { id, images } });
+      temporalSaveImage(id, images);
+      if (node?.data?.widget.name === "SaveImage") {
+        persistSaveImage(id, images);
+      }
+    } else {
+      subWorkflowStore.getState().onImageSave(id, images);
+      if (node?.data?.widget.name !== "SaveImage") {
+        return;
+      }
+      const { relations } = subWorkflowStore.getState();
+      const subflowId = relations[id];
+      const subflowNode = graph[subflowId];
+      if (subflowNode) {
+        st.editorEvent.emit({ type: ComfyUIEvents.ImageSave, data: { id, images } });
+        temporalSaveImage(id, images);
+        persistSaveImage(id, images, false);
+      }
+    }
+
+    function temporalSaveImage(id: string, images: PreviewImage[]) {
       set((st) => ({
         graph: {
           ...st.graph,
           [id]: { ...st.graph[id], images },
         },
-      }))
-      return;
+      }));
     }
     
-    // presistent save image to gallery
-    console.log("saved image", node, images);
-    const last_edit_time = +new Date();
-    // sync to state
-    set((st) => ({
-      persistedWorkflow: {
+    function persistSaveImage(id: string, images: PreviewImage[], saveToGallery = true) {
+      const st = get();
+      const {nodes, graph, subWorkflowStore} = st;
+      const node = nodes.find(node => node.id === id);
+      if (node?.data?.widget.name !== "SaveImage") {
+        return;
+      }
+      const last_edit_time = +new Date();
+      const newPersistedWorkflow = saveToGallery ? {
         ...st.persistedWorkflow!,
         last_edit_time,
         gallery: [
           ...st.persistedWorkflow?.gallery || [],
           ...images.reverse() || []
-        ].reverse()
-      },
-      graph: {
-        ...st.graph,
-        [id]: { ...st.graph[id], images },
-      },
-    }))
+        ].reverse(),
+      } : st.persistedWorkflow!;
 
-    // sync to storage
-    const st = get();
-    st.editorEvent.emit({
-      type: ComfyUIEvents.ImageSave,
-      data: {
-        id,
-        images
-      }
-    });
-    WorkflowDocumentUtils.onImageSave(get().doc, id, images);
-    const workflowMap = st.doc.getMap("workflow");
-    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-    throttledUpdateDocument({
-      ...st.persistedWorkflow!,
-      last_edit_time,
-      gallery: [
-        ...st.persistedWorkflow?.gallery || [],
-        ...images.reverse() || []
-      ].reverse(),
-      snapshot: workflow
-    });
+      // sync gallery state
+      set({
+        persistedWorkflow: newPersistedWorkflow,
+      });
+
+      // save to storage
+      WorkflowDocumentUtils.onImageSave(st.doc, id, images);
+      const workflowMap = st.doc.getMap("workflow");
+      const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+      throttledUpdateDocument({
+        ...newPersistedWorkflow,
+        snapshot: workflow
+      });
+    }
   },
   onLoadImageWorkflow: (image) => {
     void exifr.parse(getBackendUrl(`/view/${image}`)).then((res) => {
