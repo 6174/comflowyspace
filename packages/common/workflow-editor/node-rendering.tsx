@@ -1,7 +1,7 @@
 import { NodeProps, type Node } from 'reactflow';
 import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubFlowNodeWithControl, WorkflowNodeRenderInfo } from '../types';
 import { useEffect, useState } from 'react';
-import { useSubWorkflowStore } from '../store/sub-workflows-state';
+import { useSubflowStore } from '../store/subflow-state';
 import { useAppStore } from '../store';
 
 /**
@@ -89,15 +89,15 @@ export function useSubFlowNodeRenderingInfo(node: NodeProps<{
   const sdSubFlowNode = node.data.value;
   const nodeId = node.id;
   const { flowId, fields, custom_fields, images} = sdSubFlowNode;
-  const workflow = useSubWorkflowStore(st => st.mapping[flowId!]);
-  const loadSubWorkfow = useSubWorkflowStore(st => st.loadSubWorkfow);
+  const workflow = useSubflowStore(st => st.mapping[flowId!]);
+  const loadSubWorkfow = useSubflowStore(st => st.loadSubWorkfow);
   const [nodeTitle, setNodeTitle] = useState("SubFlow");
   const [nodesWithControl, setNodesWithControl] = useState<SubFlowNodeWithControl[]>();
   const widgets = useAppStore(st => st.widgets);
-  const parseSubWorkflow = useSubWorkflowStore(st => st.parseSubWorkflow);
+  const parseSubflow = useSubflowStore(st => st.parseSubflow);
 
   useEffect(() => {
-    // //  = parseSubWorkflow(workflow, widgets);
+    // //  = parseSubflow(workflow, widgets);
     // setNodesWithControl(nodesWithControlInfo);
     // setNodeTitle(title || "SubFlow");
     // const inputs = nodesWithControlInfo.reduce((acc, node) => {
