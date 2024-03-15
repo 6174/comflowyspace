@@ -73,6 +73,7 @@ export interface AppState {
   onEdgeUpdateStart: () => void;
   onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => void;
   onAddNode: (widget: Widget, pos: XYPosition) => PersistedWorkflowNode
+  onAddSubflowNode: (workflow: PersistedFullWorkflow, pos: XYPosition) => PersistedWorkflowNode
   onDuplicateNodes: (ids: NodeId[]) => void
   onChangeSelectMode: (mode: SelectionMode) => void;
   onSelectNodes: (ids: string[]) => void;
@@ -509,6 +510,23 @@ export const useAppStore = create<AppState>((set, get) => ({
       value: node
     }
 
+    WorkflowDocumentUtils.onNodesAdd(doc, [persistNode]);
+    onSyncFromYjsDoc();
+    return persistNode
+  },
+  onAddSubflowNode: (workflow: PersistedFullWorkflow, position: XYPosition) => {
+    const node = SDNode.newSubflowNode(workflow.id);
+    node.title = workflow.title;
+    const { doc, onSyncFromYjsDoc } = get();
+    const persistNode = {
+      id: createNodeId(),
+      position,
+      dimensions: {
+        width: 240,
+        height: 80
+      },
+      value: node
+    }
     WorkflowDocumentUtils.onNodesAdd(doc, [persistNode]);
     onSyncFromYjsDoc();
     return persistNode

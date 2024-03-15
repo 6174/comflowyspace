@@ -1,11 +1,12 @@
 import { JSONDBClient } from "@comflowy/common/jsondb/jsondb.client";
 import { documentDatabaseInstance } from "@comflowy/common/storage";
-import { PersistedFullWorkflow } from "@comflowy/common/types";
+import { PersistedFullWorkflow, PersistedWorkflowNode, SUBFLOW_WIDGET_TYPE_NAME } from "@comflowy/common/types";
 import { Input, Popover, Tooltip } from "antd";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SearchIcon, WorkflowIcon } from "ui/icons";
 import styles from "./create-subflow-node.module.scss";
 import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
+import { useAppStore } from "@comflowy/common/store";
 /**
  * create subflow entry button
  */
@@ -99,16 +100,56 @@ export function SubflowNodeList(props: {id: number}) {
           value={searchValue}
         />
       </div>
-      {docs && docs.map(doc => {
-        return <CreateSubflowNodeItem doc={doc} key={doc.id}/>
-      })}
+      <div className="subflow-list">
+        {docs && docs.map(doc => {
+          return <CreateSubflowNodeItem doc={doc} key={doc.id}/>
+        })}
+      </div>
     </div>
   )
 }
 
-function CreateSubflowNodeItem(props: {doc: PersistedFullWorkflow}) {
+function CreateSubflowNodeItem(props: {
+  doc: PersistedFullWorkflow,
+  onNodeCreated?: (node: PersistedWorkflowNode) => void
+}) {
+  const doc = props.doc;
+  const ref = useRef<HTMLDivElement>();
+  const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    const widgetInfo = JSON.stringify({
+      type: SUBFLOW_WIDGET_TYPE_NAME,
+      workflow: doc
+    });
+    event.dataTransfer.setData('application/reactflow', widgetInfo);
+    event.dataTransfer.effectAllowed = 'move';
+  }, []);
+
+  const editorInstance = useAppStore(st => st.editorInstance)
+  const onAddSubflowNode = useAppStore(st => st.onAddSubflowNode);
+  const createNewNode = useCallback(async (ev: React.MouseEvent) => {
+    const rect = ref.current.getBoundingClientRect();
+    const pos = editorInstance.screenToFlowPosition({
+      x: rect.left + rect.width + 40,
+      y: ev.clientY - 100
+    });
+
+    const node = onAddSubflowNode(doc, pos);
+    props.onNodeCreated && props.onNodeCreated(node);
+  }, [ref, doc]);
+  
+  const [isHovered, setIsHovered] = useState(false);
+  
   return (
-    <div className="subflow-node">
+    <div className="subflow-node action dndnode"
+      draggable
+      ref={ref}
+      onClick={ev => {
+        createNewNode(ev);
+      }}
+      onDragStart={onDragStart}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      >
       <div className="icon">
         <WorkflowIcon />
       </div>

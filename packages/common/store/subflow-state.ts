@@ -38,10 +38,6 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
   loadSubWorkfow: async (flowId: string): Promise<PersistedFullWorkflow | undefined> => {
     const st = get();
     const mapping = st.mapping;
-    const workflowState = st.workflowStates[flowId] || {
-      graph: {},
-      isRootSubflow: true
-    };
     if (mapping[flowId]) {
       return mapping[flowId];
     } else {
