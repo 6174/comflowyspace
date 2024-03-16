@@ -1,6 +1,6 @@
 import { useAppStore } from "@comflowy/common/store";
 import {ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
-import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
@@ -11,7 +11,7 @@ import { DragIcon } from "ui/icons";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import {Node} from "reactflow";
 import _ from "lodash";
-import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps } from "@comflowy/common/types";
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, WorkflowNodeRenderInfo } from "@comflowy/common/types";
 
 /**
  * The Control Board Config Editor
@@ -142,7 +142,7 @@ function DraggableControlNodeConfigItem({
   onChangeControlBoard: (data: ControlBoardConfig) => void,
   controlboardData: ControlBoardConfig
 }) {
-  const { title, params, widget } = getNodeRenderInfo(data.node as any);
+  const { title, params, widget } = getNodeRenderInfo(data.node.data.value, data.node.data.widget);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
     item: () => ({ id, index }),
@@ -230,7 +230,7 @@ function NodeControlParamsEditor({
   node, 
   nodeControl, 
   onChangeNodeControl,
-}: { nodeControl: ControlBoardNodeConfig, params: NodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
+}: { nodeControl: ControlBoardNodeConfig, params: WorkflowNodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
   return (
     <div className="node-control-params">
       {params.map(({ property, input }) => (

@@ -1,10 +1,15 @@
-import { XYPosition } from "reactflow";
+import { NodeProps, XYPosition } from "reactflow";
 import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage } from "./comfy-props.types";
 import { Widget, WidgetKey } from "./comfy-widget.types"
 import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-props.types";
 export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
+
+export type WorkflowNodeProps = NodeProps<{
+  widget: Widget;
+  value: SDNode;
+}>
 
 export type WorkflowNodeRenderInfo = {
   title: string;

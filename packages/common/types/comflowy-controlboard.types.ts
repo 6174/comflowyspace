@@ -1,5 +1,4 @@
-import {type Node} from "reactflow";
-import { SDNode } from "./comfy-node.types";
+import { SDNode, WorkflowNodeProps } from "./comfy-node.types";
 
 /**
  * Controlboard Config Data
@@ -48,7 +47,7 @@ export type ControlBoardSubflowNodeConfig = {
 export type ControlBoardNodeProps = {
   nodeControl?: ControlBoardNodeConfig;
   onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
-  node: Node,
+  node: WorkflowNodeProps,
 }
 
 export type SubflowNodeWithControl = {
