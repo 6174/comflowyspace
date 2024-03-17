@@ -75,7 +75,7 @@ export function SubflowNode({
   )
 }
 
-function SubflowSlots({ nodesWithControl }: {
+export function SubflowSlots({ nodesWithControl }: {
   nodesWithControl: SubflowNodeWithControl[]
 }) {
   const inputs = nodesWithControl.reduce((acc, {inputs, title, id}) => {
@@ -112,11 +112,12 @@ function SubflowSlots({ nodesWithControl }: {
   )
 }
 
-function SubflowParams({ nodesWithControl, subflowNode }: {
+export function SubflowParams({ nodesWithControl, subflowNode, onChangeHandler }: {
   nodesWithControl: SubflowNodeWithControl[];
   subflowNode: NodeProps<{
     value: SDNode
   }>
+  onChangeHandler?: (val, fieldName) => void;
 }) {
   const fieldValues = useAppStore((st) => st.graph[subflowNode.id]?.fields || {});
   // console.log(fieldValues);
@@ -132,7 +133,7 @@ function SubflowParams({ nodesWithControl, subflowNode }: {
     })]
   }, []);
   const onNodeFieldChange = useAppStore((st) => st.onNodeFieldChange);
-  const _onChangeHandler = useCallback((val: any, fieldName: string) => onNodeFieldChange(subflowNode.id, fieldName, val), [onNodeFieldChange])
+  const _onChangeHandler = onChangeHandler || useCallback((val: any, fieldName: string) => onNodeFieldChange(subflowNode.id, fieldName, val), [onNodeFieldChange])
   return (
     <div className="node-params">
       {params.map(({ param, sdnode, title, id, widget }) => {
