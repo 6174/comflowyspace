@@ -1,14 +1,15 @@
 import { getNodeRenderInfo } from './node-rendering';
 import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, SDNode, WorkflowNodeProps } from '../types';
+import {type Node} from "reactflow";
 
 export const ControlBoardUtils = {
-  createControlboardInfoFromNodes(nodes: WorkflowNodeProps[]): ControlBoardConfig {
+  createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {
     const nodeList = nodes.map(ControlBoardUtils.createControlboardInfoFromNode);
     return {
       nodes: nodeList
     }
   },
-  createControlboardInfoFromNode(node: WorkflowNodeProps): ControlBoardNodeConfig {
+  createControlboardInfoFromNode(node: Node): ControlBoardNodeConfig {
     const id = node.id;
     const { params } = getNodeRenderInfo(node.data.value, node.data.widget);
     const fields = params.map(param => param.property);
@@ -19,7 +20,7 @@ export const ControlBoardUtils = {
     } as ControlBoardNodeConfig
   },
 
-  getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: WorkflowNodeProps[], graph?: Record<string, SDNode>): ControlBoardNodeProps[] {
+  getNodesToRender(controlboardConfig: ControlBoardConfig | undefined, nodes: Node[], graph?: Record<string, SDNode>): ControlBoardNodeProps[] {
     const nodesToRender: ControlBoardNodeProps[] = [];
 
     /**
@@ -47,12 +48,12 @@ export const ControlBoardUtils = {
     }
     return nodesToRender;
   },
-  autoSortNodes(nodes: WorkflowNodeProps[], graph: Record<string, SDNode> = {}): WorkflowNodeProps[] {
+  autoSortNodes(nodes: Node[], graph: Record<string, SDNode> = {}): Node[] {
     return nodes.sort((a, b) => {
       return getPriority(b) - getPriority(a);
     });
 
-    function getPriority(node: WorkflowNodeProps): number {
+    function getPriority(node: Node): number {
       const name = (node.data.widget.name + node.data.widget.display_name).toLowerCase()
       const isPositive = graph[node.id]?.isPositive;
       const isNegative = graph[node.id]?.isNegative;

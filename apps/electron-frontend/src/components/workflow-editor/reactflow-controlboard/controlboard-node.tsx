@@ -31,7 +31,7 @@ export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
         title={title}
         isPositive={isPositive}
         isNegative={isNegative}
-        node={node}
+        node={node as any}
         nodeError={nodeError}
       />
       {paramsToRender.map(({ property, input }) => (

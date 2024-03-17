@@ -4,6 +4,8 @@
   flex-direction: column;
   padding: 10px;
   :global {
-    
+    .content {
+      padding: 10px;
+    }
   }
 }

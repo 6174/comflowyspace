@@ -198,7 +198,7 @@ function DraggableControlNodeConfigItem({
         if (!checked) {
           node.fields = [];
         } else {
-          const {fields} = ControlBoardUtils.createControlboardInfoFromNode(data.node as any);
+          const {fields} = ControlBoardUtils.createControlboardInfoFromNode(data.node);
           node.fields = fields;
         }
         onChangeControlBoard(newControlData)
