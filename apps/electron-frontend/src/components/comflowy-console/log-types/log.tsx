@@ -26,7 +26,6 @@ export function Log({ level, title, log,  children, className}: {
       break;
   }
 
-  console.log("log date", log.data.createdAt);
   return (
     <div className={`${styles.consoleLogCard} log log-${logLevel} ${open ? "open" : "close"} ${className || ""}`}>
       <div className="log-header">

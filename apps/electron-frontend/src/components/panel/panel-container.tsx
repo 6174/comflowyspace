@@ -74,7 +74,6 @@ export function PanelsContainer(props: PanelContainerProps) {
     if (!dragger || !panelsVisible) {
       return;
     }
-    console.log("add hook");
     const onMousedown = (e) => {
       const startX = e.clientX;
       const panels = panelsRef.current;
@@ -169,7 +168,6 @@ export function PanelsContainer(props: PanelContainerProps) {
   const onChange = (key: string) => {
     setActivePanel(key);
     setPanelStateToLocalStorage({ activePanel: key });
-    console.log(key);
   };
 
   return (
