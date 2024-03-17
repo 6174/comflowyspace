@@ -50,7 +50,7 @@ export function SubflowNodeList(props: {id: number}) {
       try {
         const docs = await documentDatabaseInstance.getDocs();
         return docs.filter(doc => {
-          return doc.id !== currentDocId && doc.snapshot?.controlboard?.shareAsSubflowConfig?.shared
+          return doc.id !== currentDocId && doc.meta?.sharedAsSubflow
         });
       } catch (err) {
         console.log("fetch documents", err);

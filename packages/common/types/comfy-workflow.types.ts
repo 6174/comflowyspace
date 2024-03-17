@@ -7,6 +7,12 @@ import { ControlBoardConfig } from "./comflowy-controlboard.types";
 export type PersistedFullWorkflow = {
   title: string;
   id: string;
+  meta?: {
+    sharedAsSubflow?: boolean;
+    shareAsSubflowTitle?: string;
+    sharedAsApp?: boolean;
+    sharedAsApi?: boolean;
+  };
   thumbnail?: string;
   gallery?: PreviewImage[];
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "controlboard" | "connections">; // json format

@@ -23,7 +23,6 @@ export function ShareAsSubflow() {
   const savedControlBoardData = useAppStore(st => st.controlboard);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
   const [form] = Form.useForm<ShareAsSubflowFormProps>();
-
   const [nodesToRender, setNodesToRender] = useState<Node[]>([]);
 
   /**
@@ -68,6 +67,24 @@ export function ShareAsSubflow() {
     triggerChange(values);
   }, [form, savedControlBoardData, nodesToRender]);
 
+  const docMeta = useAppStore(st => st.persistedWorkflow?.meta);
+  const onDocAttributeChange = useAppStore(st => st.onDocAttributeChange);
+  const onToggleShare = useCallback(_.debounce((value: boolean) => {
+    onDocAttributeChange({
+      meta: {
+        ...docMeta,
+        sharedAsSubflow: value
+      }
+    })
+  }, 1000), [docMeta]);
+  const onChangeShareTitle = useCallback(_.debounce((title: string) => {
+    onDocAttributeChange({
+      meta: {
+        ...docMeta,
+        shareAsSubflowTitle: title
+      }
+    })
+  }, 1000), [docMeta]);
   return (
     <div className="share-as-subflow">
       <Form form={form} layout="vertical" autoComplete="off" onValuesChange={onFormChange} >
@@ -79,7 +96,9 @@ export function ShareAsSubflow() {
           name={"shared"}
           valuePropName="checked"
         >
-          <Switch size="small"/>
+          <Switch size="small" onChange={checked => {
+            onToggleShare(checked);
+          }}/>
         </Form.Item>
 
         <div className="section-title">
@@ -96,7 +115,9 @@ export function ShareAsSubflow() {
             label="Title"
             name={"title"}
           >
-            <Input placeholder="Click to input the title of the subflow"/>
+            <Input placeholder="Click to input the title of the subflow" onChange={ev => {
+              onChangeShareTitle(ev.target.value.trim());
+            }}/>
           </Form.Item>
 
           <Form.Item<ShareAsSubflowFormProps>
