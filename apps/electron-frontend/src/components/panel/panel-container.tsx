@@ -4,8 +4,6 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async";
 import { Tabs, TabsProps } from "antd";
-import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-process-manager-async";
-import { listenElectron } from "@/lib/electron-bridge";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { useRouter } from "next/router";
@@ -174,8 +172,6 @@ export function PanelsContainer(props: PanelContainerProps) {
     console.log(key);
   };
 
-  console.log("panelvisible", panelsVisible);
-  
   return (
     <div className={styles.panelsWrapper}>
       <div className="main-content box" ref={mainRef}>
@@ -262,6 +258,5 @@ function getPanelKey(prefix: string): string {
   }
 
   const key = `${prefix}-${pathname}`;
-  console.log(key);
   return key;
 }

@@ -6,6 +6,51 @@
   :global {
     .content {
       padding: 10px;
+      overflow-y: auto;
+    }
+    .group {
+      border: solid 1px var(--borderColor);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 20px;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .ant-form {
+      .ant-form-item-label label{
+        font-size: 12px;
+      }
+      input, textarea {
+        font-size: 12px;
+      }
+    }
+    .section-title {
+      font-size: 14px;
+    }
+    .share-as-subflow-node {
+      .node-header {
+        padding: 0;
+        margin-left: -4px;
+        margin-bottom: 6px;
+        .node-title {
+          display: flex;
+          justify-content: flex-start;
+          .inner {
+            display: flex;
+            align-items: center;
+          }
+        }
+      }
+    }
+
+    .preview-subflow {
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #060608;
+      border-radius: 8px;
+      margin: 10px 0;
     }
   }
 }

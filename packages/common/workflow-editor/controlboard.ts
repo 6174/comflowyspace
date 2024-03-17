@@ -29,7 +29,7 @@ export const ControlBoardUtils = {
      * else:
      *  - render all nessessary nodes
      */
-    if (!controlboardConfig) {
+    if (!controlboardConfig || !controlboardConfig.nodes || controlboardConfig.nodes.length === 0) {
       ControlBoardUtils.autoSortNodes(nodes, graph).forEach(node => {
         nodesToRender.push({
           node

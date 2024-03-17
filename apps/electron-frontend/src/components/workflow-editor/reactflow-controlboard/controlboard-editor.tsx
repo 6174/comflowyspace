@@ -172,7 +172,6 @@ function DraggableControlNodeConfigItem({
 
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
-  const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
 
   if (params.length === 0) {
     return <></>
@@ -210,7 +209,7 @@ function DraggableControlNodeConfigItem({
           isPositive={isPositive}
           isNegative={isNegative}
           node={data.node}
-          nodeError={nodeError}
+          nodeError={null}
         />
         <NodeControlParamsEditor params={params} node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={(newNodeCtrl) => {
           const newControlData = _.cloneDeep(controlboardData);
