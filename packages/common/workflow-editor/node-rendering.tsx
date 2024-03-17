@@ -19,13 +19,13 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     widget.input.required.upload = ["IMAGEUPLOAD"];
   }
 
-  for (const [property, input] of Object.entries(widget.input.required)) {
+  for (const [property, input] of Object.entries(widget?.input?.required || {})) {
     if (!inputKeys.includes(property)) {
       params.push({ property, input })
     }
   }
 
-  if (widget.input.optional) {
+  if (widget && widget?.input?.optional) {
     for (const [property, input] of Object.entries(widget.input.optional)) {
       if (!inputKeys.includes(property)) {
         params.push({ property, input })
@@ -34,7 +34,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   }
 
   // If it is a primitive node , add according primitive type params
-  if (Widget.isPrimitive(widget.name)) {
+  if (Widget.isPrimitive(widget?.name)) {
     const paramType = node.outputs[0].type;
     const extraInfo: any = {};
     if (paramType === "STRING") {
@@ -88,23 +88,20 @@ export function useSubflowNodeRenderingInfo(node: NodeProps<{
 }>): SubflowRenderingInfo {
   const sdSubflowNode = node.data.value;
   const nodeId = node.id;
-  const { flowId, fields, custom_fields, images} = sdSubflowNode;
+  const { flowId } = sdSubflowNode;
+
   const workflow = useSubflowStore(st => st.mapping[flowId!]);
   const loadSubWorkfow = useSubflowStore(st => st.loadSubWorkfow);
   const [nodeTitle, setNodeTitle] = useState("Subflow");
   const [nodesWithControl, setNodesWithControl] = useState<SubflowNodeWithControl[]>();
-  const widgets = useAppStore(st => st.widgets);
   const parseSubflow = useSubflowStore(st => st.parseSubflow);
 
   useEffect(() => {
-    // //  = parseSubflow(workflow, widgets);
-    // setNodesWithControl(nodesWithControlInfo);
-    // setNodeTitle(title || "Subflow");
-    // const inputs = nodesWithControlInfo.reduce((acc, node) => {
-    //   const nodeInputs = [];
-    //   return acc.concat([]);
-    // }, []);
-  }, [workflow, widgets]);
+    if (!workflow) {return};
+    const {nodesWithControlInfo, title, description} = parseSubflow(workflow.id);
+    setNodesWithControl(nodesWithControlInfo);
+    setNodeTitle(title);
+  }, [workflow]);
 
   useEffect(() => {
     if (!workflow && flowId) {

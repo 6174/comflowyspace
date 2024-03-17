@@ -143,6 +143,10 @@ export function ShareAsSubflow() {
 
 function ShareAsSubflowNodeEditor({ node, index }: { node: Node, index }) {
   const { title, params, inputs, outputs, widget } = getNodeRenderInfo(node.data.value, node.data.widget);
+
+  /**
+   * @TODO this filter will filt out subflow node, can add this feature in later versions
+   */
   if (params.length === 0 && inputs.length === 0 && outputs.length === 0) {
     return null;
   }

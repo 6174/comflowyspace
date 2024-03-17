@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, PersistedWorkflowNode } from "../types";
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, PersistedWorkflowNode, SubflowNodeWithControl } from "../types";
 import { documentDatabaseInstance } from '../storage';
 import { getNodeRenderInfo } from '../workflow-editor/node-rendering';
 import _ from 'lodash';
@@ -24,7 +24,7 @@ export interface SubflowStore {
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onNodeInProgress: (id: NodeId, progress: number) => void;
   loadSubWorkfow: (flowId: string) => Promise<PersistedFullWorkflow | undefined>;
-  parseSubflow: (id: string) => void;
+  parseSubflow: (id: string) => { nodesWithControlInfo: SubflowNodeWithControl[], title: string, description: string };
 }
 
 export const useSubflowStore = create<SubflowStore>((set, get) => ({
@@ -136,19 +136,28 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
       workflowStates: _.cloneDeep(workflowStates)
     });
   },
-  parseSubflow: (id) => {
+  parseSubflow: (id): { nodesWithControlInfo: SubflowNodeWithControl[], title: string, description: string } => {
     const st = get();
     const doc = st.mapping[id];
+    if (!doc) {
+      return {
+        nodesWithControlInfo: [],
+        title: "Subflow",
+        description: ""
+      }
+    }
+
     const widgets = st.widgets;
     const allNodes = Object.values(doc.snapshot.nodes);
     const shareAsSubflowConfig = doc.snapshot.controlboard?.shareAsSubflowConfig!;
     const { title, description, nodes } = shareAsSubflowConfig;
 
     const nodesWithControlInfo = nodes.map(node => {
+      // @TODO: 这里需要考虑节点又是 subflow 的情况，不过暂时可以不考虑它，也就是说不能将 subflow 放在 controlboard 中当做参数
       const id = node.id;
       const perssitedNode = allNodes.find(n => n.id === id) as PersistedWorkflowNode;
       const widget = widgets[perssitedNode.value.widget];
-      const {inputs, outputs, params} = getNodeRenderInfo(perssitedNode.value, widgets[perssitedNode.value.widget]);
+      const {inputs, outputs, title, params} = getNodeRenderInfo(perssitedNode.value, widgets[perssitedNode.value.widget]);
 
       const paramsToRender = params.filter(param => {
         if (!node.fields) {
@@ -172,7 +181,9 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
       });
 
       return {
+        id,
         sdnode: perssitedNode?.value,
+        title,
         nodeControl: node,
         params: paramsToRender,
         inputs: inputsToRender,
@@ -183,8 +194,8 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
 
     return {
       nodesWithControlInfo,
-      title,
-      description
+      title: title || doc.title || "SubflowNode",
+      description: description || ""
     }
   }
 }));

@@ -1,5 +1,7 @@
 import { SDNode } from "./comfy-node.types";
 import {Node} from "reactflow";
+import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput, Input } from "./comfy-props.types";
+import { Widget } from "./comfy-widget.types";
 /**
  * Controlboard Config Data
  */
@@ -53,6 +55,15 @@ export type ControlBoardNodeProps = {
 }
 
 export type SubflowNodeWithControl = {
+  id: string,
   sdnode: SDNode,
-  nodeControl: ControlBoardNodeConfig
+  title: string,
+  nodeControl: ControlBoardNodeConfig,
+  inputs: ComfyUIWorkflowNodeInput[],
+  outputs: ComfyUIWorkflowNodeOutput[],
+  widget: Widget,
+  params: {
+    property: string;
+    input: Input;
+  }[]
 }

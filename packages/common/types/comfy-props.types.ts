@@ -231,3 +231,11 @@ export enum ContrlAfterGeneratedValues {
 }
 
 export const ContrlAfterGeneratedValuesOptions = Object.values(ContrlAfterGeneratedValues);
+
+export function getSubflowFieldId(nodeId: string, fieldName: string): string{
+  return `${nodeId}__${fieldName}`
+}
+
+export function getSubflowSlotId(nodeId: string, slotName: string): string {
+  return `${nodeId}__${slotName}`
+}
