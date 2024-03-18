@@ -62,7 +62,7 @@ export default {
       "value": {
         "widget": "CheckpointLoaderSimple",
         "fields": {
-          "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+          "ckpt_name": "v1-5-dream-shaper.safetensors"
         },
         "inputs": [],
         "outputs": [
