@@ -6,6 +6,7 @@ import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import Color from "color";
 import { ComflowyNodeResizer, useNodeAutoResize } from "../reactflow-node/reactflow-node-resize";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { Radio } from "antd";
 
 /**
  * group node
@@ -16,7 +17,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const id = props.id;
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
 
-  const groupState = useAppStore(st => st.graph[id]?.properties?.groupState || GroupNodeState.Collapsed);
+  const groupState = useAppStore(st => st.graph[id]?.properties?.groupState || GroupNodeState.Expaned);
   const onNodePropertyChange = useAppStore(st => st.onNodePropertyChange);
   const onChangeGroupState = useCallback((v) => {
     onNodePropertyChange(id, "groupState", v);
@@ -51,6 +52,15 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
             <h2 className="node-title">
               {title}
             </h2>
+            <div className="actions">
+              <Radio.Group value={groupState} onChange={ev => {
+                onChangeGroupState(ev.target.value);
+              }}>
+                <Radio.Button value={GroupNodeState.Expaned}>E</Radio.Button>
+                <Radio.Button value={GroupNodeState.CollapsedAsNode}>CAN</Radio.Button>
+                <Radio.Button value={GroupNodeState.Collapsed}>CA</Radio.Button>
+              </Radio.Group>
+            </div>
           </div>
           <div className="node-main" ref={mainRef}>
           </div>
