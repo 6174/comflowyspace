@@ -57,8 +57,8 @@ export default function WorkflowEditor() {
   useCopyPaste(ref, reactFlowInstance);
   const { menu, setMenu, onSelectionContextMenu } = useWorkflowNodeContextMenu(ref);
   const { widgetTreeContext, setWidgetTreeContext, onPanelDoubleClick, onPanelClick } = useWorkflowPanelContextMenu(edgeUpdating);
-  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragAnDropNode()
-  const { onDragOver, onDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
+  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragDropNode()
+  const { onPaneDragOver, onPaneDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
 
   /**
    * app state
@@ -184,12 +184,12 @@ export default function WorkflowEditor() {
             edgeUpdating.current = false;
           }, 100)
         }}
-        onDrop={onDrop}
+        onDrop={onPaneDrop}
+        onDragOver={onPaneDragOver}
         onMoveStart={ev => {
           onTransformStart();
         }}
         onMoveEnd={tranformEnd}
-        onDragOver={onDragOver}
         onPaneClick={onPaneClick}
         onNodeContextMenu={(ev, node) => {
           onSelectionContextMenu(ev, [node]);
@@ -351,8 +351,6 @@ function useWorkflowPanelContextMenu(edgeUpdating) {
   }
 }
 
-
-
 function useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext) {
   const widgets = useAppStore(st => st.widgets);
   const onAddNode = useAppStore(st => st.onAddNode);
@@ -389,8 +387,8 @@ function useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext) {
   );
 
   return {
-    onDragOver,
-    onDrop
+    onPaneDragOver: onDragOver,
+    onPaneDrop: onDrop
   }
 
 }
@@ -429,7 +427,7 @@ function useLiveDoc(inited) {
   * node drag enter and leave on group node
   * https://pro-examples.reactflow.dev/dynamic-grouping
   */
-function useDragAnDropNode() {
+function useDragDropNode() {
   const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
     console.log("drag start");
   }, []);
@@ -570,8 +568,4 @@ function useCopyPaste(ref, reactFlowInstance) {
       document.removeEventListener('paste', onPaste);
     }
   }, [ref])
-}
-
-function useContextMenu() {
-
 }
