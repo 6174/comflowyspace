@@ -51,7 +51,6 @@ export type PersistedWorkflowNode = {
     height: number
   },
   images?: PreviewImage[],
-  parent?: NodeId;
   position: XYPosition
 }
 
@@ -75,6 +74,7 @@ export interface SDNode {
   custom_inputs?: string[];
   custom_outputs?: string[];
   flowId?: string;
+  parent?: NodeId;
 }
 
 export const SUBFLOW_WIDGET_TYPE_NAME = 'Subflow'

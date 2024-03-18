@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi } from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node} from 'reactflow';
 import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -22,6 +22,8 @@ import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
 import { GroupNode } from './reactflow-group/reactflow-group';
+import {BBox} from "@comflowy/common/types/math.types";
+import { isBoxContain } from "@comflowy/common/utils/math";
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
@@ -269,28 +271,28 @@ export default function WorkflowEditor() {
       })
     }
   }, [setWidgetTreeContext]);
-
-  const edgeUpdateSuccessful = React.useRef(true);
-  const edgetConnectSuccessful = React.useRef(true);
-  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
-  const edgeUpdating = React.useRef(false);
-
   const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
     !edgeUpdating.current && setWidgetTreeContext(null)
   }, []);
-
   React.useEffect(() => {
     document.oncontextmenu = function () {
       return false;
     }
   }, []);
 
+  const edgeUpdateSuccessful = React.useRef(true);
+  const edgetConnectSuccessful = React.useRef(true);
+  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
+  const edgeUpdating = React.useRef(false);
+ 
   const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
   React.useEffect(() => {
     if (ref.current) {
       setToolsUIVisible(true);
     }
   }, [ref])
+
+  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragAnDropNode()
 
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
@@ -386,17 +388,10 @@ export default function WorkflowEditor() {
         onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
         {...selectionModeProps}
-        onNodeDrag={(ev, node) => {
-          // https://pro-examples.reactflow.dev/dynamic-grouping
-          console.log("dragging", node.id);
-        }}
         selectNodesOnDrag={false}
-        onNodeDragStart={ev => {
-          onChangeDragingAndResizingState(true);
-        }}
-        onNodeDragStop={ev => {
-          onChangeDragingAndResizingState(false);
-        }}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDragStop={onNodeDragStop}
         onInit={async (instance) => {
           try {
             setReactFlowInstance(instance);
@@ -443,4 +438,83 @@ function checkWebGLStatus() {
   // } else {
   //   console.log('WebGL is disabled');
   // }
+}
+
+
+function useDragAnDropNode() {
+  /**
+   * node drag enter and leave on group node
+   * https://pro-examples.reactflow.dev/dynamic-grouping
+   */
+  const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    console.log("drag start");
+  }, []);
+  const onNodeDrag = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    const nodes = useAppStore.getState().nodes;
+    const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
+    const nodeBox: BBox = {
+      width: node.width,
+      height: node.height,
+      x: node.position.x,
+      y: node.position.y
+    }
+    const groupNode = groupNodes.find(n => {
+      const groupBox: BBox = {
+        width: n.width,
+        height: n.height,
+        x: n.position.x,
+        y: n.position.y
+      }
+      return isBoxContain(groupBox, nodeBox);
+    });
+
+    if (groupNode) {
+      useAppStore.setState({
+        draggingOverGroupId: groupNode.id
+      })
+    } else {
+      useAppStore.setState({
+        draggingOverGroupId: null
+      })
+    }
+    console.log("drag move node", ev, node.position);
+  }, []);
+
+  const onNodeDragStop = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    const st = useAppStore.getState();
+    const draggingOverGroupId = st.draggingOverGroupId;
+    const sdnode = node.data.value as SDNode;
+    /**
+     * if node already in a group, then do nothing
+     */
+    if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
+      return;
+    }
+
+    /**
+     * if node already in a group, and current dragging over group is null, then remove the node from the group
+     */
+    if (sdnode.parent && !draggingOverGroupId) {
+      st.onNodeAttributeChange(node.id, {
+        parent: null
+      });
+      return;
+    }
+
+    /**
+     * if node is not in a group, and current dragging over group is not null, then add the node to the group
+     */
+    if (!sdnode.parent && draggingOverGroupId) {
+      st.onNodeAttributeChange(node.id, {
+        parent: draggingOverGroupId
+      });
+      return;
+    }
+  }, []);
+
+  return {
+    onNodeDragStart,
+    onNodeDrag,
+    onNodeDragStop
+  }
 }

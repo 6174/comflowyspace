@@ -56,6 +56,10 @@ export interface AppState {
   promptError?: ComfyUIExecuteError
   previewedImageIndex?: number
 
+  // group control
+  draggingOverGroupId?: string;
+  draggingNodeId?: string;
+
   // document mutation handler
   onSyncFromYjsDoc: () => void;
   updateErrorCheck: () => void;
@@ -140,7 +144,7 @@ export const AppState = {
 
     const width = node.dimensions?.width;
     const height = node.dimensions?.height;
-
+    const parent = node.value.parent;
     const item: Node = {
       id: node.id + "",
       data: {
@@ -155,14 +159,15 @@ export const AppState = {
       height,
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
-      parentNode: node.parent,
+      parentNode: parent,
+      expandParent: true
     }
 
     /**
      * toggle group visile 
      */
-    if (node.parent) {
-      const parentNode = state.nodes.find(n => n.id === node.parent);
+    if (parent) {
+      const parentNode = state.nodes.find(n => n.id === parent);
       const parentState = parentNode?.data?.value?.properties?.groupState as GroupNodeState || GroupNodeState.Expaned;
       if (parentState !== GroupNodeState.Expaned) {
         item.hidden = true;
