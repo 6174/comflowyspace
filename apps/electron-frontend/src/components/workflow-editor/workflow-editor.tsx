@@ -30,9 +30,40 @@ const nodeTypes = {
   [NODE_GROUP]: GroupNode
 }
 export default function WorkflowEditor() {
+  /**
+   * basic properties
+   */
   const [inited, setInited] = React.useState(false);
+  const ref = React.useRef(null);
+  const storeApi = useStoreApi();
+  const { id, watchedDoc } = useLiveDoc(inited);
+  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
   const onInitExtensionState = useExtensionsState((st) => st.onInit);
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onNewClientId, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
+  React.useEffect(() => {
+    if (ref.current) {
+      setToolsUIVisible(true);
+    }
+  }, [ref])
+
+  const edgeUpdateSuccessful = React.useRef(true);
+  const edgetConnectSuccessful = React.useRef(true);
+  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
+  const edgeUpdating = React.useRef(false);
+
+  /**
+   * core behaviors
+   */
+  useCopyPaste(ref, reactFlowInstance);
+  const { menu, setMenu, onSelectionContextMenu } = useWorkflowNodeContextMenu(ref);
+  const { widgetTreeContext, setWidgetTreeContext, onPanelDoubleClick, onPanelClick } = useWorkflowPanelContextMenu(edgeUpdating);
+  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragAnDropNode()
+  const { onDragOver, onDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
+
+  /**
+   * app state
+   */
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onConnect, onInit, onNewClientId} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
@@ -44,7 +75,6 @@ export default function WorkflowEditor() {
     onDeleteNodes: st.onDeleteNodes,
     onConnectStart: st.onConnectStart,
     onConnectEnd: st.onConnectEnd,
-    onAddNode: st.onAddNode,
     onEdgesDelete: st.onEdgesDelete,
     onNodesChange: st.onNodesChange,
     onEdgesChange: st.onEdgesChange,
@@ -55,59 +85,13 @@ export default function WorkflowEditor() {
     onConnect: st.onConnect,
     inprogressNodeId: st.nodeInProgress?.id,
     onInit: st.onInit,
-    onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
   }), shallow)
+
+  /**
+   * node and edge rendering 
+   */
+  const { nodesWithStyle, styledEdges } = useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform);
   
-  const nodesWithStyle = nodes.map(node => {
-    return {
-      ...node,
-      style: {
-        ...node.style,
-        width: node.width,
-        height: node.height
-      }
-    }
-  });
-
-  const styledEdges = edges.map(edge => {
-    return {
-      ...edge,
-      animated: edge.source === inprogressNodeId,
-      style: {
-        strokeWidth: 2.5 / transform,
-        opacity: edge.selected ? 1 : .6,
-        stroke: Input.getInputColor([edge.sourceHandle] as any),
-      },
-    }
-  });
-
-  const {id, watchedDoc} = useLiveDoc(inited);
-  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
-
-
-  const ref = React.useRef(null);
-  const [menu, setMenu] = React.useState(null);
-  const onSelectionContextMenu = React.useCallback(
-    (event, nodes) => {
-      // Prevent native context menu from showing
-      event.preventDefault();
-
-      // Calculate position of the context menu. We want to make sure it
-      // doesn't get positioned off-screen.
-      const pane = ref.current.getBoundingClientRect();
-      setMenu({
-        nodes,
-        top: event.clientY < pane.height - 200 && event.clientY,
-        left: event.clientX < pane.width - 200 && event.clientX,
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
-      });
-    },
-    [setMenu],
-  );
-
-  const storeApi = useStoreApi();
   const tranformEnd = React.useCallback(() => {
     const transform = storeApi.getState().transform;
     onTransformEnd(transform[2]);
@@ -118,56 +102,6 @@ export default function WorkflowEditor() {
     setMenu(null)
   }, [setMenu]);
   
-  const selectionModeProps = selectionMode === "figma" ? {
-    selectionOnDrag: true,
-    panOnScroll: true,
-    panOnDrag: [1, 2],
-    selectionMode: SelectionMode.Partial
-  }  : {};
-
-  /**
-   * On double click panel to show the widget tree
-   */
-  const [widgetTreeContext, setWidgetTreeContext] = React.useState<WidgetTreeOnPanelContext>();
-  const onPanelDoubleClick = React.useCallback((ev: React.MouseEvent) => {
-    const target = ev.target as HTMLElement;
-    if (target.classList.contains("react-flow__pane")) {
-      setWidgetTreeContext({
-        position: {
-          x: ev.clientX,
-          y: ev.clientY
-        },
-        filter: (widget) => true,
-        showCategory: true,
-        onNodeCreated: () => {
-          setWidgetTreeContext(null);
-        }
-      })
-    }
-  }, [setWidgetTreeContext]);
-  const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
-    !edgeUpdating.current && setWidgetTreeContext(null)
-  }, []);
-  React.useEffect(() => {
-    document.oncontextmenu = function () {
-      return false;
-    }
-  }, []);
-
-  const edgeUpdateSuccessful = React.useRef(true);
-  const edgetConnectSuccessful = React.useRef(true);
-  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
-  const edgeUpdating = React.useRef(false);
- 
-  const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
-  React.useEffect(() => {
-    if (ref.current) {
-      setToolsUIVisible(true);
-    }
-  }, [ref])
-
-  useCopyPaste(ref, reactFlowInstance);
-  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragAnDropNode()
 
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
@@ -262,7 +196,7 @@ export default function WorkflowEditor() {
         }}
         onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
-        {...selectionModeProps}
+        {...useSelectionModeRelatedProps(selectionMode)}
         selectNodesOnDrag={false}
         onNodeDrag={onNodeDrag}
         onNodeDragStart={onNodeDragStart}
@@ -305,8 +239,121 @@ export default function WorkflowEditor() {
   )
 }
 
+function useSelectionModeRelatedProps(selectionMode) {
+  return selectionMode === "figma" ? {
+    selectionOnDrag: true,
+    panOnScroll: true,
+    panOnDrag: [1, 2],
+    selectionMode: SelectionMode.Partial
+  } : {};
+}
 
-function useDragAnDropToCreateNode(reactFlowInstance) {
+function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
+  const nodesWithStyle = nodes.map(node => {
+    return {
+      ...node,
+      style: {
+        ...node.style,
+        width: node.width,
+        height: node.height
+      }
+    }
+  });
+
+  const styledEdges = edges.map(edge => {
+    return {
+      ...edge,
+      animated: edge.source === inprogressNodeId,
+      style: {
+        strokeWidth: 2.5 / transform,
+        opacity: edge.selected ? 1 : .6,
+        stroke: Input.getInputColor([edge.sourceHandle] as any),
+      },
+    }
+  });
+
+  return {
+    nodesWithStyle,
+    styledEdges
+  }
+
+}
+
+/**
+ * workfow node context menu
+ */
+
+function useWorkflowNodeContextMenu(ref) {
+  const [menu, setMenu] = React.useState(null);
+  const onSelectionContextMenu = React.useCallback(
+    (event, nodes) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const pane = ref.current.getBoundingClientRect();
+      setMenu({
+        nodes,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX,
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu],
+  );
+
+  return {
+    menu,
+    setMenu,
+    onSelectionContextMenu
+  }
+}
+
+/**
+ * workflow panel context menu
+ */
+function useWorkflowPanelContextMenu(edgeUpdating) {
+  const [widgetTreeContext, setWidgetTreeContext] = React.useState<WidgetTreeOnPanelContext>();
+  const onPanelDoubleClick = React.useCallback((ev: React.MouseEvent) => {
+    const target = ev.target as HTMLElement;
+    if (target.classList.contains("react-flow__pane")) {
+      setWidgetTreeContext({
+        position: {
+          x: ev.clientX,
+          y: ev.clientY
+        },
+        filter: (widget) => true,
+        showCategory: true,
+        onNodeCreated: () => {
+          setWidgetTreeContext(null);
+        }
+      })
+    }
+  }, [setWidgetTreeContext]);
+
+  const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
+    !edgeUpdating.current && setWidgetTreeContext(null)
+  }, []);
+
+  React.useEffect(() => {
+    document.oncontextmenu = function () {
+      return false;
+    }
+  }, []);
+  return {
+    widgetTreeContext,
+    setWidgetTreeContext,
+    onPanelDoubleClick,
+    onPanelClick
+  }
+}
+
+
+
+function useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext) {
   const widgets = useAppStore(st => st.widgets);
   const onAddNode = useAppStore(st => st.onAddNode);
   const onDragOver = React.useCallback((event) => {
@@ -340,6 +387,11 @@ function useDragAnDropToCreateNode(reactFlowInstance) {
     },
     [reactFlowInstance, widgets],
   );
+
+  return {
+    onDragOver,
+    onDrop
+  }
 
 }
 
