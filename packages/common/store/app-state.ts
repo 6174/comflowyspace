@@ -447,14 +447,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     AppState.persistUpdateDoc(st, doc)
     onSyncFromYjsDoc();
   },
-  onEdgesChange: (changes) => {
-    console.log("on edge change", changes);
+  onEdgesChange: (changes) => {;
     set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    // all edge changes are catched in other methods
-    // const st = get();
-    // const { doc } = st;
-    // WorkflowDocumentUtils.onEdgesChange(doc, changes);
-    // AppState.persistUpdateDoc(st, doc)
   },
   onEdgeUpdateStart: ()=> {
     console.log("on Edge Update Start");

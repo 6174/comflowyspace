@@ -438,9 +438,9 @@ function useDragDropNode(ref) {
   const mousedownRef = React.useRef(false);
   const draggingRef = React.useRef(false);
   const selectionNodesRef = React.useRef<Node[]>([]);
+  const onNodeAttributeChange = useAppStore(st => st.onNodeAttributeChange);
   
   const onMouseDown = React.useCallback(() => {
-    console.log("mousedown", mousedownRef.current)
     mousedownRef.current = true;
   }, []);
 
@@ -453,14 +453,22 @@ function useDragDropNode(ref) {
       }
 
       draggingRef.current = true;
-      selectionNodesRef.current = selectionNodes
 
       // calculate the bound for all nodes;
-      const bound = getNodesBounds(selectionNodes)
       const nodes = useAppStore.getState().nodes;
+      const realtimeNodes = selectionNodes.map(n => nodes.find(node => node.id === n.id));
+
+      selectionNodesRef.current = realtimeNodes;
+
+      const bound = getNodesBounds(realtimeNodes)
+      // console.log(selectionNodes[0].position, realtimeNodes[0].position)
+
       const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
       const groupNode = groupNodes.find(n => {
-        return isRectContain(getNodesBounds([n]), bound);
+        const groupBound = getNodesBounds([n]);
+        const ret = isRectContain(groupBound, bound);
+        // console.log(ret, groupBound, bound, selectionNodes.map(n => n.id));
+        return ret;
       });
 
       if (groupNode) {
@@ -476,7 +484,6 @@ function useDragDropNode(ref) {
   }, []);
   
   const onMouseUp = React.useCallback(() => {
-    console.log("mouseup");
     mousedownRef.current = false;
     const selectionNodes = selectionNodesRef.current;
     if (draggingRef.current && selectionNodes.length > 0) {
@@ -489,7 +496,10 @@ function useDragDropNode(ref) {
         draggingOverGroupId: null
       });
 
+      const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
+
       selectionNodes.forEach(node => {
+        const st = useAppStore.getState();
         const sdnode = node.data.value as SDNode;
         /**
          * if node already in a group, then do nothing
@@ -501,10 +511,10 @@ function useDragDropNode(ref) {
         /**
          * if node already in a group, and current dragging over group is null, then remove the node from the group
         */
-        if (sdnode.parent && !draggingOverGroupId) {
+        if (sdnode.parent && !draggingOverGroup) {
           const draggingOverGroup = st.nodes.find(n => n.id === sdnode.parent);
           getNodePositionOutOfGroup(node, draggingOverGroup);
-          st.onNodeAttributeChange(node.id, {
+          onNodeAttributeChange(node.id, {
             parent: null,
             position: {
               x: node.position.x + draggingOverGroup.position.x,
@@ -517,14 +527,12 @@ function useDragDropNode(ref) {
         /**
          * if node is not in a group, and current dragging over group is not null, then add the node to the group
          */
-        if (!sdnode.parent && draggingOverGroupId) {
-          const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
+        if (!sdnode.parent && draggingOverGroup) {
           const realPosition = getNodePositionInGroup(node, draggingOverGroup);
           console.log("realPosition", realPosition);
-          st.onNodeAttributeChange(node.id, {
+          onNodeAttributeChange(node.id, {
             parent: draggingOverGroupId,
             position: realPosition
-            // position: {
             //   x: 0,//node.position.x - draggingOverGroup.position.x,
             //   y: 0//node.position.y - draggingOverGroup.position.y
             // }
@@ -534,7 +542,7 @@ function useDragDropNode(ref) {
       })
     }
     
-  }, []);
+  }, [onNodeAttributeChange]);
 
 
   React.useEffect(() => {
