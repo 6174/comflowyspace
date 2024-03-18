@@ -6,8 +6,9 @@ import { NodeError } from "../reactflow-node/reactflow-node-errors";
 import { type Node, useReactFlow } from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
 import { ControlBoardNodeProps, WorkflowNodeRenderInfo } from "@comflowy/common/types";
+import React from "react";
 
-export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
+export const ControlBoardNode = React.memo(({ nodeControl, node }: ControlBoardNodeProps) => {
   const id = node.id;
   const { title, params, widget } = getNodeRenderInfo(node.data.value, node.data.widget);
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
@@ -39,9 +40,9 @@ export function ControlBoardNode({ nodeControl, node }: ControlBoardNodeProps) {
       ))}
     </div>
   )
-}
+});
 
-export function NodeHeader({ widget, title, isPositive, isNegative, node, nodeError }: Partial<WorkflowNodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) {
+export const NodeHeader = React.memo(({ widget, title, isPositive, isNegative, node, nodeError }: Partial<WorkflowNodeRenderInfo> & { node: Node, nodeError: any, isPositive?: boolean, isNegative?: boolean }) => {
   const { setCenter } = useReactFlow();
   return (
     <div className="node-header">
@@ -63,4 +64,4 @@ export function NodeHeader({ widget, title, isPositive, isNegative, node, nodeEr
       <div className="node-control"></div>
     </div>
   )
-}
+});

@@ -18,7 +18,7 @@ import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, Work
  * @returns 
  */
 export function EditControlBoard(props: {onFinish: () => void}) {
-  const nodes = useAppStore(st => st.nodes);
+  const nodeIds = useAppStore(st => st.nodes.join(","));
   const [allNodes, setAllNodes] = useState<ControlBoardNodeProps[]>([]);
   
   /**
@@ -39,6 +39,7 @@ export function EditControlBoard(props: {onFinish: () => void}) {
   }, [savedControlBoardData]);
 
   useEffect(() => {
+    const nodes = useAppStore.getState().nodes;
     let allNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
       return {
         node
@@ -67,7 +68,7 @@ export function EditControlBoard(props: {onFinish: () => void}) {
       setControlBoardData(ControlBoardUtils.createControlboardInfoFromNodes(allNodes.map(n => n.node)));
       setAllNodes(allNodes);
     }
-  }, [nodes, controlboardData]);
+  }, [nodeIds, controlboardData]);
 
   console.log("control board Data", allNodes);
 

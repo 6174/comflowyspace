@@ -11,6 +11,7 @@ import _ from "lodash";
 import Color from "color";
 import { SubflowParams, SubflowSlots } from "../reactflow-node/reactflow-subflow-node";
 import { parseSubflow } from "@comflowy/common/store/subflow-state";
+import React from "react";
 
 type ShareAsSubflowFormProps = ShareAsSubflowConfig;
 
@@ -21,7 +22,7 @@ type ShareAsSubflowFormProps = ShareAsSubflowConfig;
  * @returns 
  */
 export function ShareAsSubflow() {
-  const nodes = useAppStore(st => st.nodes);
+  const nodeIds = useAppStore(st => st.nodes.join(","));
   const savedControlBoardData = useAppStore(st => st.controlboard);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
   const [form] = Form.useForm<ShareAsSubflowFormProps>();
@@ -49,12 +50,14 @@ export function ShareAsSubflow() {
     onChangeControlBoard(newControlboardData)
   }, 1000), [onChangeControlBoard, savedControlBoardData, nodesToRender]);
 
+  // for performance consideration
   /**
    * 1) Sort nodes 
    * 2) Consider node order if there is new node come, new node should append after old nodes
    * 3) Remove deleted nodes in config
    */
   useEffect(() => {
+    const nodes = useAppStore.getState().nodes;
     const nodesToRender = ControlBoardUtils.autoSortNodes(nodes);
     const subflowConfigNodes = (savedControlBoardData?.shareAsSubflowConfig?.nodes || []).map(node => {
       return nodes.find(n => n.id === node.id);
@@ -62,7 +65,7 @@ export function ShareAsSubflow() {
     const otherNodes = nodesToRender.filter(node => !subflowConfigNodes.find(n => n.id === node.id));
     setNodesToRender([...subflowConfigNodes, ...otherNodes]);
     form.setFieldsValue(savedControlBoardData?.shareAsSubflowConfig || {});
-  }, [nodes, savedControlBoardData]);
+  }, [nodeIds, savedControlBoardData]);
 
   const onFormChange = useCallback(() => {
     const values = form.getFieldsValue();
@@ -142,8 +145,7 @@ export function ShareAsSubflow() {
   )
 }
 
-
-function ShareAsSubflowNodeEditor({ node, index }: { node: Node, index }) {
+const ShareAsSubflowNodeEditor = React.memo(({ node, index }: { node: Node, index }) => {
   const { title, params, inputs, outputs, widget } = getNodeRenderInfo(node.data.value, node.data.widget);
 
   /**
@@ -206,9 +208,9 @@ function ShareAsSubflowNodeEditor({ node, index }: { node: Node, index }) {
       )}
     </div>
   )
-}
+})
 
-function PreviewSubflowNode() {
+const PreviewSubflowNode = React.memo(() => {
   const savedControlBoardData = useAppStore(st => st.controlboard);
   const workflow = useAppStore(st => st.persistedWorkflow);
   const {title} = savedControlBoardData?.shareAsSubflowConfig || {nodes: []};
@@ -241,4 +243,4 @@ function PreviewSubflowNode() {
       </div>
     </div>
   )
-}
+});

@@ -1,3 +1,4 @@
+import { AppState, useAppStore } from "@comflowy/common/store/app-state";
 import { PersistedWorkflowNode, Widget } from "@comflowy/common/types";
 import { Connection, Edge, Node, OnConnectStartParams } from "reactflow";
 
@@ -14,12 +15,8 @@ export function onEdgeUpdateFailed(params: {
     const node = nodes.find(node => {
       return node.id === connectingParams.nodeId;
     });
-    const nodeWidget = node.data.widget;
-    let handleValueType = connectingParams.handleId;
-    if (connectingParams.handleType !== "source") { 
-      const handleInput = nodeWidget.input.required[handleValueType.toLowerCase()];
-      handleValueType = handleInput[0];
-    }
+    
+    const handleValueType = AppState.getValueTypeOfNodeSlot(useAppStore.getState(), node.data.value, connectingParams.handleId, connectingParams.handleType);
     // If connection params handle type is source, then search from widget inputs by edge handle id
     setWidgetTreeContext({
       position: {
@@ -33,7 +30,7 @@ export function onEdgeUpdateFailed(params: {
             const inputs = Object.keys(widget.input.required || []);
             return inputs.some(inputKey => {
               const input = widget.input.required[inputKey];
-              return input[0] === connectingParams.handleId;
+              return input[0] === handleValueType;
             });
           } else {
             const output = (widget.output || []) as string[];
@@ -55,7 +52,7 @@ export function onEdgeUpdateFailed(params: {
             const inputs = widget.input.required;
             const inputKey = Object.keys(inputs).find(inputKey => {
               const input = inputs[inputKey];
-              return input[0] === connectingParams.handleId;
+              return input[0] === handleValueType;
             });
             if (inputKey) {
               onConnect({

@@ -25,6 +25,7 @@ export interface SubflowStore {
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onNodeInProgress: (id: NodeId, progress: number) => void;
   loadSubWorkfow: (flowId: string, forceUpdate?: boolean) => Promise<PersistedFullWorkflow | undefined>;
+  getSubflowNodeSlotInfo: (flowId: string, slotId: string, handleType: "source" | "target") => any;
 }
 
 export const useSubflowStore = create<SubflowStore>((set, get) => ({
@@ -32,6 +33,15 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
   widgets: {},
   relations: {},
   workflowStates: {},
+  getSubflowNodeSlotInfo: (flowId: string, slotId: string, handleType: "source" | "target") => {
+    const st = get();
+    const renderingInfo = st.workflowStates[flowId]?.renderingInfo;
+    if (!renderingInfo) {
+      throw new Error("Something wrong, there is no rendering info found to parse slot info");
+    }
+    const data = handleType === "target" ? renderingInfo.inputs : renderingInfo.outputs;
+    return data.find(it => it.id.toUpperCase() === slotId);
+  },
   setWidgets: (widgets: Widgets) => {
     set({ widgets });
   },

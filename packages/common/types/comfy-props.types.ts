@@ -239,3 +239,13 @@ export function getSubflowFieldId(nodeId: string, fieldName: string): string{
 export function getSubflowSlotId(nodeId: string, slotName: string): string {
   return `${nodeId}__${slotName}`
 }
+
+export function parseSubflowSlotId(slotId: string): {nodeId: string, slotName: string} {
+  const [nodeId, slotName] = slotId.split('__');
+  return {nodeId, slotName}
+}
+
+export function parseSubflowFieldId(fieldId: string): {nodeId: string, fieldName: string} {
+  const [nodeId, fieldName] = fieldId.split('__');
+  return {nodeId, fieldName}
+}

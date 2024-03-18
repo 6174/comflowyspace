@@ -3,7 +3,7 @@ import exifr from 'exifr'
 import { create } from 'zustand'
 import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection } from '../types'
+import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId } from '../types'
 import { throttledUpdateDocument } from "../storage";
 import { PromptResponse, createPrompt, sendPrompt } from '../comfyui-bridge/prompt';
 import { getWidgetLibrary as getWidgets } from '../comfyui-bridge/bridge';
@@ -17,6 +17,7 @@ import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../types';
 import { SubflowStoreType, useSubflowStore } from "./subflow-state";
 import { staticCheckWorkflowErrors } from "../workflow-editor/parse-workflow-errors";
+import { getValueTypeOfNodeSlot } from "../utils/workflow";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -98,6 +99,21 @@ export interface AppState {
 }
 
 export const AppState = {
+  getValueTypeOfNodeSlot(st: AppState, node: SDNode, handleId: string, handleType: "source" | "target"): string {
+    let valueType = "";
+
+    if (node.widget === SUBFLOW_WIDGET_TYPE_NAME) {
+      const subflowState = st.subflowStore.getState();
+      const slotInfo = subflowState.getSubflowNodeSlotInfo(node.flowId!, handleId, handleType)
+      const sdnode = slotInfo.sdnode;
+      const { slotName } = parseSubflowSlotId(handleId!);
+      valueType = getValueTypeOfNodeSlot(sdnode, slotName, handleType!);
+    } else {
+      valueType = getValueTypeOfNodeSlot(node, handleId!, handleType!);
+    }
+
+    return valueType;
+  },
   getValidConnections(state: AppState): Connection[] {
     return state.edges.flatMap((e) =>
       e.sourceHandle !== undefined && e.sourceHandle !== null && e.targetHandle !== undefined && e.targetHandle !== null
@@ -446,18 +462,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
 
     const node = st.graph[params.nodeId];
-    let valueType = "";
-    if (params.handleType === "source") {
-      const output = node.outputs.find(output => output.name.toUpperCase() === params.handleId);
-      if (output) {
-        valueType = output.type;
-      }
-    } else {
-      const input = node.inputs.find(input => input.name.toUpperCase() === params.handleId);
-      if (input) {
-        valueType = input.type;
-      }
-    }
+    console.log("connecting node", params);
+    const valueType = AppState.getValueTypeOfNodeSlot(st, node, params.handleId!, params.handleType!);
+
     set({ connectingStartParams: {
       ...params,
       valueType
