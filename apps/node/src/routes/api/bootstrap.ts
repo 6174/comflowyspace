@@ -74,10 +74,11 @@ export enum BootStrapTaskType {
  */
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
-        const setupFPConfigString = appConfigManager.get(CONFIG_KEYS.setupFPConfig);
-        const setupVAEConfigString = appConfigManager.get(CONFIG_KEYS.setupVAEConfig);
-        const setupFPConfig = JSON.parse(setupFPConfigString || '{}');
-        const setupVAEConfig = JSON.parse(setupVAEConfigString || '{}');
+        const defaultConfigString = '{"fpmode":"normal","vaemode":"normal"}';
+        const setupFPConfigString = appConfigManager.get(CONFIG_KEYS.setupFPConfig) || defaultConfigString;
+        const setupVAEConfigString = appConfigManager.get(CONFIG_KEYS.setupVAEConfig) || defaultConfigString;
+        const setupFPConfig = JSON.parse(setupFPConfigString);
+        const setupVAEConfig = JSON.parse(setupVAEConfigString);
         const setupConfig = { ...setupFPConfig, ...setupVAEConfig };
         const { fpmode, vaemode } = setupConfig;
         let taskType = (fpmode !== 'normal' || vaemode !== 'normal') ? BootStrapTaskType.startComfyUIWithPrecision : (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;

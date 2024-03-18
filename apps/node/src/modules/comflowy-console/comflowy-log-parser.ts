@@ -23,7 +23,7 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
 
     if (this.currentLogLines.length > 0) {
       if (/Starting server/.test(log)) {
-        const importResults = this.currentLogLines.join("").split("\r");
+        const importResults = this.currentLogLines.join("").split(/\r?\n/);
         this.currentLogLines = [];
         const successfulImports: string[] = [];
         const failedImports: string[] = [];
