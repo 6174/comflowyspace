@@ -10,6 +10,7 @@ import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import _ from "lodash";
 import Color from "color";
 import { SubflowParams, SubflowSlots } from "../reactflow-node/reactflow-subflow-node";
+import { parseSubflow } from "@comflowy/common/store/subflow-state";
 
 type ShareAsSubflowFormProps = ShareAsSubflowConfig;
 
@@ -209,50 +210,12 @@ function ShareAsSubflowNodeEditor({ node, index }: { node: Node, index }) {
 
 function PreviewSubflowNode() {
   const savedControlBoardData = useAppStore(st => st.controlboard);
-  const initialTitle = useAppStore(st => st.persistedWorkflow?.title);
-  const {title, nodes, description} = savedControlBoardData?.shareAsSubflowConfig || {nodes: []};
+  const workflow = useAppStore(st => st.persistedWorkflow);
+  const {title} = savedControlBoardData?.shareAsSubflowConfig || {nodes: []};
   let nodeColor = SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = SDNODE_DEFAULT_COLOR.bgcolor;
-  const allNodes = Object.values(useAppStore(st => st.persistedWorkflow?.snapshot?.nodes || {}));
   const widgets =useAppStore(st => st.widgets);
-
-  const nodesWithControl = nodes.map((nodeControl) => {
-    const id = nodeControl.id;
-    const perssitedNode = allNodes.find(n => n.id === id) as PersistedWorkflowNode;
-    const widget = widgets[perssitedNode.value.widget];
-    const { inputs, outputs, title, params } = getNodeRenderInfo(perssitedNode.value, widgets[perssitedNode.value.widget]);
-    const paramsToRender = params.filter(param => {
-      if (!nodeControl.fields) {
-        return;
-      }
-      return nodeControl.fields.includes(param.property);
-    });
-
-    const inputsToRender = inputs.filter(input => {
-      if (!nodeControl.inputs) {
-        return;
-      }
-      return nodeControl.inputs.includes(input.name);
-    });
-
-    const outputsToRender = outputs.filter(output => {
-      if (!nodeControl.outputs) {
-        return;
-      }
-      return nodeControl.outputs.includes(output.name);
-    });
-
-    return {
-      id,
-      sdnode: perssitedNode?.value,
-      title,
-      nodeControl,
-      params: paramsToRender,
-      inputs: inputsToRender,
-      outputs: outputsToRender,
-      widget
-    }
-  });
+  const subflowRenderingInfo = parseSubflow(workflow, widgets);
 
   return (
     <div className="preview-subflow">
@@ -265,12 +228,12 @@ function PreviewSubflowNode() {
         <div className="node-inner">
           <div className="node-header">
             <h2 className="node-title">
-              {title || initialTitle}
+              {title || workflow?.title}
             </h2>
           </div>
           <div className="node-main">
-            <SubflowSlots nodesWithControl={nodesWithControl} />
-            <SubflowParams nodesWithControl={nodesWithControl} subflowNode={{
+            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} />
+            <SubflowParams subflowRenderingInfo={subflowRenderingInfo} subflowNode={{
               id: "TEST_PREVIEW_WORKFLOW"
             } as any} onChangeHandler={(val, fieldName) => {}} />
           </div>

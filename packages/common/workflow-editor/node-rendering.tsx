@@ -1,8 +1,7 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo } from '../types';
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
-import { useAppStore } from '../store';
 
 /**
  * Get the info needed for render a node
@@ -72,20 +71,10 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   }
 }
 
-/**
- * Get the info needed for render a subflow node
- * @param node 
- * @returns 
- */
-export type SubflowRenderingInfo = {
-  title: string;
-  id: string;
-  nodesWithControl: SubflowNodeWithControl[];
-}
 
 export function useSubflowNodeRenderingInfo(node: NodeProps<{
   value: SDNode;
-}>): SubflowRenderingInfo {
+}>): SubflowNodeRenderingInfo | undefined {
   const sdSubflowNode = node.data.value;
   const nodeId = node.id;
   const { flowId } = sdSubflowNode;
@@ -94,14 +83,7 @@ export function useSubflowNodeRenderingInfo(node: NodeProps<{
   const loadSubWorkfow = useSubflowStore(st => st.loadSubWorkfow);
   const [nodeTitle, setNodeTitle] = useState("Subflow");
   const [nodesWithControl, setNodesWithControl] = useState<SubflowNodeWithControl[]>();
-  const parseSubflow = useSubflowStore(st => st.parseSubflow);
-
-  useEffect(() => {
-    if (!workflow) {return};
-    const {nodesWithControlInfo, title, description} = parseSubflow(workflow.id);
-    setNodesWithControl(nodesWithControlInfo);
-    setNodeTitle(title);
-  }, [workflow]);
+  const subflowRenderingInfo = useSubflowStore(st => st.workflowStates[flowId!]?.renderingInfo);
 
   useEffect(() => {
     if (!workflow && flowId) {
@@ -109,9 +91,5 @@ export function useSubflowNodeRenderingInfo(node: NodeProps<{
     }
   }, [flowId, workflow])
 
-  return {
-    id: nodeId,
-    title: nodeTitle,
-    nodesWithControl: nodesWithControl || []
-  }
+  return subflowRenderingInfo
 }

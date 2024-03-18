@@ -1,7 +1,7 @@
 /**
  * Rendering flow type node
  */
-import { ComfyUINodeError, PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubflowNodeWithControl, Widget, getSubflowFieldId, getSubflowSlotId } from "@comflowy/common/types";
+import { ComfyUINodeError, PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubflowNodeRenderingInfo, SubflowNodeWithControl, Widget, getSubflowFieldId, getSubflowSlotId } from "@comflowy/common/types";
 import { useSubflowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Dimensions, NodeProps, Position } from "reactflow";
 import { ComflowyNodeResizer, useNodeAutoResize } from "./reactflow-node-resize";
@@ -28,7 +28,7 @@ export function SubflowNode({
   imagePreviews,
   nodeError
 }: SubflowNodeProps) {
-  const {title, id, nodesWithControl} = useSubflowNodeRenderingInfo(node);
+  const subflowRenderingInfo = useSubflowNodeRenderingInfo(node);
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, imagePreviews);
 
   const isInProgress = false;
@@ -51,17 +51,17 @@ export function SubflowNode({
       } as CSSProperties}> 
       <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} />
 
-      {!invisible ? (
+      {(!invisible && subflowRenderingInfo) ? (
         <div className="node-inner">
           <div className="node-header">
             <h2 className="node-title">
-              {title}
+              {subflowRenderingInfo.title}
               <NodeError nodeError={nodeError} />
             </h2>
           </div>
           <div className="node-main" ref={mainRef}>
-            <SubflowSlots nodesWithControl={nodesWithControl}/>
-            <SubflowParams nodesWithControl={nodesWithControl} subflowNode={node}/>
+            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} />
+            <SubflowParams subflowRenderingInfo={subflowRenderingInfo} subflowNode={node}/>
           </div>
           <NodeImagePreviews imagePreviews={imagePreviews || []} />
         </div>
@@ -75,27 +75,11 @@ export function SubflowNode({
   )
 }
 
-export function SubflowSlots({ nodesWithControl }: {
-  nodesWithControl: SubflowNodeWithControl[]
+export function SubflowSlots({ subflowRenderingInfo }: {
+  subflowRenderingInfo: SubflowNodeRenderingInfo;
 }) {
-  const inputs = nodesWithControl.reduce((acc, {inputs, title, id}) => {
-    return [...acc, ...inputs.map(input => {
-      return {
-        ...input, 
-        id: getSubflowSlotId(id, input.name),
-        name: `${title}:${input.name}`
-      }
-    })]
-  }, []);
-  const outputs = nodesWithControl.reduce((acc, { outputs, title, id }) => {
-    return [...acc, ...outputs.map(output => {
-      return {
-        ...output,
-        id: getSubflowSlotId(id, output.name),
-        name: `${title}:${output.name}`
-      }
-    })];
-  }, []);
+  const inputs = subflowRenderingInfo.inputs;
+  const outputs = subflowRenderingInfo.outputs;
   return (
     <div className="node-slots">
       <div className="node-inputs">
@@ -112,33 +96,22 @@ export function SubflowSlots({ nodesWithControl }: {
   )
 }
 
-export function SubflowParams({ nodesWithControl, subflowNode, onChangeHandler }: {
-  nodesWithControl: SubflowNodeWithControl[];
+export function SubflowParams({ subflowRenderingInfo, subflowNode, onChangeHandler }: {
+  subflowRenderingInfo: SubflowNodeRenderingInfo;
   subflowNode: NodeProps<{
     value: SDNode
   }>
   onChangeHandler?: (val, fieldName) => void;
 }) {
   const fieldValues = useAppStore((st) => st.graph[subflowNode.id]?.fields || {});
-  // console.log(fieldValues);
-  const params = nodesWithControl.reduce((acc, { sdnode, params, title, id, widget}) => {
-    return [...acc, ...params.map(param => {
-      return {
-        param,
-        sdnode,
-        title,
-        widget,
-        id
-      }
-    })]
-  }, []);
+  const params =  subflowRenderingInfo.params;
   const onNodeFieldChange = useAppStore((st) => st.onNodeFieldChange);
   const _onChangeHandler = onChangeHandler || useCallback((val: any, fieldName: string) => onNodeFieldChange(subflowNode.id, fieldName, val), [onNodeFieldChange])
   return (
     <div className="node-params">
-      {params.map(({ param, sdnode, title, id, widget }) => {
-        const realFieldName = getSubflowFieldId(id, param.property);
-        const visibleName = `${title}:${param.property}`
+      {params.map(({ property, input, sdnode, title, id, widget }) => {
+        const realFieldName = getSubflowFieldId(id, property);
+        const visibleName = `${title}:${property}`
         return (
           <InputContainer
             key={realFieldName}
@@ -146,7 +119,7 @@ export function SubflowParams({ nodesWithControl, subflowNode, onChangeHandler }
             id={id}
             value={fieldValues[realFieldName]}
             node={sdnode}
-            input={param.input}
+            input={input}
             onChange={(val) => {
               _onChangeHandler(val, realFieldName);
             }}

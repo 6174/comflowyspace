@@ -2,6 +2,8 @@ import { NodeProps, XYPosition } from "reactflow";
 import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage } from "./comfy-props.types";
 import { Widget, WidgetKey } from "./comfy-widget.types"
 import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-props.types";
+import { SubflowNodeWithControl } from "./comflowy-controlboard.types";
+import { PersistedFullWorkflow } from "./comfy-workflow.types";
 export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
@@ -19,6 +21,16 @@ export type WorkflowNodeRenderInfo = {
   outputs: ComfyUIWorkflowNodeOutput[];
   nodeColor: string;
   nodeBgColor: string;
+}
+
+export type SubflowNodeRenderingInfo = {
+  nodesWithControlInfo: SubflowNodeWithControl[],
+  title: string,
+  description: string,
+  inputs: (ComfyUIWorkflowNodeInput & {id: string, widget: Widget, sdnode: SDNode, nodeId: string})[],
+  outputs: (ComfyUIWorkflowNodeOutput & { id: string, widget: Widget, sdnode: SDNode, nodeId: string })[],
+  params: { property: string; input: Input; title: string; id: string, name: string, widget: Widget, sdnode: SDNode, nodeId: string }[],
+  doc: PersistedFullWorkflow
 }
 
 /**
