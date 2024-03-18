@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node} from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds} from 'reactflow';
 import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -22,8 +22,7 @@ import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
 import { GroupNode } from './reactflow-group/reactflow-group';
-import {BBox} from "@comflowy/common/types/math.types";
-import { isBoxContain } from "@comflowy/common/utils/math";
+import { isRectContain } from "@comflowy/common/utils/math";
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
@@ -57,7 +56,7 @@ export default function WorkflowEditor() {
   useCopyPaste(ref, reactFlowInstance);
   const { menu, setMenu, onSelectionContextMenu } = useWorkflowNodeContextMenu(ref);
   const { widgetTreeContext, setWidgetTreeContext, onPanelDoubleClick, onPanelClick } = useWorkflowPanelContextMenu(edgeUpdating);
-  const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragDropNode()
+  const { onNodeDrag, onNodeDragStart, onNodeDragStop, onSelectionChange} = useDragDropNode(ref);
   const { onPaneDragOver, onPaneDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
 
   /**
@@ -201,6 +200,14 @@ export default function WorkflowEditor() {
         onNodeDrag={onNodeDrag}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionChange={(ev) => {
+          /**
+           * Track multiple node dragging
+           */
+          if (ev.nodes.length > 0) {
+            onSelectionChange(ev);
+          }
+        }}
         onInit={async (instance) => {
           try {
             setReactFlowInstance(instance);
@@ -427,76 +434,174 @@ function useLiveDoc(inited) {
   * node drag enter and leave on group node
   * https://pro-examples.reactflow.dev/dynamic-grouping
   */
-function useDragDropNode() {
-  const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
-    console.log("drag start");
+function useDragDropNode(ref) {
+  const mousedownRef = React.useRef(false);
+  const draggingRef = React.useRef(false);
+  const selectionNodesRef = React.useRef<Node[]>([]);
+  
+  const onMouseDown = React.useCallback(() => {
+    console.log("mousedown", mousedownRef.current)
+    mousedownRef.current = true;
   }, []);
-  const onNodeDrag = React.useCallback((ev: React.MouseEvent, node: Node) => {
-    const nodes = useAppStore.getState().nodes;
-    const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
-    const nodeBox: BBox = {
-      width: node.width,
-      height: node.height,
-      x: node.position.x,
-      y: node.position.y
-    }
-    const groupNode = groupNodes.find(n => {
-      const groupBox: BBox = {
-        width: n.width,
-        height: n.height,
-        x: n.position.x,
-        y: n.position.y
-      }
-      return isBoxContain(groupBox, nodeBox);
-    });
 
-    if (groupNode && groupNode.id !== node.id) {
-      useAppStore.setState({
-        draggingOverGroupId: groupNode.id
-      })
-    } else {
+  const onSelectionChange = React.useCallback((ev) => {
+    const selectionNodes = (ev.nodes || []) as Node[];
+    if (mousedownRef.current && selectionNodes.length > 0) {
+      // if any of the selection node is a group type node, do nothing
+      if (selectionNodes.find(n => n.type === NODE_GROUP)) {
+        return
+      }
+
+      draggingRef.current = true;
+      selectionNodesRef.current = selectionNodes
+
+      // calculate the bound for all nodes;
+      const bound = getNodesBounds(selectionNodes)
+      const nodes = useAppStore.getState().nodes;
+      const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
+      const groupNode = groupNodes.find(n => {
+        return isRectContain(getNodesBounds([n]), bound);
+      });
+
+      if (groupNode) {
+        useAppStore.setState({
+          draggingOverGroupId: groupNode.id
+        })
+      } else {
+        useAppStore.setState({
+          draggingOverGroupId: null
+        })
+      }
+    }
+  }, []);
+  
+  const onMouseUp = React.useCallback(() => {
+    console.log("mouseup");
+    mousedownRef.current = false;
+    const selectionNodes = selectionNodesRef.current;
+    if (draggingRef.current && selectionNodes.length > 0) {
+      draggingRef.current = false;
+      const st = useAppStore.getState();
+      // if this id exist, all nodes is over the group
+      const draggingOverGroupId = st.draggingOverGroupId;
+
       useAppStore.setState({
         draggingOverGroupId: null
+      });
+
+      selectionNodes.forEach(node => {
+        const sdnode = node.data.value as SDNode;
+        /**
+         * if node already in a group, then do nothing
+         */
+        if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
+          return;
+        }
+
+        /**
+         * if node already in a group, and current dragging over group is null, then remove the node from the group
+        */
+        if (sdnode.parent && !draggingOverGroupId) {
+          const draggingOverGroup = st.nodes.find(n => n.id === sdnode.parent);
+          getNodePositionOutOfGroup(node, draggingOverGroup);
+          st.onNodeAttributeChange(node.id, {
+            parent: null,
+            position: {
+              x: node.position.x + draggingOverGroup.position.x,
+              y: node.position.y + draggingOverGroup.position.y
+            }
+          });
+          return;
+        }
+
+        /**
+         * if node is not in a group, and current dragging over group is not null, then add the node to the group
+         */
+        if (!sdnode.parent && draggingOverGroupId) {
+          const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
+          const realPosition = getNodePositionInGroup(node, draggingOverGroup);
+          console.log("realPosition", realPosition);
+          st.onNodeAttributeChange(node.id, {
+            parent: draggingOverGroupId,
+            position: realPosition
+            // position: {
+            //   x: 0,//node.position.x - draggingOverGroup.position.x,
+            //   y: 0//node.position.y - draggingOverGroup.position.y
+            // }
+          });
+          return;
+        }
       })
     }
+    
+  }, []);
+
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const dom = document.body;
+      dom.addEventListener("mousedown", onMouseDown, true);
+      dom.addEventListener("mouseup", onMouseUp, true);
+      return () => {
+        dom.removeEventListener("mousedown", onMouseDown, true);
+        dom.removeEventListener("mouseup", onMouseUp, true);
+      }
+    }
+  }, [ref, onMouseDown, onMouseUp]);
+
+  const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
+  }, []);
+
+  const onNodeDrag = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    onSelectionChange({
+      nodes: [node]
+    })
   }, []);
 
   const onNodeDragStop = React.useCallback((ev: React.MouseEvent, node: Node) => {
-    const st = useAppStore.getState();
-    const draggingOverGroupId = st.draggingOverGroupId;
-    const sdnode = node.data.value as SDNode;
-    /**
-     * if node already in a group, then do nothing
-     */
-    if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
-      return;
-    }
-
-    /**
-     * if node already in a group, and current dragging over group is null, then remove the node from the group
-     */
-    if (sdnode.parent && !draggingOverGroupId) {
-      st.onNodeAttributeChange(node.id, {
-        parent: null
-      });
-      return;
-    }
-
-    /**
-     * if node is not in a group, and current dragging over group is not null, then add the node to the group
-     */
-    if (!sdnode.parent && draggingOverGroupId) {
-      st.onNodeAttributeChange(node.id, {
-        parent: draggingOverGroupId
-      });
-      return;
-    }
+    onMouseUp();
   }, []);
 
   return {
     onNodeDragStart,
+    onSelectionChange,
     onNodeDrag,
     onNodeDragStop
+  }
+
+  function getNodePositionInGroup(node: Node, containerNode: Node) {
+    const nodePosition = node.position ?? { x: 0, y: 0 };
+    const nodeWidth = node.width ?? 0;
+    const nodeHeight = node.height ?? 0;
+    const containerWidth = containerNode.width ?? 0;
+    const containerHeight = containerNode.height ?? 0;
+
+    // 计算 node 节点在 containerNode 节点内的 x 坐标
+    if (nodePosition.x < containerNode.position.x) {
+      nodePosition.x = 0;
+    } else if (nodePosition.x + nodeWidth > containerNode.position.x + containerWidth) {
+      nodePosition.x = containerWidth - nodeWidth;
+    } else {
+      nodePosition.x = nodePosition.x - containerNode.position.x;
+    }
+
+    // 计算 node 节点在 containerNode 节点内的 y 坐标
+    if (nodePosition.y < containerNode.position.y) {
+      nodePosition.y = 0;
+    } else if (nodePosition.y + nodeHeight > containerNode.position.y + containerHeight) {
+      nodePosition.y = containerHeight - nodeHeight;
+    } else {
+      nodePosition.y = nodePosition.y - containerNode.position.y;
+    }
+
+    return nodePosition;
+  }
+
+  function getNodePositionOutOfGroup(node: Node, containerNode: Node) {
+    const nodePosition = node.position ?? { x: 0, y: 0 };
+    nodePosition.x = nodePosition.x + containerNode.position.x;
+    nodePosition.y = nodePosition.y + containerNode.position.y;
+    return nodePosition;
   }
 }
 

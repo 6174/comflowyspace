@@ -1,9 +1,9 @@
-import {BBox} from "../types/math.types";
+import { Rect } from "reactflow";
 
 /**
  * 实现一个函数，判断
  */
-export function isBoxIntersect(a: BBox, b: BBox) {
+export function isRectIntersect(a: Rect, b: Rect) {
   return (
     a.x < b.x + b.width &&
     a.x + a.width > b.x &&
@@ -13,9 +13,9 @@ export function isBoxIntersect(a: BBox, b: BBox) {
 }
 
 /**
- * extendABox
+ * extendARect
  */
-export function extendBox(box1: BBox, box2: BBox): BBox {
+export function extendRect(box1: Rect, box2: Rect): Rect {
   const x = Math.min(box1.x, box2.x);
   const y = Math.min(box1.y, box2.y);
   const width = Math.max(box1.x + box1.width, box2.x + box2.width) - x;
@@ -24,9 +24,9 @@ export function extendBox(box1: BBox, box2: BBox): BBox {
 }
 
 /**
- * 判断一个 BBox 是否包含另外一个 BBox
+ * 判断一个 Rect 是否包含另外一个 Rect
  */
-export function isBoxContain(a: BBox, b: BBox) {
+export function isRectContain(a: Rect, b: Rect) {
   return (
     a.x <= b.x &&
     a.y <= b.y &&
