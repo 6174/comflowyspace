@@ -18,6 +18,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
 
   const groupState = useAppStore(st => st.graph[id]?.properties?.groupState || GroupNodeState.Expaned);
+  const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
   const onNodePropertyChange = useAppStore(st => st.onNodePropertyChange);
   const onChangeGroupState = useCallback((v) => {
     onNodePropertyChange(id, "groupState", v);
@@ -38,7 +39,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
-      ${node.selected ? nodeStyles.reactFlowSelected : ""} 
+      ${(node.selected || isDraggingNodeOverCurrentGroup) ? nodeStyles.reactFlowSelected : ""} 
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,

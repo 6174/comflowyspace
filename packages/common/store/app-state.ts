@@ -58,7 +58,6 @@ export interface AppState {
 
   // group control
   draggingOverGroupId?: string;
-  draggingNodeId?: string;
 
   // document mutation handler
   onSyncFromYjsDoc: () => void;
@@ -159,8 +158,12 @@ export const AppState = {
       height,
       type: NODE_IDENTIFIER,
       zIndex: maxZ + 1,
-      parentNode: parent,
-      expandParent: true
+      parentNode: parent
+    }
+
+    // edge case detection
+    if (item.parentNode === node.id) {
+      item.parentNode = undefined;
     }
 
     /**

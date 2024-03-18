@@ -57,11 +57,6 @@ export default function WorkflowEditor() {
     onInit: st.onInit,
     onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
   }), shallow)
-
-  // @TODO performance issue when zooming
-  // const transform  = useStore((st => {
-  //   return st.transform[2]
-  // }));
   
   const nodesWithStyle = nodes.map(node => {
     return {
@@ -86,37 +81,15 @@ export default function WorkflowEditor() {
     }
   });
 
-  const router = useRouter();
-  const {id} = router.query;
-
-  const watchedDoc = JSONDBClient.useLiveDoc<PersistedFullWorkflow | null>({
-    collectionName: "workflows",
-    documentId: id as string,
-    queryFn: async() => {
-      if (!id) {
-        return null;
-      }
-      return await documentDatabaseInstance.getDoc(id as string)
-    }
-  });
-
-  React.useEffect(() => {
-    if (id && inited) {
-      documentDatabaseInstance.getDoc(id as string).then(doc => {
-        doc && !doc.deleted && onLoadWorkflow(doc);
-      }).catch(err => {
-        console.log(err);
-      })
-    }
-    checkWebGLStatus();
-  }, [id, inited])
+  const {id, watchedDoc} = useLiveDoc(inited);
+  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
 
   const onDragOver = React.useCallback((event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+  
   const onDrop = React.useCallback(
     async (event) => {
       event.preventDefault();
@@ -165,10 +138,11 @@ export default function WorkflowEditor() {
     [setMenu],
   );
 
-  const tranformEnd = () => {
+  const storeApi = useStoreApi();
+  const tranformEnd = React.useCallback(() => {
     const transform = storeApi.getState().transform;
     onTransformEnd(transform[2]);
-  }
+  }, []);
 
   const onPaneClick = React.useCallback(() => {
     tranformEnd();
@@ -181,75 +155,6 @@ export default function WorkflowEditor() {
     panOnDrag: [1, 2],
     selectionMode: SelectionMode.Partial
   }  : {};
-
-  /**
-   * Keyboard Event handler 
-   */
-  const storeApi = useStoreApi();
-  const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
-    const metaKey = ev.metaKey;
-    switch (ev.code) {
-      case "KeyC": 
-        break;
-      case "KeyV":
-        break;
-      case "KeyZ":
-        if (metaKey && !ev.shiftKey) {
-          undo();
-        }
-        if (metaKey && ev.shiftKey) {
-          redo();
-        }
-        break;
-      default: 
-        break;
-    }
-
-    function undo() {
-      const undo = useAppStore.getState().undo;
-      undo();
-    }
-
-    function redo() {
-      const redo = useAppStore.getState().redo;
-      redo();
-    }
-  }, []);
-
-  const onCopy = React.useCallback((ev: ClipboardEvent) => {
-    if ((ev.target as HTMLElement)?.className === "node-error") {
-      return;
-    }
-    const state = useAppStore.getState();
-    const selectedNodes = state.nodes.filter(node => node.selected);
-    const workflowMap = state.doc.getMap("workflow");
-    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-    copyNodes(selectedNodes.map((node) => {
-      const id = node.id;
-      return workflow.nodes[id];
-    }), ev);
-
-    if (ev.type === "cut") {
-      // do something with cut
-    }
-  }, [])
-
-  const onPaste = React.useCallback((ev: ClipboardEvent) => {
-    pasteNodes(ev);
-  }, [reactFlowInstance])
-
-  React.useEffect(() => {
-    document.addEventListener('copy', onCopy);
-    document.addEventListener('cut', onCopy);
-    document.addEventListener('paste', onPaste);
-    document.addEventListener('keydown', onKeyPresshandler);
-    return () => {
-      document.removeEventListener('keydown', onKeyPresshandler);
-      document.removeEventListener('copy', onCopy);
-      document.removeEventListener('cut', onCopy);
-      document.removeEventListener('paste', onPaste);
-    }
-  }, [ref])
 
   /**
    * On double click panel to show the widget tree
@@ -292,6 +197,7 @@ export default function WorkflowEditor() {
     }
   }, [ref])
 
+  useCopyPaste(ref, reactFlowInstance);
   const { onNodeDrag, onNodeDragStart, onNodeDragStop } = useDragAnDropNode()
 
   if (inited && watchedDoc && watchedDoc.deleted) {
@@ -430,22 +336,41 @@ export default function WorkflowEditor() {
   )
 }
 
-function checkWebGLStatus() {
-  // var canvas = document.createElement('canvas');
-  // var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  // if (gl && gl instanceof WebGLRenderingContext) {
-  //   console.log('WebGL is enabled');
-  // } else {
-  //   console.log('WebGL is disabled');
-  // }
+/**
+ * live doc
+ */
+function useLiveDoc(inited) {
+  const onLoadWorkflow = useAppStore(st => st.onLoadWorkflow);
+  const router = useRouter();
+  const { id } = router.query;
+  const watchedDoc = JSONDBClient.useLiveDoc<PersistedFullWorkflow | null>({
+    collectionName: "workflows",
+    documentId: id as string,
+    queryFn: async () => {
+      if (!id) {
+        return null;
+      }
+      return await documentDatabaseInstance.getDoc(id as string)
+    }
+  });
+  React.useEffect(() => {
+    if (id && inited) {
+      documentDatabaseInstance.getDoc(id as string).then(doc => {
+        doc && !doc.deleted && onLoadWorkflow(doc);
+      }).catch(err => {
+        console.log(err);
+      })
+    }
+  }, [id, inited])
+  return {id, watchedDoc}
 }
 
 
+/**
+  * node drag enter and leave on group node
+  * https://pro-examples.reactflow.dev/dynamic-grouping
+  */
 function useDragAnDropNode() {
-  /**
-   * node drag enter and leave on group node
-   * https://pro-examples.reactflow.dev/dynamic-grouping
-   */
   const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
     console.log("drag start");
   }, []);
@@ -468,7 +393,7 @@ function useDragAnDropNode() {
       return isBoxContain(groupBox, nodeBox);
     });
 
-    if (groupNode) {
+    if (groupNode && groupNode.id !== node.id) {
       useAppStore.setState({
         draggingOverGroupId: groupNode.id
       })
@@ -477,7 +402,6 @@ function useDragAnDropNode() {
         draggingOverGroupId: null
       })
     }
-    console.log("drag move node", ev, node.position);
   }, []);
 
   const onNodeDragStop = React.useCallback((ev: React.MouseEvent, node: Node) => {
@@ -517,4 +441,78 @@ function useDragAnDropNode() {
     onNodeDrag,
     onNodeDragStop
   }
+}
+
+/**
+ * Keyboard Event handler 
+ */
+function useCopyPaste(ref, reactFlowInstance) {
+  const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
+    const metaKey = ev.metaKey;
+    switch (ev.code) {
+      case "KeyC":
+        break;
+      case "KeyV":
+        break;
+      case "KeyZ":
+        if (metaKey && !ev.shiftKey) {
+          undo();
+        }
+        if (metaKey && ev.shiftKey) {
+          redo();
+        }
+        break;
+      default:
+        break;
+    }
+
+    function undo() {
+      const undo = useAppStore.getState().undo;
+      undo();
+    }
+
+    function redo() {
+      const redo = useAppStore.getState().redo;
+      redo();
+    }
+  }, []);
+
+  const onCopy = React.useCallback((ev: ClipboardEvent) => {
+    if ((ev.target as HTMLElement)?.className === "node-error") {
+      return;
+    }
+    const state = useAppStore.getState();
+    const selectedNodes = state.nodes.filter(node => node.selected);
+    const workflowMap = state.doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    copyNodes(selectedNodes.map((node) => {
+      const id = node.id;
+      return workflow.nodes[id];
+    }), ev);
+
+    if (ev.type === "cut") {
+      // do something with cut
+    }
+  }, [])
+
+  const onPaste = React.useCallback((ev: ClipboardEvent) => {
+    pasteNodes(ev);
+  }, [reactFlowInstance])
+
+  React.useEffect(() => {
+    document.addEventListener('copy', onCopy);
+    document.addEventListener('cut', onCopy);
+    document.addEventListener('paste', onPaste);
+    document.addEventListener('keydown', onKeyPresshandler);
+    return () => {
+      document.removeEventListener('keydown', onKeyPresshandler);
+      document.removeEventListener('copy', onCopy);
+      document.removeEventListener('cut', onCopy);
+      document.removeEventListener('paste', onPaste);
+    }
+  }, [ref])
+}
+
+function useContextMenu() {
+
 }
