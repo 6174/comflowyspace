@@ -5,7 +5,7 @@ import {NodeComponent} from "./reactflow-node";
 import { memo } from "react";
 import { SubflowNode } from "./reactflow-subflow-node";
 
-type NodeWrapperProps = NodeProps<{
+export type NodeWrapperProps = NodeProps<{
   widget: Widget;
   value: SDNode;
   dimensions: Dimensions

@@ -4,9 +4,8 @@
 import { uuid } from "../utils";
 import {NodeChange, EdgeChange, type Connection as FlowConnecton, Connection, XYPosition, Dimensions, Edge} from "reactflow";
 import * as Y from "yjs";
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../types";
+import { ControlBoardConfig, PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode } from "../types";
 import { NodeId, PreviewImage } from "../types";
-import { ControlBoardConfig } from "../workflow-editor/controlboard";
 
 export const createNodeId = () => `node-${uuid()}`;
 export const createConnectionId = () => `conn-${uuid()}`;

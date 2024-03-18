@@ -8,6 +8,12 @@ export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
 
+export enum GroupNodeState {
+  Collapsed = "collpased",
+  Expaned = "expaned",
+  CollapsedAsNode = "collapsedAsNode"
+}
+
 export type WorkflowNodeProps = NodeProps<{
   widget: Widget;
   value: SDNode;
@@ -45,6 +51,7 @@ export type PersistedWorkflowNode = {
     height: number
   },
   images?: PreviewImage[],
+  parent?: NodeId;
   position: XYPosition
 }
 

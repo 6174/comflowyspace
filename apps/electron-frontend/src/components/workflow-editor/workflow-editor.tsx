@@ -21,10 +21,11 @@ import { onEdgeUpdateFailed } from './reactflow-connecting';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
+import { GroupNode } from './reactflow-group/reactflow-group';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
-  [NODE_GROUP]: NodeWrapper
+  [NODE_GROUP]: GroupNode
 }
 export default function WorkflowEditor() {
   const [inited, setInited] = React.useState(false);
@@ -248,7 +249,6 @@ export default function WorkflowEditor() {
     }
   }, [ref])
 
-
   /**
    * On double click panel to show the widget tree
    */
@@ -292,7 +292,6 @@ export default function WorkflowEditor() {
     }
   }, [ref])
 
-
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
@@ -317,7 +316,6 @@ export default function WorkflowEditor() {
         onEdgesChange={onEdgesChange}
         onNodesDelete={onDeleteNodes}
         onEdgesDelete={onEdgesDelete}
-
         onEdgeUpdateStart={() => {
           edgeUpdateSuccessful.current = false;
           edgeUpdating.current = true;
@@ -388,6 +386,11 @@ export default function WorkflowEditor() {
         onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
         {...selectionModeProps}
+        onNodeDrag={(ev, node) => {
+          // https://pro-examples.reactflow.dev/dynamic-grouping
+          console.log("dragging", node.id);
+        }}
+        selectNodesOnDrag={false}
         onNodeDragStart={ev => {
           onChangeDragingAndResizingState(true);
         }}
