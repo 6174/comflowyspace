@@ -37,7 +37,7 @@ function ReactflowBottomCenterPanel() {
                         </WidgetPopover>
                     </div>
                 </Tooltip>
-                <CreateSubflowNodeEntry/>
+                {process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled" && <CreateSubflowNodeEntry/>}
                 <div className="spliter"></div>
                 <ExtensionListPopover>
                     <div className="action action-open-extension">

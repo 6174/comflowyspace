@@ -157,12 +157,14 @@ export function PanelsContainer(props: PanelContainerProps) {
         label: 'Messages',
         children: <AsyncComflowyConsole />,
       },
-      {
+    ]
+    if (process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled") {
+      items.push({
         key: "share",
         label: "Share",
         children: <ReactFlowShare/>
-      }
-    ]
+      });
+    }
   } 
 
   const onChange = (key: string) => {

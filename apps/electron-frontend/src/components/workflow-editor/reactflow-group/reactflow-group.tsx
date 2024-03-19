@@ -16,7 +16,6 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const sdnode = props.data.value;
   const id = props.id;
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
-
   const groupState = useAppStore(st => st.graph[id]?.properties?.groupState || GroupNodeState.Expaned);
   const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
   const onNodePropertyChange = useAppStore(st => st.onNodePropertyChange);
@@ -54,13 +53,15 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
               {title}
             </h2>
             <div className="actions">
-              <Radio.Group value={groupState} onChange={ev => {
-                onChangeGroupState(ev.target.value);
-              }}>
-                <Radio.Button value={GroupNodeState.Expaned}>E</Radio.Button>
-                <Radio.Button value={GroupNodeState.CollapsedAsNode}>CAN</Radio.Button>
-                <Radio.Button value={GroupNodeState.Collapsed}>CA</Radio.Button>
-              </Radio.Group>
+              {process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled" && (
+                <Radio.Group value={groupState} onChange={ev => {
+                  onChangeGroupState(ev.target.value);
+                }}>
+                  <Radio.Button value={GroupNodeState.Expaned}>E</Radio.Button>
+                  <Radio.Button value={GroupNodeState.CollapsedAsNode}>CAN</Radio.Button>
+                  <Radio.Button value={GroupNodeState.Collapsed}>CA</Radio.Button>
+                </Radio.Group>
+              )}
             </div>
           </div>
           <div className="node-main" ref={mainRef}>
