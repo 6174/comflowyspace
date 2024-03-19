@@ -438,8 +438,6 @@ function useDragDropNode(ref) {
   const mousedownRef = React.useRef(false);
   const draggingRef = React.useRef(false);
   const selectionNodesRef = React.useRef<Node[]>([]);
-  const onNodeAttributeChange = useAppStore(st => st.onNodeAttributeChange);
-  
   const onMouseDown = React.useCallback(() => {
     mousedownRef.current = true;
   }, []);
@@ -497,7 +495,6 @@ function useDragDropNode(ref) {
       });
 
       const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
-
       selectionNodes.forEach(node => {
         const st = useAppStore.getState();
         const sdnode = node.data.value as SDNode;
@@ -512,37 +509,21 @@ function useDragDropNode(ref) {
          * if node already in a group, and current dragging over group is null, then remove the node from the group
         */
         if (sdnode.parent && !draggingOverGroup) {
-          const draggingOverGroup = st.nodes.find(n => n.id === sdnode.parent);
-          getNodePositionOutOfGroup(node, draggingOverGroup);
-          onNodeAttributeChange(node.id, {
-            parent: null,
-            position: {
-              x: node.position.x + draggingOverGroup.position.x,
-              y: node.position.y + draggingOverGroup.position.y
-            }
-          });
+          st.onRemoveNodeFromGroup(node);
           return;
         }
 
         /**
          * if node is not in a group, and current dragging over group is not null, then add the node to the group
          */
-        if (!sdnode.parent && draggingOverGroup) {
-          const realPosition = getNodePositionInGroup(node, draggingOverGroup);
-          console.log("realPosition", realPosition);
-          onNodeAttributeChange(node.id, {
-            parent: draggingOverGroupId,
-            position: realPosition
-            //   x: 0,//node.position.x - draggingOverGroup.position.x,
-            //   y: 0//node.position.y - draggingOverGroup.position.y
-            // }
-          });
+        if (draggingOverGroup) {
+          st.onAddNodeToGroup(node, draggingOverGroup);
           return;
         }
       })
     }
     
-  }, [onNodeAttributeChange]);
+  }, []);
 
 
   React.useEffect(() => {
@@ -575,41 +556,6 @@ function useDragDropNode(ref) {
     onSelectionChange,
     onNodeDrag,
     onNodeDragStop
-  }
-
-  function getNodePositionInGroup(node: Node, containerNode: Node) {
-    const nodePosition = node.position ?? { x: 0, y: 0 };
-    const nodeWidth = node.width ?? 0;
-    const nodeHeight = node.height ?? 0;
-    const containerWidth = containerNode.width ?? 0;
-    const containerHeight = containerNode.height ?? 0;
-
-    // 计算 node 节点在 containerNode 节点内的 x 坐标
-    if (nodePosition.x < containerNode.position.x) {
-      nodePosition.x = 0;
-    } else if (nodePosition.x + nodeWidth > containerNode.position.x + containerWidth) {
-      nodePosition.x = containerWidth - nodeWidth;
-    } else {
-      nodePosition.x = nodePosition.x - containerNode.position.x;
-    }
-
-    // 计算 node 节点在 containerNode 节点内的 y 坐标
-    if (nodePosition.y < containerNode.position.y) {
-      nodePosition.y = 0;
-    } else if (nodePosition.y + nodeHeight > containerNode.position.y + containerHeight) {
-      nodePosition.y = containerHeight - nodeHeight;
-    } else {
-      nodePosition.y = nodePosition.y - containerNode.position.y;
-    }
-
-    return nodePosition;
-  }
-
-  function getNodePositionOutOfGroup(node: Node, containerNode: Node) {
-    const nodePosition = node.position ?? { x: 0, y: 0 };
-    nodePosition.x = nodePosition.x + containerNode.position.x;
-    nodePosition.y = nodePosition.y + containerNode.position.y;
-    return nodePosition;
   }
 }
 

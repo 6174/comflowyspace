@@ -17,7 +17,7 @@ import { comflowyConsoleClient } from '../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../types';
 import { SubflowStoreType, useSubflowStore } from "./subflow-state";
 import { staticCheckWorkflowErrors } from "../workflow-editor/parse-workflow-errors";
-import { getValueTypeOfNodeSlot } from "../utils/workflow";
+import { getNodePositionInGroup, getNodePositionOutOfGroup, getValueTypeOfNodeSlot } from "../utils/workflow";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -69,7 +69,12 @@ export interface AppState {
   onNodeFieldChange: OnPropChange
   onNodePropertyChange: (id: NodeId, key: string, value: any) => void;
   onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
-  onDocAttributeChange: (updates: Record<string, any>) => void
+  onDocAttributeChange: (updates: Record<string, any>) => void;
+
+  // group control
+  onAddNodeToGroup: (node: Node, group: Node) => void;
+  onRemoveNodeFromGroup: (node: Node) => void;
+  onDeleteGroup: (groupId: string) => void;
 
   onConnect: OnConnect
   onConnectStart: OnConnectStart
@@ -143,7 +148,6 @@ export const AppState = {
 
     const width = node.dimensions?.width;
     const height = node.dimensions?.height;
-    const parent = node.value.parent;
     const item: Node = {
       id: node.id + "",
       data: {
@@ -156,27 +160,9 @@ export const AppState = {
       position: node.position ?? { x: 0, y: 0 },
       width,
       height,
+      parentNode: node.value.parent,
       type: NODE_IDENTIFIER,
-      zIndex: maxZ + 1,
-      parentNode: parent
-    }
-
-    // edge case detection
-    if (item.parentNode === node.id) {
-      item.parentNode = undefined;
-    }
-
-    /**
-     * toggle group visile 
-     */
-    if (parent) {
-      const parentNode = state.nodes.find(n => n.id === parent);
-      const parentState = parentNode?.data?.value?.properties?.groupState as GroupNodeState || GroupNodeState.Expaned;
-      if (parentState !== GroupNodeState.Expaned) {
-        item.hidden = true;
-      } else {
-        item.hidden = false;
-      }
+      zIndex: maxZ + 1
     }
 
     if (widget.name === NODE_GROUP) {
@@ -259,6 +245,40 @@ export const useAppStore = create<AppState>((set, get) => ({
   widgets: {},
   widgetCategory: {},
 
+  onAddNodeToGroup: (node: Node, group: Node) => {
+    const st = get();
+    st.onNodeAttributeChange(node.id, {
+      parent: group.id,
+    });
+    const realPosition = getNodePositionInGroup(node, group);
+    st.onNodesChange([{
+      type: "position",
+      position: realPosition,
+      id: node.id
+    }]);
+  },
+  onRemoveNodeFromGroup: (node: Node) => {
+    const st = get();
+    if (!node.parentNode) {
+      return;
+    }
+    const groupNode = st.nodes.find(n => n.id === node.parentNode);
+    if (groupNode) {
+      st.onNodeAttributeChange(node.id, {
+        parent: null
+      });
+      const realPosition = getNodePositionOutOfGroup(node, groupNode);
+      st.onNodesChange([{
+        type: "position",
+        position: realPosition,
+        id: node.id
+      }]);
+    }
+  },
+  onDeleteGroup: (groupId: string) => {
+
+  },
+
   onTransformStart: () => {
     set({
       transforming: true
@@ -337,6 +357,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         controlboard: workflow.controlboard
       }
 
+
       for (const [key, node] of Object.entries(workflow.nodes)) {
         const widget = state.widgets[node.value.widget]
         if (widget !== undefined) {
@@ -355,6 +376,33 @@ export const useAppStore = create<AppState>((set, get) => ({
       for (const connection of workflow.connections) {
         state = AppState.addConnection(state, connection)
       }
+
+      /**
+       * check all node and group relations
+       */
+      state.nodes.forEach(item => {
+        const parentId = item.parentNode;
+        if (parentId) {
+          // edge case detection, 
+          if (parentId === item.id) {
+            item.parentNode = undefined;
+          }
+          const parentNode = state.graph[parentId];
+          if (parentNode) {
+            item.parentNode = parentId;
+            const parentState = parentNode.properties?.groupState as GroupNodeState || GroupNodeState.Expaned;
+            if (parentState !== GroupNodeState.Expaned) {
+              item.hidden = true;
+            } else {
+              item.hidden = false;
+            }
+          } else {
+            item.parentNode = undefined;
+          }
+        }
+      })
+
+      // console.log("render", state.nodes.map( node => node.position));
 
       /**
        * Check is postive or is negative connection, and update graph
@@ -526,6 +574,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       id,
       updates
     });
+    console.log(doc.getMap("workflow").toJSON());
+    // debugger
+    set({
+      doc
+    })
     onSyncFromYjsDoc();
   },
   onAddNode: (widget: Widget, position: XYPosition) => {
