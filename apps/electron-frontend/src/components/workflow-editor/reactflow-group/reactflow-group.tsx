@@ -43,6 +43,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const collapsed = nodeVisibleState === NodeVisibleState.Collapsed;
   return (
     <div className={`
+      group-node
       ${nodeStyles.reactFlowNode} 
       ${(node.selected || isDraggingNodeOverCurrentGroup) ? nodeStyles.reactFlowSelected : ""} 
       ${collapsed ? nodeStyles.nodeCollapsed : ""}
@@ -82,7 +83,7 @@ function GroupCollapsed(props: {
   return (
     <div className="node-inner">
       <div className="node-header">
-        <h2 className="node-title">
+        <h2 className="group-node-title node-title">
           {title}({children.length} children)
         </h2>
       </div>

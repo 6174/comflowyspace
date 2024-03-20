@@ -362,12 +362,12 @@
     background-color: var(--node-color);
     :global {
         .node-inner {
-            overflow: hidden;
-            .node-title {
+            .group-node-title {
                 position: relative;
                 top: 6px;
                 left: 8px;
             }
+            overflow: hidden;
             // display: none;
             .node-main {
                 position: absolute;
