@@ -10,6 +10,7 @@ export type NodeWrapperProps = NodeProps<{
   value: SDNode;
   dimensions: Dimensions;
   visibleState: NodeVisibleState;
+  children: string[]
 }>
 
 export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {

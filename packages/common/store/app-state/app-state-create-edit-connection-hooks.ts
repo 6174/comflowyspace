@@ -5,6 +5,12 @@ import _ from "lodash";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
+    /**
+     * connection stage
+     * @param ev 
+     * @param params 
+     * @returns 
+     */
     onConnectStart: (ev, params: OnConnectStartParams) => {
       console.log("on connect start", params);
       const st = get();
@@ -51,20 +57,12 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       AppState.persistUpdateDoc(st, doc)
       onSyncFromYjsDoc();
     },
-    onEdgesDelete: (changes: Edge[]) => {
-      console.log("on Edge Delete");
-      const { doc, onSyncFromYjsDoc } = get();
-      WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
-      onSyncFromYjsDoc();
-    },
-    onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => {
-      console.log("on Edge Update End", edge);
-    },
+    /**
+     * edit connected edge
+     * @param changes 
+     */
     onEdgesChange: (changes) => {
       set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
-    },
-    onEdgeUpdateStart: () => {
-      console.log("on Edge Update Start");
     },
     onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
       console.log("on Edge Update", oldEdge, newConnection);
@@ -79,6 +77,18 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       WorkflowDocumentUtils.onEdgeUpdate(doc, oldEdge, newConnection);
 
       onSyncFromYjsDoc();
+    },
+    onEdgesDelete: (changes: Edge[]) => {
+      console.log("on Edge Delete");
+      const { doc, onSyncFromYjsDoc } = get();
+      WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
+      onSyncFromYjsDoc();
+    },
+    onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => {
+      console.log("on Edge Update End", edge);
+    },
+    onEdgeUpdateStart: () => {
+      console.log("on Edge Update Start");
     },
   }
 }

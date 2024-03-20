@@ -39,9 +39,6 @@ export const NodeComponent = memo(({
   const isInProgress = progressBar !== undefined
   const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
-  const parentNode = useAppStore(st => st.graph[node.data.value.parent]);
-  const parentState = parentNode?.properties?.nodeVisibleState || NodeVisibleState.Expaned;
-
   const transform = useAppStore(st => st.transform);
   const invisible = transform < 0.2;
   
@@ -51,14 +48,13 @@ export const NodeComponent = memo(({
   if (isPositive) {
     nodeBgColor = "#212923";
     nodeColor = "#67A166";
-  } 
+  }
 
   if (isNegative) {
     nodeBgColor = "#261E1F";
     nodeColor = "#DE654B";
   }
   
-  const parentCollpased = parentNode && parentState === NodeVisibleState.Collapsed;
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
@@ -67,7 +63,7 @@ export const NodeComponent = memo(({
       ${nodeError ? nodeStyles.reactFlowError : ""}
       ${isPositive ? "positive-node" : ""}
       ${isNegative ? "negative-node" : ""}
-      ${collapsed || parentCollpased ? nodeStyles.nodeCollapsed : ""}
+      ${collapsed ? nodeStyles.nodeCollapsed : ""}
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,

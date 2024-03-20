@@ -5,7 +5,6 @@ import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-pro
 import { SubflowNodeWithControl } from "./comflowy-controlboard.types";
 import { PersistedFullWorkflow } from "./comfy-workflow.types";
 export const NODE_IDENTIFIER = 'sdNode';
-export const NODE_GROUP = 'Group';
 export type NodeId = string
 
 export enum NodeVisibleState {

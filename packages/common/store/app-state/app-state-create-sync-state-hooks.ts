@@ -1,7 +1,7 @@
 import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import { throttledUpdateDocument } from "../../storage";
 import _ from "lodash";
-import { NodeVisibleState, PersistedWorkflowDocument, UnknownWidget } from "../../types";
+import { NODE_GROUP, NodeVisibleState, PersistedWorkflowDocument, UnknownWidget } from "../../types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter) {
   return {
@@ -41,7 +41,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
             // console.log(`Unknown widget ${node.value.widget}`)
           }
         }
-  
+        
         for (const connection of workflow.connections) {
           state = AppState.addConnection(state, connection)
         }
@@ -95,11 +95,41 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
                   // item.hidden = false;
                   break;
               }
+
+              // add to parent's children
+              if (parentNode.flowNode.data.children.indexOf(item.id) === -1) {
+                parentNode.flowNode.data.children.push(item.id);
+              }
+
             } else {
               item.parentNode = undefined;
             }
           }
         })
+
+        state.edges.forEach(edge => {
+          const sourceNode = state.graph[edge.source];
+          const targetNode = state.graph[edge.target];
+          if (sourceNode.parent && targetNode.parent && sourceNode.parent === targetNode.parent) {
+            const parentNode = state.graph[targetNode.parent];
+            const nodeVisibleState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
+            if (nodeVisibleState === NodeVisibleState.Collapsed) {
+              edge.hidden = true;
+            }
+          }
+          if (targetNode && targetNode.parent && sourceNode.parent !== targetNode.parent) {
+            const parentId = targetNode.parent;
+            const parentNode = state.graph[targetNode.parent];
+            if (parentNode && parentNode.widget === NODE_GROUP) {
+              const nodeVisibleState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
+              if (nodeVisibleState === NodeVisibleState.Collapsed) {
+                edge.target = parentId;
+                edge.deletable = false;
+                edge.focusable = false;
+              }
+            }
+          }
+        });
   
         // console.log("render", state.nodes.map( node => node.position));
   
@@ -124,6 +154,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
             }
           }
         }
+
         return {
           ...state,
           unknownWidgets

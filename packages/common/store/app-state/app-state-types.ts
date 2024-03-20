@@ -1,24 +1,17 @@
 import * as Y from "yjs";
-import exifr from 'exifr'
-import { create } from 'zustand'
-import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
-import { WorkflowDocumentUtils, createNodeId } from '../ydoc-utils';
+import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, ReactFlowInstance} from 'reactflow';
+import { WorkflowDocumentUtils } from '../ydoc-utils';
 import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, NodeVisibleState } from '../../types'
 import { throttledUpdateDocument } from "../../storage";
-import { PromptResponse, createPrompt, sendPrompt } from '../../comfyui-bridge/prompt';
-import { getWidgetLibrary as getWidgets } from '../../comfyui-bridge/bridge';
-import { writeWorkflowToFile, } from '../../comfyui-bridge/export-import';
-import { getBackendUrl } from '../../config'
-import { uuid } from '../../utils';
+import { PromptResponse } from '../../comfyui-bridge/prompt';
 import { SlotEvent } from '../../utils/slot-event';
 import { ComfyUIExecuteError } from '../../types';
-import { ComfyUIEvents } from '../../types';
-import { comflowyConsoleClient } from '../../utils/comflowy-console.client';
 import { ControlBoardConfig } from '../../types';
-import { SubflowStoreType, useSubflowStore } from "../subflow-state";
+import { SubflowStoreType } from "../subflow-state";
 import { staticCheckWorkflowErrors } from "../../workflow-editor/parse-workflow-errors";
-import { getNodePositionInGroup, getNodePositionOutOfGroup, getValueTypeOfNodeSlot } from "../../utils/workflow";
+import { getValueTypeOfNodeSlot } from "../../utils/workflow";
 import _ from "lodash";
+
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
 export interface EditorEvent {
@@ -45,7 +38,7 @@ export interface AppState {
   nodes: Node[]
   edges: Edge[]
   controlboard?: ControlBoardConfig
-  graph: Record<NodeId, SDNode>
+  graph: Record<NodeId, (SDNode & {id: string, flowNode: Node})>
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
   draggingAndResizing: boolean;
@@ -158,7 +151,8 @@ export const AppState = {
         value: nodeValue,
         dimensions: node.dimensions,
         position: node.position,
-        visibleState: node.value.properties?.nodeVisibleState || NodeVisibleState.Expaned
+        visibleState: node.value.properties?.nodeVisibleState || NodeVisibleState.Expaned,
+        children: []
       },
       selected: stateNode?.selected,
       position: node.position ?? { x: 0, y: 0 },
@@ -179,11 +173,13 @@ export const AppState = {
       nodes: applyNodeChanges([{ type: 'add', item }], state.nodes),
       graph: {
         ...state.graph,
-        [node.id]: {
+        [item.id]: {
           ...node.value,
+          id: item.id,
           isPositive: false,
           isNegative: false,
           images: state.graph[node.id]?.images || node.images || [],
+          flowNode: item
         }
       }
     }
