@@ -8,7 +8,7 @@ export const NODE_IDENTIFIER = 'sdNode';
 export const NODE_GROUP = 'Group';
 export type NodeId = string
 
-export enum GroupNodeState {
+export enum NodeVisibleState {
   Collapsed = "collpased",
   Expaned = "expaned",
   CollapsedAsNode = "collapsedAsNode"
@@ -67,7 +67,11 @@ export interface SDNode {
   color?: string;
   bgcolor?: string;
   title?: string;
-  properties?: any;
+  properties?: { 
+    nodeVisibleState?: NodeVisibleState, 
+    nodeSize?: [number, number],
+    [_:string]: any
+  };
   isPositive?: boolean;
   isNegative?: boolean;
   custom_fields?: string[];

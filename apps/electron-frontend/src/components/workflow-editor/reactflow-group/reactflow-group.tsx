@@ -1,13 +1,12 @@
 import { CSSProperties, memo, useCallback, useState } from "react";
 import { NodeWrapperProps } from "../reactflow-node/reactflow-node-wrapper";
 import { useAppStore } from "@comflowy/common/store";
-import { GroupNodeState, SDNODE_DEFAULT_COLOR } from "@comflowy/common/types";
+import { NodeVisibleState, SDNODE_DEFAULT_COLOR } from "@comflowy/common/types";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import Color from "color";
 import { ComflowyNodeResizer, useNodeAutoResize } from "../reactflow-node/reactflow-node-resize";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Radio } from "antd";
-
 /**
  * group node
  */
@@ -16,12 +15,8 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const sdnode = props.data.value;
   const id = props.id;
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
-  const groupState = useAppStore(st => st.graph[id]?.properties?.groupState || GroupNodeState.Expaned);
+  const nodeVisibleState = sdnode.properties?.nodeVisibleState;
   const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
-  const onNodePropertyChange = useAppStore(st => st.onNodePropertyChange);
-  const onChangeGroupState = useCallback((v) => {
-    onNodePropertyChange(id, "groupState", v);
-  }, [id]);
 
   let nodeColor = props.data.value.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = props.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
@@ -29,8 +24,8 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const invisible = transform < 0.2;
 
   let $view = <GroupExpanded {...props} />;
-  switch (groupState) {
-    case GroupNodeState.Collapsed:
+  switch (nodeVisibleState) {
+    case NodeVisibleState.Collapsed:
       $view = <GroupCollapsed {...props} />
       break;
   }
@@ -44,7 +39,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
         '--node-border-color': nodeColor,
         '--node-bg-color':  Color(nodeBgColor).alpha(.95).hexa(),
       } as CSSProperties}> 
-      <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} />
+      {nodeVisibleState !== NodeVisibleState.Collapsed && <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} /> }
       
       {(!invisible && $view) ? (
         <div className="node-inner">
@@ -52,17 +47,6 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
             <h2 className="node-title">
               {title}
             </h2>
-            <div className="actions">
-              {process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled" && (
-                <Radio.Group value={groupState} onChange={ev => {
-                  onChangeGroupState(ev.target.value);
-                }}>
-                  <Radio.Button value={GroupNodeState.Expaned}>E</Radio.Button>
-                  <Radio.Button value={GroupNodeState.CollapsedAsNode}>CAN</Radio.Button>
-                  <Radio.Button value={GroupNodeState.Collapsed}>CA</Radio.Button>
-                </Radio.Group>
-              )}
-            </div>
           </div>
           <div className="node-main" ref={mainRef}>
           </div>

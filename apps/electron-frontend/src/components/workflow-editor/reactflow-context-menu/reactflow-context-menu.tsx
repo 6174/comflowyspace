@@ -10,6 +10,7 @@ import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
 import { CopyIcon, DeleteIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
+import { NodeVisibleState } from '@comflowy/common/types';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -88,7 +89,7 @@ function NodeMenu(props: NodeMenuProps) {
   const {id} = props;
   const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
   const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
-
+  const onChangeNodeVisibleState = useAppStore(st => st.onChangeNodeVisibleState)
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
     e.domEvent.stopPropagation();
@@ -113,6 +114,14 @@ function NodeMenu(props: NodeMenuProps) {
         props.hide();
         console.log("delete node")
         break;
+      case 'MENU_ITEM_COLLPASE_NODE':
+        onChangeNodeVisibleState(id, NodeVisibleState.Collapsed);
+        props.hide();
+        break;
+      case 'MENU_ITEM_EXPAND_NODE':
+        onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
+        props.hide();
+        break;
       default:
         break;
     }
@@ -124,6 +133,13 @@ function NodeMenu(props: NodeMenuProps) {
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
     { type: "divider" },
   ];
+
+  const nodeVisibleState = node.properties?.nodeVisibleState || NodeVisibleState.Expaned;
+  if (nodeVisibleState === NodeVisibleState.Expaned) {
+    items.push(getMenuItem(<div className="menu-item-title"> Collpase </div>, 'MENU_ITEM_COLLPASE_NODE', null, null));
+  } else if (nodeVisibleState === NodeVisibleState.Collapsed) {
+    items.push(getMenuItem(<div className="menu-item-title"> EXPAND </div>, 'MENU_ITEM_EXPAND_NODE', null, null));
+  }
 
   if (hasInputs) {
     items.push(getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null))

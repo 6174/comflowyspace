@@ -3,7 +3,7 @@ import exifr from 'exifr'
 import { create } from 'zustand'
 import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, applyEdgeChanges, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, NodeChange, ReactFlowInstance, } from 'reactflow';
 import { WorkflowDocumentUtils, createNodeId } from './ydoc-utils';
-import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, GroupNodeState } from '../types'
+import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, NodeVisibleState } from '../types'
 import { throttledUpdateDocument } from "../storage";
 import { PromptResponse, createPrompt, sendPrompt } from '../comfyui-bridge/prompt';
 import { getWidgetLibrary as getWidgets } from '../comfyui-bridge/bridge';
@@ -68,7 +68,7 @@ export interface AppState {
   onDeleteNodes: (changes: (Node | { id: string })[]) => void
   onEdgesDelete: OnEdgesDelete
   onNodeFieldChange: OnPropChange
-  onNodePropertyChange: (id: NodeId, key: string, value: any) => void;
+  onNodePropertyChange: (id: NodeId, updates: Partial<SDNode["properties"]>) => void;
   onNodeAttributeChange: (id: string, updates: Record<string, any>) => void
   onDocAttributeChange: (updates: Record<string, any>) => void;
 
@@ -76,6 +76,9 @@ export interface AppState {
   onAddNodeToGroup: (node: Node, group: Node) => void;
   onRemoveNodeFromGroup: (node: Node) => void;
   onDeleteGroup: (groupId: string) => void;
+
+  // collpase and expand
+  onChangeNodeVisibleState: (nodeId: string, state: NodeVisibleState) => void;
 
   onConnect: OnConnect
   onConnectStart: OnConnectStart
@@ -246,6 +249,38 @@ export const useAppStore = create<AppState>((set, get) => ({
   widgets: {},
   widgetCategory: {},
 
+  onChangeNodeVisibleState: (nodeId: string, state: NodeVisibleState) => {
+    const st = get();
+    const node = st.nodes.find(n => n.id === nodeId);
+    if (!node) {
+      throw new Error("nodeId does not exist")
+    }
+    const id = node.id;
+    const dimensions = node.data.dimensions;
+    const nodeSize = node.data.value.properties?.nodeSize || [dimensions.width, dimensions.height];
+    switch (state) {
+      case NodeVisibleState.Collapsed:
+        st.onNodePropertyChange(id, {
+          nodeVisibleState: state,
+          nodeSize: [dimensions.width, dimensions.height]
+        });
+        break;
+      case NodeVisibleState.Expaned:
+        st.onNodePropertyChange(id, {
+          nodeVisibleState: state
+        });
+        st.onNodesChange([{
+          type: "dimensions",
+          dimensions: {
+            width: nodeSize[0],
+            height: nodeSize[1]
+          },
+          id
+        }])
+        break;
+    }
+  },
+
   onAddNodeToGroup: (node: Node, group: Node) => {
     const st = get();
     st.onNodeAttributeChange(node.id, {
@@ -378,10 +413,24 @@ export const useAppStore = create<AppState>((set, get) => ({
         state = AppState.addConnection(state, connection)
       }
 
-      /**
-       * check all node and group relations
-       */
+      
       state.nodes.forEach(item => {
+        /**
+         * toggle visible state
+         */
+        const nodeVisibleState = item.data.value.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
+        switch (nodeVisibleState) {
+          case NodeVisibleState.Collapsed:
+            item.width = 200;
+            item.height = 60;
+            break;
+          default:
+            break;
+        }
+        
+        /**
+         * check all node and group relations
+         */
         const parentId = item.parentNode;
         if (parentId) {
           // edge case detection, 
@@ -391,11 +440,28 @@ export const useAppStore = create<AppState>((set, get) => ({
           const parentNode = state.graph[parentId];
           if (parentNode) {
             item.parentNode = parentId;
-            const parentState = parentNode.properties?.groupState as GroupNodeState || GroupNodeState.Expaned;
-            if (parentState !== GroupNodeState.Expaned) {
-              item.hidden = true;
-            } else {
-              item.hidden = false;
+            const parentState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
+            switch (parentState) {
+              case NodeVisibleState.Collapsed:
+                // item.hidden = true;
+                item.selectable = false;
+                item.draggable = false;
+                // item.height = 20;
+                // item.width = 20;
+                item.position = {
+                  x: 0,
+                  y: 0
+                }
+                item.style = {
+                  ...item.style,
+                  width: 20,
+                  height: 20,
+                  visibility: 'hidden'
+                }
+                break;
+              default:
+                // item.hidden = false;
+                break;
             }
           } else {
             item.parentNode = undefined;
@@ -582,11 +648,11 @@ export const useAppStore = create<AppState>((set, get) => ({
     onSyncFromYjsDoc();
     set(AppState.attatchStaticCheckErrors(get()));
   },
-  onNodePropertyChange: (id: NodeId, key: string, value: any) => {
+  onNodePropertyChange: (id: NodeId, updates: Partial<SDNode["properties"]>) => {
     const st = get();
     st.onNodeAttributeChange(id, { properties: {
       ...st.graph[id].properties || {},
-      [key]: value
+      ...updates
     }});
   },
   onNodeAttributeChange: (id: string, updates) => {
@@ -595,11 +661,6 @@ export const useAppStore = create<AppState>((set, get) => ({
       id,
       updates
     });
-    console.log(doc.getMap("workflow").toJSON());
-    // debugger
-    set({
-      doc
-    })
     onSyncFromYjsDoc();
   },
   onAddNode: (widget: Widget, position: XYPosition) => {

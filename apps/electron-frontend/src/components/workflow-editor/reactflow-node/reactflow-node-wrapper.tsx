@@ -8,7 +8,7 @@ import { SubflowNode } from "./reactflow-subflow-node";
 export type NodeWrapperProps = NodeProps<{
   widget: Widget;
   value: SDNode;
-  dimensions: Dimensions
+  dimensions: Dimensions;
 }>
 
 export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
@@ -24,7 +24,7 @@ export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
 
   if (props.data.value.widget === SUBFLOW_WIDGET_TYPE_NAME) {
-    return <SubflowNode node={props as any} imagePreviews={imagePreviews} nodeError={nodeError} />
+    return <SubflowNode node={props} imagePreviews={imagePreviews} nodeError={nodeError} />
   }
   
   return (

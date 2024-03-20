@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { type NodeProps, Position, Dimensions} from 'reactflow'
-import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR } from '@comflowy/common/types';
+import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, NodeVisibleState } from '@comflowy/common/types';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { useAppStore } from '@comflowy/common/store';
@@ -40,6 +40,8 @@ export const NodeComponent = memo(({
   const { inputs, title, outputs, params } = getNodeRenderInfo(node.data.value, node.data.widget);
   const isInProgress = progressBar !== undefined
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
+  const parentNode = useAppStore(st => st.graph[node.data.value.parent]);
+  const parentState = parentNode?.properties?.nodeVisibleState || NodeVisibleState.Expaned;
 
   const transform = useAppStore(st => st.transform);
   const invisible = transform < 0.2;
@@ -56,7 +58,6 @@ export const NodeComponent = memo(({
     nodeBgColor = "#261E1F";
     nodeColor = "#DE654B";
   }
-
 
   return (
     <div className={`
