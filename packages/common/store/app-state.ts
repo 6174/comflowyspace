@@ -18,6 +18,7 @@ import { ControlBoardConfig } from '../types';
 import { SubflowStoreType, useSubflowStore } from "./subflow-state";
 import { staticCheckWorkflowErrors } from "../workflow-editor/parse-workflow-errors";
 import { getNodePositionInGroup, getNodePositionOutOfGroup, getValueTypeOfNodeSlot } from "../utils/workflow";
+import _ from "lodash";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -541,8 +542,28 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   onDeleteNodes: (changes: (Node | {id: string})[]) => {
     console.log("on Node Delete");
-    const { doc, onSyncFromYjsDoc, } = get();
-    WorkflowDocumentUtils.onDeleteNodes(doc, changes.map(node => node.id));
+    const { doc, onSyncFromYjsDoc, nodes} = get();
+
+    /**
+     * find group node & it's child nodes
+     */
+    let nodeIdsToDelete = changes.map(change => change.id);
+    const groupNodes = changes.map(change => {
+      const nodeId = change.id;
+      const node = nodes.find(node => node.id === nodeId);
+      return node;
+    }).filter(node => node?.type === NODE_GROUP);
+
+    groupNodes.forEach(groupNode => {
+      const groupNodes = nodes.filter(node => node.parentNode === groupNode!.id);
+      const groupNodeIds = groupNodes.map(node => node.id);
+      nodeIdsToDelete = nodeIdsToDelete.concat(groupNodeIds);
+    });
+
+    nodeIdsToDelete = _.uniq(nodeIdsToDelete);
+
+    WorkflowDocumentUtils.onDeleteNodes(doc, nodeIdsToDelete);
+    
     onSyncFromYjsDoc();
   },
   onEdgesDelete: (changes: Edge[]) => {
