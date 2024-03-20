@@ -68,11 +68,15 @@ function GroupCollapsed(props: {
   const { title } = getNodeRenderInfo(sdnode, node.data.widget);
   const childrenIds = node.data.children || [];
   const children = useAppStore(st => childrenIds.map(id => st.graph[id].flowNode));
+  let totalInputs = 0, totalOutputs = 0;
   const childrenWidthRenderInfo = children.map(child => {
-    return {
+    const ret = {
       node: child,
       renderInfo: getNodeRenderInfo(child.data.value, child.data.widget)
     }
+    totalInputs += ret.renderInfo.inputs.length;
+    totalOutputs += ret.renderInfo.outputs.length;
+    return ret;
   })
   // render slots of children
   return (
@@ -81,6 +85,14 @@ function GroupCollapsed(props: {
         <h2 className="node-title">
           {title}({children.length} children)
         </h2>
+      </div>
+      <div className="fake-slots">
+        {totalInputs > 0 && (
+          <div className="fake-slot fake-slot-left"></div>
+        )}
+        {totalOutputs > 0 && (
+          <div className="fake-slot fake-slot-right"></div>
+        )}
       </div>
       <div className="node-main">
         <div className="node-slots">

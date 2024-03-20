@@ -26,7 +26,8 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
           edges: [],
           controlboard: workflow.controlboard
         }
-  
+        
+        // add nodes
         for (const [key, node] of Object.entries(workflow.nodes)) {
           const widget = state.widgets[node.value.widget]
           if (widget !== undefined) {
@@ -42,10 +43,14 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
           }
         }
         
+        // add connections
         for (const connection of workflow.connections) {
           state = AppState.addConnection(state, connection)
         }
-  
+        
+        /**
+         * modify nodes attributes according to node state
+         * */ 
         state.nodes.forEach(item => {
           /**
            * toggle visible state
@@ -107,9 +112,14 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
           }
         })
 
+        /**
+         * modify edge attributes according to node state
+         *  */ 
         state.edges.forEach(edge => {
           const sourceNode = state.graph[edge.source];
           const targetNode = state.graph[edge.target];
+
+          // sourceNode and parentNode are in the same container and the container is collapsed
           if (sourceNode.parent && targetNode.parent && sourceNode.parent === targetNode.parent) {
             const parentNode = state.graph[targetNode.parent];
             const nodeVisibleState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
@@ -117,6 +127,8 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
               edge.hidden = true;
             }
           }
+
+          // targetNode in a collapsed container
           if (targetNode && targetNode.parent && sourceNode.parent !== targetNode.parent) {
             const parentId = targetNode.parent;
             const parentNode = state.graph[targetNode.parent];
@@ -129,9 +141,21 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
               }
             }
           }
+
+          // sourceNode in a collapsed container
+          if (sourceNode && sourceNode.parent && sourceNode.parent !== targetNode.parent) {
+            const parentId = sourceNode.parent;
+            const parentNode = state.graph[parentId];
+            if (parentNode && parentNode.widget === NODE_GROUP) {
+              const nodeVisibleState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
+              if (nodeVisibleState === NodeVisibleState.Collapsed) {
+                edge.source = parentId;
+                edge.deletable = false;
+                edge.focusable = false;
+              }
+            }
+          }
         });
-  
-        // console.log("render", state.nodes.map( node => node.position));
   
         /**
          * Check is postive or is negative connection, and update graph

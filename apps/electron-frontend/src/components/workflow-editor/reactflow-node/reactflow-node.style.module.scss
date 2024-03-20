@@ -362,6 +362,12 @@
     background-color: var(--node-color);
     :global {
         .node-inner {
+            overflow: hidden;
+            .node-title {
+                position: relative;
+                top: 6px;
+                left: 8px;
+            }
             // display: none;
             .node-main {
                 position: absolute;
@@ -376,6 +382,20 @@
                 .node-slot-right {
                     right: 0;
                 }
+            }
+        }
+        .fake-slot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 8px;
+            background-color: rgb(146, 147, 155);
+            top: 17px;
+            &-left {
+                left: 3px;
+            }
+            &-right {
+                right: 3px;
             }
         }
     }
