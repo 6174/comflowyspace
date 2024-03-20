@@ -6,7 +6,6 @@ import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import Color from "color";
 import { ComflowyNodeResizer, useNodeAutoResize } from "../reactflow-node/reactflow-node-resize";
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
-import { Radio } from "antd";
 /**
  * group node
  */
@@ -15,7 +14,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const sdnode = props.data.value;
   const id = props.id;
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
-  const nodeVisibleState = sdnode.properties?.nodeVisibleState;
+  const nodeVisibleState = node.data.visibleState;
   const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
 
   let nodeColor = props.data.value.color || SDNODE_DEFAULT_COLOR.color;
@@ -29,11 +28,13 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
       $view = <GroupCollapsed {...props} />
       break;
   }
+  const collapsed = nodeVisibleState === NodeVisibleState.Collapsed;
   const { title } = getNodeRenderInfo(sdnode, node.data.widget);
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
       ${(node.selected || isDraggingNodeOverCurrentGroup) ? nodeStyles.reactFlowSelected : ""} 
+      ${collapsed ? nodeStyles.nodeCollapsed : ""}
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,

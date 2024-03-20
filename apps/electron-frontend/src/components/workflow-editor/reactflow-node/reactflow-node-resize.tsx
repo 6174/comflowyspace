@@ -1,6 +1,6 @@
 import { MutableRefObject,  useCallback, useEffect, useRef, useState } from 'react'
 import { type NodeProps, NodeResizeControl } from 'reactflow'
-import { PreviewImage } from '@comflowy/common/types';
+import { NodeVisibleState, PreviewImage } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
 import ResizeIcon from 'ui/icons/resize-icon';
 
@@ -46,6 +46,7 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
   mainRef: MutableRefObject<HTMLDivElement>;
   setResizing: (resizing: boolean) => void;
 } {
+  const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
   const mainRef = useRef<HTMLDivElement>();
   const [minHeight, setMinHeight] = useState(100);
   const [minWidth] = useState(240);
@@ -54,7 +55,7 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
   const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);
 
   const updateMinHeight = useCallback(async () => {
-    if (mainRef.current) {
+    if (mainRef.current && !collapsed) {
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve(null);
@@ -79,7 +80,7 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
       }
       setMinHeight(height);
     }
-  }, [setMinHeight, node.id, imagePreviews]);
+  }, [setMinHeight, node.id, imagePreviews, collapsed]);
 
   useEffect(() => {
     updateMinHeight();

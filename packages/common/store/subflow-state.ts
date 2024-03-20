@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, PersistedWorkflowNode, SubflowNodeWithControl, getSubflowSlotId, SubflowNodeRenderingInfo } from "../types";
+import { NodeId, ComfyUIExecuteError, PersistedFullWorkflow, NodeInProgress, PreviewImage, SDNode, SUBFLOW_WIDGET_TYPE_NAME, WidgetKey, Widget, Widgets, PersistedWorkflowNode, SubflowNodeWithControl, getSubflowSlotId, SubflowNodeRenderingInfo, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "../types";
 import { documentDatabaseInstance } from '../storage';
 import { getNodeRenderInfo } from '../workflow-editor/node-rendering';
 import _ from 'lodash';
@@ -33,14 +33,17 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
   widgets: {},
   relations: {},
   workflowStates: {},
-  getSubflowNodeSlotInfo: (flowId: string, slotId: string, handleType: "source" | "target") => {
+  getSubflowNodeSlotInfo: (flowId: string, slotId: string, handleType: "source" | "target"): ComfyUIWorkflowNodeInput | ComfyUIWorkflowNodeOutput | undefined => {
     const st = get();
     const renderingInfo = st.workflowStates[flowId]?.renderingInfo;
     if (!renderingInfo) {
       throw new Error("Something wrong, there is no rendering info found to parse slot info");
     }
-    const data = handleType === "target" ? renderingInfo.inputs : renderingInfo.outputs;
-    return data.find(it => it.id.toUpperCase() === slotId);
+    if (handleType === "target") {
+      return renderingInfo.inputs.find((it: any) => it?.id?.toUpperCase() === slotId);
+    } else {
+      return renderingInfo.outputs.find((it: any) => it?.id?.toUpperCase() === slotId);
+    }
   },
   setWidgets: (widgets: Widgets) => {
     set({ widgets });
@@ -57,7 +60,7 @@ export const useSubflowStore = create<SubflowStore>((set, get) => ({
         state.workflowStates = {
           ...state.workflowStates,
           [flowId]: {
-            ...state.workflowStates[flowId] || {},
+            ...state.workflowStates[flowId],
             renderingInfo
           }
         };

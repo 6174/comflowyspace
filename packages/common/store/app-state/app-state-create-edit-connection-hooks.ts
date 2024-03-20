@@ -1,0 +1,118 @@
+import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
+import { type Edge, type Connection as FlowConnecton,   applyEdgeChanges,  OnConnectStartParams } from 'reactflow';
+import { WorkflowDocumentUtils } from '../ydoc-utils';
+import _ from "lodash";
+
+export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
+  return {
+    onConnectStart: (ev, params: OnConnectStartParams) => {
+      console.log("on connect start", params);
+      const st = get();
+      if (!params.nodeId) {
+        return;
+      }
+
+      const node = st.graph[params.nodeId];
+      console.log("connecting node", params);
+      const valueType = AppState.getValueTypeOfNodeSlot(st, node, params.handleId!, params.handleType!);
+
+      set({
+        connectingStartParams: {
+          ...params,
+          valueType
+        }, isConnecting: true
+      })
+    },
+    onConnectEnd: (ev) => {
+      console.log("on connect end");
+      set({ isConnecting: false, connectingStartParams: undefined })
+    },
+    onConnect: (connection: FlowConnecton) => {
+      console.log("on connect", connection);
+      const [validate, message] = validateEdge(get(), connection);
+      if (!validate) {
+        console.log("validate failed", message);
+        return;
+      }
+      // remove old edge if exist
+      // connect new edge
+      const st = get();
+      const { doc, onSyncFromYjsDoc } = st;
+      const oldEdge = st.edges.find(edge => {
+        return (
+          edge.target === connection.target &&
+          edge.targetHandle === connection.targetHandle
+        )
+      });
+      if (oldEdge) {
+        WorkflowDocumentUtils.onEdgesDelete(doc, [oldEdge.id]);
+      }
+      WorkflowDocumentUtils.addConnection(doc, connection);
+      AppState.persistUpdateDoc(st, doc)
+      onSyncFromYjsDoc();
+    },
+    onEdgesDelete: (changes: Edge[]) => {
+      console.log("on Edge Delete");
+      const { doc, onSyncFromYjsDoc } = get();
+      WorkflowDocumentUtils.onEdgesDelete(doc, changes.map(edge => edge.id));
+      onSyncFromYjsDoc();
+    },
+    onEdgeUpdateEnd: (ev: any, edge: Edge, success: boolean) => {
+      console.log("on Edge Update End", edge);
+    },
+    onEdgesChange: (changes) => {
+      set((st) => ({ edges: applyEdgeChanges(changes, st.edges) }))
+    },
+    onEdgeUpdateStart: () => {
+      console.log("on Edge Update Start");
+    },
+    onEdgeUpdate: (oldEdge: Edge, newConnection: FlowConnecton) => {
+      console.log("on Edge Update", oldEdge, newConnection);
+      const [validate, message] = validateEdge(get(), newConnection);
+      if (!validate) {
+        console.log("validate failed", message);
+        return;
+      }
+      const st = get();
+      const { doc, onSyncFromYjsDoc } = st;
+
+      WorkflowDocumentUtils.onEdgeUpdate(doc, oldEdge, newConnection);
+
+      onSyncFromYjsDoc();
+    },
+  }
+}
+
+export function validateEdge(st: AppState, connection: FlowConnecton): [boolean, string] {
+  const { source, sourceHandle, target, targetHandle } = connection;
+  if (!source || !target) {
+    return [false, "source or target is null"];
+  }
+
+  if (st.edges.find(edge =>
+    edge.source === source &&
+    edge.sourceHandle === sourceHandle &&
+    edge.target === target &&
+    edge.targetHandle === targetHandle)) {
+    return [false, "edge already exist"];
+  }
+
+  const sourceNode = st.graph[source];
+  const targetNode = st.graph[target];
+  const sourceOutputs = sourceNode.outputs;
+  const targetInputs = targetNode.inputs;
+
+  const output = sourceOutputs.find(output => output.name.toUpperCase() === sourceHandle);
+  const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);
+  // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
+
+  if (!output || !input) {
+    return [false, "output or input is null"];
+  }
+
+  if (output.type !== input.type) {
+    return [false, "output type and input type not match"];
+  }
+
+  return [true, "success"];
+}

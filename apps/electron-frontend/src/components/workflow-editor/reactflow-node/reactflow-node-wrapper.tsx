@@ -1,4 +1,4 @@
-import { SDNode, SUBFLOW_WIDGET_TYPE_NAME, UnknownWidget, Widget } from "@comflowy/common/types"
+import { NodeVisibleState, SDNode, SUBFLOW_WIDGET_TYPE_NAME, UnknownWidget, Widget } from "@comflowy/common/types"
 import { useAppStore } from "@comflowy/common/store"
 import { Dimensions, NodeProps } from "reactflow";
 import {NodeComponent} from "./reactflow-node";
@@ -9,6 +9,7 @@ export type NodeWrapperProps = NodeProps<{
   widget: Widget;
   value: SDNode;
   dimensions: Dimensions;
+  visibleState: NodeVisibleState;
 }>
 
 export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {

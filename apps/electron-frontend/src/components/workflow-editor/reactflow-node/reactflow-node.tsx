@@ -12,14 +12,11 @@ import { Slot } from './reactflow-node-slot';
 import { InstallMissingWidget, NodeError } from './reactflow-node-errors';
 import { ComflowyNodeResizer, useNodeAutoResize } from './reactflow-node-resize';
 import { NodeImagePreviews } from './reactflow-node-imagepreviews';
+import { NodeWrapperProps } from './reactflow-node-wrapper';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
-  node: NodeProps<{
-    widget: Widget;
-    value: SDNode;
-    dimensions: Dimensions
-  }>
+  node: NodeWrapperProps
   isPositive: boolean;
   isNegative: boolean;
   progressBar?: number;
@@ -37,8 +34,10 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
-  const { inputs, title, outputs, params } = getNodeRenderInfo(node.data.value, node.data.widget);
+  const renderInfo= getNodeRenderInfo(node.data.value, node.data.widget);
+  const { inputs, title, outputs, params } = renderInfo;
   const isInProgress = progressBar !== undefined
+  const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
   const parentNode = useAppStore(st => st.graph[node.data.value.parent]);
   const parentState = parentNode?.properties?.nodeVisibleState || NodeVisibleState.Expaned;
@@ -58,7 +57,8 @@ export const NodeComponent = memo(({
     nodeBgColor = "#261E1F";
     nodeColor = "#DE654B";
   }
-
+  
+  const parentCollpased = parentNode && parentState === NodeVisibleState.Collapsed;
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
@@ -67,13 +67,14 @@ export const NodeComponent = memo(({
       ${nodeError ? nodeStyles.reactFlowError : ""}
       ${isPositive ? "positive-node" : ""}
       ${isNegative ? "negative-node" : ""}
+      ${collapsed || parentCollpased ? nodeStyles.nodeCollapsed : ""}
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,
         '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
 
-      <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} />
+      {!collapsed && <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} /> }
 
       {!invisible ? (
         <div className='node-inner'>
@@ -108,16 +109,21 @@ export const NodeComponent = memo(({
                 ))}
               </div>
             </div>
-            
-            <div className="node-params">
-              {params.map(({ property, input }) => (
-                <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
-              ))}
-            </div>
-            <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
-            <div style={{ height: 10 }}></div>
+            {
+              !collapsed && (
+                <>
+                  <div className="node-params">
+                    {params.map(({ property, input }) => (
+                      <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
+                    ))}
+                  </div>
+                  <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
+                  <div style={{ height: 10 }}></div>
+                </>
+              )
+            }
           </div>
-          <NodeImagePreviews imagePreviews={imagePreviews}/>
+          {!collapsed && <NodeImagePreviews imagePreviews={imagePreviews}/> }
         </div>
       ) : (
         <>

@@ -303,6 +303,8 @@
     }
 }
 
+
+
 .reactFlowSelected {
     &::before,
     &::after {
@@ -354,4 +356,27 @@
     line-height: 16px;
     background: var(--Linear, linear-gradient(90deg, #CB2B95 5.47%, #F75B2A 95.2%, #F92525 95.2%));
     font-family: JetBrains Mono, monospace;
+}
+
+.nodeCollapsed {
+    background-color: var(--node-color);
+    :global {
+        .node-inner {
+            // display: none;
+            .node-main {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background-color: transparent !important;
+                .node-slot {
+                    position: absolute;
+                    visibility: hidden;
+                }
+                .node-slot-right {
+                    right: 0;
+                }
+            }
+        }
+    }
 }
