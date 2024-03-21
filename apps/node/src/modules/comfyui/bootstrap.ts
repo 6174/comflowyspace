@@ -55,7 +55,8 @@ export async function checkBasicRequirements() {
         isSetupedConfig,
         isBasicModelInstalled: true,
         isBasicExtensionInstalled: true,
-        comfyUIVersion: await checkComfyUIVersion()
+        comfyUIVersion: await checkComfyUIVersion(),
+        appConfig: appConfigManager.getAll()
     }
 }
 

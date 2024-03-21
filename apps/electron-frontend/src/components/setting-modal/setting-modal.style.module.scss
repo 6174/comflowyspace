@@ -1,7 +1,23 @@
 .settingsModal {
+  min-width: 700px;
+  min-height: 300px;
   :global {
-    min-width: 700px;
-    min-height: 300px;
+    .ant-modal-content {
+      padding: 0;
+      .ant-modal-header {
+        padding: 16px 16px 0 16px;
+      }
+      .ant-layout-sider {
+        padding-left: 10px;
+        .ant-menu-title-content {
+          font-size: 14px;
+        }
+      }
+
+      .ant-select, .ant-select-selection-item {
+        font-size: 14px;
+      }
+    }
     .settings-layout{
       min-width: 500px;
       min-height: 300px;
@@ -39,12 +55,22 @@
           }
       }
     }
+
+    .section{
+      margin-bottom: 20px;
+      .section-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+    }
+    
     .settings-content {
       height: 100%;
       background-color: #212126;
       flex: 2;
       padding: 20px 14px;
     }
+
     .about-content {
       display: flex;
       align-items: center;
@@ -60,36 +86,18 @@
         font-weight: 500;
       }
     }
-    .general-language {
-      display: flex;
-      align-items: center;
-      .general-language-title{
-        font-size: 18px;
-        margin-right: 20px;
-      }
-    }
-    .general-startup-settings {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-      .general-startup-settings-title{
-        font-size: 18px;
-        margin-right: 20px;
-      }
-    }
+
     .general-sdpath {
       margin-top: 20px;
       .gerneral-sdpath-title{
-        font-size: 18px;
+        font-size: 14px;
       }
       .general-sdpath-content{
-        color: #C5C5D3;
-        font-size: 14px;
+        font-size: 12px;
         margin: 4px 0 8px 0;
       }
     }
     .general-sdpath-button{
-      border: 0.5px solid #a2a2ae;
       border-radius: 8px;
       cursor: pointer;
       width: 130px;

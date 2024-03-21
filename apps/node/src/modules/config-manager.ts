@@ -2,7 +2,6 @@ import Configstore from 'configstore';
 import * as path from 'path';
 import { getAppDataDir } from './utils/get-appdata-dir';
 
-export const CONDA_ENV_NAME = "comflowy";
 class MyConfigManager {
   private config: Configstore;
 
@@ -28,6 +27,10 @@ class MyConfigManager {
   delete(key: string): void {
     this.config.delete(key);
   }
+
+  getAll(): any {
+    return this.config.all;
+  }
 }
 
 // 示例用法
@@ -38,6 +41,7 @@ export enum CONFIG_KEYS {
   "modeSetupConfig" = "modeSetupConfig"
 }
 
+export const CONDA_ENV_NAME = appConfigManager.get(CONFIG_KEYS.modeSetupConfig)?.condaEnv || "comflowy";
 
 export {appConfigManager}
 

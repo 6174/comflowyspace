@@ -1,5 +1,6 @@
 import { getComfyUIEnvRequirements } from "../comfyui-bridge/bridge";
 import { create } from "zustand";
+import { ComfyUIRunPrecisionMode } from "../types";
 
 export type EnvRequirements = {
     isCondaInstalled: boolean;
@@ -12,6 +13,15 @@ export type EnvRequirements = {
     isComfyUIStarted: boolean;
     isSetupedConfig: boolean;
     comfyUIVersion: string;
+    appConfig: {
+        appSetupConfig?: {
+            comfyUIDir: string,
+            stableDiffusionDir: string
+        },
+        modeSetupConfig?: {
+            mode: ComfyUIRunPrecisionMode
+        }
+    };
 }
 
 export type BootstrapError = {
@@ -61,6 +71,7 @@ type DashboardAction = {
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
     docs: [],
+    appConfig: {},
     bootstraped: false,
     loading: true,
     bootstrapMessages: [],
@@ -87,8 +98,24 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
         if (ret.data) {
             const tasks = checkEnvRequirements(ret.data).filter(t => !t.finished);
             const allTaskFinished = tasks.every(t => t.finished);
+            const rawAppConfig = ret.data.appConfig;
+            let appConfig: EnvRequirements["appConfig"] = {};
+            try {
+                if (rawAppConfig.appSetupConfig && rawAppConfig.appSetupConfig.length > 0) {
+                    appConfig.appSetupConfig = JSON.parse(rawAppConfig.appSetupConfig);
+                }
+                if (rawAppConfig.modeSetupConfig && rawAppConfig.modeSetupConfig.length > 0) {
+                    appConfig.modeSetupConfig = JSON.parse(rawAppConfig.modeSetupConfig);
+                }
+            } catch(err) {
+                console.log(err);
+            }
+
             set({
-                env: ret.data,
+                env: {
+                    ...ret.data,
+                    appConfig
+                },
                 bootstrapTasks: tasks,
                 bootstraped: allTaskFinished,
                 loading: false
