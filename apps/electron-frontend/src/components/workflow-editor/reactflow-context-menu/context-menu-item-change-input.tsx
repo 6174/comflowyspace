@@ -7,7 +7,7 @@ import { FlowPropsKey, Input, InputType } from '@comflowy/common/types';
 import { EditIcon } from 'ui/icons';
 type InputArrayItem = { property: string; type: any; disabled: boolean; enable: boolean };
 type InputArray = InputArrayItem[];
-
+import { useUpdateNodeInternals } from "reactflow";
 const ChangeInputMenuItem = (props: NodeMenuProps) => {
   const [visible, setVisible] = useState(false);
   const { node, widget } = props;
@@ -56,6 +56,7 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
     setVisible(visible);
   };
 
+  const updateNodeInternals = useUpdateNodeInternals();
   const handleInputChange = useCallback((property: string, enable: boolean) => {
     const newInputItems = [...inputItems];
     const index = newInputItems.findIndex(item => item.property === property);
@@ -65,6 +66,9 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
       const inputs = newInputItems.filter(item => item.enable).map(item => ({name: item.property, type: item.type}));
       onNodeAttributeChange(props.id, { inputs });
     }
+    setTimeout(() => {
+      updateNodeInternals(props.id)
+    }, 100);
   }, [props.id, inputItems, node]);
 
   const content = (

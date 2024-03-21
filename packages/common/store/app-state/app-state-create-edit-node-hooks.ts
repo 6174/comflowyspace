@@ -206,11 +206,13 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       });
     },
     onNodeAttributeChange: (id: string, updates) => {
+      const st = get();
       const { doc, onSyncFromYjsDoc } = get();
       WorkflowDocumentUtils.onNodeAttributeChange(doc, {
         id,
         updates
       });
+      AppState.persistUpdateDoc(st, doc);
       onSyncFromYjsDoc();
     },
   }

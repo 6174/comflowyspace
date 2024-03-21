@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds} from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds, ReactFlowInstance} from 'reactflow';
 import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -36,7 +36,7 @@ export default function WorkflowEditor() {
   const ref = React.useRef(null);
   const storeApi = useStoreApi();
   const { id, watchedDoc } = useLiveDoc(inited);
-  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
+  const [reactFlowInstance, setReactFlowInstance] = React.useState<ReactFlowInstance>(null);
   const onInitExtensionState = useExtensionsState((st) => st.onInit);
   const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
   React.useEffect(() => {
@@ -59,14 +59,16 @@ export default function WorkflowEditor() {
   const { onNodeDrag, onNodeDragStart, onNodeDragStop, onSelectionChange} = useDragDropNode(ref);
   const { onPaneDragOver, onPaneDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
 
+  const edges = useAppStore(st => st.edges);
+  const nodes = useAppStore(st => st.nodes);
+  const widgets = useAppStore(st => st.widgets);
+  const transform = useAppStore(st => st.transform);
+  const inprogressNodeId = useAppStore(st => st.nodeInProgress?.id);
+  const selectionMode = useAppStore(st => st.slectionMode);
   /**
    * app state
    */
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onConnect, onInit, onNewClientId} = useAppStore((st) => ({
-    nodes: st.nodes,
-    widgets: st.widgets,
-    edges: st.edges,
-    selectionMode: st.slectionMode,
+  const { onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onConnect, onInit, onNewClientId} = useAppStore((st) => ({
     onNewClientId: st.onNewClientId,
     onEdgesUpdate: st.onEdgeUpdate,
     onEdgeUpdateStart: st.onEdgeUpdateStart,
@@ -80,9 +82,7 @@ export default function WorkflowEditor() {
     onLoadWorkflow: st.onLoadWorkflow,
     onTransformEnd: st.onTransformEnd,
     onTransformStart: st.onTransformStart,
-    transform: st.transform,
     onConnect: st.onConnect,
-    inprogressNodeId: st.nodeInProgress?.id,
     onInit: st.onInit,
   }), shallow)
 
@@ -100,7 +100,6 @@ export default function WorkflowEditor() {
     tranformEnd();
     setMenu(null)
   }, [setMenu]);
-  
 
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
@@ -279,6 +278,23 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
     }
   });
 
+  console.log("connection edges", styledEdges);
+  
+  const mid = [
+    {
+      "source": "node-a988fa3b-e5cb-489a-84c6-92216f69c235",
+      "sourceHandle": "INT",
+      "target": "node-3928fd69-9bfe-4d44-9129-420b8c0e2f2a",
+      "targetHandle": "SEED",
+      "id": "conn_3a49d512-ef2e-486f-b6bc-ece4983956c7",
+      "animated": false,
+      "style": {
+        "strokeWidth": 2.0974935103755303,
+        "opacity": 0.6,
+        "stroke": "#92939B"
+      }
+    }
+  ]
   return {
     nodesWithStyle,
     styledEdges
@@ -455,6 +471,10 @@ function useDragDropNode(ref) {
       // calculate the bound for all nodes;
       const nodes = useAppStore.getState().nodes;
       const realtimeNodes = selectionNodes.map(n => nodes.find(node => node.id === n.id));
+
+      if (realtimeNodes.length !== selectionNodes.length) {
+        return
+      }
 
       selectionNodesRef.current = realtimeNodes;
 

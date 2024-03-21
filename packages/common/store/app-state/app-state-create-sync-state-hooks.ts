@@ -46,8 +46,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
         // add connections
         for (const connection of workflow.connections) {
           state = AppState.addConnection(state, connection)
-        }
-        
+        }    
         /**
          * modify nodes attributes according to node state
          * */ 

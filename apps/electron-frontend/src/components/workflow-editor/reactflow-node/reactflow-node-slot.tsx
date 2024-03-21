@@ -48,7 +48,7 @@ export function Slot({ id, label, type, position, valueType }: SlotProps): JSX.E
     transformFactor = Math.max(1, (1 / transform)) * 2.2;
   }
 
-  if (isValidConnection && isConnecting && connectingMe) {
+  if (isConnecting && connectingMe) {
     transformFactor = Math.max(1, (1 / transform)) * 2.8;
   };
 
