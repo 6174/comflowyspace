@@ -170,7 +170,9 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
     // const sourceWidget = widgets[sourceNode.value.widget];
     // const targetWidget = widgets[targetNode.value.widget];
     if (!sourceNode || !targetNode) {
-      throw new Error("sourceNode or targetNode not found");
+      console.log("Error!!!!: source node or target node not found");
+      return undefined
+      // throw new Error("sourceNode or targetNode not found");
     }
 
     const outputKeys = sourceNode.value.outputs.map((output) => {
@@ -209,7 +211,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       targetHandle,
       handleType: connectionType,
     }
-  });
+  }).filter(it => it !== undefined) as PersistedWorkflowConnection[];
 
   groups.forEach((group) => {
     const groupId = uuid();
