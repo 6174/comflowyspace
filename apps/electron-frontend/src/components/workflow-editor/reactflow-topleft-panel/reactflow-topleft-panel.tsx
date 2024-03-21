@@ -12,6 +12,8 @@ export default function ReactflowTopLeftPanel() {
                 <div className="spliter"></div>
                 <ChangeTitle/>
                 <UndoRedo/>
+                <div className="spliter"></div>
+                <RefreshPageButton />
             </Space>
         </div>
     )
@@ -86,6 +88,7 @@ import ResetDefault from "./action-reset-default";
 import { ReloadIcon } from "ui/icons";
 import { comfyElectronApi, useIsElectron } from "@/lib/electron-bridge";
 import ExportWorkflow from "./action-export-workflow";
+import { RefreshPageButton } from "../reactflow-bottomcenter-panel/reactflow-bottomcenter-panel";
 
 function FileMenu() {
     const [visible, setVisible] = useState(false);

@@ -58,8 +58,8 @@ function ReactflowBottomCenterPanel() {
                 </Tooltip>
                 <GalleryEntry/>
                 <QueueEntry />
+                <div className="spliter"></div>
                 <RunButton/>
-                <RefreshPageButton />
             </Space>
         </div>
     )
