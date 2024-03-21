@@ -7,6 +7,8 @@ import { getComfyUIDir } from "../utils/get-appdata-dir";
 import { getSystemPath, getSystemProxy, isWindows } from "../utils/env";
 import { uuid } from "@comflowy/common";
 import { conda } from "../utils/conda";
+import { ComfyUIRunPrecisionMode } from "@comflowy/common/types";
+import { getPythonPackageRequirements } from "./requirements";
 
 export type ComfyUIProgressEventType = {
   type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
@@ -166,7 +168,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
+  async startComfyUI(pip: boolean = true, mode: ComfyUIRunPrecisionMode = 'normal'): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -210,10 +212,12 @@ class ComfyuiService {
   /**
    * Run comfyUI command
    */
-  #getComfyUIRunCommand(pip: boolean = true, mode: "normal" | "fp16" | "fp32" = "normal") {
+  #getComfyUIRunCommand(pip: boolean = true, mode: ComfyUIRunPrecisionMode = "normal") {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
+    const requirements = getPythonPackageRequirements();
+
     // Default command with no extra options
-    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
+    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0 ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
 
     // Adjust command based on selected mode
     if(mode === 'fp16') {
@@ -238,7 +242,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
+  async restartComfyUI(pip: boolean = true, mode: ComfyUIRunPrecisionMode = 'normal'): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",

@@ -11,6 +11,7 @@ import logger from '../../modules/utils/logger';
 import { comfyuiService } from '../../modules/comfyui/comfyui.service';
 import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 import { runCommand } from '../../modules/utils/run-command';
+import { ComfyUIRunPrecisionMode } from '@comflowy/common/types';
 
 /**
  * fetch all extensions
@@ -86,6 +87,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
             executor: async (dispatcher): Promise<boolean> => {
                 const newDispatcher = (event: PartialTaskEvent) => {
                     dispatcher(event);
+
                     comfyuiService.comfyuiProgressEvent.emit({
                         type: "OUTPUT",
                         message: event.message || ""
@@ -102,6 +104,36 @@ export async function ApiBootstrap(req: Request, res: Response) {
 
                 const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution}  If you can't go through this issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
+
+                const startComfyUITask = async (mode: ComfyUIRunPrecisionMode) => {
+                    const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
+                    if (isComfyUIStarted) {
+                        return true;
+                    }
+                    const disposable = comfyuiService.comfyuiProgressEvent.on((event) => {
+                        if (event.type === "OUTPUT_WARPED") {
+                            console.log("update", event.message)
+                            dispatcher({
+                                message: event.message
+                            });
+                        }
+                        if (event.type === "START_SUCCESS") {
+                            dispatcher({
+                                type: "SUCCESS",
+                                message: event.message
+                            })
+                        }
+                        if (event.type === "TIMEOUT") {
+                            dispatcher({
+                                type: "TIMEOUT",
+                                message: event.message
+                            })
+                        }
+                    });
+                    const ret = await comfyuiService.startComfyUI(true, mode);
+                    disposable.dispose();
+                    return ret;
+                }
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
                         const isCondaInstalled = await checkIfInstalled("conda");
@@ -141,38 +173,13 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         task = cloneComfyUI(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Clone comfyUI"));
                     case BootStrapTaskType.startComfyUI:
-                        const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
-                        if (isComfyUIStarted) {
-                            return true;
-                        }
-                        const disposable = comfyuiService.comfyuiProgressEvent.on((event) => {
-                            if (event.type === "OUTPUT_WARPED") {
-                                dispatcher({
-                                    message: event.message
-                                });
-                            }
-                            if (event.type === "START_SUCCESS") {
-                                dispatcher({
-                                    type: "SUCCESS",
-                                    message: event.message
-                                })
-                            }
-                            if (event.type === "TIMEOUT") {
-                                dispatcher({
-                                    type: "TIMEOUT",
-                                    message: event.message
-                                })
-                            }
-                        });
-                        const ret =  await comfyuiService.startComfyUI()
-                        disposable.dispose();
-                        return ret;
+                        return await startComfyUITask('normal');
                     case BootStrapTaskType.startComfyUIFp16:
                         newDispatcher({ message: "Starting ComfyUI with --force-fp16." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp16'), 1000 * 60 * 30, "Start ComfyUI with --force-fp16 timed out.");
+                        return await startComfyUITask('fp16');
                     case BootStrapTaskType.startComfyUIFp32:
                         newDispatcher({ message: "Starting ComfyUI with --force-fp32." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp32'), 1000 * 60 * 30, "Start ComfyUI with --force-fp32 timed out.");
+                        return await startComfyUITask('fp32');
                     default:
                         throw new Error("No task named " + taskType)
                 }
