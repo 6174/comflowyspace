@@ -373,6 +373,18 @@ const ALLLang: i18nAllLang = {
     'ja': '起動設定',
     'ru': 'Настройки запуска'
   },
+  [KEYS.floatingPointPrecision]: {
+    'en-US': 'Floating Point Precision: ',
+    'zh-CN': '浮点数精度：',
+    'ja': '浮動小数点精度：',
+    'ru': 'Точность с плавающей запятой: '
+  },
+  [KEYS.vaePrecision]: {
+    'en-US': 'VAE Precision: ',
+    'zh-CN': 'VAE 精度：',
+    'ja': 'VAE 精度：',
+    'ru': 'Точность VAE: '
+  },
   [KEYS.sdWebUIPath]: {
     'en-US': 'SD Web UI Path',
     'zh-CN': 'SD Web UI 路径',

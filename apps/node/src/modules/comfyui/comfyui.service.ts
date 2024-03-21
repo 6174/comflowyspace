@@ -7,7 +7,7 @@ import { getComfyUIDir } from "../utils/get-appdata-dir";
 import { getSystemPath, getSystemProxy, isWindows } from "../utils/env";
 import { uuid } from "@comflowy/common";
 import { conda } from "../utils/conda";
-import { ComfyUIRunPrecisionMode } from "@comflowy/common/types";
+import { ComfyUIRunPrecisionMode, ComfyUIRunVAEMode } from "@comflowy/common/types";
 import { getPythonPackageRequirements } from "./requirements";
 
 export type ComfyUIProgressEventType = {
@@ -168,7 +168,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true, mode: ComfyUIRunPrecisionMode = 'normal'): Promise<boolean> {
+  async startComfyUI(pip: boolean = true, fpmode: ComfyUIRunPrecisionMode = 'normal', vaemode: ComfyUIRunVAEMode = 'normal'): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -179,7 +179,7 @@ class ComfyuiService {
       console.log("startted");
       const id = this.comfyuiSessionId = uuid();
       await this.startTerminal();
-      const command = this.#getComfyUIRunCommand(pip, mode);
+      const command = this.#getComfyUIRunCommand(pip, fpmode, vaemode);
       this.write(command);
   
       await new Promise((resolve, reject) => {
@@ -212,7 +212,7 @@ class ComfyuiService {
   /**
    * Run comfyUI command
    */
-  #getComfyUIRunCommand(pip: boolean = true, mode: ComfyUIRunPrecisionMode = "normal") {
+  #getComfyUIRunCommand(pip: boolean = true, mode: ComfyUIRunPrecisionMode = "normal", vaemode: ComfyUIRunVAEMode) {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
     const requirements = getPythonPackageRequirements();
 
@@ -225,7 +225,12 @@ class ComfyuiService {
     } else if(mode === 'fp32') {
       command += ' --force-fp32';
     }
-    // 'normal' doesn't require extra options
+
+    if(vaemode === 'fp16') {
+      command += ' --fp16-vae';
+    } else if(vaemode === 'fp32') {
+      command += ' --fp32-vae';
+    }
 
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
@@ -242,7 +247,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = true, mode: ComfyUIRunPrecisionMode = 'normal'): Promise<boolean> {
+  async restartComfyUI(pip: boolean = true, fpmode: ComfyUIRunPrecisionMode = 'normal', vaemode: ComfyUIRunVAEMode = 'normal'): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
@@ -250,7 +255,7 @@ class ComfyuiService {
       });
       this.stopComfyUI();
       await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
-      await this.startComfyUI(pip, mode);
+      await this.startComfyUI(pip, fpmode, vaemode);
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
         message: "Restart ComfyUI Success"

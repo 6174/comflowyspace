@@ -11,7 +11,7 @@ import logger from '../../modules/utils/logger';
 import { comfyuiService } from '../../modules/comfyui/comfyui.service';
 import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 import { runCommand } from '../../modules/utils/run-command';
-import { ComfyUIRunPrecisionMode } from '@comflowy/common/types';
+import { ComfyUIRunPrecisionMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
 
 /**
  * fetch all extensions
@@ -65,8 +65,7 @@ export enum BootStrapTaskType {
     "installBasicModel" = "installBasicModel",
     "installBasicExtension" = "installBasicExtension",
     "startComfyUI" = "startComfyUI",
-    "startComfyUIFp16" = "startComfyUIFp16",
-    "startComfyUIFp32" = "startComfyUIFp32",
+    "startComfyUIWithPrecision" = "startComfyUIWithPrecision",
 }
 
 /**
@@ -76,10 +75,14 @@ export enum BootStrapTaskType {
  */
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
-        const setupConfigString = appConfigManager.get(CONFIG_KEYS.modeSetupConfig);
-        const setupConfig = JSON.parse(setupConfigString || '{}');
-        const { bootstrapType } = setupConfig; 
-        const taskType = bootstrapType || (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
+        const defaultConfigString = '{"fpmode":"normal","vaemode":"normal"}';
+        const setupFPConfigString = appConfigManager.get(CONFIG_KEYS.setupFPConfig) || defaultConfigString;
+        const setupVAEConfigString = appConfigManager.get(CONFIG_KEYS.setupVAEConfig) || defaultConfigString;
+        const setupFPConfig = JSON.parse(setupFPConfigString);
+        const setupVAEConfig = JSON.parse(setupVAEConfigString);
+        const setupConfig = { ...setupFPConfig, ...setupVAEConfig };
+        const { fpmode, vaemode } = setupConfig;
+        let taskType = (fpmode !== 'normal' || vaemode !== 'normal') ? BootStrapTaskType.startComfyUIWithPrecision : (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
         const taskId = req.body.data && req.body.data.taskId;
         const task: TaskProps = {
             taskId,
@@ -105,7 +108,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                 const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution}  If you can't go through this issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
 
-                const startComfyUITask = async (mode: ComfyUIRunPrecisionMode) => {
+                const startComfyUITask = async (fpmode: ComfyUIRunPrecisionMode, vaemode: ComfyUIRunVAEMode) => {
                     const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
                     if (isComfyUIStarted) {
                         return true;
@@ -130,7 +133,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                             })
                         }
                     });
-                    const ret = await comfyuiService.startComfyUI(true, mode);
+                    const ret = await comfyuiService.startComfyUI(true, fpmode, vaemode);
                     disposable.dispose();
                     return ret;
                 }
@@ -173,13 +176,10 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         task = cloneComfyUI(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Clone comfyUI"));
                     case BootStrapTaskType.startComfyUI:
-                        return await startComfyUITask('normal');
-                    case BootStrapTaskType.startComfyUIFp16:
+                        return await startComfyUITask('normal', 'normal');
+                    case BootStrapTaskType.startComfyUIWithPrecision:
                         newDispatcher({ message: "Starting ComfyUI with --force-fp16." });
-                        return await startComfyUITask('fp16');
-                    case BootStrapTaskType.startComfyUIFp32:
-                        newDispatcher({ message: "Starting ComfyUI with --force-fp32." });
-                        return await startComfyUITask('fp32');
+                        return await startComfyUITask(fpmode, vaemode);
                     default:
                         throw new Error("No task named " + taskType)
                 }
@@ -261,16 +261,16 @@ export async function ApiSetupConfig(req: Request, res: Response) {
     } 
 }
 
-export async function ApiModeSetupConfig(req: Request, res: Response) {
+export async function ApiFPModeSetupConfig(req: Request, res: Response) {
   try {
-    const { mode, bootstrapType } = req.body; 
-    if (mode && bootstrapType) { 
+    const { fpmode, fpType } = req.body; 
+    if (fpmode && fpType) { 
       const setupString = JSON.stringify({
-        mode: mode,
-        bootstrapType: bootstrapType
+        fpmode: fpmode,
+        fpType: fpType
       });
 
-      appConfigManager.set(CONFIG_KEYS.modeSetupConfig, setupString);
+      appConfigManager.set(CONFIG_KEYS.setupFPConfig, setupString);
       res.send({
         success: true,
       });
@@ -278,7 +278,36 @@ export async function ApiModeSetupConfig(req: Request, res: Response) {
       
       res.send({
         success: false,
-        error: '缺少必要的配置参数'
+        error: 'Missing required configuration parameters'
+      });
+    }
+  } catch (err: any) {
+    logger.error(err.message + ":" + err.stack);
+    res.send({
+      success: false,
+      error: err.message
+    })
+  }
+}
+
+export async function ApiVAEModeSetupConfig(req: Request, res: Response) {
+  try {
+    const { vaemode, VAEType } = req.body; 
+    if (vaemode && VAEType) { 
+      const setupString = JSON.stringify({
+        vaemode: vaemode,
+        VAEType: VAEType
+      });
+
+      appConfigManager.set(CONFIG_KEYS.setupVAEConfig, setupString);
+      res.send({
+        success: true,
+      });
+    } else {
+      
+      res.send({
+        success: false,
+        error: 'Missing required configuration parameters'
       });
     }
   } catch (err: any) {

@@ -38,7 +38,8 @@ const appConfigManager = new MyConfigManager('_config');
 
 export enum CONFIG_KEYS {
   "appSetupConfig" = "appSetupConfig",
-  "modeSetupConfig" = "modeSetupConfig"
+  "setupFPConfig" = "setupFPConfig",
+  "setupVAEConfig" = "setupVAEConfig",
 }
 
 export const CONDA_ENV_NAME = appConfigManager.get(CONFIG_KEYS.modeSetupConfig)?.condaEnv || "comflowy";

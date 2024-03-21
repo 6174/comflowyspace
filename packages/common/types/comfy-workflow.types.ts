@@ -5,6 +5,7 @@ import { ComfyUIWorkflowConnection, PersistedWorkflowConnection } from "./comfy-
 import { ControlBoardConfig } from "./comflowy-controlboard.types";
 
 export type ComfyUIRunPrecisionMode = "normal" | "fp16" | "fp32";
+export type ComfyUIRunVAEMode = "normal" | "fp16" | "fp32";
 export type PersistedFullWorkflow = {
   title: string;
   id: string;
