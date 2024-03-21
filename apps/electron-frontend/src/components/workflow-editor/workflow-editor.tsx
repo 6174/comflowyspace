@@ -195,7 +195,6 @@ export default function WorkflowEditor() {
         onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
         {...useSelectionModeRelatedProps(selectionMode)}
-        selectNodesOnDrag={false}
         onNodeDrag={onNodeDrag}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragStop}
