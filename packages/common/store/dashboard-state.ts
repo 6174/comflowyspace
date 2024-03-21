@@ -1,37 +1,6 @@
-import { getComfyUIEnvRequirements } from "../comfyui-bridge/bridge";
+import { getComflowyAppConfig, getComfyUIEnvRequirements } from "../comfyui-bridge/bridge";
 import { create } from "zustand";
-import { ComfyUIRunPrecisionMode } from "../types";
-
-export type EnvRequirements = {
-    isCondaInstalled: boolean;
-    isPythonInstalled: boolean;
-    isGitInstalled: boolean;
-    isTorchInstalled: boolean;
-    isComfyUIInstalled: boolean;
-    isBasicModelInstalled: boolean;
-    isBasicExtensionInstalled: boolean;
-    isComfyUIStarted: boolean;
-    isSetupedConfig: boolean;
-    comfyUIVersion: string;
-    appConfig: {
-        appSetupConfig?: {
-            comfyUIDir: string,
-            stableDiffusionDir: string
-        },
-        modeSetupConfig?: {
-            mode: ComfyUIRunPrecisionMode
-        }
-    };
-}
-
-export type BootstrapError = {
-    title: string;
-    type: string;
-    level?: "warn" | "error";
-    message: string;
-    createdAt?: number;
-    data?: Record<string, any>;
-}
+import { AppConfigs, BootstrapError, ComfyUIRunFPMode, ComfyUIRunVAEMode, EnvRequirements } from "../types";
 
 type DashboardState = {
     loading: boolean;
@@ -41,6 +10,7 @@ type DashboardState = {
     showComfyUIProcessModal: boolean;
     bootstrapMessages: string[];
     errors: BootstrapError[];
+    appConfigs?: AppConfigs;
 }
 
 export enum BootStrapTaskType {
@@ -64,6 +34,7 @@ export type BootstrapTask = {
 
 type DashboardAction = {
     onInit: () => void,
+    onLoadAppConfig: () => void;
     setBootstrapTasks: (tasks: BootstrapTask[]) => void;
     addBootstrapMessage: (message: string) => void;
     addBootstrapError: (error: BootstrapError) => void;
@@ -71,7 +42,7 @@ type DashboardAction = {
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
     docs: [],
-    appConfig: {},
+    appConfigs: {},
     bootstraped: false,
     loading: true,
     bootstrapMessages: [],
@@ -93,29 +64,24 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
             ]
         })
     },
+    onLoadAppConfig: async () => {
+        const ret = await getComflowyAppConfig();
+        if (ret.data) {
+            console.log("configs", ret);
+            set({
+                appConfigs: ret.data
+            });
+        }
+    },
     onInit: async () => {
         const ret = await getComfyUIEnvRequirements();
         if (ret.data) {
             const tasks = checkEnvRequirements(ret.data).filter(t => !t.finished);
             const allTaskFinished = tasks.every(t => t.finished);
             const rawAppConfig = ret.data.appConfig;
-            let appConfig: EnvRequirements["appConfig"] = {};
-            try {
-                if (rawAppConfig.appSetupConfig && rawAppConfig.appSetupConfig.length > 0) {
-                    appConfig.appSetupConfig = JSON.parse(rawAppConfig.appSetupConfig);
-                }
-                if (rawAppConfig.modeSetupConfig && rawAppConfig.modeSetupConfig.length > 0) {
-                    appConfig.modeSetupConfig = JSON.parse(rawAppConfig.modeSetupConfig);
-                }
-            } catch(err) {
-                console.log(err);
-            }
-
+        
             set({
-                env: {
-                    ...ret.data,
-                    appConfig
-                },
+                env: ret.data,
                 bootstrapTasks: tasks,
                 bootstraped: allTaskFinished,
                 loading: false

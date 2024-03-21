@@ -10,6 +10,7 @@ export * from "./comfy-workflow.types";
 export * from "./comflowy-console.types";
 export * from "./comfy-extensions.types";
 export * from "./comflowy-controlboard.types";
+export * from "./comflowy-bootstrap.types"
 
 export interface GalleryItem {
   prompt?: string

@@ -1,5 +1,5 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
-import { Widget, type NodeId, type PropertyKey, type WidgetKey, NODE_GROUP, specialWidgets } from '../types'
+import { Widget, type NodeId, type PropertyKey, type WidgetKey, NODE_GROUP, specialWidgets, AppConfigs } from '../types'
 
 export interface Node {
   class_type: WidgetKey
@@ -24,6 +24,36 @@ export async function getComfyUIEnvRequirements(): Promise<any> {
   let ret;
   try {
     const rest = await fetch(getBackendUrl('/api/env_check'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+export async function getComflowyAppConfig(): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/api/all_configs'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+export async function updateComflowyRunConfig(configs: Partial<AppConfigs["runConfig"]>): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/api/update_run_config'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(configs)
+    });
     ret = await rest.json();
   } catch (err) {
     console.log(err);

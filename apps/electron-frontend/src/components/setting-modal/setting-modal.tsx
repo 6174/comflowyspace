@@ -9,15 +9,21 @@ import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
+import { updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
+import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
+import { stat } from 'fs';
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const SettingsModal = ({ isVisible, handleClose }) => {
+  const onLoadAppConfig = useDashboardState(state => state.onLoadAppConfig);
+  useEffect(() => {
+    onLoadAppConfig();
+  }, []);
   const [activeMenuKey, setActiveMenuKey] = useState('general');
   const onMenuItemClick = ({ key }) => {
     setActiveMenuKey(key);
   };
-
   return (
     <Modal
       title={t(KEYS.settings)}
@@ -53,7 +59,6 @@ const SettingsModal = ({ isVisible, handleClose }) => {
                 <SelectSDPath/>
               </>
             }
-
             {activeMenuKey === 'about' && <AboutComflowySpace />}
           </div>
         </Content>
@@ -63,7 +68,8 @@ const SettingsModal = ({ isVisible, handleClose }) => {
 };
 
 function SelectSDPath() {
-  const savedSdwebuiPath = useDashboardState(state => state.env.appConfig?.appSetupConfig?.stableDiffusionDir || '');
+  const onLoadAppConfig = useDashboardState(state => state.onLoadAppConfig);
+  const savedSdwebuiPath = useDashboardState(state => state.appConfigs?.appSetupConfig?.stableDiffusionDir || '');
   const [sdwebuiPath, setSdwebuiPath] = useState(savedSdwebuiPath);
   useEffect(() => {
     setSdwebuiPath(savedSdwebuiPath);
@@ -95,6 +101,7 @@ function SelectSDPath() {
           const data = await ret.json();
           if (data.success) {
             message.success("success: " + data.error);
+            onLoadAppConfig();
           } else {
             message.error("Failed: " + data.error);
           }
@@ -160,84 +167,66 @@ function SelectLanguage() {
 }
 
 function SelectExecutionPrecisionMode() {
+  const onLoadAppConfig = useDashboardState(state => state.onLoadAppConfig);
   const options = [
     { label: 'Normal', value: 'normal' },
     { label: 'FP16', value: 'fp16' },
     { label: 'FP32', value: 'fp32' },
   ];
 
-  const storageKey = 'startupModeValue';
+  const runConfig = useDashboardState(state => state.appConfigs?.runConfig);
 
-  const getInitialValue = () => {
-    return localStorage.getItem(storageKey) || 'normal';
-  };
+  const [FPValue, setFPValue] = useState('normal');
+  const [VAEValue, setVAEValue] = useState('normal');
 
-  const [value, setValue] = useState(getInitialValue);
-
-  const onSegmentChange = async (newValue) => {
-    setValue(newValue);
-    localStorage.setItem(storageKey, newValue);
-    let bootstrapType;
-    switch (newValue) {
-      case 'fp16':
-        bootstrapType = 'startComfyUIFp16';
-        break;
-      case 'fp32':
-        bootstrapType = 'startComfyUIFp32';
-        break;
-      default:
-        bootstrapType = 'startComfyUI';
+  useEffect(() => {
+    if (runConfig) {
+      setFPValue(runConfig.fpmode || 'normal');
+      setVAEValue(runConfig.vaemode || 'normal');
     }
+  }, [runConfig]);
+
+  const saveConfig = async (props: Partial<AppConfigs["runConfig"]>) => {
     try {
-      const modeApi = getBackendUrl('/api/mode_setup_config');
-      const modeResponse = await fetch(modeApi, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          mode: newValue,
-          bootstrapType: bootstrapType
-        })
-      });
-      const modeResult = await modeResponse.json();
-      if (modeResult.success) {
-        console.log('模式设置保存成功');
-        const restartApi = getBackendUrl('/api/bootstrap');
-        const restartResponse = await fetch(restartApi, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            data: {
-              name: bootstrapType,
-            },
-          }),
-        });
-        const restartResult = await restartResponse.json();
-        if (restartResult.success) {
-          console.log('ComfyUI 重启成功');
-        } else {
-          console.error('ComfyUI 重启失败：', restartResult.error);
-        }
-      } else {
-        console.error('配置更新失败：', modeResult.error);
-      }
-    } catch (error) {
-      console.error('更新配置或重启 ComfyUI 时出现错误：', error);
+      await updateComflowyRunConfig(props);
+      message.success("Save success");
+      onLoadAppConfig();
+    } catch (err) {
+      message.error("Save faileld:" + err.message);
     }
-  };
-
+  }
+ 
   return (
-    <div className="precision-mode section">
-      <div className='general-startup-settings-title section-title'>{t(KEYS.startupSettings)}</div>
-      <Segmented
-        options={options}
-        value={value}
-        onChange={onSegmentChange}
-      />
-    </div>
+    <>
+      <div className="precision-mode section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.floatingPointPrecision)}</div>
+        <Segmented
+          options={options}
+          value={FPValue}
+          onChange={(value) => {
+            const v = value.toString()
+            setFPValue(v);
+            saveConfig({ 
+              fpmode: v as ComfyUIRunFPMode
+            });
+          }}
+        />
+      </div>
+      <div className="vae-mode section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.vaePrecision)}</div>
+        <Segmented
+          options={options}
+          value={VAEValue}
+          onChange={(value) => {
+            const v = value.toString()
+            setVAEValue(v);
+            saveConfig({
+              vaemode: v as ComfyUIRunVAEMode
+            });
+          }}
+        />
+      </div>
+    </>
   )
 }
 

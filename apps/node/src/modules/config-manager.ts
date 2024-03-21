@@ -31,6 +31,31 @@ class MyConfigManager {
   getAll(): any {
     return this.config.all;
   }
+
+  getRunConfig(): {
+    fpmode?: string;
+    vaemode?: string;
+    condaEnv?: string;
+  } {
+    return this.#getJSONKey(CONFIG_KEYS.runConfig)
+  }
+
+  getSetupConfig(): {
+    comfyUIDir?: string;
+    sdwebuiPath?: string;
+  } {
+    return this.#getJSONKey(CONFIG_KEYS.appSetupConfig)
+  }
+
+  #getJSONKey(key: string): any {
+    const raw = this.config.get(key);
+    try {
+      const data = JSON.parse(raw);
+      return data;
+    } catch (err) {
+      return {};
+    }
+  }
 }
 
 // 示例用法
@@ -38,11 +63,10 @@ const appConfigManager = new MyConfigManager('_config');
 
 export enum CONFIG_KEYS {
   "appSetupConfig" = "appSetupConfig",
-  "setupFPConfig" = "setupFPConfig",
-  "setupVAEConfig" = "setupVAEConfig",
+  "runConfig" = "modeSetupConfig",
 }
 
-export const CONDA_ENV_NAME = appConfigManager.get(CONFIG_KEYS.modeSetupConfig)?.condaEnv || "comflowy";
+export let CONDA_ENV_NAME = appConfigManager.getRunConfig()?.condaEnv || "comflowy"
 
 export {appConfigManager}
 
