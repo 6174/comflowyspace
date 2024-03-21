@@ -277,7 +277,9 @@ class ComfyuiService {
       });
       const repoPath = getComfyUIDir();
       this.stopComfyUI();
+      await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
       this.write(`cd ${repoPath}; git pull \r`);
+      await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
       await this.startComfyUI(true);
       logger.info("updateComfyUI: stopped");
     } catch (err: any) {
