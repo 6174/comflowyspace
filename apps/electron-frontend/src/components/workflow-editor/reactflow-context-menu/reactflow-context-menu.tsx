@@ -8,7 +8,7 @@ import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
-import { CopyIcon, DeleteIcon } from 'ui/icons';
+import { CollapseIcon, CopyIcon, DeleteIcon, ExpandIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
 
@@ -136,9 +136,9 @@ function NodeMenu(props: NodeMenuProps) {
 
   const nodeVisibleState = node.properties?.nodeVisibleState || NodeVisibleState.Expaned;
   if (nodeVisibleState === NodeVisibleState.Expaned) {
-    items.push(getMenuItem(<div className="menu-item-title"> Collpase </div>, 'MENU_ITEM_COLLPASE_NODE', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <CollapseIcon/> Collpase </div>, 'MENU_ITEM_COLLPASE_NODE', null, null));
   } else if (nodeVisibleState === NodeVisibleState.Collapsed) {
-    items.push(getMenuItem(<div className="menu-item-title"> EXPAND </div>, 'MENU_ITEM_EXPAND_NODE', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <ExpandIcon/> EXPAND </div>, 'MENU_ITEM_EXPAND_NODE', null, null));
   }
 
   if (hasInputs) {
