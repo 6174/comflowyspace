@@ -30,7 +30,7 @@ export default {
         },
         "4": {
             "inputs": {
-                "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+                "ckpt_name": "v1-5-dream-shaper.safetensors"
             },
             "class_type": "CheckpointLoaderSimple"
         },
@@ -92,7 +92,7 @@ const my = {
     "1": {
         "class_type": "CheckpointLoaderSimple",
         "inputs": {
-            "ckpt_name": "v1-5-pruned-emaonly.ckpt"
+            "ckpt_name": "v1-5-dream-shaper.safetensors"
         }
     },
     "2": {

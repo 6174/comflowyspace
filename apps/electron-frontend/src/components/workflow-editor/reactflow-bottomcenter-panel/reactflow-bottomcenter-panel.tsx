@@ -13,6 +13,7 @@ import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 import { useQueueState } from "@comflowy/common/store/comfyui-queue-state";
 import { isWindows } from "ui/utils/is-windows";
+import { CreateSubflowNodeEntry } from "./create-subflow-node/create-subflow-node";
 
 function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
@@ -36,6 +37,7 @@ function ReactflowBottomCenterPanel() {
                         </WidgetPopover>
                     </div>
                 </Tooltip>
+                {process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled" && <CreateSubflowNodeEntry/>}
                 <div className="spliter"></div>
                 <ExtensionListPopover>
                     <div className="action action-open-extension">

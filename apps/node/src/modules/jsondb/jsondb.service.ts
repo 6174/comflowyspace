@@ -15,7 +15,7 @@ export function serve(app: Express, server: http.Server, wss: WebSocketServer) {
   JSONDB.dir(dbPath);
   async function createAndListen(name: string) {
     if (!dbs[name]) {
-      dbs[name] = await JSONDB.db<JSONDocMeta>(name, ["id", "title", "create_at", "gallery", "deleted", "deleted_at", "update_at"]);
+      dbs[name] = await JSONDB.db<JSONDocMeta>(name, ["id", "title", "create_at", "gallery", "deleted", "deleted_at", "update_at", "meta"]);
       dbs[name].updateEvent.on((event) => {
         const data = JSON.stringify(event);
         clients.forEach(client => {

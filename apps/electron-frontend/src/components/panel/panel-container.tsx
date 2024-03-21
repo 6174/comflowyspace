@@ -4,12 +4,11 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { AsyncComflowyConsole } from "../comflowy-console/comflowy-console-async";
 import { Tabs, TabsProps } from "antd";
-import { AsyncComfyUIProcessManager } from "../comfyui-process-manager/comfyui-process-manager-async";
-import { listenElectron } from "@/lib/electron-bridge";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { useRouter } from "next/router";
 import { ControlBoard } from "../workflow-editor/reactflow-controlboard/controlboard";
+import { ReactFlowShare } from "../workflow-editor/reactflow-share/reactflow-share";
 
 export function PanelsContainerServerAdapter(props: PanelContainerProps) {
   const [visible, setVisible] = useState(false);
@@ -75,7 +74,6 @@ export function PanelsContainer(props: PanelContainerProps) {
     if (!dragger || !panelsVisible) {
       return;
     }
-    console.log("add hook");
     const onMousedown = (e) => {
       const startX = e.clientX;
       const panels = panelsRef.current;
@@ -158,18 +156,22 @@ export function PanelsContainer(props: PanelContainerProps) {
         key: 'messages',
         label: 'Messages',
         children: <AsyncComflowyConsole />,
-      }
+      },
     ]
+    if (process.env.NEXT_PUBLIC_FG_ENABLE_SUBFLOW === "enabled") {
+      items.push({
+        key: "share",
+        label: "Share",
+        children: <ReactFlowShare/>
+      });
+    }
   } 
 
   const onChange = (key: string) => {
     setActivePanel(key);
     setPanelStateToLocalStorage({ activePanel: key });
-    console.log(key);
   };
 
-  console.log("panelvisible", panelsVisible);
-  
   return (
     <div className={styles.panelsWrapper}>
       <div className="main-content box" ref={mainRef}>
@@ -256,6 +258,5 @@ function getPanelKey(prefix: string): string {
   }
 
   const key = `${prefix}-${pathname}`;
-  console.log(key);
   return key;
 }

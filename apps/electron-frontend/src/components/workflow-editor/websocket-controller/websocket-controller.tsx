@@ -28,7 +28,7 @@ export function WsController(props: {clientId: string}): JSX.Element {
         type: ComfyUIEvents.RunMessage,
         data: msg
       });
-      console.log("msg", msg)
+      // console.log("msg", msg)
 
       if (Message.isExecutingStart(msg) || Message.isProgress(msg)) {
         if (msg.data?.prompt_id) {

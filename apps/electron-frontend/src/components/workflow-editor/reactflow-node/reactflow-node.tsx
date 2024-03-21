@@ -1,29 +1,22 @@
-import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions} from 'reactflow'
-import { Widget, Input, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, ContrlAfterGeneratedValuesOptions } from '@comflowy/common/types';
-
-import { Button, Image, Popover } from 'antd';
+import { memo } from 'react'
+import { type NodeProps, Position, Dimensions} from 'reactflow'
+import { Widget, SDNode, PreviewImage, SDNODE_DEFAULT_COLOR, NodeVisibleState } from '@comflowy/common/types';
 import { InputContainer } from '../reactflow-input/reactflow-input-container';
 import nodeStyles from "./reactflow-node.style.module.scss";
-import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
-import { ResizeIcon } from 'ui/icons';
 import { useAppStore } from '@comflowy/common/store';
-import { validateEdge } from '@comflowy/common/store/app-state';
 import Color from "color";
 import { getWidgetIcon } from './reactflow-node-icons';
-import { PreviewGroupWithDownload } from '../reactflow-gallery/image-with-download';
-import { ComfyUIErrorTypes, ComfyUINodeError } from '@comflowy/common/types';
-import { useExtensionsState } from '@comflowy/common/store/extension-state';
-import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
+import { ComfyUINodeError } from '@comflowy/common/types';
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import { Slot } from './reactflow-node-slot';
+import { InstallMissingWidget, NodeError } from './reactflow-node-errors';
+import { ComflowyNodeResizer, useNodeAutoResize } from './reactflow-node-resize';
+import { NodeImagePreviews } from './reactflow-node-imagepreviews';
+import { NodeWrapperProps } from './reactflow-node-wrapper';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
-  node: NodeProps<{
-    widget: Widget;
-    value: SDNode;
-    dimensions: Dimensions
-  }>
+  node: NodeWrapperProps
   isPositive: boolean;
   isNegative: boolean;
   progressBar?: number;
@@ -41,100 +34,13 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
-  const { inputs, title, outputs, params } = getNodeRenderInfo(node);
+  const renderInfo= getNodeRenderInfo(node.data.value, node.data.widget);
+  const { inputs, title, outputs, params } = renderInfo;
   const isInProgress = progressBar !== undefined
-  const [minHeight, setMinHeight] = useState(100);
-  const [minWidth] = useState(240);
-  const mainRef = useRef<HTMLDivElement>();
-  const onNodesChange = useAppStore(st => st.onNodesChange);
-  const updateMinHeight = useCallback(async () => {
-    if (mainRef.current) {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 100)
-      });
-      if (!mainRef.current) {
-        return
-      }
-      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
-      const width = mainRef.current.offsetWidth + 4;
-      const dimensions = node.data.dimensions
-      // console.log("dimensions", height, dimensions);
-      if (!dimensions || dimensions.height < height - 2) {
-        onNodesChange([{
-          type: "dimensions",
-          id: node.id,
-          dimensions: {
-            width: !!dimensions ? dimensions.width : width,
-            height
-          }
-        }])
-      }
-      setMinHeight(height);
-    }
-  }, [setMinHeight, node.id, imagePreviews]);
-  const resetWorkflowEvent = useAppStore(st => st.resetWorkflowEvent);  
-  const [resizing, setResizing] = useState(false);
-  useEffect(() => {
-    updateMinHeight();
-    const disposable = resetWorkflowEvent.on(async () => {
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(null);
-        }, 100)
-      });
-      console.log("reset workflow event")
-      updateMinHeight();
-    })
-
-    if (mainRef.current) {
-      const resizeObserver = new ResizeObserver(entries => {
-        entries.forEach(entry => {
-          if(entry.target === mainRef.current && !resizing) {
-            updateMinHeight(); 
-          }
-        });
-      });
-
-      resizeObserver.observe(mainRef.current);
-
-      // Cleanup
-      return () => {
-        if (resizeObserver && mainRef.current) {
-          resizeObserver.unobserve(mainRef.current);
-        }
-        disposable.dispose();
-      };
-    }
-
-    return () => {
-      disposable.dispose();
-    } 
-  }, [mainRef])
-
-  useEffect(() => {
-    if (imagePreviews.length > 0) {
-      updateMinHeight();
-    }
-  }, [imagePreviews])
-
-  const resizeIcon = (
-    <div className="resize-icon nodrag">
-      <ResizeIcon/>
-    </div>
-  )
+  const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
+  const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
   const transform = useAppStore(st => st.transform);
-
   const invisible = transform < 0.2;
-
-  const imagePreviewsWithSrc = (imagePreviews||[]).map((image, index) => {
-    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-    return {
-      src: imageSrc,
-      filename: image.filename
-    }
-  });
   
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
@@ -142,44 +48,29 @@ export const NodeComponent = memo(({
   if (isPositive) {
     nodeBgColor = "#212923";
     nodeColor = "#67A166";
-  } 
+  }
 
   if (isNegative) {
     nodeBgColor = "#261E1F";
     nodeColor = "#DE654B";
   }
-
+  
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
       ${node.selected && !isInProgress && !nodeError ? nodeStyles.reactFlowSelected : ""} 
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
-      ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${nodeError ? nodeStyles.reactFlowError : ""}
       ${isPositive ? "positive-node" : ""}
       ${isNegative ? "negative-node" : ""}
+      ${collapsed ? nodeStyles.nodeCollapsed : ""}
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,
         '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
 
-      <NodeResizeControl
-        style={{
-          background: "transparent",
-          border: "none"
-        }}
-        onResizeStart={() => {
-          setResizing(true);
-        }}
-        onResizeEnd={() => {
-          setResizing(false);
-        }}
-        minWidth={minWidth}
-        minHeight={minHeight} 
-      >
-        {node.selected && resizeIcon}
-      </NodeResizeControl>
+      {!collapsed && <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} /> }
 
       {!invisible ? (
         <div className='node-inner'>
@@ -199,13 +90,6 @@ export const NodeComponent = memo(({
                 }}></div>
               </div>
               : null}
-            
-            {node.selected ? (
-              <div className="node-selected-actions">
-              </div>
-            ) : (
-              <></>
-            )}
           </div>
 
           <div className="node-main" ref={mainRef}>
@@ -221,33 +105,21 @@ export const NodeComponent = memo(({
                 ))}
               </div>
             </div>
-            
-            <div className="node-params">
-              {params.map(({ property, input }) => (
-                <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
-              ))}
-            </div>
-            <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
-            <div style={{ height: 10 }}></div>
+            {
+              !collapsed && (
+                <>
+                  <div className="node-params">
+                    {params.map(({ property, input }) => (
+                      <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
+                    ))}
+                  </div>
+                  <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
+                  <div style={{ height: 10 }}></div>
+                </>
+              )
+            }
           </div>
-
-          <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
-            <div className="inner">
-              <PreviewGroupWithDownload images={imagePreviewsWithSrc}>
-              {
-                imagePreviewsWithSrc.map((image, index) => {
-                  return (
-                    <Image
-                      key={image.src + index}
-                      className="node-preview-image"
-                      src={image.src}
-                    />
-                  )
-                })
-              }
-              </PreviewGroupWithDownload>
-            </div>
-          </div>
+          {!collapsed && <NodeImagePreviews imagePreviews={imagePreviews}/> }
         </div>
       ) : (
         <>
@@ -259,162 +131,5 @@ export const NodeComponent = memo(({
   )
 });
 
-interface SlotProps {
-  id: string
-  label: string
-  type: HandleType
-  position: Position
-  valueType: string
-}
-
-/**
- * https://reactflow.dev/examples/nodes/connection-limit
- * @param param0 
- * @returns 
- */
-function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element {
-  const color = Input.getInputColor([label.toUpperCase()] as any);
-  const isConnecting = useAppStore(st => st.isConnecting);
-  const connectingParams = useAppStore(st => st.connectingStartParams);
-  const transform = useAppStore(st => st.transform);
-  const [connectingMe, setConnectingMe] = useState(false);
-  const isValidConnection = useCallback((connection: Connection) => {
-    const st = useAppStore.getState();
-    const [validate, message] = validateEdge(st, connection);
-    !validate && console.log("connect failed", message)
-    return validate
-  }, [])
-  useEffect(() => {
-    if (isConnecting && connectingParams) {
-      const sourceType = connectingParams.handleType;
-      if (sourceType !== type && connectingParams.valueType === valueType) {
-        setConnectingMe(true);
-      } else {
-        setConnectingMe(false);
-      }
-    } else {
-      setConnectingMe(false);
-    }
-  }, [isConnecting, connectingParams])
-
-  let transformFactor = 1;
-  const [hover, setHover] = useState(false);
-  if (hover && !isConnecting) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.2;
-  }
-
-  if (isValidConnection && isConnecting && connectingMe) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.8;
-  };
-
-  return (
-    <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
-      <Handle 
-        id={id.toUpperCase()} 
-        isConnectable={true}
-        isValidConnection={isValidConnection}
-        type={type} 
-        position={position} 
-        onMouseMove={ev => {
-          setHover(true);
-        }}
-        onMouseOut={ev => {
-          setHover(false);
-        }}
-        className="node-slot-handle" 
-        style={{
-          backgroundColor: color,
-          // visibility: (transforming || invisible)? "hidden" : "visible",
-          transform: `scale(${transformFactor})`
-        } as React.CSSProperties}/>
-      <div className="node-slot-name" style={{ marginBottom: 2 }}>
-        {type === "source" ? label.toUpperCase() : label.toLowerCase()}
-      </div>
-    </div>
-  )
-}
-
-export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
-  const [visible, setVisible] = useState(false);
-  const handleVisibleChange = (visible: boolean) => {
-    setVisible(visible);
-  };
-
-  if (!nodeError || nodeError.errors.length === 0) {
-    return null
-  }
-
-  const errorsEl = (
-    <div className={nodeStyles.nodeErrors}>
-      {nodeError.errors.map((error, index) => (
-        <div key={index} className="node-error">
-          {error.message + ":" + error.details}
-        </div>
-      ))}
-    </div>
-  )
-
-  return (
-    <div className={nodeStyles.nodeErrorWrapper}>
-      <Popover
-        title={null}
-        content={errorsEl}
-        trigger="hover"
-      >
-        Errors
-      </Popover>
-    </div>
-  )
-}
-
-function InstallMissingWidget(props: {
-  nodeError?: ComfyUINodeError;
-  node: SDNode;
-}) {
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
-  const {nodeError, node} = props;
-  const installWidget = useCallback((extension) => {
-    SlotGlobalEvent.emit({
-      type: GlobalEvents.show_missing_widgets_modal,
-      data: null
-    });
-    setTimeout(() => {
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.install_missing_widget,
-        data: extension
-      });
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.show_comfyprocess_manager,
-        data: null
-      });
-    }, 10);
-  }, []);
-
-  if (!nodeError) {
-    return null;
-  }
-
-  const widgetNotFoundError = nodeError.errors.find(err => err.type === ComfyUIErrorTypes.widget_not_found);
-
-  if (!widgetNotFoundError) {
-    return null;
-  }
-
-  const widget = node.widget;
-  const extension = extensionsNodeMap[widget];
-  if (!extension) {
-    return null
-  } else {
-    console.log("miss extension", extension, node);
-  }
-
-  return (
-    <div className="install-missing-widget nodrag">
-      <Button type="primary" onClick={ev => {
-        installWidget(extension);
-      }}>Install "{extension.title}"</Button>
-    </div>
-  )
-}
 
 

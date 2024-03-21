@@ -1,55 +1,6 @@
-import { type Node } from 'reactflow';
 import { getNodeRenderInfo } from './node-rendering';
-import { SDNode } from '../types';
-
-/**
- * Controlboard Config Data
- */
-export type ControlBoardConfig = {
-  nodes: ControlBoardNodeConfig[];
-  requirements?: ControlBoardShareRequirements
-  shareAsNodeConfig?: {
-    description?: string;
-    title?: string;
-    nodes: ControlBoardSharedNodeConfig[]
-  }
-}
-
-export type ControlBoardShareRequirements = {
-  requiredModels: {
-    modelHash: string;
-    modelReferece: string;
-    modelDownloadUrl: string;
-    modelSaveLocation: string;
-  }[];
-  requiredExtensions: {
-    extensionName: string;
-    extensionGithubUrl: string;
-  }[]
-}
-
-/**
- * Controlboard Node Config
- */
-export type ControlBoardNodeConfig = {
-  id: string;
-  fields: string[];
-  select: boolean;
-}
-
-export type ControlBoardSharedNodeConfig = {
-  id: string;
-  fields: string[];
-  inputs: string[];
-  outputs: string[];
-  select: boolean;
-}
-
-export type ControlBoardNodeProps = {
-  nodeControl?: ControlBoardNodeConfig;
-  onChangeNodeControl?: (cfg: ControlBoardNodeConfig) => void;
-  node: Node,
-}
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, SDNode, WorkflowNodeProps } from '../types';
+import {type Node} from "reactflow";
 
 export const ControlBoardUtils = {
   createControlboardInfoFromNodes(nodes: Node[]): ControlBoardConfig {
@@ -59,7 +10,8 @@ export const ControlBoardUtils = {
     }
   },
   createControlboardInfoFromNode(node: Node): ControlBoardNodeConfig {
-    const { params, id } = getNodeRenderInfo(node as any);
+    const id = node.id;
+    const { params } = getNodeRenderInfo(node.data.value, node.data.widget);
     const fields = params.map(param => param.property);
     return {
       id,
@@ -77,7 +29,7 @@ export const ControlBoardUtils = {
      * else:
      *  - render all nessessary nodes
      */
-    if (!controlboardConfig) {
+    if (!controlboardConfig || !controlboardConfig.nodes || controlboardConfig.nodes.length === 0) {
       ControlBoardUtils.autoSortNodes(nodes, graph).forEach(node => {
         nodesToRender.push({
           node

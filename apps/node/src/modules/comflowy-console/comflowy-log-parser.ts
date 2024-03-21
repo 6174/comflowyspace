@@ -23,14 +23,14 @@ class ImportResultParsingStrategy implements LogParsingStrategy {
 
     if (this.currentLogLines.length > 0) {
       if (/Starting server/.test(log)) {
-        const importResults = this.currentLogLines.join("").split("\r");
+        const importResults = this.currentLogLines.join("").split(/\r|\n/);
         this.currentLogLines = [];
         const successfulImports: string[] = [];
         const failedImports: string[] = [];
         for (const result of importResults) {
           const info = result.replace(/(\r|\n)/g, "");
           if (/seconds/.test(info)) {
-            const lastChild = info.split("/").pop()!
+            const lastChild = info.split(/[\/\\]/).pop()!
             if (/IMPORT FAILED/.test(info)) {
               failedImports.push(lastChild);
             } else  {

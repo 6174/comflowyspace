@@ -21,7 +21,6 @@ import { ComflowyConsoleLogTypes } from '@comflowy/common/types';
 import { isWindow } from 'ui/utils/is-window';
 const Bootstrap = () => {
   const {bootstrapTasks} = useDashboardState();
-  console.log("bootstrap", bootstrapTasks);
   const finisedTasks = bootstrapTasks.filter(task => task.finished);
   const unfinishedTasks = bootstrapTasks.filter(task => !task.finished);
   const currentTask = unfinishedTasks[0];

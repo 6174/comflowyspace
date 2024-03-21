@@ -2,11 +2,13 @@ import * as nodePty from "node-pty"
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 import logger from "../utils/logger";
 import { ComflowyConsole } from "../comflowy-console/comflowy-console";
-import { runCommand, shell } from "../utils/run-command";
+import { shell } from "../utils/run-command";
 import { getComfyUIDir } from "../utils/get-appdata-dir";
 import { getSystemPath, getSystemProxy, isWindows } from "../utils/env";
 import { uuid } from "@comflowy/common";
 import { conda } from "../utils/conda";
+import { getPythonPackageRequirements } from "./requirements";
+import { appConfigManager } from "../config-manager";
 
 export type ComfyUIProgressEventType = {
   type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
@@ -166,7 +168,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
+  async startComfyUI(pip: boolean = true): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -174,10 +176,9 @@ class ComfyuiService {
         return true;
       }
       this.#comfyuiStarted = true;
-      console.log("startted");
       const id = this.comfyuiSessionId = uuid();
       await this.startTerminal();
-      const command = this.#getComfyUIRunCommand(pip, mode);
+      const command = this.#getComfyUIRunCommand(pip);
       this.write(command);
   
       await new Promise((resolve, reject) => {
@@ -210,19 +211,26 @@ class ComfyuiService {
   /**
    * Run comfyUI command
    */
-  #getComfyUIRunCommand(pip: boolean = true, mode: "normal" | "fp16" | "fp32" = "normal") {
+  #getComfyUIRunCommand(pip: boolean = true) {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
-    // Default command with no extra options
-    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0; ${PYTHON_PATH} main.py --enable-cors-header`;
+    const requirements = getPythonPackageRequirements();
 
+    // Default command with no extra options
+    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0 ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
+    const runConfig = appConfigManager.getRunConfig();
     // Adjust command based on selected mode
-    if(mode === 'fp16') {
+    const fpmode= runConfig.fpmode;
+    const vaemode = runConfig.vaemode;
+    if (fpmode === 'fp16') {
       command += ' --force-fp16';
-    } else if(mode === 'fp32') {
+    } else if(fpmode === 'fp32') {
       command += ' --force-fp32';
     }
-    // 'normal' doesn't require extra options
-
+    if(vaemode === 'fp16') {
+      command += ' --fp16-vae';
+    } else if(vaemode === 'fp32') {
+      command += ' --fp32-vae';
+    }
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 
@@ -238,7 +246,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = true, mode: string = 'normal'): Promise<boolean> {
+  async restartComfyUI(pip: boolean = true): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
@@ -246,7 +254,7 @@ class ComfyuiService {
       });
       this.stopComfyUI();
       await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
-      await this.startComfyUI(pip, mode);
+      await this.startComfyUI(pip);
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
         message: "Restart ComfyUI Success"
@@ -269,7 +277,9 @@ class ComfyuiService {
       });
       const repoPath = getComfyUIDir();
       this.stopComfyUI();
+      await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
       this.write(`cd ${repoPath}; git pull \r`);
+      await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
       await this.startComfyUI(true);
       logger.info("updateComfyUI: stopped");
     } catch (err: any) {

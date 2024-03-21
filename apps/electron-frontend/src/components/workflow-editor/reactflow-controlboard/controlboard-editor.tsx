@@ -1,23 +1,24 @@
 import { useAppStore } from "@comflowy/common/store";
-import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
-import { NodeRenderInfo, getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
+import {ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard";
+import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Button, Checkbox, Modal, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { useDrag, useDrop, DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import styles from "./controlboard.module.scss";
-import { ControlBoardNode, NodeHeader } from "./controlboard-node";
+import { NodeHeader } from "./controlboard-node";
 import { DragIcon } from "ui/icons";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import {Node} from "reactflow";
 import _ from "lodash";
+import { ControlBoardConfig, ControlBoardNodeConfig, ControlBoardNodeProps, WorkflowNodeRenderInfo } from "@comflowy/common/types";
 
 /**
- * The Control Båoard Config Editor
+ * The Control Board Config Editor
  * @returns 
  */
 export function EditControlBoard(props: {onFinish: () => void}) {
-  const nodes = useAppStore(st => st.nodes);
+  const nodeIds = useAppStore(st => st.nodes.join(","));
   const [allNodes, setAllNodes] = useState<ControlBoardNodeProps[]>([]);
   
   /**
@@ -38,10 +39,11 @@ export function EditControlBoard(props: {onFinish: () => void}) {
   }, [savedControlBoardData]);
 
   useEffect(() => {
+    const nodes = useAppStore.getState().nodes;
     let allNodes = ControlBoardUtils.autoSortNodes(nodes).map(node => {
       return {
         node
-      } as ControlBoardNodeProps;
+      } as unknown as ControlBoardNodeProps;
     });
     if (controlboardData) {
       const nodesWithControl = ControlBoardUtils.getNodesToRender(_.cloneDeep(controlboardData), nodes);
@@ -66,7 +68,7 @@ export function EditControlBoard(props: {onFinish: () => void}) {
       setControlBoardData(ControlBoardUtils.createControlboardInfoFromNodes(allNodes.map(n => n.node)));
       setAllNodes(allNodes);
     }
-  }, [nodes, controlboardData]);
+  }, [nodeIds, controlboardData]);
 
   console.log("control board Data", allNodes);
 
@@ -141,7 +143,7 @@ function DraggableControlNodeConfigItem({
   onChangeControlBoard: (data: ControlBoardConfig) => void,
   controlboardData: ControlBoardConfig
 }) {
-  const { title, params, widget } = getNodeRenderInfo(data.node as any);
+  const { title, params, widget } = getNodeRenderInfo(data.node.data.value, data.node.data.widget);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
     item: () => ({ id, index }),
@@ -171,7 +173,6 @@ function DraggableControlNodeConfigItem({
 
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
-  const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
 
   if (params.length === 0) {
     return <></>
@@ -197,7 +198,7 @@ function DraggableControlNodeConfigItem({
         if (!checked) {
           node.fields = [];
         } else {
-          const {fields} = ControlBoardUtils.createControlboardInfoFromNode(data.node as any);
+          const {fields} = ControlBoardUtils.createControlboardInfoFromNode(data.node);
           node.fields = fields;
         }
         onChangeControlBoard(newControlData)
@@ -209,7 +210,7 @@ function DraggableControlNodeConfigItem({
           isPositive={isPositive}
           isNegative={isNegative}
           node={data.node}
-          nodeError={nodeError}
+          nodeError={null}
         />
         <NodeControlParamsEditor params={params} node={data.node} nodeControl={data.nodeControl} onChangeNodeControl={(newNodeCtrl) => {
           const newControlData = _.cloneDeep(controlboardData);
@@ -229,7 +230,7 @@ function NodeControlParamsEditor({
   node, 
   nodeControl, 
   onChangeNodeControl,
-}: { nodeControl: ControlBoardNodeConfig, params: NodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
+}: { nodeControl: ControlBoardNodeConfig, params: WorkflowNodeRenderInfo['params'], node: Node, onChangeNodeControl: (cfg: ControlBoardNodeConfig) => void }) {
   return (
     <div className="node-control-params">
       {params.map(({ property, input }) => (

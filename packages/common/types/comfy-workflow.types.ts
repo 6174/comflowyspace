@@ -1,12 +1,20 @@
 import { PreviewImage } from "./comfy-props.types";
 import { ComfyUIWorkflowGroup, ComfyUIWorkflowNode, PersistedWorkflowNode } from "./comfy-node.types";
-import { ControlBoardConfig } from "../workflow-editor/controlboard";
 import { JSONDocMeta } from "../jsondb/jsondb.types";
 import { ComfyUIWorkflowConnection, PersistedWorkflowConnection } from "./comfy-connection.types";
+import { ControlBoardConfig } from "./comflowy-controlboard.types";
 
+export type ComfyUIRunFPMode = "normal" | "fp16" | "fp32";
+export type ComfyUIRunVAEMode = "normal" | "fp16" | "fp32";
 export type PersistedFullWorkflow = {
   title: string;
   id: string;
+  meta?: {
+    sharedAsSubflow?: boolean;
+    shareAsSubflowTitle?: string;
+    sharedAsApp?: boolean;
+    sharedAsApi?: boolean;
+  };
   thumbnail?: string;
   gallery?: PreviewImage[];
   snapshot: Pick<PersistedWorkflowDocument, "nodes" | "controlboard" | "connections">; // json format

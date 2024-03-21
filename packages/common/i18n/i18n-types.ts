@@ -60,6 +60,8 @@ export enum KEYS {
   about = "about",
   language = "language",
   startupSettings = "startupSettings",
+  floatingPointPrecision = "floatingPointPrecision",
+  vaePrecision = "vaePrecision",
   sdWebUIPath = "sdWebUIPath",
   sdWebUIPathDesc = "sdWebUIPathDesc",
   changeLocation = "changeLocation",

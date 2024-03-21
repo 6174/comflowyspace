@@ -2,7 +2,6 @@ import Configstore from 'configstore';
 import * as path from 'path';
 import { getAppDataDir } from './utils/get-appdata-dir';
 
-export const CONDA_ENV_NAME = "comflowy";
 class MyConfigManager {
   private config: Configstore;
 
@@ -28,6 +27,35 @@ class MyConfigManager {
   delete(key: string): void {
     this.config.delete(key);
   }
+
+  getAll(): any {
+    return this.config.all;
+  }
+
+  getRunConfig(): {
+    fpmode?: string;
+    vaemode?: string;
+    condaEnv?: string;
+  } {
+    return this.#getJSONKey(CONFIG_KEYS.runConfig)
+  }
+
+  getSetupConfig(): {
+    comfyUIDir?: string;
+    sdwebuiPath?: string;
+  } {
+    return this.#getJSONKey(CONFIG_KEYS.appSetupConfig)
+  }
+
+  #getJSONKey(key: string): any {
+    const raw = this.config.get(key);
+    try {
+      const data = JSON.parse(raw);
+      return data;
+    } catch (err) {
+      return {};
+    }
+  }
 }
 
 // 示例用法
@@ -35,9 +63,10 @@ const appConfigManager = new MyConfigManager('_config');
 
 export enum CONFIG_KEYS {
   "appSetupConfig" = "appSetupConfig",
-  "modeSetupConfig" = "modeSetupConfig"
+  "runConfig" = "modeSetupConfig",
 }
 
+export let CONDA_ENV_NAME = appConfigManager.getRunConfig()?.condaEnv || "comflowy"
 
 export {appConfigManager}
 

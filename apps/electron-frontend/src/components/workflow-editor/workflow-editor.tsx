@@ -1,8 +1,8 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi } from 'reactflow';
-import { NodeContainer } from './reactflow-node/reactflow-node-container';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds} from 'reactflow';
+import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
 import { Input, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowDocument, SDNode, Widget } from '@comflowy/common/types';
@@ -21,15 +21,48 @@ import { onEdgeUpdateFailed } from './reactflow-connecting';
 import { useExtensionsState } from '@comflowy/common/store/extension-state';
 import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
+import { GroupNode } from './reactflow-group/reactflow-group';
+import { isRectContain } from "@comflowy/common/utils/math";
 
 const nodeTypes = { 
-  [NODE_IDENTIFIER]: NodeContainer,
-  [NODE_GROUP]: NodeContainer
+  [NODE_IDENTIFIER]: NodeWrapper,
+  [NODE_GROUP]: GroupNode
 }
 export default function WorkflowEditor() {
+  /**
+   * basic properties
+   */
   const [inited, setInited] = React.useState(false);
+  const ref = React.useRef(null);
+  const storeApi = useStoreApi();
+  const { id, watchedDoc } = useLiveDoc(inited);
+  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
   const onInitExtensionState = useExtensionsState((st) => st.onInit);
-  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onAddNode, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onLoadWorkflow, onConnect, onInit, onNewClientId, onChangeDragingAndResizingState} = useAppStore((st) => ({
+  const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
+  React.useEffect(() => {
+    if (ref.current) {
+      setToolsUIVisible(true);
+    }
+  }, [ref])
+
+  const edgeUpdateSuccessful = React.useRef(true);
+  const edgetConnectSuccessful = React.useRef(true);
+  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
+  const edgeUpdating = React.useRef(false);
+
+  /**
+   * core behaviors
+   */
+  useCopyPaste(ref, reactFlowInstance);
+  const { menu, setMenu, onSelectionContextMenu } = useWorkflowNodeContextMenu(ref);
+  const { widgetTreeContext, setWidgetTreeContext, onPanelDoubleClick, onPanelClick } = useWorkflowPanelContextMenu(edgeUpdating);
+  const { onNodeDrag, onNodeDragStart, onNodeDragStop, onSelectionChange} = useDragDropNode(ref);
+  const { onPaneDragOver, onPaneDrop } = useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext);
+
+  /**
+   * app state
+   */
+  const { nodes, widgets, edges, inprogressNodeId, selectionMode, transform, onTransformStart, onTransformEnd, onConnectStart, onConnectEnd, onDeleteNodes, onEdgesDelete,onNodesChange, onEdgesChange, onEdgesUpdate, onEdgeUpdateStart, onEdgeUpdateEnd, onConnect, onInit, onNewClientId} = useAppStore((st) => ({
     nodes: st.nodes,
     widgets: st.widgets,
     edges: st.edges,
@@ -41,7 +74,6 @@ export default function WorkflowEditor() {
     onDeleteNodes: st.onDeleteNodes,
     onConnectStart: st.onConnectStart,
     onConnectEnd: st.onConnectEnd,
-    onAddNode: st.onAddNode,
     onEdgesDelete: st.onEdgesDelete,
     onNodesChange: st.onNodesChange,
     onEdgesChange: st.onEdgesChange,
@@ -52,246 +84,23 @@ export default function WorkflowEditor() {
     onConnect: st.onConnect,
     inprogressNodeId: st.nodeInProgress?.id,
     onInit: st.onInit,
-    onChangeDragingAndResizingState: st.onChangeDragingAndResizingState,
   }), shallow)
 
-  // @TODO performance issue when zooming
-  // const transform  = useStore((st => {
-  //   return st.transform[2]
-  // }));
+  /**
+   * node and edge rendering 
+   */
+  const { nodesWithStyle, styledEdges } = useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform);
   
-  const nodesWithStyle = nodes.map(node => {
-    return {
-      ...node,
-      style: {
-        ...node.style,
-        width: node.width,
-        height: node.height
-      }
-    }
-  });
-
-  const styledEdges = edges.map(edge => {
-    return {
-      ...edge,
-      animated: edge.source === inprogressNodeId,
-      style: {
-        strokeWidth: 2.5 / transform,
-        opacity: edge.selected ? 1 : .6,
-        stroke: Input.getInputColor([edge.sourceHandle] as any),
-      },
-    }
-  });
-
-  const router = useRouter();
-  const {id} = router.query;
-
-  const watchedDoc = JSONDBClient.useLiveDoc<PersistedFullWorkflow | null>({
-    collectionName: "workflows",
-    documentId: id as string,
-    queryFn: async() => {
-      if (!id) {
-        return null;
-      }
-      return await documentDatabaseInstance.getDoc(id as string)
-    }
-  });
-
-  React.useEffect(() => {
-    if (id && inited) {
-      documentDatabaseInstance.getDoc(id as string).then(doc => {
-        doc && !doc.deleted && onLoadWorkflow(doc);
-      }).catch(err => {
-        console.log(err);
-      })
-    }
-    checkWebGLStatus();
-  }, [id, inited])
-
-  const onDragOver = React.useCallback((event) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
-
-  const [reactFlowInstance, setReactFlowInstance] = React.useState(null);
-  const onDrop = React.useCallback(
-    async (event) => {
-      event.preventDefault();
-      try {
-        const rawWidgetInfo = event.dataTransfer.getData('application/reactflow');
-        const widgetInfo = JSON.parse(rawWidgetInfo) as Widget;
-        const widgetType = widgetInfo.name;
-        if (typeof widgetType === 'undefined' || !widgetType) {
-          return;
-        }
-        // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
-        // and you don't need to subtract the reactFlowBounds.left/top anymore
-        // details: https://reactflow.dev/whats-new/2023-11-10
-        const position = reactFlowInstance.screenToFlowPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
-        await onAddNode(widgetInfo, position);
-        setWidgetTreeContext(null);
-      } catch(err) {
-        console.log("drop error", err);
-      }
-    },
-    [reactFlowInstance, widgets],
-  );
-
-  const ref = React.useRef(null);
-  const [menu, setMenu] = React.useState(null);
-  const onSelectionContextMenu = React.useCallback(
-    (event, nodes) => {
-      // Prevent native context menu from showing
-      event.preventDefault();
-
-      // Calculate position of the context menu. We want to make sure it
-      // doesn't get positioned off-screen.
-      const pane = ref.current.getBoundingClientRect();
-      setMenu({
-        nodes,
-        top: event.clientY < pane.height - 200 && event.clientY,
-        left: event.clientX < pane.width - 200 && event.clientX,
-        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
-      });
-    },
-    [setMenu],
-  );
-
-  const tranformEnd = () => {
+  const tranformEnd = React.useCallback(() => {
     const transform = storeApi.getState().transform;
     onTransformEnd(transform[2]);
-  }
+  }, []);
 
   const onPaneClick = React.useCallback(() => {
     tranformEnd();
     setMenu(null)
   }, [setMenu]);
   
-  const selectionModeProps = selectionMode === "figma" ? {
-    selectionOnDrag: true,
-    panOnScroll: true,
-    panOnDrag: [1, 2],
-    selectionMode: SelectionMode.Partial
-  }  : {};
-
-  /**
-   * Keyboard Event handler 
-   */
-  const storeApi = useStoreApi();
-  const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
-    const metaKey = ev.metaKey;
-    switch (ev.code) {
-      case "KeyC": 
-        break;
-      case "KeyV":
-        break;
-      case "KeyZ":
-        if (metaKey && !ev.shiftKey) {
-          undo();
-        }
-        if (metaKey && ev.shiftKey) {
-          redo();
-        }
-        break;
-      default: 
-        break;
-    }
-
-    function undo() {
-      const undo = useAppStore.getState().undo;
-      undo();
-    }
-
-    function redo() {
-      const redo = useAppStore.getState().redo;
-      redo();
-    }
-  }, []);
-
-  const onCopy = React.useCallback((ev: ClipboardEvent) => {
-    if ((ev.target as HTMLElement)?.className === "node-error") {
-      return;
-    }
-    const state = useAppStore.getState();
-    const selectedNodes = state.nodes.filter(node => node.selected);
-    const workflowMap = state.doc.getMap("workflow");
-    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
-    copyNodes(selectedNodes.map((node) => {
-      const id = node.id;
-      return workflow.nodes[id];
-    }), ev);
-
-    if (ev.type === "cut") {
-      // do something with cut
-    }
-  }, [])
-
-  const onPaste = React.useCallback((ev: ClipboardEvent) => {
-    pasteNodes(ev);
-  }, [reactFlowInstance])
-
-  React.useEffect(() => {
-    document.addEventListener('copy', onCopy);
-    document.addEventListener('cut', onCopy);
-    document.addEventListener('paste', onPaste);
-    document.addEventListener('keydown', onKeyPresshandler);
-    return () => {
-      document.removeEventListener('keydown', onKeyPresshandler);
-      document.removeEventListener('copy', onCopy);
-      document.removeEventListener('cut', onCopy);
-      document.removeEventListener('paste', onPaste);
-    }
-  }, [ref])
-
-
-  /**
-   * On double click panel to show the widget tree
-   */
-  const [widgetTreeContext, setWidgetTreeContext] = React.useState<WidgetTreeOnPanelContext>();
-  const onPanelDoubleClick = React.useCallback((ev: React.MouseEvent) => {
-    const target = ev.target as HTMLElement;
-    if (target.classList.contains("react-flow__pane")) {
-      setWidgetTreeContext({
-        position: {
-          x: ev.clientX,
-          y: ev.clientY
-        },
-        filter: (widget) => true,
-        showCategory: true,
-        onNodeCreated: () => {
-          setWidgetTreeContext(null);
-        }
-      })
-    }
-  }, [setWidgetTreeContext]);
-
-  const edgeUpdateSuccessful = React.useRef(true);
-  const edgetConnectSuccessful = React.useRef(true);
-  const edgeConnectingParams = React.useRef<OnConnectStartParams>(null);
-  const edgeUpdating = React.useRef(false);
-
-  const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
-    !edgeUpdating.current && setWidgetTreeContext(null)
-  }, []);
-
-  React.useEffect(() => {
-    document.oncontextmenu = function () {
-      return false;
-    }
-  }, []);
-
-  const [toolsUIVisible, setToolsUIVisible] = React.useState(false);
-  React.useEffect(() => {
-    if (ref.current) {
-      setToolsUIVisible(true);
-    }
-  }, [ref])
-
 
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
@@ -317,7 +126,6 @@ export default function WorkflowEditor() {
         onEdgesChange={onEdgesChange}
         onNodesDelete={onDeleteNodes}
         onEdgesDelete={onEdgesDelete}
-
         onEdgeUpdateStart={() => {
           edgeUpdateSuccessful.current = false;
           edgeUpdating.current = true;
@@ -375,24 +183,30 @@ export default function WorkflowEditor() {
             edgeUpdating.current = false;
           }, 100)
         }}
-        onDrop={onDrop}
+        onDrop={onPaneDrop}
+        onDragOver={onPaneDragOver}
         onMoveStart={ev => {
           onTransformStart();
         }}
         onMoveEnd={tranformEnd}
-        onDragOver={onDragOver}
         onPaneClick={onPaneClick}
         onNodeContextMenu={(ev, node) => {
           onSelectionContextMenu(ev, [node]);
         }}
         onSelectionContextMenu={onSelectionContextMenu}
         onPaneContextMenu={onPaneClick}
-        {...selectionModeProps}
-        onNodeDragStart={ev => {
-          onChangeDragingAndResizingState(true);
-        }}
-        onNodeDragStop={ev => {
-          onChangeDragingAndResizingState(false);
+        {...useSelectionModeRelatedProps(selectionMode)}
+        selectNodesOnDrag={false}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDragStop={onNodeDragStop}
+        onSelectionChange={(ev) => {
+          /**
+           * Track multiple node dragging
+           */
+          if (ev.nodes.length > 0) {
+            onSelectionChange(ev);
+          }
         }}
         onInit={async (instance) => {
           try {
@@ -432,12 +246,385 @@ export default function WorkflowEditor() {
   )
 }
 
-function checkWebGLStatus() {
-  // var canvas = document.createElement('canvas');
-  // var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  // if (gl && gl instanceof WebGLRenderingContext) {
-  //   console.log('WebGL is enabled');
-  // } else {
-  //   console.log('WebGL is disabled');
-  // }
+function useSelectionModeRelatedProps(selectionMode) {
+  return selectionMode === "figma" ? {
+    selectionOnDrag: true,
+    panOnScroll: true,
+    panOnDrag: [1, 2],
+    selectionMode: SelectionMode.Partial
+  } : {};
+}
+
+function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
+  const nodesWithStyle = nodes.map(node => {
+    return {
+      ...node,
+      style: {
+        ...node.style,
+        width: node.width,
+        height: node.height
+      }
+    }
+  });
+
+  const styledEdges = edges.map(edge => {
+    return {
+      ...edge,
+      animated: edge.source === inprogressNodeId,
+      style: {
+        strokeWidth: 2.5 / transform,
+        opacity: edge.selected ? 1 : .6,
+        stroke: Input.getInputColor([edge.sourceHandle] as any),
+      },
+    }
+  });
+
+  return {
+    nodesWithStyle,
+    styledEdges
+  }
+
+}
+
+/**
+ * workfow node context menu
+ */
+
+function useWorkflowNodeContextMenu(ref) {
+  const [menu, setMenu] = React.useState(null);
+  const onSelectionContextMenu = React.useCallback(
+    (event, nodes) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const pane = ref.current.getBoundingClientRect();
+      setMenu({
+        nodes,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX,
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu],
+  );
+
+  return {
+    menu,
+    setMenu,
+    onSelectionContextMenu
+  }
+}
+
+/**
+ * workflow panel context menu
+ */
+function useWorkflowPanelContextMenu(edgeUpdating) {
+  const [widgetTreeContext, setWidgetTreeContext] = React.useState<WidgetTreeOnPanelContext>();
+  const onPanelDoubleClick = React.useCallback((ev: React.MouseEvent) => {
+    const target = ev.target as HTMLElement;
+    if (target.classList.contains("react-flow__pane")) {
+      setWidgetTreeContext({
+        position: {
+          x: ev.clientX,
+          y: ev.clientY
+        },
+        filter: (widget) => true,
+        showCategory: true,
+        onNodeCreated: () => {
+          setWidgetTreeContext(null);
+        }
+      })
+    }
+  }, [setWidgetTreeContext]);
+
+  const onPanelClick = React.useCallback((ev: React.MouseEvent) => {
+    !edgeUpdating.current && setWidgetTreeContext(null)
+  }, []);
+
+  React.useEffect(() => {
+    document.oncontextmenu = function () {
+      return false;
+    }
+  }, []);
+  return {
+    widgetTreeContext,
+    setWidgetTreeContext,
+    onPanelDoubleClick,
+    onPanelClick
+  }
+}
+
+function useDragDropToCreateNode(reactFlowInstance, setWidgetTreeContext) {
+  const widgets = useAppStore(st => st.widgets);
+  const onAddNode = useAppStore(st => st.onAddNode);
+  const onDragOver = React.useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+
+  const onDrop = React.useCallback(
+    async (event) => {
+      event.preventDefault();
+      try {
+        const rawWidgetInfo = event.dataTransfer.getData('application/reactflow');
+        const widgetInfo = JSON.parse(rawWidgetInfo) as Widget;
+        const widgetType = widgetInfo.name;
+        if (typeof widgetType === 'undefined' || !widgetType) {
+          return;
+        }
+        // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+        // and you don't need to subtract the reactFlowBounds.left/top anymore
+        // details: https://reactflow.dev/whats-new/2023-11-10
+        const position = reactFlowInstance.screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+        await onAddNode(widgetInfo, position);
+        setWidgetTreeContext(null);
+      } catch (err) {
+        console.log("drop error", err);
+      }
+    },
+    [reactFlowInstance, widgets],
+  );
+
+  return {
+    onPaneDragOver: onDragOver,
+    onPaneDrop: onDrop
+  }
+
+}
+
+/**
+ * live doc
+ */
+function useLiveDoc(inited) {
+  const onLoadWorkflow = useAppStore(st => st.onLoadWorkflow);
+  const router = useRouter();
+  const { id } = router.query;
+  const watchedDoc = JSONDBClient.useLiveDoc<PersistedFullWorkflow | null>({
+    collectionName: "workflows",
+    documentId: id as string,
+    queryFn: async () => {
+      if (!id) {
+        return null;
+      }
+      return await documentDatabaseInstance.getDoc(id as string)
+    }
+  });
+  React.useEffect(() => {
+    if (id && inited) {
+      documentDatabaseInstance.getDoc(id as string).then(doc => {
+        doc && !doc.deleted && onLoadWorkflow(doc);
+      }).catch(err => {
+        console.log(err);
+      })
+    }
+  }, [id, inited])
+  return {id, watchedDoc}
+}
+
+
+/**
+  * node drag enter and leave on group node
+  * https://pro-examples.reactflow.dev/dynamic-grouping
+  */
+function useDragDropNode(ref) {
+  const mousedownRef = React.useRef(false);
+  const draggingRef = React.useRef(false);
+  const selectionNodesRef = React.useRef<Node[]>([]);
+  const onMouseDown = React.useCallback(() => {
+    mousedownRef.current = true;
+  }, []);
+
+  const onSelectionChange = React.useCallback((ev) => {
+    const selectionNodes = (ev.nodes || []) as Node[];
+    if (mousedownRef.current && selectionNodes.length > 0) {
+      // if any of the selection node is a group type node, do nothing
+      if (selectionNodes.find(n => n.type === NODE_GROUP)) {
+        return
+      }
+
+      draggingRef.current = true;
+
+      // calculate the bound for all nodes;
+      const nodes = useAppStore.getState().nodes;
+      const realtimeNodes = selectionNodes.map(n => nodes.find(node => node.id === n.id));
+
+      selectionNodesRef.current = realtimeNodes;
+
+      const bound = getNodesBounds(realtimeNodes)
+      // console.log(selectionNodes[0].position, realtimeNodes[0].position)
+
+      const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
+      const groupNode = groupNodes.find(n => {
+        const groupBound = getNodesBounds([n]);
+        const ret = isRectContain(groupBound, bound);
+        // console.log(ret, groupBound, bound, selectionNodes.map(n => n.id));
+        return ret;
+      });
+
+      if (groupNode) {
+        useAppStore.setState({
+          draggingOverGroupId: groupNode.id
+        })
+      } else {
+        useAppStore.setState({
+          draggingOverGroupId: null
+        })
+      }
+    }
+  }, []);
+  
+  const onMouseUp = React.useCallback(() => {
+    mousedownRef.current = false;
+    const selectionNodes = selectionNodesRef.current;
+    if (draggingRef.current && selectionNodes.length > 0) {
+      draggingRef.current = false;
+      const st = useAppStore.getState();
+      // if this id exist, all nodes is over the group
+      const draggingOverGroupId = st.draggingOverGroupId;
+
+      useAppStore.setState({
+        draggingOverGroupId: null
+      });
+
+      const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
+      selectionNodes.forEach(node => {
+        const st = useAppStore.getState();
+        const sdnode = node.data.value as SDNode;
+        /**
+         * if node already in a group, then do nothing
+         */
+        if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
+          return;
+        }
+
+        /**
+         * if node already in a group, and current dragging over group is null, then remove the node from the group
+        */
+        if (sdnode.parent && !draggingOverGroup) {
+          st.onRemoveNodeFromGroup(node);
+          return;
+        }
+
+        /**
+         * if node is not in a group, and current dragging over group is not null, then add the node to the group
+         */
+        if (draggingOverGroup) {
+          st.onAddNodeToGroup(node, draggingOverGroup);
+          return;
+        }
+      })
+    }
+    
+  }, []);
+
+
+  React.useEffect(() => {
+    if (ref.current) {
+      const dom = document.body;
+      dom.addEventListener("mousedown", onMouseDown, true);
+      dom.addEventListener("mouseup", onMouseUp, true);
+      return () => {
+        dom.removeEventListener("mousedown", onMouseDown, true);
+        dom.removeEventListener("mouseup", onMouseUp, true);
+      }
+    }
+  }, [ref, onMouseDown, onMouseUp]);
+
+  const onNodeDragStart = React.useCallback((ev: React.MouseEvent, node: Node) => {
+  }, []);
+
+  const onNodeDrag = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    onSelectionChange({
+      nodes: [node]
+    })
+  }, []);
+
+  const onNodeDragStop = React.useCallback((ev: React.MouseEvent, node: Node) => {
+    onMouseUp();
+  }, []);
+
+  return {
+    onNodeDragStart,
+    onSelectionChange,
+    onNodeDrag,
+    onNodeDragStop
+  }
+}
+
+/**
+ * Keyboard Event handler 
+ */
+function useCopyPaste(ref, reactFlowInstance) {
+  const onKeyPresshandler = React.useCallback((ev: KeyboardEvent) => {
+    const metaKey = ev.metaKey;
+    switch (ev.code) {
+      case "KeyC":
+        break;
+      case "KeyV":
+        break;
+      case "KeyZ":
+        if (metaKey && !ev.shiftKey) {
+          undo();
+        }
+        if (metaKey && ev.shiftKey) {
+          redo();
+        }
+        break;
+      default:
+        break;
+    }
+
+    function undo() {
+      const undo = useAppStore.getState().undo;
+      undo();
+    }
+
+    function redo() {
+      const redo = useAppStore.getState().redo;
+      redo();
+    }
+  }, []);
+
+  const onCopy = React.useCallback((ev: ClipboardEvent) => {
+    if ((ev.target as HTMLElement)?.className === "node-error") {
+      return;
+    }
+    const state = useAppStore.getState();
+    const selectedNodes = state.nodes.filter(node => node.selected);
+    const workflowMap = state.doc.getMap("workflow");
+    const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
+    copyNodes(selectedNodes.map((node) => {
+      const id = node.id;
+      return workflow.nodes[id];
+    }), ev);
+
+    if (ev.type === "cut") {
+      // do something with cut
+    }
+  }, [])
+
+  const onPaste = React.useCallback((ev: ClipboardEvent) => {
+    pasteNodes(ev);
+  }, [reactFlowInstance])
+
+  React.useEffect(() => {
+    document.addEventListener('copy', onCopy);
+    document.addEventListener('cut', onCopy);
+    document.addEventListener('paste', onPaste);
+    document.addEventListener('keydown', onKeyPresshandler);
+    return () => {
+      document.removeEventListener('keydown', onKeyPresshandler);
+      document.removeEventListener('copy', onCopy);
+      document.removeEventListener('cut', onCopy);
+      document.removeEventListener('paste', onPaste);
+    }
+  }, [ref])
 }

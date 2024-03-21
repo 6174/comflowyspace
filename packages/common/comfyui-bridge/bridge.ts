@@ -1,5 +1,5 @@
 import { getBackendUrl, getComfyUIBackendUrl } from '../config'
-import { Widget, type NodeId, type PropertyKey, type WidgetKey } from '../types'
+import { Widget, type NodeId, type PropertyKey, type WidgetKey, NODE_GROUP, specialWidgets, AppConfigs } from '../types'
 
 export interface Node {
   class_type: WidgetKey
@@ -24,6 +24,36 @@ export async function getComfyUIEnvRequirements(): Promise<any> {
   let ret;
   try {
     const rest = await fetch(getBackendUrl('/api/env_check'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+export async function getComflowyAppConfig(): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/api/all_configs'));
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+export async function updateComflowyRunConfig(configs: Partial<AppConfigs["runConfig"]>): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl('/api/update_run_config'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(configs)
+    });
     ret = await rest.json();
   } catch (err) {
     console.log(err);
@@ -67,69 +97,11 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
     throw err;
   }
 
-  const specialWidgets = {
-    Note: {
-      "name": "Note",
-      "display_name": "Note",
-      "description": "Note",
-      "input": {
-        "required": {
-          "text": [
-            "STRING",
-            {
-              "multiline": true
-            }
-          ]
-        }
-      },
-      "output": [],
-      "category": "utils",
-    },
-    Group: {
-      "name": "Group",
-      "display_name": "Group",
-      "description": "Group",
-      "input": {
-        "required": {}
-      },
-      "output": [],
-      "category": "utils"
-    },
-    Primitive_STRING: createPrimitiveWidget("STRING"),
-    Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
-    Primitive_INT: createPrimitiveWidget("INT"),
-    Primitive_FLOAT: createPrimitiveWidget("FLOAT"),
-    // Reroute: {
-    //   "name": "Reroute",
-    //   "input": {
-    //     "required": {}
-    //   },
-    //   "output": [],
-    //   "display_name": "Reroute",
-    //   "description": "Reroute",
-    //   "category": "utils",
-    // }
-  }
-
   return {
     ...specialWidgets,
     ...ret
   };
 
-  function createPrimitiveWidget(type: string) {
-    return {
-      "name": `Primitive_${type}`,
-      "input": {
-        "required": {}
-      },
-      "output": [
-        type
-      ],
-      "display_name": `Primitive ${type}`,
-      "description": `Primitive type of ${type}`,
-      "category": "utils",
-    }
-  }
 }
 
 export async function getQueueApi(): Promise<Queue> {

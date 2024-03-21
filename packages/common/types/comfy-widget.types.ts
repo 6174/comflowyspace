@@ -1,5 +1,5 @@
 import { FlowPropsKey, Input } from "./comfy-props.types"
-
+export const NODE_GROUP = 'Group';
 export type WidgetKey = string
 /**
  * Stable Diffusion Widget Interface
@@ -9,7 +9,7 @@ export interface Widget {
   display_name?: string
   description?: string
   category: string
-  input: { 
+  input: {
     required: Record<PropertyKey, Input>,
     optional?: Record<PropertyKey, Input>,
   }
@@ -20,7 +20,7 @@ export const UnknownWidget: Widget = {
   name: "UNKNOWN_WIDGET",
   display_name: "Unknown",
   category: "Unknown",
-  input: {required: {}},
+  input: { required: {} },
   output: [],
 };
 
@@ -61,5 +61,64 @@ export const Widget = {
     const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];
     const type = name.split("_")[1];
     return types.indexOf(type) >= 0;
+  }
+}
+
+export const specialWidgets = {
+  Note: {
+    "name": "Note",
+    "display_name": "Note",
+    "description": "Note",
+    "input": {
+      "required": {
+        "text": [
+          "STRING",
+          {
+            "multiline": true
+          }
+        ]
+      }
+    },
+    "output": [],
+    "category": "utils",
+  },
+  Group: {
+    "name": NODE_GROUP,
+    "display_name": NODE_GROUP,
+    "description": "Group",
+    "input": {
+      "required": {}
+    },
+    "output": [],
+    "category": "utils"
+  },
+  Primitive_STRING: createPrimitiveWidget("STRING"),
+  Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
+  Primitive_INT: createPrimitiveWidget("INT"),
+  Primitive_FLOAT: createPrimitiveWidget("FLOAT"),
+  // Reroute: {
+  //   "name": "Reroute",
+  //   "input": {
+  //     "required": {}
+  //   },
+  //   "output": [],
+  //   "display_name": "Reroute",
+  //   "description": "Reroute",
+  //   "category": "utils",
+  // }
+}
+
+function createPrimitiveWidget(type: string) {
+  return {
+    "name": `Primitive_${type}`,
+    "input": {
+      "required": {}
+    },
+    "output": [
+      type
+    ],
+    "display_name": `Primitive ${type}`,
+    "description": `Primitive type of ${type}`,
+    "category": "utils",
   }
 }

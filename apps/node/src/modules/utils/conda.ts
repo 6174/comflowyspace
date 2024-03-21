@@ -36,6 +36,7 @@ class Conda {
   updateCondaInfo () {
     this.info = getCondaInfo();
     this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
+    console.log("env", this.env);
     logger.info("update conda info" + JSON.stringify(this.info) + JSON.stringify(this.env));
   }
 

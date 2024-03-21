@@ -1,0 +1,16 @@
+.createSubflowNodeList {
+  height: 340px;
+  :global {
+    .subflow-list {
+      height: 308px;
+      overflow-y: auto;
+    }
+    .subflow-node {
+      display: flex;
+      justify-content: flex-start;
+      .info {
+        flex: 1;
+      }
+    }
+  }
+}

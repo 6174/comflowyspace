@@ -64,8 +64,7 @@ export enum BootStrapTaskType {
     "installBasicModel" = "installBasicModel",
     "installBasicExtension" = "installBasicExtension",
     "startComfyUI" = "startComfyUI",
-    "startComfyUIFp16" = "startComfyUIFp16",
-    "startComfyUIFp32" = "startComfyUIFp32",
+    "startComfyUIWithPrecision" = "startComfyUIWithPrecision",
 }
 
 /**
@@ -75,10 +74,7 @@ export enum BootStrapTaskType {
  */
 export async function ApiBootstrap(req: Request, res: Response) {
     try {
-        const setupConfigString = appConfigManager.get(CONFIG_KEYS.modeSetupConfig);
-        const setupConfig = JSON.parse(setupConfigString || '{}');
-        const { bootstrapType } = setupConfig; 
-        const taskType = bootstrapType || (req.body.data && req.body.data.name) || BootStrapTaskType.startComfyUI;
+        const taskType = req.body.data && req.body.data.name
         const taskId = req.body.data && req.body.data.taskId;
         const task: TaskProps = {
             taskId,
@@ -102,6 +98,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
 
                 const msgTemplate = (type: string, solution = "") => `${type} operation timed out.${solution}  If you can't go through this issue. Please reach out to us on Discord or refer to our FAQ for assistance. We are open to offer 1v1 support.`
                 let task: Promise<any>;
+
                 switch (taskType) {
                     case BootStrapTaskType.installConda:
                         const isCondaInstalled = await checkIfInstalled("conda");
@@ -164,15 +161,9 @@ export async function ApiBootstrap(req: Request, res: Response) {
                                 })
                             }
                         });
-                        const ret =  await comfyuiService.startComfyUI()
+                        const ret = await comfyuiService.startComfyUI();
                         disposable.dispose();
                         return ret;
-                    case BootStrapTaskType.startComfyUIFp16:
-                        newDispatcher({ message: "Starting ComfyUI with --force-fp16." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp16'), 1000 * 60 * 30, "Start ComfyUI with --force-fp16 timed out.");
-                    case BootStrapTaskType.startComfyUIFp32:
-                        newDispatcher({ message: "Starting ComfyUI with --force-fp32." });
-                        return await withTimeout(comfyuiService.restartComfyUI(true, 'fp32'), 1000 * 60 * 30, "Start ComfyUI with --force-fp32 timed out.");
                     default:
                         throw new Error("No task named " + taskType)
                 }
@@ -254,26 +245,38 @@ export async function ApiSetupConfig(req: Request, res: Response) {
     } 
 }
 
-export async function ApiModeSetupConfig(req: Request, res: Response) {
-  try {
-    const { mode, bootstrapType } = req.body; 
-    if (mode && bootstrapType) { 
-      const setupString = JSON.stringify({
-        mode: mode,
-        bootstrapType: bootstrapType
-      });
-
-      appConfigManager.set(CONFIG_KEYS.modeSetupConfig, setupString);
-      res.send({
-        success: true,
-      });
-    } else {
-      
-      res.send({
-        success: false,
-        error: '缺少必要的配置参数'
-      });
+export async function ApiGetAllConfig(req: Request, res: Response) {
+    try {
+        const runConfig = appConfigManager.getRunConfig();
+        const setupConfig = appConfigManager.getSetupConfig();
+        res.send({
+            success: true,
+            data: {
+                runConfig,
+                setupConfig
+            }
+        });
+    } catch (err: any) {
+        logger.error(err.message + ":" + err.stack);
+        res.send({
+            success: false,
+            error: err.message
+        })
     }
+}
+
+export async function ApiSetRunConfig(req: Request, res: Response) {
+  try {
+    const configs = req.body;
+    let runMode = appConfigManager.getRunConfig();
+    appConfigManager.set(CONFIG_KEYS.runConfig, JSON.stringify({
+        ...runMode,
+        ...configs
+    }));
+    await comfyuiService.restartComfyUI();
+    res.send({
+        success: true,
+    });
   } catch (err: any) {
     logger.error(err.message + ":" + err.stack);
     res.send({
