@@ -52,6 +52,61 @@ export const conda = new Conda();
 conda.updateCondaInfo();
 
 /**
+ * this function should return all conda envs in a list
+ * the command return result is: 
+ *  # conda environments:
+    #
+    base                     /Users/chenxuejia/miniconda3
+    comflowy              *  /Users/chenxuejia/miniconda3/envs/comflowy
+    new_comflowy             /Users/chenxuejia/miniconda3/envs/new_comflowy
+                            /Users/chenxuejia/pinokio/bin/miniconda
+  * try to parse the result and return a list of conda envs
+ */
+export function getCondaEnvs(condaInfo: CondaInfo): CondaInfo[] {
+  const SHELL_ENV_PATH = getSystemPath({
+    CONDA_SCRIPTS_PATH: condaInfo.CONDA_SCRIPTS_PATH,
+    CONDA_ENV_PATH: DEFAULT_CONDA_ENV_PATH
+  });
+  try {
+    const result = execSync(`conda info --envs`, {
+      env: {
+        ...process.env,
+        PATH: SHELL_ENV_PATH,
+        Path: SHELL_ENV_PATH
+      },
+      encoding: 'utf-8',
+
+    });
+    const lines = result.toString().split('\n');
+    const envs: CondaInfo[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.includes("/")) {
+        const CONDA_ROOT = line.split(/\s+/)[1].trim();
+        if (isWindows) {
+          envs.push({
+            CONDA_ROOT,
+            CONDA_SCRIPTS_PATH: `${CONDA_ROOT}\\Scripts`,
+            CONDA_PATH: `${CONDA_ROOT}\\Scripts\\conda.exe`,
+          });
+        } else {
+          envs.push({
+            CONDA_ROOT,
+            CONDA_SCRIPTS_PATH: `${CONDA_ROOT}/bin`,
+            CONDA_PATH: `${CONDA_ROOT}/condabin/conda`,
+          });
+        }
+      }
+    }
+    return envs;
+  } catch (err) {
+    console.log("get conda envs error", err);
+    return [];
+  }
+}
+
+
+/**
  * get conda env path
  */
 export function getCondaEnv(env: string, condaInfo: CondaInfo): CondaEnvInfo | undefined {
