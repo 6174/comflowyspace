@@ -1,6 +1,6 @@
 import { NodeProps, XYPosition } from "reactflow";
-import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage } from "./comfy-props.types";
-import { Widget, WidgetKey } from "./comfy-widget.types"
+import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage, SDNODE_DEFAULT_COLOR } from "./comfy-props.types";
+import { NODE_GROUP, Widget, WidgetKey } from "./comfy-widget.types"
 import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-props.types";
 import { SubflowNodeWithControl } from "./comflowy-controlboard.types";
 import { PersistedFullWorkflow } from "./comfy-workflow.types";
@@ -121,12 +121,21 @@ export const SDNode = {
         slot_index: index
       }
     });
-    return { 
+    const ret = { 
       widget: widget.name, 
       fields: Widget.getDefaultFields(widget),
       inputs: inputs,
+      color: SDNODE_DEFAULT_COLOR.color,
+      bgcolor: SDNODE_DEFAULT_COLOR.bgcolor,
       outputs: outputs,
     }
+
+    if (widget.name === NODE_GROUP) {
+      ret.color = '#2AAFF7';
+      ret.bgcolor = '#21262A';
+    }
+    
+    return ret;
   },
   newPrimitiveNode(primitiveType: FlowPrimitiveType): SDNode {
     return {
