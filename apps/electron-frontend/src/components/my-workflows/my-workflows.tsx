@@ -111,7 +111,7 @@ function WorkflowList() {
       }
       return [];
     }
-  }) || []).filter(doc => !doc.deleted);
+  }) || []).filter(doc => doc && !doc.deleted);
   
 
   const [modal, contextHolder] = Modal.useModal();
