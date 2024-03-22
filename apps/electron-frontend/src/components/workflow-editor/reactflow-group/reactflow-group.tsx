@@ -25,21 +25,23 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
 
   let $view;
   if (invisible) {
-    return (
+    $view = (
       <>
         <div className="node-header"></div>
         <div className="node-main"></div>
       </>
     )
+  } else {
+    switch (nodeVisibleState) {
+      case NodeVisibleState.Collapsed:
+        $view = <GroupCollapsed node={props} />
+        break;
+      default:
+        $view = <GroupExpanded node={props} />;
+        break;
+    }
   }
-  switch (nodeVisibleState) {
-    case NodeVisibleState.Collapsed:
-      $view = <GroupCollapsed node={props} />
-      break;
-    default:
-      $view = <GroupExpanded node={props} />;
-      break;
-  }
+
 
   const collapsed = nodeVisibleState === NodeVisibleState.Collapsed;
   return (
