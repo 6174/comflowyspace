@@ -149,9 +149,12 @@ export function getTransformStyle(transformScale: number) {
   }
   if (switchState) {
     ret.top = -18;
-    ret.left = -10;
-    ret.fontWeight = "bold";
-    ret.textShadow = 'var(--node-color) 2px 2px 7px';
+    ret.left = 0;
+    ret.opacity = .85
+    ret.fontSize = 12
+    // ret.fontWeight = "bold";
+    // ret.color = 'var(--node-color)';
+    // ret.textShadow = 'var(--node-color) 1px 1px 3px';
   }
   return ret;
 }
