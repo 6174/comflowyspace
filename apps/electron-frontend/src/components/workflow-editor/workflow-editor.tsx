@@ -283,23 +283,6 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
     }
   });
 
-  console.log("connection edges", styledEdges);
-  
-  const mid = [
-    {
-      "source": "node-a988fa3b-e5cb-489a-84c6-92216f69c235",
-      "sourceHandle": "INT",
-      "target": "node-3928fd69-9bfe-4d44-9129-420b8c0e2f2a",
-      "targetHandle": "SEED",
-      "id": "conn_3a49d512-ef2e-486f-b6bc-ece4983956c7",
-      "animated": false,
-      "style": {
-        "strokeWidth": 2.0974935103755303,
-        "opacity": 0.6,
-        "stroke": "#92939B"
-      }
-    }
-  ]
   return {
     nodesWithStyle,
     styledEdges

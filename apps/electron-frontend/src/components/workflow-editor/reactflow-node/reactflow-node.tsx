@@ -65,6 +65,7 @@ export const NodeComponent = memo(({
       ${isNegative ? "negative-node" : ""}
       ${collapsed ? nodeStyles.nodeCollapsed : ""}
       `} style={{
+        '--node-width': node.data.dimensions.width + "px",
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,
         '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
@@ -148,10 +149,13 @@ export function getTransformStyle(transformScale: number) {
     transformOrigin: '0 100%',
   }
   if (switchState) {
-    ret.top = -18;
+    ret.top = -14;
     ret.left = 0;
-    ret.opacity = .85
-    ret.fontSize = 12
+    ret.opacity = .6
+    ret.fontSize = 10
+    ret['--icon-size'] = "14px";
+    // ret.maxWidth = 140
+    // ret.overflow = 'hidden'
     // ret.fontWeight = "bold";
     // ret.color = 'var(--node-color)';
     // ret.textShadow = 'var(--node-color) 1px 1px 3px';

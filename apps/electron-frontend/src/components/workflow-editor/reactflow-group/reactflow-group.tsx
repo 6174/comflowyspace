@@ -19,7 +19,6 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const nodeVisibleState = node.data.visibleState;
   const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
   let nodeColor = props.data.value.color || SDNODE_DEFAULT_COLOR.color;
-  let nodeBgColor = props.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
   const transform = useAppStore(st => st.transform);
   const invisible = transform < 0.2;
 
@@ -46,14 +45,14 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const collapsed = nodeVisibleState === NodeVisibleState.Collapsed;
   return (
     <div className={`
-      group-node
+      ${nodeStyles.reactFlowGroup}
       ${nodeStyles.reactFlowNode} 
       ${(node.selected || isDraggingNodeOverCurrentGroup) ? nodeStyles.reactFlowSelected : ""} 
       ${collapsed ? nodeStyles.nodeCollapsed : ""}
       `} style={{
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,
-        '--node-bg-color':  Color(nodeBgColor).alpha(.95).hexa(),
+        '--node-bg-color': Color(SDNODE_DEFAULT_COLOR.bgcolor).alpha(.25).hexa(),
       } as CSSProperties}> 
       {$view}
     </div>

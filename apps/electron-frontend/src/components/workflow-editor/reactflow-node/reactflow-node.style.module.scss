@@ -1,5 +1,5 @@
 .reactFlowNode {
-    --node-base-font-size: 14px;
+    --node-base-font-size: 12px;
     border: solid 2px transparent;
     box-sizing: content-box;
     display: flex;
@@ -62,12 +62,13 @@
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
             height: 24px;
+            --icon-size: 20px;
             .node-title {
                 flex: 1;
                 position: absolute;
                 color: white;
                 font-weight: normal;
-                font-size: 14px;
+                font-size: 12px;
                 line-height: 18px;
                 overflow: hidden;
                 white-space: nowrap;
@@ -79,6 +80,7 @@
                 transition: var(--transition);
                 svg {
                     margin-right: 4px;
+                    width: var(--icon-size);
                 }
             }
             .progress-bar {
@@ -124,7 +126,7 @@
             }
             .node-slot{
                 position: relative;
-                font-size: 14px;
+                font-size: var(--node-base-font-size);
                 line-height: 14px;
                 font-family: JetBrains Mono, monospace;
                 color: #A8A9AF;
@@ -322,6 +324,13 @@
     }
     &::before {
         background-image: linear-gradient(to right, #37B7AB, #37B7AB);
+    }
+    
+}
+
+.reactFlowGroup {
+    &::before {
+        background-image: initial !important;
     }
 }
 
