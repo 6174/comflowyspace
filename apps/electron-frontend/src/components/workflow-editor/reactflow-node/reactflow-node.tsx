@@ -135,9 +135,9 @@ export const NodeComponent = memo(({
 });
 
 
-export function keepTransformedFontSize(transformScale: number, baseFontSize = 14): number {
+export function keepTransformedSize(transformScale: number, baseSize = 14): number {
   const transform = Math.max(1, 1 / transformScale);
-  return baseFontSize * transform;
+  return baseSize * transform;
 }
 
 export function getTransformStyle(transformScale: number) {
@@ -151,7 +151,7 @@ export function getTransformStyle(transformScale: number) {
   if (switchState) {
     ret.top = -14;
     ret.left = 0;
-    ret.opacity = .6
+    ret.opacity = .8
     ret.fontSize = 10
     ret['--icon-size'] = "14px";
     // ret.maxWidth = 140

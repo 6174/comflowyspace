@@ -3,6 +3,7 @@ import { type NodeProps, NodeResizeControl } from 'reactflow'
 import { NodeVisibleState, PreviewImage } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
 import ResizeIcon from 'ui/icons/resize-icon';
+import { transform } from 'lodash';
 
 export function ComflowyNodeResizer({ setResizing, minWidth, minHeight, node }: {
   setResizing: (resizing: boolean) => void;
@@ -10,6 +11,7 @@ export function ComflowyNodeResizer({ setResizing, minWidth, minHeight, node }: 
   minHeight: number;
   node: NodeProps;
 }) {
+  const transform = useAppStore(st => st.transform || 1);
   return (
     <NodeResizeControl
       style={{
@@ -26,12 +28,20 @@ export function ComflowyNodeResizer({ setResizing, minWidth, minHeight, node }: 
       minHeight={minHeight}
     >
       {node.selected && (
-        <div className="resize-icon nodrag">
+        <div className="resize-icon nodrag" style={{
+          transform: `scale(${keepTransformedSize(transform, 1)})`,
+          transformOrigin: '50% 50%'
+        }}>
           <ResizeIcon />
         </div>
       )}
     </NodeResizeControl>
   )
+}
+
+export function keepTransformedSize(transformScale: number, baseSize = 14): number {
+  const transform = Math.max(1, 1 / transformScale);
+  return baseSize * transform;
 }
 
 /**
