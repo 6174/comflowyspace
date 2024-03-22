@@ -24,12 +24,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
 
   let $view;
   if (invisible) {
-    $view = (
-      <>
-        <div className="node-header"></div>
-        <div className="node-main"></div>
-      </>
-    )
+    $view = <GroupSmallTransformState node={props} />
   } else {
     switch (nodeVisibleState) {
       case NodeVisibleState.Collapsed:
@@ -58,6 +53,27 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
     </div>
   )
 });
+
+function GroupSmallTransformState(props: {
+  node: NodeWrapperProps,
+}) {
+  const node = props.node
+  const childrenIds = node.data.children || [];
+  const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
+  const transform = useAppStore(st => st.transform);
+  const { title } = getNodeRenderInfo(node.data.value, node.data.widget);
+  return (
+    <>
+      <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} />
+      <div className="node-header">
+        <h2 className="group-node-title node-title" style={getTransformStyle(transform)}>
+          {title}({childrenIds.length} children)
+        </h2>
+      </div>
+      <div className="node-main"></div>
+    </>
+  )
+}
 
 /**
  * 
