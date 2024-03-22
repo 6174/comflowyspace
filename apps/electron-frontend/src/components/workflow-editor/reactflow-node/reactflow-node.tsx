@@ -25,6 +25,8 @@ interface Props {
   imagePreviews?: PreviewImage[]
 }
 
+export const INVISIBLE_TRANSFORM_THRSHOLD = 0.25;
+
 export const NodeComponent = memo(({
   node,
   nodeError,
@@ -40,7 +42,7 @@ export const NodeComponent = memo(({
   const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
   const transform = useAppStore(st => st.transform || 1);
-  const invisible = transform < 0.2;
+  const invisible = transform < INVISIBLE_TRANSFORM_THRSHOLD;
   
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
@@ -135,21 +137,23 @@ export const NodeComponent = memo(({
 });
 
 
-export function keepTransformedSize(transformScale: number, baseSize = 14): number {
-  const transform = Math.max(1, 1 / transformScale);
-  return baseSize * transform;
-}
-
 export function getTransformStyle(transformScale: number) {
   const transform = Math.max(1, 1 / transformScale);
   console.log(transform);
-  const switchState = transform > 1.3;
+  const switchState = transform > 1.6;
   const ret: React.CSSProperties = {
-    transform: `scale(${transform})`,
-    transformOrigin: '0 100%',
+    transformOrigin: '0 50%',
+    transform: `scale(${transform})`
   }
+
+  if (transform > 1.3) {
+    ret.fontSize = 10;
+  }
+
   if (switchState) {
-    ret.top = -14;
+    ret.transform = `scale(${transform})`
+    ret.transformOrigin = '0 90%';
+    ret.top = -16;
     ret.left = 0;
     ret.opacity = .8
     ret.fontSize = 10

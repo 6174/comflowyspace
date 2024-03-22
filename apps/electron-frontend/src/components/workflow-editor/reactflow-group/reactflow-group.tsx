@@ -9,7 +9,7 @@ import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-renderi
 import {Slot} from "../reactflow-node/reactflow-node-slot";
 import { Position } from "reactflow";
 import { getTransformStyle } from "../reactflow-node/reactflow-node";
-
+import { INVISIBLE_TRANSFORM_THRSHOLD } from "../reactflow-node/reactflow-node";
 /**
  * group node
  */
@@ -20,7 +20,7 @@ export const GroupNode = memo((props: NodeWrapperProps) => {
   const isDraggingNodeOverCurrentGroup = useAppStore(st => st.draggingOverGroupId === id);
   let nodeColor = props.data.value.color || SDNODE_DEFAULT_COLOR.color;
   const transform = useAppStore(st => st.transform);
-  const invisible = transform < 0.2;
+  const invisible = transform < INVISIBLE_TRANSFORM_THRSHOLD;
 
   let $view;
   if (invisible) {

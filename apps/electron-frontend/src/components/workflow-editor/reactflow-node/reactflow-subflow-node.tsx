@@ -13,7 +13,7 @@ import { NodeError } from "./reactflow-node-errors";
 import { NodeImagePreviews } from "./reactflow-node-imagepreviews";
 import { Slot } from "./reactflow-node-slot";
 import { InputContainer } from "../reactflow-input/reactflow-input-container";
-
+import { INVISIBLE_TRANSFORM_THRSHOLD } from "./reactflow-node";
 type SubflowNodeProps = {
   node: NodeProps<{
     value: SDNode;
@@ -36,7 +36,7 @@ export function SubflowNode({
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.data.value.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
   const transform = useAppStore(st => st.transform);
-  const invisible = transform < 0.2;
+  const invisible = transform < INVISIBLE_TRANSFORM_THRSHOLD;
 
   return (
     <div className={`
