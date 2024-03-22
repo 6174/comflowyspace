@@ -79,7 +79,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
               const parentState = parentNode.properties?.nodeVisibleState as NodeVisibleState || NodeVisibleState.Expaned;
               switch (parentState) {
                 case NodeVisibleState.Collapsed:
-                  // item.hidden = true;
+                  item.hidden = true;
                   item.selectable = false;
                   item.draggable = false;
                   // item.height = 20;
