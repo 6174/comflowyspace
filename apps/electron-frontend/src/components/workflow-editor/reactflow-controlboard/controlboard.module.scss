@@ -24,7 +24,8 @@
       padding: 10px;
       height: auto;
       .node-title {
-        justify-content: left;
+        height: 28px !important;
+        position: relative !important;
         display: inline-block !important;
         .inner {
           display: flex;
@@ -85,12 +86,12 @@
         .editable-control-node {
           flex: 1;
           position: relative;
-          top: 4px;
-
           .node-title {
             justify-content: left;
             display: inline-block !important;
-
+            height: 28px !important;
+            position: relative !important;
+            top: -4px;
             .inner {
               display: flex;
               align-items: center;
