@@ -28,10 +28,14 @@ export function EditControlBoard(props: {onFinish: () => void}) {
   const [controlboardData, setControlBoardData] = useState<ControlBoardConfig | null>(savedControlBoardData);
   const onChangeControlBoard = useAppStore(st => st.onChangeControlBoard); 
   const triggerChangeControlBoardData = useCallback(async (data: ControlBoardConfig) => {
-    setControlBoardData(data);
+    const newData = {
+      ...controlboardData,
+      ...data
+    };
+    setControlBoardData(newData);
     console.log("change control data order", data)
-    onChangeControlBoard(data);
-  }, []);
+    onChangeControlBoard(newData);
+  }, [controlboardData]);
 
   // auto update controlboard data from SSOT Source
   useEffect(() => {
@@ -45,13 +49,14 @@ export function EditControlBoard(props: {onFinish: () => void}) {
         node
       } as unknown as ControlBoardNodeProps;
     });
-    if (controlboardData) {
+    if (controlboardData && controlboardData.nodes) {
       const nodesWithControl = ControlBoardUtils.getNodesToRender(_.cloneDeep(controlboardData), nodes);
       const otherNodes = allNodes.filter(an => !nodesWithControl.find(n => n.node.id === an.node.id)) 
       const newAllNodes = [...nodesWithControl, ...otherNodes];
       setAllNodes(newAllNodes);
       if (otherNodes.length > 0) {
         setControlBoardData({
+          ...controlboardData,
           nodes: [
             ...controlboardData.nodes,
             ...otherNodes.map(n => {
@@ -65,7 +70,10 @@ export function EditControlBoard(props: {onFinish: () => void}) {
         })
       }
     } else {
-      setControlBoardData(ControlBoardUtils.createControlboardInfoFromNodes(allNodes.map(n => n.node)));
+      setControlBoardData({
+        ...controlboardData,
+        ...ControlBoardUtils.createControlboardInfoFromNodes(allNodes.map(n => n.node))
+      });
       setAllNodes(allNodes);
     }
   }, [nodeIds, controlboardData]);

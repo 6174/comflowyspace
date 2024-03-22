@@ -211,10 +211,16 @@ export default function WorkflowEditor() {
             setReactFlowInstance(instance);
             await onInitExtensionState(false);
             await onInit(instance);
+            
             if (id) {
               onNewClientId(id as string);
             }
             setInited(true);
+
+            setTimeout(() => {
+              const transform = storeApi.getState().transform;
+              onTransformEnd(transform[2]);
+            }, 1000)
           } catch(err) {
             message.error("App init failed: " + err.message);
           }
