@@ -1,4 +1,3 @@
-
 .reactFlowNode {
     border: solid 2px transparent;
     box-sizing: content-box;
@@ -41,96 +40,34 @@
     :global {
         .node-inner {
             height: 100%;
-            overflow-y: hidden;
             margin-left: -1px;
             margin-top: -1px;
             margin-right: -1px;
-        }
-
-        .connectionindicator {
-            // transition: var(--transition);
-        }
-        .node-slot-left .connectionindicator {
-            transform-origin: 10% 50%;
-        }
-
-        .node-slot-right .connectionindicator {
-            transform-origin: 90% 50%;
-        }
-        
-        .node-images-preview {
-            padding: 10px;
-            flex: 1;
-            overflow: hidden;
-            &.multiple {
-                .inner {
-                    margin-bottom: 20px;
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, 200px);
-                    grid-gap: 10px;
-                    padding: 10px;
-                }
-                .ant-image {
-                    margin-right: 4px;
-                    margin-bottom: 4px;
-                    min-height: 200px;
-                    min-width: 200px;
-                    overflow: hidden;
-                    display: inline-flex;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: var(--backgroundColor);
-                    border-radius: 4px;
-                }
-            }
-            
-            &.single {
-                .ant-image {
-                    width: 100%;
-                }
-            }
-            
-            img {
-                border-radius: 8px;
-            }
-
-        }
-
-        .resize-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 20px;
-            background: var(--backgroundColorL1);
-            transition: var(--transition);
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            &:hover {
-                background-color: var(--backgroundColorL2);
-            }
-            svg {
-                transform: scale(.8);
-                // position: relative;
-                // top: -4px;
-                // left: -4px;
-            }
-        }
-        .node-header {
-            flex-direction: row;
             display: flex;
+            flex-direction: column;
+            .node-main {
+                overflow-y: hidden;
+                flex: 1;
+            }
+        }
+
+        .node-header {
+            display: flex;
+            flex-direction: row;
             align-items: center;
             padding: 5px 7px 5px 12px;
             background: var(--node-color);;
             padding: 4px 6px;;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
+            height: 24px;
             .node-title {
+                flex: 1;
+                position: absolute;
                 color: white;
                 font-weight: normal;
-                font-size: 12px;
+                font-size: 14px;
                 line-height: 18px;
-                flex: 1;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
@@ -138,6 +75,7 @@
                 margin: 0;
                 display: flex;
                 align-items: center;
+                transition: var(--transition);
                 svg {
                     margin-right: 4px;
                 }
@@ -185,7 +123,7 @@
             }
             .node-slot{
                 position: relative;
-                font-size: 10px;
+                font-size: 14px;
                 line-height: 14px;
                 font-family: JetBrains Mono, monospace;
                 color: #A8A9AF;
@@ -300,6 +238,76 @@
         .install-missing-widget {
             padding: 0 10px;
         }
+
+        .connectionindicator {
+            // transition: var(--transition);
+        }
+        .node-slot-left .connectionindicator {
+            transform-origin: 10% 50%;
+        }
+
+        .node-slot-right .connectionindicator {
+            transform-origin: 90% 50%;
+        }
+        
+        .node-images-preview {
+            padding: 10px;
+            flex: 1;
+            overflow: hidden;
+            &.multiple {
+                .inner {
+                    margin-bottom: 20px;
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, 200px);
+                    grid-gap: 10px;
+                    padding: 10px;
+                }
+                .ant-image {
+                    margin-right: 4px;
+                    margin-bottom: 4px;
+                    min-height: 200px;
+                    min-width: 200px;
+                    overflow: hidden;
+                    display: inline-flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: var(--backgroundColor);
+                    border-radius: 4px;
+                }
+            }
+            
+            &.single {
+                .ant-image {
+                    width: 100%;
+                }
+            }
+            
+            img {
+                border-radius: 8px;
+            }
+
+        }
+
+        .resize-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+            background: var(--backgroundColorL1);
+            transition: var(--transition);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            &:hover {
+                background-color: var(--backgroundColorL2);
+            }
+            svg {
+                transform: scale(.8);
+                // position: relative;
+                // top: -4px;
+                // left: -4px;
+            }
+        }
     }
 }
 
@@ -367,9 +375,8 @@
                 top: 6px;
                 left: 8px;
             }
-            overflow: hidden;
-            // display: none;
             .node-main {
+                overflow: hidden;
                 position: absolute;
                 top: 0;
                 left: 0;

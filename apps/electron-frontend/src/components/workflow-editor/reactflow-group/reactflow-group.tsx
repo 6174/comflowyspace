@@ -8,6 +8,7 @@ import { ComflowyNodeResizer, useNodeAutoResize } from "../reactflow-node/reactf
 import { getNodeRenderInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import {Slot} from "../reactflow-node/reactflow-node-slot";
 import { Position } from "reactflow";
+import { getTransformStyle } from "../reactflow-node/reactflow-node";
 
 /**
  * group node
@@ -79,11 +80,12 @@ function GroupCollapsed(props: {
     totalOutputs += ret.renderInfo.outputs.length;
     return ret;
   })
+  const transform = useAppStore(st => st.transform);
   // render slots of children
   return (
     <div className="node-inner">
       <div className="node-header">
-        <h2 className="group-node-title node-title">
+        <h2 className="group-node-title node-title" style={getTransformStyle(transform)}>
           {title}({children.length} children)
         </h2>
       </div>
@@ -95,23 +97,26 @@ function GroupCollapsed(props: {
           <div className="fake-slot fake-slot-right"></div>
         )}
       </div>
+
       <div className="node-main">
-        <div className="node-slots">
-          <div className="node-inputs">
-            {childrenWidthRenderInfo.map(childWidthRenderInfo => {
-              const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
-              return inputs.map((input, index) => (
-                <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
-              ))
-            })}
-          </div>
-          <div className="node-outputs">
-            {childrenWidthRenderInfo.map(childWidthRenderInfo => { 
-              const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
-              return outputs.map((output, index) => (
-                <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
-              ))
-            })}
+        <div className="node-main-inner">
+          <div className="node-slots">
+            <div className="node-inputs">
+              {childrenWidthRenderInfo.map(childWidthRenderInfo => {
+                const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
+                return inputs.map((input, index) => (
+                  <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                ))
+              })}
+            </div>
+            <div className="node-outputs">
+              {childrenWidthRenderInfo.map(childWidthRenderInfo => { 
+                const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
+                return outputs.map((output, index) => (
+                  <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                ))
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -126,16 +131,17 @@ function GroupExpanded(props: {
   const sdnode = node.data.value;
   const { title } = getNodeRenderInfo(sdnode, node.data.widget);
   const { mainRef, minHeight, minWidth, setResizing } = useNodeAutoResize(node, []);
+  const transform = useAppStore(st => st.transform);
   return (
     <>
       <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} /> 
       <div className="node-inner">
         <div className="node-header">
-          <h2 className="node-title">
+          <h2 className="node-title" style={getTransformStyle(transform)}>
             {title}
           </h2>
         </div>
-        <div className="node-main" ref={mainRef}>
+        <div className="node-main">
         </div>
       </div>
     </>

@@ -39,7 +39,7 @@ export const NodeComponent = memo(({
   const isInProgress = progressBar !== undefined
   const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;
   const {mainRef, minHeight, minWidth, setResizing} = useNodeAutoResize(node, imagePreviews);
-  const transform = useAppStore(st => st.transform);
+  const transform = useAppStore(st => st.transform || 1);
   const invisible = transform < 0.2;
   
   let nodeColor = node.data.value.color || SDNODE_DEFAULT_COLOR.color;
@@ -75,12 +75,12 @@ export const NodeComponent = memo(({
       {!invisible ? (
         <div className='node-inner'>
           <div className="node-header">
-            <h2 className="node-title">
+            <h2 className="node-title" style={getTransformStyle(transform)}>
               {getWidgetIcon(widget)} 
-              {title} 
-              {isPositive && <span>{"("}Positive{")"}</span>} 
-              {isNegative && <span>{"("}Negative{")"}</span>} 
-              <NodeError nodeError={nodeError}/>
+                {title}
+                {isPositive && <span>{"("}Positive{")"}</span>} 
+                {isNegative && <span>{"("}Negative{")"}</span>} 
+                <NodeError nodeError={nodeError}/>
             </h2>
 
             {isInProgress? 
@@ -92,34 +92,36 @@ export const NodeComponent = memo(({
               : null}
           </div>
 
-          <div className="node-main" ref={mainRef}>
-            <div className="node-slots">
-              <div className="node-inputs">
-                {inputs.map((input, index) => (
-                  <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
-                ))}
+          <div className="node-main">
+            <div className="node-main-inner" ref={mainRef}>
+              <div className="node-slots">
+                <div className="node-inputs">
+                  {inputs.map((input, index) => (
+                    <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                  ))}
+                </div>
+                <div className="node-outputs">
+                  {outputs.map((output, index) => (
+                    <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                  ))}
+                </div>
               </div>
-              <div className="node-outputs">
-                {outputs.map((output, index) => (
-                  <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
-                ))}
-              </div>
+              {
+                !collapsed && (
+                  <>
+                    <div className="node-params">
+                      {params.map(({ property, input }) => (
+                        <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
+                      ))}
+                    </div>
+                    <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
+                    <div style={{ height: 10 }}></div>
+                  </>
+                )
+              }
             </div>
-            {
-              !collapsed && (
-                <>
-                  <div className="node-params">
-                    {params.map(({ property, input }) => (
-                      <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
-                    ))}
-                  </div>
-                  <InstallMissingWidget nodeError={nodeError} node={node.data.value} />
-                  <div style={{ height: 10 }}></div>
-                </>
-              )
-            }
+            {!collapsed && <NodeImagePreviews imagePreviews={imagePreviews}/> }
           </div>
-          {!collapsed && <NodeImagePreviews imagePreviews={imagePreviews}/> }
         </div>
       ) : (
         <>
@@ -132,4 +134,24 @@ export const NodeComponent = memo(({
 });
 
 
+export function keepTransformedFontSize(transformScale: number, baseFontSize = 14): number {
+  const transform = Math.max(1, 1 / transformScale);
+  return baseFontSize * transform;
+}
 
+export function getTransformStyle(transformScale: number) {
+  const transform = Math.max(1, 1 / transformScale);
+  console.log(transform);
+  const switchState = transform > 1.3;
+  const ret: React.CSSProperties = {
+    transform: `scale(${transform})`,
+    transformOrigin: '0 100%',
+  }
+  if (switchState) {
+    ret.top = -18;
+    ret.left = -10;
+    ret.fontWeight = "bold";
+    ret.textShadow = 'var(--node-color) 2px 2px 7px';
+  }
+  return ret;
+}
