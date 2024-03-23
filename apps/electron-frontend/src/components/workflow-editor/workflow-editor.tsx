@@ -443,7 +443,7 @@ function useDragDropNode(ref) {
   const mousedownRef = React.useRef(false);
   const draggingRef = React.useRef(false);
   const selectionNodesRef = React.useRef<Node[]>([]);
-  const onMouseDown = React.useCallback(() => {
+  const onMouseDown = React.useCallback((ev: MouseEvent) => {
     mousedownRef.current = true;
   }, []);
 
@@ -454,7 +454,6 @@ function useDragDropNode(ref) {
       if (selectionNodes.find(n => n.type === NODE_GROUP)) {
         return
       }
-
       draggingRef.current = true;
 
       // calculate the bound for all nodes consider nodes are deleted
@@ -519,12 +518,12 @@ function useDragDropNode(ref) {
       selectionNodes.forEach(node => {
         const st = useAppStore.getState();
         const sdnode = node.data.value as SDNode;
-        console.log("sdnode", sdnode, sdnode.parent, draggingOverGroupId);
+        // console.log("sdnode", sdnode, sdnode.parent, draggingOverGroupId);
         /**
          * if node already in a group, then do nothing
          */
         if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
-          console.log("has parent");
+          // console.log("has parent");
           return;
         }
 
@@ -540,13 +539,12 @@ function useDragDropNode(ref) {
          * if node is not in a group, and current dragging over group is not null, then add the node to the group
          */
         if (!sdnode.parent && draggingOverGroup) {
-          console.log("no parent");
+          // console.log("no parent");
           st.onAddNodeToGroup(node, draggingOverGroup);
           return;
         }
       })
     }
-    
   }, []);
 
 
