@@ -2,10 +2,11 @@ import { getImagePreviewUrl } from "@comflowy/common/comfyui-bridge/bridge";
 import { PreviewImage } from "@comflowy/common/types";
 import { PreviewGroupWithDownload } from "../reactflow-gallery/image-with-download";
 import { Image } from 'antd';
+import {memo} from "react";
 
-export function NodeImagePreviews({ imagePreviews }: {
+export const NodeImagePreviews = memo(({ imagePreviews }: {
   imagePreviews: PreviewImage[]
-}) {
+}) => {
   const imagePreviewsWithSrc = (imagePreviews || []).map((image, index) => {
     const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
     return {
@@ -33,5 +34,5 @@ export function NodeImagePreviews({ imagePreviews }: {
       </div>
     </div>
   )
-}
+});
 

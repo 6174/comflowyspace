@@ -139,7 +139,6 @@ export const NodeComponent = memo(({
 
 export function getTransformStyle(transformScale: number) {
   const transform = Math.max(1, 1 / transformScale);
-  console.log(transform);
   const switchState = transform > 1.6;
   const ret: React.CSSProperties = {
     transformOrigin: '0 50%',

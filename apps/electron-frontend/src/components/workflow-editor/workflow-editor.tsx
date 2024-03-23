@@ -457,18 +457,24 @@ function useDragDropNode(ref) {
 
       draggingRef.current = true;
 
-      // calculate the bound for all nodes;
-      const nodes = useAppStore.getState().nodes;
-      const realtimeNodes = selectionNodes.map(n => nodes.find(node => node.id === n.id));
+      // calculate the bound for all nodes consider nodes are deleted
+      const {nodes} = useAppStore.getState();
+      // const realtimeNodes = selectionNodes.map(n => graph[n.id]);
+      const realtimeNodes = selectionNodes.map(n => {
+        const it = nodes.find(node => node.id === n.id);
+        return {
+          ...it,
+          positionAbsolute: it.positionAbsolute || n.positionAbsolute
+        };
+      }).filter(n => !!n);
 
       if (realtimeNodes.length !== selectionNodes.length) {
         return
       }
 
       selectionNodesRef.current = realtimeNodes;
-
-      const bound = getNodesBounds(realtimeNodes)
-      // console.log(selectionNodes[0].position, realtimeNodes[0].position)
+      
+      const bound = getNodesBounds(realtimeNodes);
 
       const groupNodes = nodes.filter(n => n.type === NODE_GROUP);
       const groupNode = groupNodes.find(n => {
@@ -493,31 +499,39 @@ function useDragDropNode(ref) {
   const onMouseUp = React.useCallback(() => {
     mousedownRef.current = false;
     const selectionNodes = selectionNodesRef.current;
-    if (draggingRef.current && selectionNodes.length > 0) {
-      draggingRef.current = false;
-      const st = useAppStore.getState();
-      // if this id exist, all nodes is over the group
-      const draggingOverGroupId = st.draggingOverGroupId;
 
+    const st = useAppStore.getState();
+    const draggingOverGroupId = st.draggingOverGroupId;
+    if (draggingOverGroupId) {
       useAppStore.setState({
         draggingOverGroupId: null
       });
+    }
+
+    if (draggingRef.current) {
+      draggingRef.current = false;
+      
+      if (selectionNodes.length === 0) {
+        return;
+      }
 
       const draggingOverGroup = st.nodes.find(n => n.id === draggingOverGroupId);
       selectionNodes.forEach(node => {
         const st = useAppStore.getState();
         const sdnode = node.data.value as SDNode;
+        console.log("sdnode", sdnode, sdnode.parent, draggingOverGroupId);
         /**
          * if node already in a group, then do nothing
          */
         if (sdnode.parent && sdnode.parent === draggingOverGroupId) {
+          console.log("has parent");
           return;
         }
 
         /**
          * if node already in a group, and current dragging over group is null, then remove the node from the group
         */
-        if (sdnode.parent && !draggingOverGroup) {
+        if (sdnode.parent && !draggingOverGroupId) {
           st.onRemoveNodeFromGroup(node);
           return;
         }
@@ -525,7 +539,8 @@ function useDragDropNode(ref) {
         /**
          * if node is not in a group, and current dragging over group is not null, then add the node to the group
          */
-        if (draggingOverGroup) {
+        if (!sdnode.parent && draggingOverGroup) {
+          console.log("no parent");
           st.onAddNodeToGroup(node, draggingOverGroup);
           return;
         }
@@ -551,9 +566,9 @@ function useDragDropNode(ref) {
   }, []);
 
   const onNodeDrag = React.useCallback((ev: React.MouseEvent, node: Node) => {
-    onSelectionChange({
-      nodes: [node]
-    })
+    // onSelectionChange({
+    //   nodes: [node]
+    // })
   }, []);
 
   const onNodeDragStop = React.useCallback((ev: React.MouseEvent, node: Node) => {

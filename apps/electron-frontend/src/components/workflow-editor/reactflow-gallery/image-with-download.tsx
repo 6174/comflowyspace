@@ -9,7 +9,7 @@ import {
   ZoomOutOutlined,
 } from '@ant-design/icons';
 import styles from "./gallery.module.scss";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 import { EditIcon } from "ui/icons";
 import { EditImageIcon } from "../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image";
 
@@ -67,7 +67,7 @@ export function ImageWithDownload(props: ImageProps & {fileName: string, editabl
 /**
  * Preview group with download
  */
-export function PreviewGroupWithDownload(props: {images: {src: string, filename: string}[], [_:string]: any}) {
+export const PreviewGroupWithDownload = memo((props: {images: {src: string, filename: string}[], [_:string]: any}) => {
   const images = props.images;
   const onDownload = useCallback((current: number) => {
     const previewImage = images[current];
@@ -89,6 +89,7 @@ export function PreviewGroupWithDownload(props: {images: {src: string, filename:
       message.error("Download failed:" + err.message);
     }
   }, [images]);
+
   return (
     <Image.PreviewGroup 
       {...props}
@@ -125,4 +126,4 @@ export function PreviewGroupWithDownload(props: {images: {src: string, filename:
       {props.children}
     </Image.PreviewGroup>
   )
-}
+});
