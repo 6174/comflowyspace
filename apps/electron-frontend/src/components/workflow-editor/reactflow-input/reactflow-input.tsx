@@ -151,6 +151,7 @@ function InputComponent({
 			return (
 				<AntInput.TextArea
 					autoSize
+					className='nopan nodrag'
 					placeholder={name}
 					style={{ minHeight: 128, width: '100%', marginBottom: 10 }}
 					value={value}
@@ -188,7 +189,9 @@ function Labelled({
 					maxWidth: 10
 				}}>{name}</div>
 			</div>
-			{children}
+			<div className='node-input-label-content nopan nodrag'>
+				{children}
+			</div>
 		</div>
 	);
 }
