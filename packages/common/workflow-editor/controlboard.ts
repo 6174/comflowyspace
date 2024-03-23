@@ -57,6 +57,9 @@ export const ControlBoardUtils = {
       const name = (node.data.widget.name + node.data.widget.display_name).toLowerCase()
       const isPositive = graph[node.id]?.isPositive;
       const isNegative = graph[node.id]?.isNegative;
+      if (node.data.widget.name === "Note") {
+        return 12;
+      }
       if (name.includes('cliptextencod')) {
         if (isPositive) {
           return 11;

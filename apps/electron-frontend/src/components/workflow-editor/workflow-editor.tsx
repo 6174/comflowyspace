@@ -274,9 +274,10 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
   const styledEdges = edges.map(edge => {
     return {
       ...edge,
+      // type: 'step',
       animated: edge.source === inprogressNodeId,
       style: {
-        strokeWidth: 2.5 / transform,
+        strokeWidth: 2 / transform,
         opacity: edge.selected ? 1 : .6,
         stroke: Input.getInputColor([edge.sourceHandle] as any),
       },
