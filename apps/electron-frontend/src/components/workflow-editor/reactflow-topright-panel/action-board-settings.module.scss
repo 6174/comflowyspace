@@ -1,0 +1,12 @@
+.boardSettings {
+  padding: 10px;
+  :global {
+    .setting-item {
+      .setting-title {
+        font-size: 12px;
+        opacity: .6;
+        margin-bottom: 10px;
+      }
+    }
+  }
+}

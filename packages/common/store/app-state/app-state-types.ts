@@ -1,5 +1,5 @@
 import * as Y from "yjs";
-import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, ReactFlowInstance} from 'reactflow';
+import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, ReactFlowInstance, EdgeTypes} from 'reactflow';
 import { WorkflowDocumentUtils } from '../ydoc-utils';
 import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, NodeVisibleState } from '../../types'
 import { throttledUpdateDocument } from "../../storage";
@@ -14,6 +14,7 @@ import _ from "lodash";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
+export type EdgeType = "straight" | "step" | "smoothstep" | "bezier";
 export interface EditorEvent {
   type: string;
   data: any
@@ -25,6 +26,7 @@ export interface AppState {
   counter: number
   clientId?: string
   slectionMode: SelectionMode
+  edgeType: EdgeType
   transform: number
   transforming: boolean
   unknownWidgets: Set<string>;
@@ -82,6 +84,7 @@ export interface AppState {
   onAddSubflowNode: (workflow: PersistedFullWorkflow, pos: XYPosition) => PersistedWorkflowNode
   onDuplicateNodes: (ids: NodeId[]) => void
   onChangeSelectMode: (mode: SelectionMode) => void;
+  onChangeEdgeType: (type: EdgeType) => void;
   onSelectNodes: (ids: string[]) => void;
   onChangeControlBoard: (config: ControlBoardConfig) => void;
 

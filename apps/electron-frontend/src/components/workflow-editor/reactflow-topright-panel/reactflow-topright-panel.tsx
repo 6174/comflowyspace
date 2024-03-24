@@ -3,6 +3,7 @@ import styles from "./reactflow-topright-panel.style.module.scss";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useUnreadLogs } from "@/components/comflowy-console/comflowy-console";
 import { useRouter } from "next/router";
+import { ActionBoardSettingEntry } from "./action-board-settings";
 export default function ReactflowTopRightPanel() {
     const router = useRouter();
     const currentWorkflowId = router.query.id;
@@ -50,6 +51,9 @@ export default function ReactflowTopRightPanel() {
                             </Space>
                         </Badge>
                     </div>
+                </Tooltip>
+                <Tooltip title={"Board Settings"}>
+                    <ActionBoardSettingEntry />
                 </Tooltip>
             </Space>
         </div>

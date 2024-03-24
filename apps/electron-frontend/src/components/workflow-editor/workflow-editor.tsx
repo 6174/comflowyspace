@@ -260,6 +260,7 @@ function useSelectionModeRelatedProps(selectionMode) {
 }
 
 function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
+  const edgeType = useAppStore(st => st.edgeType);
   const nodesWithStyle = nodes.map(node => {
     return {
       ...node,
@@ -274,7 +275,7 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
   const styledEdges = edges.map(edge => {
     return {
       ...edge,
-      // type: 'step',
+      type: edgeType || 'bezier',
       animated: edge.source === inprogressNodeId,
       style: {
         strokeWidth: 2 / transform,
