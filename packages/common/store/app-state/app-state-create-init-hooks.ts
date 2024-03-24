@@ -15,6 +15,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       console.log("widgets", widgets);
       get().subflowStore.getState().setWidgets(widgets);
       set({
+        edgeType: localStorage.getItem("edgeType") as any || "bezier",
         widgets,
         widgetCategory
       })

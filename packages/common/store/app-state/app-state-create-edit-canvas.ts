@@ -23,6 +23,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
     },
     onChangeEdgeType: (type: EdgeType) => {
       set({ edgeType: type })
+      localStorage.setItem("edgeType", type);
     }
   }
 }

@@ -33,6 +33,7 @@ export const useAppStore = create<AppState>((set, get) => {
 
     // temporary state
     slectionMode: "default",
+    edgeType: "bezier",
     nodeSelection: [],
     edgeSelection: [],
     draggingAndResizing: false,
