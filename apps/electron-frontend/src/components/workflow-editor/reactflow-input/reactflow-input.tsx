@@ -106,6 +106,11 @@ function InputComponent({
 					label: k,
 				};
 			});
+			
+			if (name === "control_after_generated") {
+				value = value || defaultValue
+			}
+
 			return (
 				<Labelled name={name}>
 					<Select

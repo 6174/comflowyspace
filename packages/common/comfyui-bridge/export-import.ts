@@ -108,18 +108,23 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         }
       }
 
-      if (node.type === "KSampler") {
-        params.splice(1, 0, "control_after_generated")
+      // if (node.type === "KSampler") {
+      //   params.splice(1, 0, "control_after_generated")
+      // }
+
+      const seedIndex = params.findIndex(param => param === "seed");
+      if (seedIndex >= 0) {
+        params.splice(seedIndex + 1, 0, "control_after_generated")
       }
 
-      if (node.type === "KSamplerAdvanced" || 
-        node.type === "ImpactKSamplerBasicPipe" || 
-        node.type === "SamplerCustom" || 
-        node.type === "ImpactKSamplerAdvancedBasicPipe" || 
-        node.type === "KSampler (Efficient)"
-        ) {
-        params.splice(2, 0, "control_after_generated")
-      }
+      // if (node.type === "KSamplerAdvanced" || 
+      //   node.type === "ImpactKSamplerBasicPipe" || 
+      //   node.type === "SamplerCustom" || 
+      //   node.type === "ImpactKSamplerAdvancedBasicPipe" || 
+      //   node.type === "KSampler (Efficient)"
+      //   ) {
+      //   params.splice(2, 0, "control_after_generated")
+      // }
 
       node.widgets_values.forEach((value, index) => {
         const key = params[index];

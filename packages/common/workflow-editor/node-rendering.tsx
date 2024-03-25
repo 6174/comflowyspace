@@ -60,7 +60,9 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     const index = params.findIndex(param => param.property === seedFieldName);
     params.splice(index + 1, 0, {
       property: "control_after_generated",
-      input: [ContrlAfterGeneratedValuesOptions]
+      input: [ContrlAfterGeneratedValuesOptions, {
+        default: "randomize"
+      }]
     });
   }
 
