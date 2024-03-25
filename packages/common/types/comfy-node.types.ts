@@ -102,6 +102,9 @@ export const SDNode = {
    * @returns 
    */
   fromWidget(widget: Widget): SDNode {
+    if (widget.name === "Reroute") {
+      return SDNode.newRerouteNode();
+    }
     const inputs = Object.entries(widget.input.required)
     .filter(([name, input]) => {
       return !Input.isParameterOrList(input)
@@ -152,7 +155,7 @@ export const SDNode = {
   },
   newRerouteNode(): SDNode {
     return {
-      widget: 'RerouteNode',
+      widget: 'Reroute',
       fields: {},
       inputs: [{
         name: "",

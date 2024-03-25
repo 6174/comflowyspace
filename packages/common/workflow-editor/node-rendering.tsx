@@ -10,9 +10,15 @@ import { useSubflowStore } from '../store/subflow-state';
  */
 export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRenderInfo {
   const params: { property: string, input: Input }[] = []
-  const inputs = node.inputs || [];
-  const outputs = node.outputs || [];
+  let inputs = node.inputs || [];
+  let outputs = node.outputs || [];
   const inputKeys = inputs.map(input => input.name);
+
+  if (widget.name === "Reroute") {
+    console.log("info", node, widget);
+    outputs = [{ name: "*", type: "*", links: [], slot_index: 0 }];
+    inputs = [{ name: "value", type: "*" }];
+  }
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
     widget.input.required.upload = ["IMAGEUPLOAD"];

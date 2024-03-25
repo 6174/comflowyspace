@@ -107,10 +107,35 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
     return [false, "edge already exist"];
   }
 
-  const sourceNode = st.graph[source];
+  let sourceNode = st.graph[source];
   const targetNode = st.graph[target];
   const sourceOutputs = sourceNode.outputs;
   const targetInputs = targetNode.inputs;
+
+  if (targetNode.widget === "Reroute") {
+    return [true, "success"];
+  }
+
+  /**
+   * @TODO if source node is reroute，find the real source node and validate it
+   */
+  if (sourceNode.widget === "Reroute") {
+    return [true, "success"];
+    // const edge = st.edges.find(edge => {
+    //   return edge.target === sourceNode.id
+    // });
+    // if (edge) {
+    //   const realSource = edge.source;
+    //   const realSourceNode = st.graph[realSource];
+    //   sourceNode = realSourceNode;
+    // } else {
+    //   return [false, "source node is reroute but no real source node found"]
+    // }
+  }
+
+  if (sourceHandle === "*" || targetHandle === "*") {
+    return [true, "success"]
+  }
 
   const output = sourceOutputs.find(output => output.name.toUpperCase() === sourceHandle);
   const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);

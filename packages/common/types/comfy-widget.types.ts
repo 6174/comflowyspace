@@ -96,16 +96,16 @@ export const specialWidgets = {
   Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
   Primitive_INT: createPrimitiveWidget("INT"),
   Primitive_FLOAT: createPrimitiveWidget("FLOAT"),
-  // Reroute: {
-  //   "name": "Reroute",
-  //   "input": {
-  //     "required": {}
-  //   },
-  //   "output": [],
-  //   "display_name": "Reroute",
-  //   "description": "Reroute",
-  //   "category": "utils",
-  // }
+  Reroute: {
+    "name": "Reroute",
+    "input": {
+      "required": {}
+    },
+    "output": [],
+    "display_name": "Reroute",
+    "description": "Reroute",
+    "category": "utils",
+  }
 }
 
 function createPrimitiveWidget(type: string) {

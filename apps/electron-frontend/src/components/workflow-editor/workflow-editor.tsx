@@ -28,6 +28,7 @@ const nodeTypes = {
   [NODE_IDENTIFIER]: NodeWrapper,
   [NODE_GROUP]: GroupNode
 }
+
 export default function WorkflowEditor() {
   /**
    * basic properties
