@@ -1,6 +1,6 @@
 import { Input } from '@comflowy/common/types';
 import { memo, useState, useEffect } from 'react';
-import { Input as AntInput, InputNumber, Select, Switch, Image } from 'antd';
+import { Input as AntInput, InputNumber, Select, Switch, Image, Space } from 'antd';
 import {
 	getImagePreviewUrl,
 	getModelImagePreviewUrl,
@@ -106,7 +106,7 @@ function InputComponent({
 					label: k,
 				};
 			});
-			
+
 			if (name === "control_after_generated") {
 				value = value || defaultValue
 			}
@@ -126,9 +126,22 @@ function InputComponent({
 		}
 	}
 	if (Input.isBool(input)) {
+		let label = "";
+		if (input[1].label_on && value === true) {
+			label = input[1].label_on;
+		}
+
+		if (input[1].label_off && value === false) {
+			label = input[1].label_off;
+		}
+
+
 		return (
 			<Labelled name={name}>
-				<Switch size='small' checked={value} onChange={(ev) => onChange(ev)} />
+				<Space>
+					<div className="label">{label}</div>
+					<Switch size='small' checked={value} onChange={(ev) => onChange(ev)} />
+				</Space>
 			</Labelled>
 		);
 	}

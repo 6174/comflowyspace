@@ -30,7 +30,9 @@ export interface StringProps {
 }
 
 export interface BoolProps {
-  default?: boolean
+  default?: boolean,
+  label_on?: string, 
+  label_off?: string,
 }
 
 export interface InputType {
@@ -67,7 +69,7 @@ type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
 export type FlowPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
-export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload?: boolean, default?: string}] | FlowProps
+export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload?: boolean,  default?: string}] | FlowProps
 
 export const Input = {
   getTypeName(i: Input): string {
