@@ -1,5 +1,5 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_COMBO } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { uuid } from '../utils'
@@ -48,7 +48,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const widget = widgets[node.value.widget];
-    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isPrimitive(widget.name) || widget.name === NODE_REROUTE) {
+    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isStaticPrimitive(widget.name) || widget.name === NODE_REROUTE) {
       continue
     }
 
@@ -127,16 +127,19 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     const outputs = source.value.outputs || [];
     const outputIndex = outputs.findIndex((output) => output.name.toUpperCase() === edge.sourceHandle);
     value = [edge.source, outputIndex];
-    // special widget such as primitiveNode & reroute node & combo 
-    if (Widget.isPrimitive(source.value.widget)) {
+    // special widget such as primitive_string & reroute node & combo 
+    if (Widget.isStaticPrimitive(source.value.widget)) {
       value = source.value.fields[source.value.outputs[0].name];
     }
+
     if (source.value.widget === NODE_REROUTE) {
       value = findRerouteNodeInputValue(source);
     }
-    if (source.value.widget === NODE_COMBO) {
-      value = findComboNodeValue(source);
+
+    if (source.value.widget === NODE_PRIMITIVE) {
+      value = findPrimitiveNodeValue(source);
     }
+
     return value;
   }
 
@@ -149,10 +152,13 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
   }
 
   /**
-   * combo node value 
+   * primitive value is the first field value
    * @param node 
    */
-  function findComboNodeValue(node: PersistedWorkflowNode): any {
+  function findPrimitiveNodeValue(node: PersistedWorkflowNode): any {
+    const fields = node.value.fields;
+    const value = Object.entries(fields)[0];
+    return value[1];
   }
 }
 

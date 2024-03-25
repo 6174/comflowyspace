@@ -51,7 +51,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   }
 
   // If it is a primitive node , add according primitive type params
-  if (Widget.isPrimitive(widget?.name)) {
+  if (Widget.isStaticPrimitive(widget?.name)) {
     const paramType = node.outputs[0].type;
     const extraInfo: any = {};
     if (paramType === "STRING") {
@@ -92,10 +92,10 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
 }
 
 /**
- * combo node reference to another node
+ * Primitive reference to another node
  * @param node 
  */
-export function getComboNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRenderInfo, "outputs" | "params"> {
+export function getPrimitiveNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRenderInfo, "outputs" | "params"> {
   const st = useAppStore.getState();
   const edge = st.edges.find(edge => edge.source === node.id);
   if (!edge) {
@@ -115,22 +115,22 @@ export function getComboNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRender
   const targetWidget = st.widgets[targetNode.widget];
 
   const {params} = getNodeRenderInfo(targetNode, targetWidget);
-  let comboParam;
+  let referenceParam;
 
   for (const param of params) {
     if (param.property.toUpperCase() === targetHandle) {
-      comboParam = param;
+      referenceParam = param;
     }
   }
 
   return {
     outputs: [{
-      type: comboParam?.property || "*",
-      name: comboParam?.property || "Combo ",
+      type: referenceParam?.property || "*",
+      name: referenceParam?.property || "Connect to widget input",
       links: [],
       slot_index: 0
     }],
-    params: [comboParam!],
+    params: [referenceParam!],
   }
 }
 

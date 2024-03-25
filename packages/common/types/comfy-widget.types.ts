@@ -1,6 +1,5 @@
 import { FlowPropsKey, Input } from "./comfy-props.types"
 export const NODE_GROUP = 'Group';
-export const NODE_COMBO = "Combo";
 export const NODE_REROUTE = "Reroute";
 export const NODE_PRIMITIVE = "PrimitiveNode";
 export type WidgetKey = string
@@ -58,13 +57,13 @@ export const Widget = {
     }
     return
   },
-  isPrimitive(name: string): boolean {
-    if (name === NODE_PRIMITIVE) {
-      return true;
-    }
+  isStaticPrimitive(name: string): boolean {
     const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];
     const type = name.split("_")[1];
     return types.indexOf(type) >= 0;
+  },
+  isPrimitive(name: string): boolean {
+    return name === NODE_PRIMITIVE;
   }
 }
 
@@ -96,10 +95,10 @@ export const specialWidgets = {
     "output": [],
     "category": "utils"
   },
-  Combo: {
-    "name": NODE_COMBO,
-    "display_name": NODE_COMBO,
-    "description": "Combo node can reference anthor node's field description as input",
+  [NODE_PRIMITIVE]: {
+    "name": NODE_PRIMITIVE,
+    "display_name": NODE_PRIMITIVE,
+    "description": "Primitive node can reference anthor node's primitive field as input",
     "input": {
       "required": {}
     },
@@ -131,7 +130,7 @@ function createPrimitiveWidget(type: string) {
     "output": [
       type
     ],
-    "display_name": `Primitive ${type}`,
+    "display_name": `${type}`,
     "description": `Primitive type of ${type}`,
     "category": "utils",
   }
