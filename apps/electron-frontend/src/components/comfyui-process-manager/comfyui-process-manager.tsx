@@ -283,7 +283,7 @@ function InstallPipActions() {
   
   const [value, setValue] = useState("");
   useEffect(() => {
-    setValue(missingModules.length > 0 ? missingModules.join(" ") : "")
+    setValue(missingModules.length > 0 ? missingModules.join(" ").replace("cv2", "opencv-python==4.7.0.72") : "")
   }, [missingModules])
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
