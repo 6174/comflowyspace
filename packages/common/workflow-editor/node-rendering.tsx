@@ -10,13 +10,16 @@ import { useAppStore } from '../store';
  * @returns
  */
 export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRenderInfo {
-  const params: { property: string, input: Input }[] = []
+  if (Widget.isPrimitive(widget.name)) {
+    return getPrimitiveNodeRenderingInfo(node, widget);
+  }
+
+  let params: { property: string, input: Input }[] = []
   let inputs = node.inputs || [];
   let outputs = node.outputs || [];
   const inputKeys = inputs.map(input => input.name);
 
   if (widget.name === NODE_REROUTE) {
-    console.log("info", node, widget);
     outputs = [{ name: "*", type: "*", links: [], slot_index: 0 }];
     inputs = [{ name: "value", type: "*" }];
   }
@@ -95,11 +98,18 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
  * Primitive reference to another node
  * @param node 
  */
-export function getPrimitiveNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRenderInfo, "outputs" | "params"> {
+export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): WorkflowNodeRenderInfo {
   const st = useAppStore.getState();
   const edge = st.edges.find(edge => edge.source === node.id);
+  const nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
+  const nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+  const title = node.title || widget?.name;
+
   if (!edge) {
     return {
+      title,
+      widget,
+      inputs: [],
       outputs: [{
         type: "*",
         name: "Connect to widget input",
@@ -107,6 +117,8 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRe
         slot_index: 0
       }],
       params: [],
+      nodeBgColor,
+      nodeColor
     }
   }
 
@@ -114,23 +126,32 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRe
   const targetHandle = edge.targetHandle;
   const targetWidget = st.widgets[targetNode.widget];
 
-  const {params} = getNodeRenderInfo(targetNode, targetWidget);
-  let referenceParam;
+  const inputs = [...Object.entries(targetWidget?.input?.required), ...Object.entries(targetWidget?.input?.optional || {})]
 
-  for (const param of params) {
-    if (param.property.toUpperCase() === targetHandle) {
-      referenceParam = param;
+  const refParams = [];
+  for (const input of inputs) {
+    if (input[0].toUpperCase() === targetHandle) {
+      refParams.push({
+        property: input[0],
+        input: input[1]
+      })
     }
   }
 
+  const typeName = Input.getTypeName(refParams[0]?.input)
   return {
+    title,
+    widget,
+    inputs: [],
     outputs: [{
-      type: referenceParam?.property || "*",
-      name: referenceParam?.property || "Connect to widget input",
+      type: typeName || "*",
+      name: typeName || "Connect to widget input",
       links: [],
       slot_index: 0
     }],
-    params: [referenceParam!],
+    params: refParams,
+    nodeBgColor,
+    nodeColor
   }
 }
 

@@ -151,7 +151,7 @@ function DraggableControlNodeConfigItem({
   onChangeControlBoard: (data: ControlBoardConfig) => void,
   controlboardData: ControlBoardConfig
 }) {
-  const { title, params, widget } = getNodeRenderInfo(data.node.data.value, data.node.data.widget);
+  const { title, params, widget } = getNodeRenderInfo({ id: id, ...data.node.data.value }, data.node.data.widget);
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'node',
     item: () => ({ id, index }),

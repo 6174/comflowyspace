@@ -36,7 +36,7 @@ export const NodeComponent = memo(({
   widget,
   imagePreviews,
 }: Props): JSX.Element => {
-  const renderInfo= getNodeRenderInfo(node.data.value, node.data.widget);
+  const renderInfo = getNodeRenderInfo({ id: node.id, ...node.data.value }, node.data.widget);
   const { inputs, title, outputs, params } = renderInfo;
   const isInProgress = progressBar !== undefined
   const collapsed = node.data.visibleState === NodeVisibleState.Collapsed;

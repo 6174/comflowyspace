@@ -2,7 +2,7 @@ import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import { type Edge, type Connection as FlowConnecton,   applyEdgeChanges,  OnConnectStartParams } from 'reactflow';
 import { WorkflowDocumentUtils } from '../ydoc-utils';
 import _ from "lodash";
-import { NODE_REROUTE } from "../../types";
+import { NODE_REROUTE, Widget } from "../../types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -134,18 +134,32 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
     // }
   }
 
+
   if (sourceHandle === "*" || targetHandle === "*") {
     return [true, "success"]
   }
 
   const output = sourceOutputs.find(output => output.name.toUpperCase() === sourceHandle);
   const input = targetInputs.find(input => input.name.toUpperCase() === targetHandle);
-  // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
 
-  if (!output || !input) {
-    return [false, "output or input is null"];
+  if (Widget.isPrimitive(sourceNode.widget)) {
+    if (input && ["INT", 'BOOL' , 'FLOAT','LIST', 'BOOLEAN', "COMBO", "STRING"].indexOf(input.type) >= 0) {
+      return [true, "success"];
+    } else {
+      return [false, "output type not match, primitive node can only link to primitive field"]
+    }
   }
 
+  // console.log(sourceNode, targetNode, sourceOutputs, targetInputs, output, input, sourceHandle, targetHandle);
+
+  if (!output) {
+    return [false, "output is null"];
+  }
+
+  if (!input) {
+    return [false, "input is null"]
+  }
+ 
   if (output.type !== input.type) {
     return [false, "output type and input type not match"];
   }

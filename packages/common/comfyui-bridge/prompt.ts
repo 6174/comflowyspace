@@ -48,7 +48,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const widget = widgets[node.value.widget];
-    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isStaticPrimitive(widget.name) || widget.name === NODE_REROUTE) {
+    if (!widget || Widget.isPrimitive(widget.name) ||  widget.name === "Note" || widget.name === "Group" || Widget.isStaticPrimitive(widget.name) || widget.name === NODE_REROUTE) {
       continue
     }
 
@@ -156,9 +156,9 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
    * @param node 
    */
   function findPrimitiveNodeValue(node: PersistedWorkflowNode): any {
-    const fields = node.value.fields;
-    const value = Object.entries(fields)[0];
-    return value[1];
+    const fieldKeys = Object.keys(node.value.fields).filter(it => it !== "undefined");
+    const value = node.value.fields[fieldKeys[0]];
+    return value;
   }
 }
 

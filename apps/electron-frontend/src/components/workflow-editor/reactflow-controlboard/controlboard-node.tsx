@@ -10,7 +10,7 @@ import React from "react";
 
 export const ControlBoardNode = React.memo(({ nodeControl, node }: ControlBoardNodeProps) => {
   const id = node.id;
-  const { title, params, widget } = getNodeRenderInfo(node.data.value, node.data.widget);
+  const { title, params, widget } = getNodeRenderInfo({id: node.id, ...node.data.value}, node.data.widget);
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
