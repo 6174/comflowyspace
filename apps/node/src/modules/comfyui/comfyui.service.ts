@@ -216,7 +216,7 @@ class ComfyuiService {
     const requirements = getPythonPackageRequirements();
 
     // Default command with no extra options
-    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install mpmath==1.3.0 ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
+    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
     const runConfig = appConfigManager.getRunConfig();
     // Adjust command based on selected mode
     const fpmode= runConfig.fpmode;

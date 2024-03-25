@@ -9,7 +9,6 @@ const windowsPackages = `
 diffusers                 0.27.0                   pypi_0    pypi
 huggingface-hub           0.20.3                   pypi_0    pypi
 insightface               0.7.3                    pypi_0    pypi
-mpmath                    1.3.0                    pypi_0    pypi
 numpy                     1.25.2                   pypi_0    pypi
 onnx                      1.15.0                   pypi_0    pypi
 onnxruntime               1.17.0                   pypi_0    pypi
@@ -28,13 +27,13 @@ semantic-version          2.10.0                   pypi_0    pypi
 setuptools                69.1.0                   pypi_0    pypi
 transformers              4.37.2                   pypi_0    pypi
 wheel                     0.42.0                   pypi_0    pypi
+mpmath                    1.3.0                    pypi_0    pypi
 `
 
 const macPackages = `
 diffusers                 0.25.0                   pypi_0    pypi
 huggingface-hub           0.20.2                   pypi_0    pypi
 insightface               0.7.3                    pypi_0    pypi
-mpmath                    1.3.0                    pypi_0    pypi
 numpy                     1.26.3                   pypi_0    pypi
 onnx                      1.15.0                   pypi_0    pypi
 onnxruntime               1.17.0                   pypi_0    pypi
@@ -52,6 +51,7 @@ semantic-version          2.10.0                   pypi_0    pypi
 transformers              4.36.2                   pypi_0    pypi
 setuptools                68.0.0          py310hca03da5_0    anaconda
 wheel                     0.41.2          py310hca03da5_0    anaconda
+mpmath                    1.3.0                    pypi_0    pypi
 `
 
 /*
