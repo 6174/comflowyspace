@@ -113,7 +113,12 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       // }
 
       const seedIndex = params.findIndex(param => param === "seed");
-      if (seedIndex >= 0) {
+      if (seedIndex >= 0 ) {
+        params.splice(seedIndex + 1, 0, "control_after_generated")
+      }
+      
+      const noiseSeedIndex = params.findIndex(param => param === "noise_seed");
+      if (noiseSeedIndex >= 0 ) {
         params.splice(seedIndex + 1, 0, "control_after_generated")
       }
 
