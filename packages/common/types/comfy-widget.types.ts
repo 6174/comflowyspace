@@ -17,6 +17,7 @@ export interface Widget {
     optional?: Record<PropertyKey, Input>,
   }
   output: FlowPropsKey[]
+  output_name?: string[]
 }
 
 export const UnknownWidget: Widget = {

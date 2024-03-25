@@ -43,6 +43,13 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     }
   }
 
+  const outputNames = widget.output_name;
+  if (outputNames && outputNames.length === outputs.length) {
+    outputs.forEach((output, index) => {
+      output.name = outputNames[index];
+    });
+  }
+
   // If it is a primitive node , add according primitive type params
   if (Widget.isPrimitive(widget?.name)) {
     const paramType = node.outputs[0].type;
