@@ -141,7 +141,7 @@
         }
         .node-input-container {
             position: relative;
-            padding: 4px 10px;
+            padding: 2px 10px;
             .node-input-label-box {
                 display: flex;
                 align-items: center;
@@ -160,6 +160,11 @@
                 }
                 .ant-input-number-input-wrap {
                     padding-right: 25px;
+                    display: flex;
+                    align-items: center;
+                    >input {
+                        height: 24px;
+                    }
                 }
                 .ant-select-selector {
                     background-color: transparent;
@@ -169,7 +174,7 @@
                     min-width: 100px;
                     max-width: calc(100% - 40px);
                     border-color: #414356;
-                    height: 30px;
+                    height: 26px;
                     background-color: var(--node-bg-color);;
                     &-focused {
                         border-color: var(--primaryColor);
