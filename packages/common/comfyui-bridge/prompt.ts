@@ -1,5 +1,5 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { uuid } from '../utils'
@@ -48,7 +48,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
 
   for (const [id, node] of Object.entries(workflow.nodes)) {
     const widget = widgets[node.value.widget];
-    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isPrimitive(widget.name) || widget.name === "Reroute") {
+    if (!widget || widget.name === "Note" || widget.name === "Group" || Widget.isPrimitive(widget.name) || widget.name === NODE_REROUTE) {
       continue
     }
 
@@ -131,7 +131,7 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     if (Widget.isPrimitive(source.value.widget)) {
       value = source.value.fields[source.value.outputs[0].name];
     }
-    if (source.value.widget === "Reroute") {
+    if (source.value.widget === NODE_REROUTE) {
       value = findRerouteNodeInputValue(source);
     }
     return value;

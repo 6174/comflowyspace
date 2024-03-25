@@ -1,6 +1,6 @@
 import { NodeProps, XYPosition } from "reactflow";
 import { ComfyUIID, FlowPrimitiveType, Input, PreviewImage, SDNODE_DEFAULT_COLOR } from "./comfy-props.types";
-import { NODE_GROUP, Widget, WidgetKey } from "./comfy-widget.types"
+import { NODE_COMBO, NODE_GROUP, NODE_PRIMITIVE, NODE_REROUTE, Widget, WidgetKey } from "./comfy-widget.types"
 import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput } from "./comfy-props.types";
 import { SubflowNodeWithControl } from "./comflowy-controlboard.types";
 import { PersistedFullWorkflow } from "./comfy-workflow.types";
@@ -102,8 +102,11 @@ export const SDNode = {
    * @returns 
    */
   fromWidget(widget: Widget): SDNode {
-    if (widget.name === "Reroute") {
+    if (widget.name === NODE_REROUTE) {
       return SDNode.newRerouteNode();
+    }
+    if (widget.name === NODE_COMBO) {
+      return SDNode.newComboNode();
     }
     const inputs = Object.entries(widget.input.required)
     .filter(([name, input]) => {
@@ -142,7 +145,7 @@ export const SDNode = {
   },
   newPrimitiveNode(primitiveType: FlowPrimitiveType): SDNode {
     return {
-      widget: 'PrimitiveNode',
+      widget: NODE_PRIMITIVE,
       fields: {},
       inputs: [],
       outputs: [{
@@ -168,7 +171,20 @@ export const SDNode = {
         links: [],
       }]
     }
-  } 
+  },
+  newComboNode(): SDNode {
+    return {
+      widget: NODE_COMBO,
+      fields: {},
+      inputs: [],
+      outputs: [{
+        name: "",
+        type: "*",
+        slot_index: 0,
+        links: [],
+      }]
+    }
+  }
 }
 
 /**

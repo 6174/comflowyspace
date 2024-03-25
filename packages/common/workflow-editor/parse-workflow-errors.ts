@@ -1,4 +1,4 @@
-import { ComfyUIErrorTypes, ComfyUIExecuteError, PersistedWorkflowDocument, SUBFLOW_WIDGET_TYPE_NAME, Widgets } from "../types";
+import { ComfyUIErrorTypes, ComfyUIExecuteError, NODE_REROUTE, PersistedWorkflowDocument, SUBFLOW_WIDGET_TYPE_NAME, Widgets } from "../types";
 
 /**
  * Utility to parse comfyui workflow errors
@@ -20,7 +20,7 @@ export function staticCheckWorkflowErrors(
     const widget = widgets[sdnode.widget];
     const error = flowError.node_errors[id] || { errors: [] };
     
-    if (["Reroute", "PrimitiveNode", SUBFLOW_WIDGET_TYPE_NAME].indexOf(sdnode.widget) >= 0) {
+    if ([NODE_REROUTE, "PrimitiveNode", SUBFLOW_WIDGET_TYPE_NAME].indexOf(sdnode.widget) >= 0) {
       return;
     }
 

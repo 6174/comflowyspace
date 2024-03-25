@@ -1,5 +1,5 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo, NODE_REROUTE } from '../types';
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
 
@@ -14,10 +14,14 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   let outputs = node.outputs || [];
   const inputKeys = inputs.map(input => input.name);
 
-  if (widget.name === "Reroute") {
+  if (widget.name === NODE_REROUTE) {
     console.log("info", node, widget);
     outputs = [{ name: "*", type: "*", links: [], slot_index: 0 }];
     inputs = [{ name: "value", type: "*" }];
+  }
+
+  if (widget.name === "KSampler") {
+    console.log("info", widget, node);
   }
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {

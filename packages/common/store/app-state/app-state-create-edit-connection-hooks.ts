@@ -2,6 +2,7 @@ import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import { type Edge, type Connection as FlowConnecton,   applyEdgeChanges,  OnConnectStartParams } from 'reactflow';
 import { WorkflowDocumentUtils } from '../ydoc-utils';
 import _ from "lodash";
+import { NODE_REROUTE } from "../../types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -112,14 +113,14 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
   const sourceOutputs = sourceNode.outputs;
   const targetInputs = targetNode.inputs;
 
-  if (targetNode.widget === "Reroute") {
+  if (targetNode.widget === NODE_REROUTE) {
     return [true, "success"];
   }
 
   /**
    * @TODO if source node is reroute，find the real source node and validate it
    */
-  if (sourceNode.widget === "Reroute") {
+  if (sourceNode.widget === NODE_REROUTE) {
     return [true, "success"];
     // const edge = st.edges.find(edge => {
     //   return edge.target === sourceNode.id

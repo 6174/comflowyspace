@@ -1,5 +1,8 @@
 import { FlowPropsKey, Input } from "./comfy-props.types"
 export const NODE_GROUP = 'Group';
+export const NODE_COMBO = "Combo";
+export const NODE_REROUTE = "Reroute";
+export const NODE_PRIMITIVE = "PrimitiveNode";
 export type WidgetKey = string
 /**
  * Stable Diffusion Widget Interface
@@ -55,7 +58,7 @@ export const Widget = {
     return
   },
   isPrimitive(name: string): boolean {
-    if (name === "PrimitiveNode") {
+    if (name === NODE_PRIMITIVE) {
       return true;
     }
     const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];
@@ -92,18 +95,28 @@ export const specialWidgets = {
     "output": [],
     "category": "utils"
   },
+  Combo: {
+    "name": NODE_COMBO,
+    "display_name": NODE_COMBO,
+    "description": "Combo node can reference anthor node's field description as input",
+    "input": {
+      "required": {}
+    },
+    "output": [],
+    "category": "utils"
+  },
   Primitive_STRING: createPrimitiveWidget("STRING"),
   Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
   Primitive_INT: createPrimitiveWidget("INT"),
   Primitive_FLOAT: createPrimitiveWidget("FLOAT"),
   Reroute: {
-    "name": "Reroute",
+    "name": NODE_REROUTE,
     "input": {
       "required": {}
     },
     "output": [],
-    "display_name": "Reroute",
-    "description": "Reroute",
+    "display_name": NODE_REROUTE,
+    "description": NODE_REROUTE,
     "category": "utils",
   }
 }

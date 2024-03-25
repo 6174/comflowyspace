@@ -1,6 +1,6 @@
 import exifr from 'exifr';
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode } from '../types';
-import { Widgets } from '../types';
+import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
 
 /**
@@ -126,7 +126,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       });
 
     } else {
-      if (node.type === "PrimitiveNode") {
+      if (node.type === NODE_PRIMITIVE) {
         const fieldName = node.outputs[0].name;
         fields[fieldName] = node.widgets_values[0];
       }
@@ -304,7 +304,7 @@ export function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocu
 
       comfyUINode.widgets_values = params.map(param => node.value.fields[param]);
     } else {
-      if (node.value.widget === "PrimitiveNode") {
+      if (node.value.widget === NODE_PRIMITIVE) {
         const fieldName = node.value.outputs[0].name;
         comfyUINode.widgets_values.push(node.value.fields[fieldName]);
       }
