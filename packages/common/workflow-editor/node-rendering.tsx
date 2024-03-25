@@ -30,11 +30,15 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
       params.push({ property, input })
     }
   }
-
+  
   if (widget && widget?.input?.optional) {
     for (const [property, input] of Object.entries(widget.input.optional)) {
       if (!inputKeys.includes(property)) {
-        params.push({ property, input })
+        if (!Input.isParameterOrList(input)) {
+          inputKeys.push(property);
+        } else {    
+          params.push({ property, input })
+        }
       }
     }
   }
@@ -61,7 +65,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     params.splice(index + 1, 0, {
       property: "control_after_generated",
       input: [ContrlAfterGeneratedValuesOptions, {
-        default: "randomize"
+        default: ""
       }]
     });
   }

@@ -108,17 +108,19 @@ export const SDNode = {
     if (widget.name === NODE_COMBO) {
       return SDNode.newComboNode();
     }
-    const inputs = Object.entries(widget.input.required)
-    .filter(([name, input]) => {
-      return !Input.isParameterOrList(input)
-    })
-    .map(([name, input]) => {
-      return {
-        name: name,
-        type: input[0] as any,
-        link: undefined
-      }
-    });
+    const inputs = [...Object.entries(widget.input.required), ...Object.entries(widget.input.optional || {})]
+      .filter(([name, input]) => {
+        return !Input.isParameterOrList(input)
+      })
+      .map(([name, input]) => {
+        return {
+          name: name,
+          type: input[0] as any,
+          link: undefined
+        }
+      });
+  
+
     const outputs = widget.output.map((output, index) => {
       return {
         name: output,
