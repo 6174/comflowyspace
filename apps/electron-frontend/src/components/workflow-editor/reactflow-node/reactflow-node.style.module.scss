@@ -150,6 +150,10 @@
                 .node-input-label-name {
                     flex: 1;
                 }
+                .node-input-label-content {
+                    display: flex;
+                    justify-content: flex-end;
+                }
                 .ant-input-number-input-wrap, .ant-input {
                     padding: 0 10px;
                     flex: 0;

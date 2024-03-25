@@ -2,6 +2,7 @@ import { NodeProps, type Node } from 'reactflow';
 import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo, NODE_REROUTE } from '../types';
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
+import { useAppStore } from '../store';
 
 /**
  * Get the info needed for render a node
@@ -18,10 +19,6 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     console.log("info", node, widget);
     outputs = [{ name: "*", type: "*", links: [], slot_index: 0 }];
     inputs = [{ name: "value", type: "*" }];
-  }
-
-  if (widget.name === "KSampler") {
-    console.log("info", widget, node);
   }
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
@@ -78,6 +75,49 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     outputs,
     nodeColor,
     nodeBgColor
+  }
+}
+
+/**
+ * combo node reference to another node
+ * @param node 
+ */
+export function getComboNodeRenderingInfo(node: SDNode): Pick<WorkflowNodeRenderInfo, "outputs" | "params"> {
+  const st = useAppStore.getState();
+  const edge = st.edges.find(edge => edge.source === node.id);
+  if (!edge) {
+    return {
+      outputs: [{
+        type: "*",
+        name: "Connect to widget input",
+        links: [],
+        slot_index: 0
+      }],
+      params: [],
+    }
+  }
+
+  const targetNode = st.graph[edge.target];
+  const targetHandle = edge.targetHandle;
+  const targetWidget = st.widgets[targetNode.widget];
+
+  const {params} = getNodeRenderInfo(targetNode, targetWidget);
+  let comboParam;
+
+  for (const param of params) {
+    if (param.property.toUpperCase() === targetHandle) {
+      comboParam = param;
+    }
+  }
+
+  return {
+    outputs: [{
+      type: comboParam?.property || "*",
+      name: comboParam?.property || "Combo ",
+      links: [],
+      slot_index: 0
+    }],
+    params: [comboParam!],
   }
 }
 

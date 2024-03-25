@@ -1,5 +1,5 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_COMBO } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { uuid } from '../utils'
@@ -134,6 +134,9 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     if (source.value.widget === NODE_REROUTE) {
       value = findRerouteNodeInputValue(source);
     }
+    if (source.value.widget === NODE_COMBO) {
+      value = findComboNodeValue(source);
+    }
     return value;
   }
 
@@ -143,6 +146,13 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
     if (edge) {
       return findEdgeSourceValue(edge);
     }
+  }
+
+  /**
+   * combo node value 
+   * @param node 
+   */
+  function findComboNodeValue(node: PersistedWorkflowNode): any {
   }
 }
 

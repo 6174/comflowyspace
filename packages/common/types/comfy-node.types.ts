@@ -178,7 +178,7 @@ export const SDNode = {
       fields: {},
       inputs: [],
       outputs: [{
-        name: "",
+        name: "*",
         type: "*",
         slot_index: 0,
         links: [],
