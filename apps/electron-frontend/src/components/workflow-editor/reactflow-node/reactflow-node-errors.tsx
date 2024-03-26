@@ -1,9 +1,10 @@
 import { ComfyUIErrorTypes, ComfyUINodeError, SDNode } from "@comflowy/common/types";
 import { useCallback, useState } from "react";
 import nodeStyles from "./reactflow-node.style.module.scss";
-import { Button, Popover } from "antd";
+import { Alert, Button, Popover } from "antd";
 import { useExtensionsState } from "@comflowy/common/store/extension-state";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
+import { openExternalURL } from "@/lib/electron-bridge";
 
 export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
   const [visible, setVisible] = useState(false);
@@ -73,6 +74,7 @@ export function InstallMissingWidget(props: {
 
   const widget = node.widget;
   const extension = extensionsNodeMap[widget];
+
   if (!extension) {
     return null
   } else {
@@ -81,9 +83,30 @@ export function InstallMissingWidget(props: {
 
   return (
     <div className="install-missing-widget nodrag">
-      <Button type="primary" onClick={ev => {
-        installWidget(extension);
-      }}>Install "{extension.title}"</Button>
+      {
+        extension.installed ? (
+          <Alert style={{
+            marginTop: 4,
+            padding: 6
+          }} message={
+            <div className="warning">
+              Load <a onClick={ev=> {
+                openExternalURL(extension.reference)
+                ev.preventDefault();
+              }}>{extension.title}</a> failed, Please check <a onClick={ev => {
+                openExternalURL("https://www.comflowy.com/blog/comflowy-faq#installation-failure")
+                ev.preventDefault();
+              }}>Comflowy FAQ</a>
+            </div>
+          } type="error" />
+         
+        ) : (
+          <Button type = "primary" onClick = {ev => {
+            installWidget(extension);
+          }}>Install "{extension.title}"</Button>
+        )
+      }
+      
     </div>
   )
 }
