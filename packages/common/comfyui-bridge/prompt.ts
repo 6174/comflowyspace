@@ -25,8 +25,8 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
       method: 'POST',
       body: JSON.stringify(prompt),
     })
-    if (resp.status === 500) {
-      throw new Error(await resp.text());
+    if (resp.status >= 500) {
+      throw new Error("ComfyUI Server may not started, check the server status");
     }
     const error = resp.status !== 200 ? await resp.json() : undefined
     return { error }

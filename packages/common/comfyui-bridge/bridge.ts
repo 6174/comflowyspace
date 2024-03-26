@@ -91,9 +91,11 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   let ret;
   try {
     const rest = await fetch(getComfyUIBackendUrl('/object_info'));
+    if (rest.status >= 500) {
+      throw new Error("ComfyUI Server may not started, check the server status");
+    }
     ret = await rest.json();
   } catch (err) {
-    console.log(err);
     throw err;
   }
 
