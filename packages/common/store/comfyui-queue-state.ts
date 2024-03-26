@@ -1,3 +1,4 @@
+import { useAppStore } from '.';
 import { clearQueue, deleteFromQueue, getQueueApi, interruptQueue } from '../comfyui-bridge/bridge';
 import { Queue, QueueItem } from '../types';
 import {create} from 'zustand';
@@ -44,6 +45,9 @@ export const useQueueState = create<QueueState & QueueActions>((set, get) => ({
   onInterruptQueue: async () => {
     await interruptQueue();
     await get().onQueueUpdate();
+    useAppStore.setState({
+      nodeInProgress: undefined
+    })
   }
 }));
 
