@@ -117,7 +117,8 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
   for (const edge of workflow.connections) {
     const target = prompt[edge.target!]
-    if (target) {
+    const source = prompt[edge.source!]
+    if (target && source) {
       const value = findEdgeSourceValue(edge);
       if (value) {
         target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
