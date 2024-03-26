@@ -74,6 +74,9 @@ export interface AppState {
   // collpase and expand
   onChangeNodeVisibleState: (nodeId: string, state: NodeVisibleState) => void;
 
+  // bypass node
+  onChangeNodeBypass: (nodeId: string, bypass: boolean) => void;
+
   onConnect: OnConnect
   onConnectStart: OnConnectStart
   onConnectEnd: OnConnectEnd

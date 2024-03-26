@@ -8,7 +8,7 @@ import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
-import { CollapseIcon, CopyIcon, DeleteIcon, ExpandIcon } from 'ui/icons';
+import { BypassIcon, CollapseIcon, CopyIcon, DeleteIcon, ExpandIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
 
@@ -90,6 +90,7 @@ function NodeMenu(props: NodeMenuProps) {
   const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
   const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
   const onChangeNodeVisibleState = useAppStore(st => st.onChangeNodeVisibleState)
+  const onChangeNodeBypass = useAppStore(st => st.onChangeNodeBypass);
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
     e.domEvent.stopPropagation();
@@ -123,11 +124,11 @@ function NodeMenu(props: NodeMenuProps) {
         props.hide();
         break;
       case 'MENU_ITEM_UN_BYPASS':
-        // onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
+        onChangeNodeBypass(id, false);
         props.hide();
         break;
       case 'MENU_ITEM_BYPASS':
-        // onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
+        onChangeNodeBypass(id, true);
         props.hide();
         break;
       default:
@@ -152,10 +153,11 @@ function NodeMenu(props: NodeMenuProps) {
   const bypassState = node.bypass || false;
   items.push({ type: "divider" });
   if (bypassState) {
-    items.push(getMenuItem(<div className="menu-item-title"> Enable </div>, 'MENU_ITEM_UN_BYPASS', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <BypassIcon /> Bypass{"(on)"} </div>, 'MENU_ITEM_UN_BYPASS', null, null));
   } else {
-    items.push(getMenuItem(<div className="menu-item-title"> Disable </div>, 'MENU_ITEM_BYPASS', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <BypassIcon/> Bypass{"(off)"} </div>, 'MENU_ITEM_BYPASS', null, null));
   }
+  items.push({ type: "divider" });
 
   if (hasInputs) {
     items.push(getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null))

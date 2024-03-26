@@ -21,8 +21,8 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
 
   if (node.parent) {
     const parent = useAppStore.getState().graph[node.parent];
-    if (parent && parent.widget === NODE_REROUTE) {
-      bypass = parent.bypass || bypass;
+    if (parent && parent.bypass) {
+      bypass = true;
     }
   }
 
@@ -91,6 +91,8 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
 
   let nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
+
+  console.log("bypass", bypass, node);
 
   return {
     title: node.title || widget?.name,
@@ -164,7 +166,8 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
     typeName = Input.getTypeName(input);
     name = typeName;
   }
-  
+
+
   return {
     title,
     widget,
