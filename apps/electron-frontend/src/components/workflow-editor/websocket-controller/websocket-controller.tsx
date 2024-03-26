@@ -79,8 +79,8 @@ export function WsController(props: {clientId: string}): JSX.Element {
     const disposable2 = SlotGlobalEvent.on((event) => {
       if (event.type === GlobalEvents.restart_comfyui_success) {
         // console.log("try to reconncet websocket")
-        // setTimestamp(Date.now())
-        window.location.reload();
+        setTimestamp(Date.now())
+        // window.location.reload();
       }
     })
 
