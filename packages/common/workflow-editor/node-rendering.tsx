@@ -92,8 +92,6 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   let nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
-  console.log("bypass", bypass, node);
-
   const title = node.title || widget?.name;
   return {
     title: `${title}${bypass ? " (Bypass)" : ""}`,
