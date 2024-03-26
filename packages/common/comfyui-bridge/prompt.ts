@@ -42,6 +42,13 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
   }
 }
 
+/**
+ * if node has bypass properties, skip the connection and the node
+ * @param workflow 
+ * @param widgets 
+ * @param clientId 
+ * @returns 
+ */
 export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
   const prompt: Record<NodeId, Node> = {}
   const data: Record<NodeId, PersistedWorkflowNode> = {}
