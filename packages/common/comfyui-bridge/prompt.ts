@@ -78,17 +78,19 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       continue
     }
 
-    const optionalFields: any = {};
+    // attach default values
+    const defaultFields: any = {};
     if (widget.input.optional) {
-      for (const [inputKey, input] of Object.entries(widget.input.optional)) {
+      for (const [inputKey, input] of [...Object.entries(widget.input.optional), ...Object.entries(widget.input.required)]) {
         const defaultConfig = input[1] as any;
         if (defaultConfig && defaultConfig.default) {
-          optionalFields[inputKey] = defaultConfig.default;
+          defaultFields[inputKey] = defaultConfig.default;
         }
       }
     }
-    const fields = { ...optionalFields, ...node.value.fields }
+    const fields = { ...defaultFields, ...node.value.fields }
 
+    // set random value
     for (const [property, value] of Object.entries(fields)) {
       const input = widgets[node.value.widget].input.required[property]
       if (input && Input.isInt(input) && value === -1) {
