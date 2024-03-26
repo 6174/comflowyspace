@@ -122,6 +122,14 @@ function NodeMenu(props: NodeMenuProps) {
         onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
         props.hide();
         break;
+      case 'MENU_ITEM_UN_BYPASS':
+        // onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
+        props.hide();
+        break;
+      case 'MENU_ITEM_BYPASS':
+        // onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
+        props.hide();
+        break;
       default:
         break;
     }
@@ -139,6 +147,14 @@ function NodeMenu(props: NodeMenuProps) {
     items.push(getMenuItem(<div className="menu-item-title"> <CollapseIcon/> Collpase </div>, 'MENU_ITEM_COLLPASE_NODE', null, null));
   } else if (nodeVisibleState === NodeVisibleState.Collapsed) {
     items.push(getMenuItem(<div className="menu-item-title"> <ExpandIcon/> EXPAND </div>, 'MENU_ITEM_EXPAND_NODE', null, null));
+  }
+
+  const bypassState = node.bypass || false;
+  items.push({ type: "divider" });
+  if (bypassState) {
+    items.push(getMenuItem(<div className="menu-item-title"> Enable </div>, 'MENU_ITEM_UN_BYPASS', null, null));
+  } else {
+    items.push(getMenuItem(<div className="menu-item-title"> Disable </div>, 'MENU_ITEM_BYPASS', null, null));
   }
 
   if (hasInputs) {

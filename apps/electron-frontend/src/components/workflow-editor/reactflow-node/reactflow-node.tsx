@@ -60,6 +60,7 @@ export const NodeComponent = memo(({
   return (
     <div className={`
       ${nodeStyles.reactFlowNode} 
+      ${renderInfo.bypass ? "bypass" : ""}
       ${node.selected && !isInProgress && !nodeError ? nodeStyles.reactFlowSelected : ""} 
       ${isInProgress ? nodeStyles.reactFlowProgress : ""}
       ${nodeError ? nodeStyles.reactFlowError : ""}

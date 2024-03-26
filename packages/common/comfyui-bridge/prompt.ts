@@ -1,8 +1,9 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { uuid } from '../utils'
+import _ from 'lodash';
 
 interface PromptRequest {
   client_id?: string
@@ -49,13 +50,31 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
  * @param clientId 
  * @returns 
  */
-export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
+export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets: Record<string, Widget>, clientId?: string): PromptRequest {
+  const workflow = _.cloneDeep(workflowSource);
   const prompt: Record<NodeId, Node> = {}
   const data: Record<NodeId, PersistedWorkflowNode> = {}
 
-  for (const [id, node] of Object.entries(workflow.nodes)) {
+  const nodes = Object.entries(workflow.nodes)
+
+  // set bypass for group nodes;
+  nodes.forEach(([pid, node]) => {
+    if (node.value.widget === NODE_GROUP && node.value.bypass) {
+      nodes.forEach(([id, node]) => {
+        if (node.value.parent === pid) {
+          node.value.bypass = true;
+        }
+      });
+    }
+  });
+
+  for (const [id, node] of nodes) {
     const widget = widgets[node.value.widget];
     if (!widget || Widget.isPrimitive(widget.name) ||  widget.name === "Note" || widget.name === "Group" || Widget.isStaticPrimitive(widget.name) || widget.name === NODE_REROUTE) {
+      continue
+    }
+
+    if (node.value.bypass) {
       continue
     }
 
@@ -92,8 +111,6 @@ export function createPrompt(workflow: PersistedWorkflowDocument, widgets: Recor
       class_type: node.value.widget,
       inputs: fields,
     }
-
-    
   }
 
   for (const edge of workflow.connections) {

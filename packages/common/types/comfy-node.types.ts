@@ -26,6 +26,7 @@ export type WorkflowNodeRenderInfo = {
   outputs: ComfyUIWorkflowNodeOutput[];
   nodeColor: string;
   nodeBgColor: string;
+  bypass?: boolean;
 }
 
 export type SubflowNodeRenderingInfo = {

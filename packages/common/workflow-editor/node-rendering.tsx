@@ -17,6 +17,15 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   let params: { property: string, input: Input }[] = []
   let inputs = node.inputs || [];
   let outputs = node.outputs || [];
+  let bypass = node.bypass || false;
+
+  if (node.parent) {
+    const parent = useAppStore.getState().graph[node.parent];
+    if (parent && parent.widget === NODE_REROUTE) {
+      bypass = parent.bypass || bypass;
+    }
+  }
+
   const inputKeys = inputs.map(input => input.name);
 
   if (widget.name === NODE_REROUTE) {
@@ -90,7 +99,8 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     params,
     outputs,
     nodeColor,
-    nodeBgColor
+    nodeBgColor,
+    bypass
   }
 }
 
@@ -104,6 +114,14 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
   const nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
   const nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
   const title = node.title || widget?.name;
+  let bypass = node.bypass || false;
+
+  if (node.parent) {
+    const parent = useAppStore.getState().graph[node.parent];
+    if (parent && parent.widget === NODE_REROUTE) {
+      bypass = parent.bypass || bypass;
+    }
+  }
 
   if (!edge) {
     return {
@@ -118,7 +136,8 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
       }],
       params: [],
       nodeBgColor,
-      nodeColor
+      nodeColor,
+      bypass
     }
   }
 
@@ -138,20 +157,28 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
     }
   }
 
-  const typeName = Input.getTypeName(refParams[0]?.input)
+  const input = refParams[0]?.input;
+  let typeName = "*";
+  let name = "Connect to widget input";
+  if (input) {
+    typeName = Input.getTypeName(input);
+    name = typeName;
+  }
+  
   return {
     title,
     widget,
     inputs: [],
     outputs: [{
-      type: typeName || "*",
-      name: typeName || "Connect to widget input",
+      type: typeName,
+      name,
       links: [],
       slot_index: 0
     }],
     params: refParams,
     nodeBgColor,
-    nodeColor
+    nodeColor,
+    bypass
   }
 }
 
