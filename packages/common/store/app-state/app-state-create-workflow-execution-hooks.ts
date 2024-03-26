@@ -59,8 +59,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
           onNodeFieldChange(node.id, seedFieldName, newSeed);
         }
       });
-
-      const newState = AppState.attatchStaticCheckErrors(get(), res.error || {})
+      const newState = AppState.attatchStaticCheckErrors(get(), res.error || {} as ComfyUIExecuteError)
       set(newState);
       if (newState.promptError?.error || newState.promptError?.node_errors) {
         comflowyConsoleClient.comfyuiExecuteError(docJson,  newState.promptError);
