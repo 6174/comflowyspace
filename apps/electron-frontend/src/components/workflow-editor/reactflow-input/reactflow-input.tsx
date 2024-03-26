@@ -18,10 +18,16 @@ interface InputProps {
 
 const getOptions = (
 	type: 'lora_name' | 'image' | 'ckpt_name',
-	list: string[]
+	list: (string | {content: string, image: string} )[]
 ) => {
 	if (type === 'lora_name') {
-		return list.map((k) => {
+		return list.map((it) => {
+			let k = ""
+			if (typeof it === "string") {
+				k = it;
+			} else {
+				k = it.content;
+			}
 			const lora = k.replace(/\.[^.]*$/, '') + '.png';
 			const src = getModelImagePreviewUrl('lora', lora);
 			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
@@ -34,7 +40,13 @@ const getOptions = (
 	}
 
 	if (type === 'image') {
-		return list.map((k) => {
+		return list.map((it) => {
+			let k = ""
+			if (typeof it === "string") {
+				k = it;
+			} else {
+				k = it.content;
+			}
 			const parsedName = k.split('/');
 			let src = getImagePreviewUrl(k);
 			if (parsedName.length > 1) {
