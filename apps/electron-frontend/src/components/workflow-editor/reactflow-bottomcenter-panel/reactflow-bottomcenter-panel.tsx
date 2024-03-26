@@ -95,7 +95,7 @@ export function RunButton() {
         if (ret.error) {
             message.error(ret.error.error.message + " " + ret.error.error.details, 3)
         } else {
-            message.info("Add task to queue");
+            message.info("Execution started, check the terminal for details.");
         }
         track("comfyui-execute-submit");
     }
