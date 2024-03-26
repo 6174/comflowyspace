@@ -60,12 +60,11 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
         }
       });
 
-      const newState = AppState.attatchStaticCheckErrors(get(), res.error)
+      const newState = AppState.attatchStaticCheckErrors(get(), res.error || {})
       set(newState);
       if (newState.promptError?.error || newState.promptError?.node_errors) {
-        comflowyConsoleClient.comfyuiExecuteError(docJson, newState.promptError);
+        comflowyConsoleClient.comfyuiExecuteError(docJson,  newState.promptError);
       }
-
       // pass node_errors to subflows
       if (newState.promptError?.node_errors) {
         state.subflowStore.getState().handleSubmitErrors(newState.promptError);
