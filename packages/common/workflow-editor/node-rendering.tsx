@@ -94,7 +94,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
 
   const title = node.title || widget?.name;
   return {
-    title: `${title}${bypass ? " (Bypass)" : ""}`,
+    title: `${title}${bypass ? " (Disabled)" : ""}`,
     widget,
     inputs,
     params,
@@ -168,7 +168,7 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
 
 
   return {
-    title: `${title}${bypass ? " (Bypass)" : ""}`,
+    title: `${title}${bypass ? " (Disabled)" : ""}`,
     widget,
     inputs: [],
     outputs: [{
