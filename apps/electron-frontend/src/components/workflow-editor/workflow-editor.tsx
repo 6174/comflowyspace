@@ -1,11 +1,11 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds, ReactFlowInstance} from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds, ReactFlowInstance, useUpdateNodeInternals} from 'reactflow';
 import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
-import { Input, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowDocument, SDNode, Widget } from '@comflowy/common/types';
+import { Input, NODE_GROUP, NODE_PRIMITIVE, PersistedFullWorkflow, PersistedWorkflowDocument, SDNode, Widget } from '@comflowy/common/types';
 import ReactflowBottomCenterPanel from './reactflow-bottomcenter-panel/reactflow-bottomcenter-panel';
 import ReactflowTopLeftPanel from './reactflow-topleft-panel/reactflow-topleft-panel';
 import ReactflowTopRightPanel from './reactflow-topright-panel/reactflow-topright-panel';
@@ -102,6 +102,9 @@ export default function WorkflowEditor() {
     setMenu(null)
   }, [setMenu]);
 
+
+  const updateNodeInternals = useUpdateNodeInternals();
+
   if (inited && watchedDoc && watchedDoc.deleted) {
     return <div>This doc is deleted</div>
   }
@@ -125,7 +128,17 @@ export default function WorkflowEditor() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodesDelete={onDeleteNodes}
-        onEdgesDelete={onEdgesDelete}
+        onEdgesDelete={edges => {
+          onEdgesDelete(edges);
+          const st = useAppStore.getState();
+          edges.forEach(edge => {
+            const source = edge.source;
+            const sourceNode = st.graph[source];
+            if (sourceNode && sourceNode.widget === NODE_PRIMITIVE) {
+              updateNodeInternals(source);
+            }
+          })
+        }}
         onEdgeUpdateStart={() => {
           edgeUpdateSuccessful.current = false;
           edgeUpdating.current = true;
