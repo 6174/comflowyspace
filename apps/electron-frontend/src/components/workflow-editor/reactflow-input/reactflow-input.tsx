@@ -22,14 +22,16 @@ const getOptions = (
 ) => {
 	if (type === 'lora_name') {
 		return list.map((it) => {
-			let k = ""
+			let k = "";
+			let src = "";
 			if (typeof it === "string") {
+				const lora = k.replace(/\.[^.]*$/, '') + '.png';
 				k = it;
+				src = getModelImagePreviewUrl('lora', lora);
 			} else {
 				k = it.content;
+				src = it.image;
 			}
-			const lora = k.replace(/\.[^.]*$/, '') + '.png';
-			const src = getModelImagePreviewUrl('lora', lora);
 			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
 			return {
 				label,
