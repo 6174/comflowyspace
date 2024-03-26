@@ -438,6 +438,12 @@ const ALLLang: i18nAllLang = {
     'zh-CN': '加入 Discord 社区',
     'ja': 'Discord コミュニティに参加',
     'ru': 'Присоединиться к сообществу в Discord'
+  },
+  [KEYS.confyuiNotStarted]: {
+    'en-US': 'ComfyUI Server may not started, check the server status',
+    'zh-CN': 'ComfyUI 服务器可能未启动，请检查服务器状态',
+    'ja': 'ComfyUI サーバーが起動していない可能性があります。サーバーの状態を確認してください',
+    'ru': 'Сервер ComfyUI может не быть запущен, проверьте статус сервера'
   }
 };
 

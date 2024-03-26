@@ -2,6 +2,7 @@ import { getComfyUIBackendUrl } from '../config'
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
+import { KEYS, t } from "../i18n";
 import { uuid } from '../utils'
 import _ from 'lodash';
 
@@ -26,7 +27,7 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
       body: JSON.stringify(prompt),
     })
     if (resp.status >= 500) {
-      throw new Error("ComfyUI Server may not started, check the server status");
+      throw new Error(t(KEYS.confyuiNotStarted));
     }
     const error = resp.status !== 200 ? await resp.json() : undefined
     return { error }

@@ -72,6 +72,7 @@ export enum KEYS {
   community = "community",
   communityDesc = "communityDesc",
   joinDiscordCommunity = "joinDiscordCommunity",
+  confyuiNotStarted = "confyuiNotStarted",
 }
 
 export type i18nKey = keyof typeof KEYS;

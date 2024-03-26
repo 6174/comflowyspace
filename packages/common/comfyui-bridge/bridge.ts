@@ -1,5 +1,6 @@
-import { getBackendUrl, getComfyUIBackendUrl } from '../config'
-import { Widget, type NodeId, type PropertyKey, type WidgetKey, NODE_GROUP, specialWidgets, AppConfigs } from '../types'
+import { getBackendUrl, getComfyUIBackendUrl } from '../config';
+import { Widget, type NodeId, type PropertyKey, type WidgetKey, NODE_GROUP, specialWidgets, AppConfigs } from '../types';
+import { KEYS, t } from "../i18n";
 
 export interface Node {
   class_type: WidgetKey
@@ -92,7 +93,7 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   try {
     const rest = await fetch(getComfyUIBackendUrl('/object_info'));
     if (rest.status >= 500) {
-      throw new Error("ComfyUI Server may not started, check the server status");
+      throw new Error(t(KEYS.confyuiNotStarted));
     }
     ret = await rest.json();
   } catch (err) {
