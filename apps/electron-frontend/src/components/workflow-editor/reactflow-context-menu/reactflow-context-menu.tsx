@@ -8,7 +8,7 @@ import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
-import { BypassIcon, CollapseIcon, CopyIcon, DeleteIcon, ExpandIcon } from 'ui/icons';
+import { BypassIcon, CollapseIcon, CopyIcon, DeleteIcon, DisableRunIcon, EnableRunIcon, ExpandIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
 
@@ -151,11 +151,10 @@ function NodeMenu(props: NodeMenuProps) {
   }
 
   const bypassState = node.bypass || false;
-  items.push({ type: "divider" });
   if (bypassState) {
-    items.push(getMenuItem(<div className="menu-item-title"> <BypassIcon /> Bypass{"(on)"} </div>, 'MENU_ITEM_UN_BYPASS', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <EnableRunIcon /> Enable Node</div>, 'MENU_ITEM_UN_BYPASS', null, null));
   } else {
-    items.push(getMenuItem(<div className="menu-item-title"> <BypassIcon/> Bypass{"(off)"} </div>, 'MENU_ITEM_BYPASS', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <DisableRunIcon /> Disable Node</div>, 'MENU_ITEM_BYPASS', null, null));
   }
   items.push({ type: "divider" });
 
