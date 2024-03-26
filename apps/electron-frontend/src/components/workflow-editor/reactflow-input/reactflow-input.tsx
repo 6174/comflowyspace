@@ -34,6 +34,7 @@ const getOptions = (
 			return {
 				label,
 				value: k,
+				realValue: it,
 				image_url: src,
 			};
 		});
@@ -56,6 +57,7 @@ const getOptions = (
 			return {
 				label,
 				value: k,
+				realValue: it,
 				image_url: src,
 			};
 		});
@@ -72,14 +74,22 @@ function InputComponent({
 	if (Input.isList(input)) {
 		if (name === 'image' || name === 'lora_name') {
 			const options = getOptions(name, input[0]);
+			const hasRealValue = options[0].realValue;
 			return (
 				<Labelled name={name}>
 					<Select
-						value={value}
+						value={value?.content || value}
 						defaultValue={defaultValue}
 						showSearch
 						popupMatchSelectWidth={false}
-						onChange={onChange}
+						onChange={(value) => {
+							if (hasRealValue) {
+								const realValue = options.find((it) => it.value === value)?.realValue;
+								onChange(realValue);
+							} else {
+								onChange(value);
+							}
+						}}
 						options={options}
 						optionRender={(option) => (
 							<div
