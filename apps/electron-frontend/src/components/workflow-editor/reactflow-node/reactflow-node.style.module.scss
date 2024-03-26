@@ -229,6 +229,7 @@
             .ant-select-selection-item {
                 font-family: JetBrains Mono, monospace;
                 font-size: var(--node-base-font-size);
+                white-space: nowrap;
             }
         }
         .progress-bar {

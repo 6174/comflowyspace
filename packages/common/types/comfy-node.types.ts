@@ -66,6 +66,7 @@ export interface SDNode {
   color?: string;
   bgcolor?: string;
   title?: string;
+  bypass?: boolean;
   properties?: { 
     nodeVisibleState?: NodeVisibleState, 
     nodeSize?: [number, number],
