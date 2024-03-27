@@ -287,9 +287,13 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
   });
 
   const styledEdges = edges.map(edge => {
+    let finalType = edgeType || 'default';
+    if (edgeType === "bezier") {
+      finalType = "default"
+    }
     return {
       ...edge,
-      type: edgeType || 'bezier',
+      type: finalType,
       animated: edge.source === inprogressNodeId,
       style: {
         strokeWidth: 2 / transform,
