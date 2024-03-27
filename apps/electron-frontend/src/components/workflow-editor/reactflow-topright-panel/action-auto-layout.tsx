@@ -53,9 +53,7 @@ export async function autoLayout(options: {
   const elkOptions = {
     'elk.algorithm': options.algorithm,
     'elk.layered.spacing.nodeNodeBetweenLayers': '80',
-    'elk.spacing.nodeNode': '60',
-    // 'org.eclipse.elk.nodeSize.options': 'PORTS'
-    // 'org.eclipse.elk.nodeSize.constraints': 'MINIMUM_SIZE'
+    'elk.spacing.nodeNode': '60'
   };
 
   const { direction, nodes, edges, onNodesChange, fitView } = options;
@@ -105,8 +103,6 @@ export async function autoLayout(options: {
     }
     const { nodes: layoutedNodes } = ret;
     const nodeChanges = calculateChanges(layoutedNodes, inGroup);
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
     return {
       layoutResult: ret,
       nodeChanges
@@ -128,13 +124,6 @@ function calculateChanges(layoutedNodes, inGroup) {
         } : position,
       });
     }
-    // if (oldNodeInfo.flowNode.width !== width || oldNodeInfo.flowNode.height !== height) {
-    //   changes.push({
-    //     id,
-    //     type: 'dimensions',
-    //     dimensions: { width, height },
-    //   });
-    // }
   });
   return changes;
 }
@@ -150,7 +139,6 @@ function getELKLayoutElements(
   graph: AppState["graph"], 
   options: any
   ) {
-  console.log(options);
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const inGroup = options?.['inGroup'];
 
@@ -197,9 +185,7 @@ function getELKLayoutElements(
     edges: elkEdges,
     layoutOptions: options,
   };
-  console.log("layout source", JSON.stringify(elkLayoutGraph));
   return elk.layout(elkLayoutGraph).then(layoutedGraph => {
-    console.log("layout result", layoutedGraph)
     return {
       ...layoutedGraph,
       nodes: layoutedGraph.children.map((node) => ({
