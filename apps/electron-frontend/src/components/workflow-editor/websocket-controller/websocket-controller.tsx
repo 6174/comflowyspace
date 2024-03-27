@@ -23,48 +23,53 @@ export function WsController(props: {clientId: string}): JSX.Element {
   useWebSocket(socketUrl, {
     queryParams: clientId ? { clientId, timestamp } : {},
     onMessage: (ev) => {
-      const msg = JSON.parse(ev.data)
-      editorEvent.emit({
-        type: ComfyUIEvents.RunMessage,
-        data: msg
-      });
-      // console.log("msg", msg)
-
-      if (Message.isExecutingStart(msg) || Message.isProgress(msg)) {
-        if (msg.data?.prompt_id) {
-          onChangeCurrentPromptId(msg.data.prompt_id);
-        }
-      }
-
-      if (Message.isStatus(msg)) {
-        if (msg.data.sid !== undefined) {
-          onNewClientId(msg.data.sid)
-        }
-        void onQueueUpdate()
-      } else if (Message.isExecuting(msg)) {
-        if (msg.data.node !== undefined) {
-          onNodeInProgress(msg.data.node, 0)
-        } else if (nodeIdInProgress !== undefined) {
-          onNodeInProgress(nodeIdInProgress, 0)
-        }
-      } else if (Message.isProgress(msg)) {
-        if (nodeIdInProgress !== undefined) {
-          onNodeInProgress(nodeIdInProgress, msg.data.value / msg.data.max)
-        }
-      } else if (Message.isExecuted(msg)) {
-        track('comfyui-executed-success');
-        const images = msg.data.output.images
-        onChangeCurrentPromptId("");
-        if (Array.isArray(images)) {
-          onImageSave(msg.data.node, images)
-        }
-      } else if (Message.isExecutingInterrupted(msg)) {
-        track('comfyui-executed-interrupted');
-        onChangeCurrentPromptId("");
-        SlotGlobalEvent.emit({
-          type: GlobalEvents.execution_interrupted,
-          data: null
+      try {
+        const msg = JSON.parse(ev.data);
+      
+        editorEvent.emit({
+          type: ComfyUIEvents.RunMessage,
+          data: msg
         });
+        
+        // console.log("msg", msg)
+        if (Message.isExecutingStart(msg) || Message.isProgress(msg)) {
+          if (msg.data?.prompt_id) {
+            onChangeCurrentPromptId(msg.data.prompt_id);
+          }
+        }
+
+        if (Message.isStatus(msg)) {
+          if (msg.data.sid !== undefined) {
+            onNewClientId(msg.data.sid)
+          }
+          void onQueueUpdate()
+        } else if (Message.isExecuting(msg)) {
+          if (msg.data.node !== undefined) {
+            onNodeInProgress(msg.data.node, 0)
+          } else if (nodeIdInProgress !== undefined) {
+            onNodeInProgress(nodeIdInProgress, 0)
+          }
+        } else if (Message.isProgress(msg)) {
+          if (nodeIdInProgress !== undefined) {
+            onNodeInProgress(nodeIdInProgress, msg.data.value / msg.data.max)
+          }
+        } else if (Message.isExecuted(msg)) {
+          track('comfyui-executed-success');
+          const images = msg.data.output.images
+          onChangeCurrentPromptId("");
+          if (Array.isArray(images)) {
+            onImageSave(msg.data.node, images)
+          }
+        } else if (Message.isExecutingInterrupted(msg)) {
+          track('comfyui-executed-interrupted');
+          onChangeCurrentPromptId("");
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.execution_interrupted,
+            data: null
+          });
+        }
+      } catch(err) {
+        console.log(err);
       }
     },
   });
