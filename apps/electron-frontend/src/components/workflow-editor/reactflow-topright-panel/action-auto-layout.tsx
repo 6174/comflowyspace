@@ -18,8 +18,8 @@ export function AutoLayoutSettings() {
 
   const { fitView } = useReactFlow();
 
-  const onLayout = useCallback(({ direction, useInitialNodes = false }) => {
-    autoLayout({ direction, useInitialNodes, nodes, edges, onNodesChange, fitView });
+  const onLayout = useCallback(({ direction, useInitialNodes = false, algorithm }) => {
+    autoLayout({ direction, useInitialNodes, nodes, edges, onNodesChange, fitView, algorithm });
   }, [nodes, edges]);
 
   return (
@@ -27,8 +27,10 @@ export function AutoLayoutSettings() {
       <div className="setting-title">Graph Layout</div>
       <div className="setting-content">
         <Space>
-          <Button size="small" onClick={() => onLayout({ direction: 'RIGHT', useInitialNodes: false })}>Horizontal Layout</Button>
-          <Button size="small" onClick={() => onLayout({ direction: 'DOWN', useInitialNodes: false })}>Vertical Layout</Button>
+          <Button size="small" onClick={() => onLayout({ direction: 'RIGHT', algorithm: 'rectpacking'})}>Rect Packing</Button>
+          <Button size="small" onClick={() => onLayout({ direction: 'RIGHT', algorithm: 'layered' })}>Layered</Button>
+          <Button size="small" onClick={() => onLayout({ direction: 'RIGHT', algorithm: 'box' })}>Box</Button>
+          <Button size="small" onClick={() => onLayout({ direction: 'RIGHT', algorithm: 'mrtree' })}>Mrtree</Button>
         </Space>
       </div>
     </div>
@@ -41,11 +43,12 @@ export async function autoLayout(options: {
   useInitialNodes: boolean;
   nodes: Node[];
   edges: Edge[];
+  algorithm?: string;
   onNodesChange: AppState["onNodesChange"],
   fitView: () => void;
 }) {
   const elkOptions = {
-    'elk.algorithm': 'layered',
+    'elk.algorithm': options.algorithm || 'rectpacking',
     'elk.layered.spacing.nodeNodeBetweenLayers': '80',
     'elk.spacing.nodeNode': '60',
     // 'org.eclipse.elk.nodeSize.options': 'PORTS'
