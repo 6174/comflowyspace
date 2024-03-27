@@ -72,18 +72,18 @@ export async function autoLayout(options: {
     const ret = await doLayout(groupNodes, groupEdges, true);
     if (ret) {
       const changes: NodeChange[] = [];
-      // All children create a shift move to the right bottom
-      ret.nodes.forEach((node) => {
-        const { id, position } = node;
-        changes.push({
-          id,
-          type: 'position',
-          position: {
-            x: position.x + 20,
-            y: position.y + 40,
-          }
-        });
-      });
+      // // All children create a shift move to the right bottom
+      // ret.nodes.forEach((node) => {
+      //   const { id, position } = node;
+      //   changes.push({
+      //     id,
+      //     type: 'position',
+      //     position: {
+      //       x: position.x + 20,
+      //       y: position.y + 40,
+      //     }
+      //   });
+      // });
 
       changes.push({
         id: groupNode.id,
@@ -110,13 +110,13 @@ export async function autoLayout(options: {
       return
     }
     const { nodes: layoutedNodes } = ret;
-    onNodesChange(calculateChanges(layoutedNodes, graph));
+    onNodesChange(calculateChanges(layoutedNodes, graph, inGroup));
     await new Promise((resolve) => setTimeout(resolve, 100));
     return ret;
   };
 }
 
-function calculateChanges(layoutedNodes, graph) {
+function calculateChanges(layoutedNodes, graph, inGroup) {
   const changes: NodeChange[] = [];
   layoutedNodes.forEach((node) => {
     const { id, position, width, height } = node;
@@ -125,7 +125,10 @@ function calculateChanges(layoutedNodes, graph) {
       changes.push({
         id,
         type: 'position',
-        position,
+        position: inGroup ? {
+          x: position.x + 20,
+          y: position.y + 40
+        } : position,
       });
     }
     // if (oldNodeInfo.flowNode.width !== width || oldNodeInfo.flowNode.height !== height) {
