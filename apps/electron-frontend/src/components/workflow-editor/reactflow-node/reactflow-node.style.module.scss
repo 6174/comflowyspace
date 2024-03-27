@@ -129,7 +129,7 @@
                 position: relative;
                 font-size: var(--node-base-font-size);
                 line-height: 14px;
-                font-family: JetBrains Mono, monospace;
+                // font-family: JetBrains Mono, monospace;
                 color: #A8A9AF;
                 padding: 4px 12px;
                 width: 100%;
@@ -184,7 +184,7 @@
                     }
                 }
                 input {
-                    font-family: JetBrains Mono, monospace;
+                    // font-family: JetBrains Mono, monospace;
                     font-size: var(--node-base-font-size);
                     line-height: 10px;
                     text-overflow: ellipsis;
@@ -227,7 +227,7 @@
             .node-input-label-name,
             .ant-input-prefix,
             .ant-select-selection-item {
-                font-family: JetBrains Mono, monospace;
+                // font-family: JetBrains Mono, monospace;
                 font-size: var(--node-base-font-size);
             }
             .node-input-label-name {
@@ -386,7 +386,7 @@
     padding: 0 2px;
     line-height: 16px;
     background: var(--Linear, linear-gradient(90deg, #CB2B95 5.47%, #F75B2A 95.2%, #F92525 95.2%));
-    font-family: JetBrains Mono, monospace;
+    // font-family: JetBrains Mono, monospace;
 }
 
 .nodeCollapsed {

@@ -37,7 +37,6 @@ export function AutoLayoutSettings() {
   )
 }
 
-
 export async function autoLayout(options: {
   direction: string; 
   useInitialNodes: boolean;
@@ -48,11 +47,11 @@ export async function autoLayout(options: {
   fitView: () => void;
 }) {
   const elkOptions = {
-    'elk.algorithm': options.algorithm || 'rectpacking',
+    'elk.algorithm': options.algorithm,
     'elk.layered.spacing.nodeNodeBetweenLayers': '80',
     'elk.spacing.nodeNode': '60',
     // 'org.eclipse.elk.nodeSize.options': 'PORTS'
-    'org.eclipse.elk.nodeSize.constraints': 'MINIMUM_SIZE'
+    // 'org.eclipse.elk.nodeSize.constraints': 'MINIMUM_SIZE'
   };
 
   const { direction, useInitialNodes, nodes, edges, onNodesChange, fitView } = options;
@@ -75,25 +74,11 @@ export async function autoLayout(options: {
     const ret = await doLayout(groupNodes, groupEdges, true);
     if (ret) {
       const changes: NodeChange[] = [];
-      // // All children create a shift move to the right bottom
-      // ret.nodes.forEach((node) => {
-      //   const { id, position } = node;
-      //   changes.push({
-      //     id,
-      //     type: 'position',
-      //     position: {
-      //       x: position.x + 20,
-      //       y: position.y + 40,
-      //     }
-      //   });
-      // });
-
       changes.push({
         id: groupNode.id,
         type: "dimensions",
         dimensions: { width: ret.width + 40, height: ret.height + 60 },
       })
-
       onNodesChange(changes);
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
