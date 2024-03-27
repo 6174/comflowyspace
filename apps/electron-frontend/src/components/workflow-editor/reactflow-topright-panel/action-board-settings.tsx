@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { SettingsIcon } from "ui/icons";
 import styles from "./action-board-settings.module.scss";
 import MenuStyles from "../reactflow-context-menu/reactflow-context-menu.module.scss";
+import { AutoLayoutSettings } from "./action-auto-layout";
 export function ActionBoardSettingEntry() {
   const [visible, setVisible] = useState(false);
   const showModal = () => {
@@ -57,6 +58,8 @@ function BoardSettings() {
           </Radio.Group>
         </div>
       </div>
+      <AutoLayoutSettings/>
     </div>
   )
 }
+

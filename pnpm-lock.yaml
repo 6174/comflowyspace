@@ -233,6 +233,9 @@ importers:
       electron-updater:
         specifier: ^6.1.7
         version: 6.1.7
+      elkjs:
+        specifier: ^0.9.2
+        version: 0.9.2
       https-proxy-agent:
         specifier: ^7.0.2
         version: 7.0.2
@@ -6261,6 +6264,10 @@ packages:
       extract-zip: 2.0.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /elkjs@0.9.2:
+    resolution: {integrity: sha512-2Y/RaA1pdgSHpY0YG4TYuYCD2wh97CRvu22eLG3Kz0pgQ/6KbIFTxsTnDc4MH/6hFlg2L/9qXrDMG0nMjP63iw==}
     dev: false
 
   /emittery@0.13.1:

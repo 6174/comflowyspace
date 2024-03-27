@@ -25,6 +25,7 @@
     "electron-log": "^5.0.1",
     "electron-next": "^3.1.5",
     "electron-updater": "^6.1.7",
+    "elkjs": "^0.9.2",
     "https-proxy-agent": "^7.0.2",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
