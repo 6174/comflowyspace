@@ -3,6 +3,7 @@ import { AppState } from '@comflowy/common/store/app-state';
 import { NODE_GROUP } from '@comflowy/common/types';
 import { Button, Space } from 'antd';
 import ELK from 'elkjs/lib/elk.bundled.js';
+import _ from 'lodash';
 import { useCallback } from 'react';
 import { Edge, Node, NodeChange, useReactFlow } from 'reactflow';
 
@@ -46,6 +47,9 @@ export async function autoLayout(options: {
   onNodesChange: AppState["onNodesChange"],
   fitView: () => void;
 }) {
+  const graph = _.cloneDeep(useAppStore.getState().graph);
+  let changes: NodeChange[] = [];
+
   const elkOptions = {
     'elk.algorithm': options.algorithm,
     'elk.layered.spacing.nodeNodeBetweenLayers': '80',
@@ -54,7 +58,7 @@ export async function autoLayout(options: {
     // 'org.eclipse.elk.nodeSize.constraints': 'MINIMUM_SIZE'
   };
 
-  const { direction, useInitialNodes, nodes, edges, onNodesChange, fitView } = options;
+  const { direction, nodes, edges, onNodesChange, fitView } = options;
   const opts = { 'elk.direction': direction, ...elkOptions };
   const ns = nodes;
   const es = edges;
@@ -71,45 +75,50 @@ export async function autoLayout(options: {
     const groupEdges = edges.filter(edge => {
       return children.includes(edge.source) && children.includes(edge.target);
     })
-    const ret = await doLayout(groupNodes, groupEdges, true);
-    if (ret) {
-      const changes: NodeChange[] = [];
+    const {layoutResult, nodeChanges} = await doLayout(groupNodes, groupEdges, true);
+    changes = [...changes, ...nodeChanges]
+    if (layoutResult) {
+      const groupDimension = { width: layoutResult.width + 40, height: layoutResult.height + 60 }
       changes.push({
         id: groupNode.id,
         type: "dimensions",
-        dimensions: { width: ret.width + 40, height: ret.height + 60 },
+        dimensions: groupDimension,
       })
-      onNodesChange(changes);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      graph[groupNode.id].flowNode.width = groupDimension.width;
+      graph[groupNode.id].flowNode.height = groupDimension.height;
     }
   }
 
   // second round layout all nodes;
-  await doLayout(ns, es);
+  const { nodeChanges } = await doLayout(ns, es);
+
+  changes = [...changes, ...nodeChanges];
 
   // fit view after all tasks done
+  onNodesChange(changes);
   window.requestAnimationFrame(() => fitView());
 
   async function doLayout(ns, es, inGroup = false) {
-    const graph = useAppStore.getState().graph;
-    ns = ns.map(n => graph[n.id].flowNode);
     const ret = await getELKLayoutElements(ns, es, graph, {...opts, inGroup});
     if (!ret) {
       return
     }
     const { nodes: layoutedNodes } = ret;
-    onNodesChange(calculateChanges(layoutedNodes, graph, inGroup));
+    const nodeChanges = calculateChanges(layoutedNodes, inGroup);
+
     await new Promise((resolve) => setTimeout(resolve, 100));
-    return ret;
+    return {
+      layoutResult: ret,
+      nodeChanges
+    };
   };
 }
 
-function calculateChanges(layoutedNodes, graph, inGroup) {
+function calculateChanges(layoutedNodes, inGroup) {
   const changes: NodeChange[] = [];
   layoutedNodes.forEach((node) => {
-    const { id, position, width, height } = node;
-    const oldNodeInfo = graph[id];
-    if (oldNodeInfo.flowNode.position.x !== position.x || oldNodeInfo.flowNode.position.y !== position.y) {
+    const { id, position, width, height, oldPosition } = node;
+    if (oldPosition.x !== position.x || oldPosition.y !== position.y) {
       changes.push({
         id,
         type: 'position',
@@ -130,6 +139,7 @@ function calculateChanges(layoutedNodes, graph, inGroup) {
   return changes;
 }
 
+const elk = new ELK();
 
 /**
  * Turn nodes to ELK layout elments, consider react flow node has parentNode relation ship
@@ -140,7 +150,7 @@ function getELKLayoutElements(
   graph: AppState["graph"], 
   options: any
   ) {
-  const elk = new ELK();
+  console.log(options);
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const inGroup = options?.['inGroup'];
 
@@ -157,6 +167,7 @@ function getELKLayoutElements(
     if (sourceNode.parentNode && sourceNode.parentNode !== targetNode.parentNode) {
       sourceId = sourceNode.parentNode;
     }
+
     if (targetNode.parentNode && targetNode.parentNode !== sourceNode.parentNode) {
       targetId = targetNode.parentNode;
     }
@@ -186,8 +197,9 @@ function getELKLayoutElements(
     edges: elkEdges,
     layoutOptions: options,
   };
-
+  console.log("layout source", JSON.stringify(elkLayoutGraph));
   return elk.layout(elkLayoutGraph).then(layoutedGraph => {
+    console.log("layout result", layoutedGraph)
     return {
       ...layoutedGraph,
       nodes: layoutedGraph.children.map((node) => ({
@@ -202,30 +214,13 @@ function getELKLayoutElements(
 }
 
 function flowNodeToLayoutNode(node: Node, isHorizontal, graph: AppState["graph"]) {
+  const graphNode = graph[node.id].flowNode || node;
   const ret: any = {
     id: node.id,
-    ...node,
+    ...graphNode,
+    oldPosition: graphNode.position,
     targetPosition: isHorizontal ? 'left' : 'top',
     sourcePosition: isHorizontal ? 'right' : 'bottom',
   }
-
-  // if (node.type === NODE_GROUP) {
-    // const children = node.data?.children || [];
-    // ret.children = children.map((childId) => {
-    //   return graph[childId].flowNode
-    // }).map((child) => {
-    //   return flowNodeToLayoutNode(child, isHorizontal, graph)
-    // });
-
-    // // Calculate group size based on children
-    // const minX = Math.min(...ret.children.map(child => child.x));
-    // const minY = Math.min(...ret.children.map(child => child.y));
-    // const maxX = Math.max(...ret.children.map(child => child.x + child.width));
-    // const maxY = Math.max(...ret.children.map(child => child.y + child.height));
-
-    // ret.width = maxX - minX;
-    // ret.height = maxY - minY;
-  // }
-
   return ret;
 }

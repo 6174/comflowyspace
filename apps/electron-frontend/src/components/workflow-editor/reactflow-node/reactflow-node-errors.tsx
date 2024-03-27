@@ -78,7 +78,7 @@ export function InstallMissingWidget(props: {
   if (!extension) {
     return null
   } else {
-    console.log("miss extension", extension, node);
+    // console.log("miss extension", extension, node);
   }
 
   return (
