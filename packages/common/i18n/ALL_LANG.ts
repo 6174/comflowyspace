@@ -1,6 +1,12 @@
 import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.languageChangeNotice]: {
+    'zh-CN': '为了支持编辑器内节点的翻译，请前往扩展中心安装 https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation',
+    'ja': "エディタ内のノードの翻訳をサポートするために、拡張センターに行って https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation をインストールしてください。",
+    'ru': "",
+    'en-US': ""
+  },
   [KEYS.community]: {
     'en-US': 'Community',
     'zh-CN': '社区',

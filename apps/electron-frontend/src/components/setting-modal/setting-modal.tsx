@@ -1,5 +1,5 @@
 import React, { useState, useCallback, use, useEffect } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented } from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert } from 'antd';
 import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron } from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss';
@@ -146,6 +146,7 @@ function SelectLanguage() {
     window.location.reload();
   };
 
+  const showNotice = ['zh-CN', 'ja'].indexOf(currentLang) >= 0;
   return (
     <div className='section'>
       <div className='section-title'>{t(KEYS.language)}</div>
@@ -161,6 +162,9 @@ function SelectLanguage() {
             { value: 'ru', label: 'Русский' },
           ]}
         />
+        <p>
+          {showNotice  && <Alert style={{fontSize: 12, wordBreak: 'break-all'}} showIcon type='info' message={t(KEYS.languageChangeNotice)}/> }
+        </p>
       </div>
     </div>
   )
