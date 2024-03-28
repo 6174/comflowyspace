@@ -33,6 +33,10 @@
         line-height: 1.2;
         max-height: 60px;
         overflow: hidden;
+        img {
+          max-width: 100%;
+          height: auto;
+        }
         a {
           color: white;
           pointer-events: none;
@@ -101,6 +105,10 @@
       p {
         border-radius: 4px;
         padding: 8px;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
       }
     }
     .footer-actions {
