@@ -243,7 +243,7 @@ function AboutComflowySpace() {
         </div>
         <div>
           <div className='about-content-title'>Comflowy</div>
-          <div>{t(KEYS.version)} {process.env.NEXT_PUBLIC_APP_VERSION}</div>
+          <div>{t(KEYS.version)} 0.1.4-alpha</div>
         </div>
       </div>
       <Divider />
