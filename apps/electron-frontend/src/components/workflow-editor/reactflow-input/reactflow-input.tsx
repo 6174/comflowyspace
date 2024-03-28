@@ -30,7 +30,7 @@ function InputComponent({
 	if (Input.isList(input)) {
 		if (name === 'image' || name === 'lora_name') {
 			const options = getOptions(name, input[0]);
-			const hasRealValue = options[0].realValue;
+			const hasRealValue = options[0]?.realValue;
 			return (
 				<Labelled name={name} widget={widget}>
 					<Select
