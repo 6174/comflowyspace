@@ -1,4 +1,4 @@
-import { Input } from '@comflowy/common/types';
+import { Input, Widget } from '@comflowy/common/types';
 import { memo, useState, useEffect } from 'react';
 import { Input as AntInput, InputNumber, Select, Switch, Image, Space } from 'antd';
 import {
@@ -6,6 +6,7 @@ import {
 	getModelImagePreviewUrl,
 } from '@comflowy/common/comfyui-bridge/bridge';
 import { imageFallBack } from '@/assets/image-fallback';
+import { dt } from '@comflowy/common/i18n';
 const MAX_SELECT_NAME = 30;
 
 interface InputProps {
@@ -13,64 +14,17 @@ interface InputProps {
 	defaultValue?: any;
 	name: string;
 	input: Input;
+	widget: Widget;
 	onChange: (val: any) => void;
 }
 
-const getOptions = (
-	type: 'lora_name' | 'image' | 'ckpt_name',
-	list: (string | {content: string, image: string} )[]
-) => {
-	if (type === 'lora_name') {
-		return list.map((it) => {
-			let k = "";
-			let src = "";
-			if (typeof it === "string") {
-				const lora = k.replace(/\.[^.]*$/, '') + '.png';
-				k = it;
-				src = getModelImagePreviewUrl('lora', lora);
-			} else {
-				k = it.content;
-				src = it.image;
-			}
-			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
-			return {
-				label,
-				value: k,
-				realValue: it,
-				image_url: src,
-			};
-		});
-	}
-
-	if (type === 'image') {
-		return list.map((it) => {
-			let k = ""
-			if (typeof it === "string") {
-				k = it;
-			} else {
-				k = it.content;
-			}
-			const parsedName = k.split('/');
-			let src = getImagePreviewUrl(k);
-			if (parsedName.length > 1) {
-				src = getImagePreviewUrl(parsedName[1], 'input', parsedName[0]);
-			}
-			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
-			return {
-				label,
-				value: k,
-				realValue: it,
-				image_url: src,
-			};
-		});
-	}
-};
 
 function InputComponent({
 	value,
 	defaultValue,
 	name,
 	input,
+	widget,
 	onChange,
 }: InputProps): JSX.Element {
 	if (Input.isList(input)) {
@@ -78,7 +32,7 @@ function InputComponent({
 			const options = getOptions(name, input[0]);
 			const hasRealValue = options[0].realValue;
 			return (
-				<Labelled name={name}>
+				<Labelled name={name} widget={widget}>
 					<Select
 						value={value?.content || value}
 						defaultValue={defaultValue}
@@ -127,7 +81,7 @@ function InputComponent({
 			const options = input[0].map((k) => {
 				return {
 					value: k,
-					label: k,
+					label: dt(`Nodes.${widget.name}.widgets.${k}`, k),
 				};
 			});
 
@@ -136,7 +90,7 @@ function InputComponent({
 			}
 
 			return (
-				<Labelled name={name}>
+				<Labelled name={name} widget={widget}>
 					<Select
 						value={value}
 						defaultValue={defaultValue}
@@ -161,7 +115,7 @@ function InputComponent({
 
 
 		return (
-			<Labelled name={name}>
+			<Labelled name={name} widget={widget}>
 				<Space>
 					<div className="label">{label}</div>
 					<Switch size='small' checked={value} onChange={(ev) => onChange(ev)} />
@@ -174,7 +128,7 @@ function InputComponent({
 		const numberProps = input[1];
 		const isInt = Input.isInt(input);
 		return (
-			<Labelled name={name}>
+			<Labelled name={name} widget={widget}>
 				<InputNumber
 					defaultValue={numberProps.default}
 					min={numberProps.min || null}
@@ -202,7 +156,7 @@ function InputComponent({
 			);
 		}
 		return (
-			<Labelled name={name}>
+			<Labelled name={name} widget={widget}>
 				<AntInput
 					type='text'
 					value={value}
@@ -220,16 +174,18 @@ export default memo(InputComponent);
 function Labelled({
 	name,
 	children,
+	widget
 }: {
 	name: string;
 	children: JSX.Element;
+	widget: Widget;
 }): JSX.Element {
 	return (
 		<div className='node-input-label-box'>
 			<div className='node-input-label-name'>
 				<div className='label' style={{
 					maxWidth: 10
-				}}>{name}</div>
+				}}>{dt(`Nodes.${widget.name}.widgets.${name}`, name)}</div>
 			</div>
 			<div className='node-input-label-content nopan nodrag'>
 				{children}
@@ -237,3 +193,53 @@ function Labelled({
 		</div>
 	);
 }
+
+const getOptions = (
+	type: 'lora_name' | 'image' | 'ckpt_name',
+	list: (string | { content: string, image: string })[]
+) => {
+	if (type === 'lora_name') {
+		return list.map((it) => {
+			let k = "";
+			let src = "";
+			if (typeof it === "string") {
+				const lora = k.replace(/\.[^.]*$/, '') + '.png';
+				k = it;
+				src = getModelImagePreviewUrl('lora', lora);
+			} else {
+				k = it.content;
+				src = it.image;
+			}
+			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
+			return {
+				label,
+				value: k,
+				realValue: it,
+				image_url: src,
+			};
+		});
+	}
+
+	if (type === 'image') {
+		return list.map((it) => {
+			let k = ""
+			if (typeof it === "string") {
+				k = it;
+			} else {
+				k = it.content;
+			}
+			const parsedName = k.split('/');
+			let src = getImagePreviewUrl(k);
+			if (parsedName.length > 1) {
+				src = getImagePreviewUrl(parsedName[1], 'input', parsedName[0]);
+			}
+			const label = k.length > MAX_SELECT_NAME ? `${k.substring(0, MAX_SELECT_NAME)}...` : k
+			return {
+				label,
+				value: k,
+				realValue: it,
+				image_url: src,
+			};
+		});
+	}
+};

@@ -23,6 +23,7 @@ import { message } from 'antd';
 import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflow-missing-widgets';
 import { GroupNode } from './reactflow-group/reactflow-group';
 import { isRectContain } from "@comflowy/common/utils/math";
+import { loadI18NFromExtension } from './reactflow-i18n/use-flow-i18n';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
@@ -223,9 +224,9 @@ export default function WorkflowEditor() {
         onInit={async (instance) => {
           try {
             setReactFlowInstance(instance);
+            await loadI18NFromExtension();
             await onInitExtensionState(false);
             await onInit(instance);
-            
             if (id) {
               onNewClientId(id as string);
             }

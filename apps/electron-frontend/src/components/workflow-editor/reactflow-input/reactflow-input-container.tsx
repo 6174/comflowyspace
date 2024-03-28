@@ -25,7 +25,7 @@ function _InputContainer({ id, name, input, widget, node, onChange, value }: Inp
     const _onChangeHandler = onChange || useCallback((val: any) => onNodeFieldChange(id, name, val), [onNodeFieldChange])
     return (
         <div className="node-input-container">
-            <InputComponent defaultValue={defaultValue} value={value} name={name} input={input} onChange={_onChangeHandler} />
+            <InputComponent defaultValue={defaultValue} value={value} name={name} input={input} onChange={_onChangeHandler} widget={widget}/>
             {isImageUpload && <InputUploadImage widget={widget} id={id} node={node}/>}
         </div>
     )

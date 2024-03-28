@@ -8,6 +8,7 @@ import { XYPosition } from 'reactflow';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
 import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
+import { dt } from '@comflowy/common/i18n';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -145,7 +146,7 @@ export const WidgetTree = (props: {
                             <div className={`category-item ${currentCategory === name ? "active" : ""}`} key={name} onClick={() => {
                                 setCurrentCategory(name);
                             }}>
-                                {name}
+                                {dt(`NodeCategory.${name}`, name)}
                             </div>
                         )
                     })}
@@ -282,9 +283,9 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
             onMouseLeave={() => setIsHovered(false)} 
             title={widget?.name}>
             <div className= "widget-title">
-                <div className="display-name">{widget.display_name}</div>
+                <div className="display-name">{dt(`Nodes.${widget.display_name}.title`, widget.display_name)}</div>
                 <div className='class_name'>
-                    Type: {widget.name}
+                    Type: {dt(`Nodes.${widget.name}.title`, widget.name)}
                 </div>
             </div>
             {isHovered && (

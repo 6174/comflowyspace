@@ -1,7 +1,7 @@
 /**
  * Rendering flow type node
  */
-import { ComfyUINodeError, PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SubflowNodeRenderingInfo, SubflowNodeWithControl, Widget, getSubflowFieldId, getSubflowSlotId } from "@comflowy/common/types";
+import { ComfyUINodeError, PreviewImage, SDNODE_DEFAULT_COLOR, SDNode, SUBFLOW_WIDGET_TYPE_NAME, SubflowNodeRenderingInfo, SubflowNodeWithControl, Widget, getSubflowFieldId, getSubflowSlotId } from "@comflowy/common/types";
 import { useSubflowNodeRenderingInfo } from "@comflowy/common/workflow-editor/node-rendering";
 import { Dimensions, NodeProps, Position } from "reactflow";
 import { ComflowyNodeResizer, useNodeAutoResize } from "./reactflow-node-resize";
@@ -84,12 +84,12 @@ export function SubflowSlots({ subflowRenderingInfo }: {
     <div className="node-slots">
       <div className="node-inputs">
         {inputs.map((input, index) => (
-          <Slot key={input.name + index} valueType={input.type} id={input.id} label={input.name} type="target" position={Position.Left} />
+          <Slot key={input.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME} valueType={input.type} id={input.id} label={input.name} type="target" position={Position.Left} />
         ))}
       </div>
       <div className="node-outputs">
         {outputs.map((output, index) => (
-          <Slot key={output.name + index} valueType={output.type} id={output.id} label={output.name} type="source" position={Position.Right} />
+          <Slot key={output.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME}  valueType={output.type} id={output.id} label={output.name} type="source" position={Position.Right} />
         ))}
       </div>
     </div>

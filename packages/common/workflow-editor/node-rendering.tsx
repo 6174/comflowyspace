@@ -3,7 +3,7 @@ import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIW
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
 import { useAppStore } from '../store';
-
+import {dt} from '../i18n';
 /**
  * Get the info needed for render a node
  * @param node 
@@ -92,7 +92,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   let nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
-  const title = node.title || widget?.name;
+  const title = node.title || dt(`Nodes.${widget?.name}.title`, widget?.name);
   return {
     title: `${title}${bypass ? " (Disabled)" : ""}`,
     widget,

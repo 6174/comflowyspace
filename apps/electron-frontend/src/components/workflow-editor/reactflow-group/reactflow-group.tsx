@@ -1,7 +1,7 @@
 import { CSSProperties, MutableRefObject, memo, use, useCallback, useState } from "react";
 import { NodeWrapperProps } from "../reactflow-node/reactflow-node-wrapper";
 import { useAppStore } from "@comflowy/common/store";
-import { NodeVisibleState, SDNODE_DEFAULT_COLOR } from "@comflowy/common/types";
+import { NODE_GROUP, NodeVisibleState, SDNODE_DEFAULT_COLOR } from "@comflowy/common/types";
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import Color from "color";
 import { ComflowyNodeResizer, useNodeAutoResize } from "../reactflow-node/reactflow-node-resize";
@@ -122,7 +122,7 @@ function GroupCollapsed(props: {
               {childrenWidthRenderInfo.map(childWidthRenderInfo => {
                 const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
                 return inputs.map((input, index) => (
-                  <Slot key={input.name + index} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                  <Slot key={input.name + index} widget={NODE_GROUP} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
                 ))
               })}
             </div>
@@ -130,7 +130,7 @@ function GroupCollapsed(props: {
               {childrenWidthRenderInfo.map(childWidthRenderInfo => { 
                 const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
                 return outputs.map((output, index) => (
-                  <Slot key={output.name + index} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                  <Slot key={output.name + index} widget={NODE_GROUP} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
                 ))
               })}
             </div>

@@ -1,3 +1,4 @@
+import { dt } from "@comflowy/common/i18n";
 import { useAppStore } from "@comflowy/common/store";
 import { validateEdge } from "@comflowy/common/store/app-state";
 import { Input } from "@comflowy/common/types";
@@ -9,7 +10,8 @@ export interface SlotProps {
   label: string
   type: HandleType
   position: Position
-  valueType: string
+  valueType: string,
+  widget: string
 }
 
 /**
@@ -17,7 +19,7 @@ export interface SlotProps {
  * @param param0 
  * @returns 
  */
-export function Slot({ id, label, type, position, valueType }: SlotProps): JSX.Element {
+export function Slot({ id, label, type, position, valueType, widget }: SlotProps): JSX.Element {
   const color = Input.getInputColor([label.toUpperCase()] as any);
   const isConnecting = useAppStore(st => st.isConnecting);
   const connectingParams = useAppStore(st => st.connectingStartParams);
@@ -52,6 +54,7 @@ export function Slot({ id, label, type, position, valueType }: SlotProps): JSX.E
     transformFactor = Math.max(1, (1 / transform)) * 2.8;
   };
 
+  const casedLabel = type === "source" ? label.toUpperCase() : label.toLowerCase();
   return (
     <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
       <Handle
@@ -73,7 +76,7 @@ export function Slot({ id, label, type, position, valueType }: SlotProps): JSX.E
           transform: `scale(${transformFactor})`
         } as React.CSSProperties} />
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
-        {type === "source" ? label.toUpperCase() : label.toLowerCase()}
+        {dt(`Nodes.${widget}.${type === "source" ? "outputs" : "inputs"}.${casedLabel}`, casedLabel)}
       </div>
     </div>
   )

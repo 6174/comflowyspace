@@ -1,5 +1,5 @@
 import ALLLang from "./ALL_LANG";
-import type { LanguageType, i18nKey, i18nLang } from "./i18n-types";
+import type { LanguageTranslation, LanguageType, i18nKey } from "./i18n-types";
 export * from "./i18n-types";
 export const isWindow = typeof window !== 'undefined';
 
@@ -16,15 +16,36 @@ export function changeLaunguage(lang: LanguageType) {
   currentLang = lang;
   localStorage.setItem('i18n', lang);
 }
+
+const dynamicLang: Record<string, LanguageTranslation> = {}
+
+export function registerDynamicTranslation(key: string, tranlations: LanguageTranslation) {
+  dynamicLang[key] = tranlations;
+}
+
+/**
+ * dynamic key translation
+ * @param key 
+ * @param lang 
+ * @param def default value
+ */
+export function dt(key: string, def?: string) {
+  console.log(key);
+  if (dynamicLang[key]) {
+    return dynamicLang[key][currentLang] || dynamicLang[key]['en-US'] || def || key;
+  }
+  return t(key as i18nKey, def);
+}
+
 /**
  * Tool for translation
  * @param key 
  * @returns 
  */
-export function t(key: i18nKey): string {
+export function t(key: i18nKey, def?: string): string {
   const allLang = ALLLang[key];
   if (allLang) {
-    return allLang[currentLang] || allLang['en-US'] || key;
+    return allLang[currentLang] || allLang['en-US'] || def || key;
   }
-  return key;
+  return def || key;
 }
