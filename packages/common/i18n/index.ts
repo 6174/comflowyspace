@@ -30,7 +30,6 @@ export function registerDynamicTranslation(key: string, tranlations: LanguageTra
  * @param def default value
  */
 export function dt(key: string, def?: string) {
-  console.log(key);
   if (dynamicLang[key]) {
     return dynamicLang[key][currentLang] || dynamicLang[key]['en-US'] || def || key;
   }
