@@ -169,7 +169,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true): Promise<boolean> {
+  async startComfyUI(pip: boolean = false): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -215,10 +215,15 @@ class ComfyuiService {
   #getComfyUIRunCommand(pip: boolean = true) {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
     const requirements = getPythonPackageRequirements();
-
-    // Default command with no extra options
-    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
+    let command = "";
     const runConfig = appConfigManager.getRunConfig();
+
+    if (pip || runConfig.autoInstallDeps) {
+      command += `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements};`;
+    }
+
+    command += `${PYTHON_PATH} main.py --enable-cors-header `;
+
     // Adjust command based on selected mode
     const fpmode= runConfig.fpmode;
     const vaemode = runConfig.vaemode;
@@ -235,7 +240,7 @@ class ComfyuiService {
       command += ' --fp32-vae';
     }
 
-    command += ` --preview-method ${previewMode}`
+    // command += ` --preview-method ${previewMode}`
 
     command += ` ${extraCommand}`;
 
@@ -254,7 +259,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = true): Promise<boolean> {
+  async restartComfyUI(): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
@@ -262,7 +267,7 @@ class ComfyuiService {
       });
       this.stopComfyUI();
       await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
-      await this.startComfyUI(pip);
+      await this.startComfyUI();
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
         message: "Restart ComfyUI Success"

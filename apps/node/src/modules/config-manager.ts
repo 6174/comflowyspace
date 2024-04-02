@@ -34,7 +34,9 @@ class MyConfigManager {
   }
 
   getRunConfig(): ComfyUIRunConfig {
-    return this.#getJSONKey(CONFIG_KEYS.runConfig)
+    const config = this.#getJSONKey(CONFIG_KEYS.runConfig)
+    config.autoInstallDeps = config.autoInstallDeps ?? true;
+    return config;
   }
 
   getSetupConfig(): {

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, use, useEffect } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert } from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert, Switch } from 'antd';
 import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron } from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss';
@@ -123,7 +123,7 @@ function SelectSDPath() {
       <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
       <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height: 40 }} />
       <div className="row" style={{marginTop: 10}}>
-        {electronEnv && <Button onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
+        {electronEnv && <Button size='small' onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
       </div>
     </div>
   )
@@ -189,9 +189,9 @@ function SelectExecutionPrecisionMode() {
     }
   }, [runConfig]);
 
-  const saveConfig = async (props: Partial<AppConfigs["runConfig"]>) => {
+  const saveConfig = async (props: Partial<AppConfigs["runConfig"]>, restart = false) => {
     try {
-      await updateComflowyRunConfig(props);
+      await updateComflowyRunConfig(props, restart);
       message.success("Save success");
       onLoadAppConfig();
     } catch (err) {
@@ -201,9 +201,26 @@ function SelectExecutionPrecisionMode() {
 
   const [previewValue, setPreviewValue] = useState(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
   const [extraCommand, setExtraCommand] = useState(runConfig.extraCommand || "");
+  const [autoInstallDeps, setAutoInstallDeps] = useState<boolean>(runConfig.autoInstallDeps || true);
 
   return (
     <>
+      <div className="comfyui_auto_install_deps section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_auto_install_deps)}</div>
+        <Switch 
+          size='small'
+          checkedChildren="ON"
+          unCheckedChildren="OFF" 
+          value={autoInstallDeps} 
+          onChange={v => {
+            setAutoInstallDeps(v);
+            saveConfig({
+              autoInstallDeps: v
+            });
+          }}
+        />
+      </div>
+
       <div className="precision-mode section">
         <div className='general-startup-settings-title section-title'>{t(KEYS.floatingPointPrecision)}</div>
         <Segmented
@@ -214,7 +231,7 @@ function SelectExecutionPrecisionMode() {
             setFPValue(v);
             saveConfig({ 
               fpmode: v as ComfyUIRunFPMode
-            });
+            }, true);
           }}
         />
       </div>
@@ -228,7 +245,7 @@ function SelectExecutionPrecisionMode() {
             setVAEValue(v);
             saveConfig({
               vaemode: v as ComfyUIRunVAEMode
-            });
+            }, true);
           }}
         />
       </div>
@@ -255,20 +272,27 @@ function SelectExecutionPrecisionMode() {
             setPreviewValue(v);
             saveConfig({
               previewMode: v
-            });
+            }, false);
           }}
         />
       </div>
 
       <div className="extra-command section">
-        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_extra_commands)}</div>
-        <Input value={extraCommand} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
-          const v = ev.target.value.toString().trim()
-          setExtraCommand(v);
-          saveConfig({
-            extraCommand: v
-          });
-        }}/>
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_extra_commands)}:</div>
+        <Space>
+          <Input value={extraCommand} style={{
+            width: 400,
+            height: 40
+          }} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
+            const v = ev.target.value.toString().trim()
+            setExtraCommand(v);
+          }}/>
+          <Button size='small' onClick={() => {
+            saveConfig({
+              extraCommand: extraCommand.trim() as any
+            }, true);
+          } }>{t(KEYS.save)}</Button>
+        </Space>
       </div>
     </>
   )

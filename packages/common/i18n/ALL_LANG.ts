@@ -1,6 +1,18 @@
 import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.save]: {
+    'en-US': 'Save',
+    'zh-CN': '保存',
+    'ja': '保存',
+    'ru': 'Сохранить'
+  },
+  [KEYS.comfyui_auto_install_deps]: {
+    'zh-CN': '启动时自动安装依赖（会花更多时间）',
+    'ja': '起動時に依存関係を自動的にインストールする（時間がかかります）',
+    'ru': 'Автоматическая установка зависимостей при запуске (займет больше времени)',
+    'en-US': 'Auto install dependencies on startup (will take more time)'
+  },
   [KEYS.comfyui_extra_commands]: {
     'en-US': 'ComfyUI Extra Commands',
     'zh-CN': 'ComfyUI 额外命令',

@@ -45,10 +45,10 @@ export async function getComflowyAppConfig(): Promise<any> {
   return ret;
 }
 
-export async function updateComflowyRunConfig(configs: Partial<AppConfigs["runConfig"]>): Promise<any> {
+export async function updateComflowyRunConfig(configs: Partial<AppConfigs["runConfig"]>, restart = true): Promise<any> {
   let ret;
   try {
-    const rest = await fetch(getBackendUrl('/api/update_run_config'), {
+    const rest = await fetch(getBackendUrl(`/api/update_run_config?restart=${restart? "true": "false"}`), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ export async function getModelInfos(): Promise<any> {
 
 
 export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
-  let ret;
+  let ret: any = {};
   try {
     const rest = await fetch(getComfyUIBackendUrl('/object_info'));
     if (rest.status >= 500) {
@@ -97,7 +97,7 @@ export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
     }
     ret = await rest.json();
   } catch (err) {
-    throw err;
+    console.log(err)
   }
 
   return {

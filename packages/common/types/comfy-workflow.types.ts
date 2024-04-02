@@ -19,6 +19,7 @@ export type ComfyUIRunConfig = {
   previewMode: ComfyUIRunPreviewMode;
   extraCommand: string;
   condaEnv: string;
+  autoInstallDeps?: boolean
 }
 
 export type PersistedFullWorkflow = {
