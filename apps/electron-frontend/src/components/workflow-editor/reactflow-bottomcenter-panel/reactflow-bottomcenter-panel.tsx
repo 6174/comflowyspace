@@ -119,6 +119,7 @@ export function RunButton() {
 
 
     const onQueueUpdate = useQueueState(st => st.onQueueUpdate);
+    const setCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
     /**
      * interval to check run state
      */
@@ -130,10 +131,12 @@ export function RunButton() {
         } else {
             intervalId.current && window.clearInterval(intervalId.current);
             intervalId.current = undefined;
+            setCurrentPromptId("")
         }
         return () => {
             intervalId.current && window.clearInterval(intervalId.current);
             intervalId.current = undefined;
+            setCurrentPromptId("")
         }
     }, [running]);
 
