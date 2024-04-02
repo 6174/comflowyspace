@@ -188,13 +188,14 @@ class ComfyuiService {
             resolve(null);
           }
         });
+        const runConfig = appConfigManager.getRunConfig();
         setTimeout(() => {
           this.comfyuiProgressEvent.emit({
             type: "TIMEOUT",
             message: "Start ComfyUI timed out"
           });
           reject(false);
-        }, pip ? 60 * 1000 * 30: 60 * 1000 * 5);
+        }, (pip || runConfig.autoInstallDeps) ? 60 * 1000 * 8: 60 * 1000 * 3);
       });
 
       return true;
