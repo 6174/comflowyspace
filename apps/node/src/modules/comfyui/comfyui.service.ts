@@ -231,6 +231,8 @@ class ComfyuiService {
     } else if(vaemode === 'fp32') {
       command += ' --fp32-vae';
     }
+
+    command += ' --preview-method latent2rgb'
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 

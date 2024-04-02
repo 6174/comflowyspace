@@ -21,18 +21,21 @@ export function WsController(props: {clientId: string}): JSX.Element {
   const [timestamp, setTimestamp] = useState(Date.now());
   const onChangeCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
 
-  useWebSocket(socketUrl, {
+  const {getWebSocket} = useWebSocket(socketUrl, {
     queryParams: clientId ? { clientId, timestamp } : {},
-    onMessage: (ev) => {
+    reconnectAttempts: 10,
+    reconnectInterval: 3000,
+    onMessage: async (ev) => {
       // blob type
       try {
-        if (ev.data instanceof ArrayBuffer) {
-          const view = new DataView(ev.data);
+        if (ev.data instanceof Blob) {
+          const arrayBuffer = await ev.data.arrayBuffer();
+          const view = new DataView(arrayBuffer);
           const eventType = view.getUint32(0);
-          const buffer = ev.data.slice(4);
+          const buffer = arrayBuffer.slice(4);
           switch (eventType) {
             case 1:
-              const view2 = new DataView(ev.data);
+              const view2 = new DataView(arrayBuffer);
               const imageType = view2.getUint32(0)
               let imageMime
               switch (imageType) {
@@ -44,12 +47,12 @@ export function WsController(props: {clientId: string}): JSX.Element {
                   imageMime = "image/png"
               }
               const imageBlob = new Blob([buffer.slice(4)], { type: imageMime });
+              // const imageUrl = URL.createObjectURL(imageBlob);
+              // console.log(imageUrl);
+              // window.open(imageUrl, '_blank');
               onBlobPreview(nodeIdInProgress, imageBlob);
               break;
-            default:
-              throw new Error(`Unknown binary websocket message of type ${eventType}`);
-          }
-
+            }
           return
         }
       } catch(err) {
@@ -112,21 +115,21 @@ export function WsController(props: {clientId: string}): JSX.Element {
       if (event.type === GlobalEvents.comfyui_process_error) {
         // message.error("Runtime Error: " + event.data.message);
       }
-    })
-
-    const disposable2 = SlotGlobalEvent.on((event) => {
-      if (event.type === GlobalEvents.restart_comfyui_success) {
+      if (
+        event.type === GlobalEvents.restart_comfyui_success || 
+        event.type === GlobalEvents.start_comfyui_execute
+      ) {
+        getWebSocket().close();
         // console.log("try to reconncet websocket")
-        setTimestamp(Date.now())
+        setTimestamp(Date.now());
         // window.location.reload();
       }
     })
 
     return () => {
       disposable.dispose();
-      disposable2.dispose();
     }
-  }, []);
+  }, [getWebSocket]);
 
   // const [pongReceived, setPongReceived] = useState(true);
   // // Send a ping every 5 seconds

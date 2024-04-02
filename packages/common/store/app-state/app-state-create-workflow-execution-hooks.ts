@@ -6,6 +6,7 @@ import { PromptResponse, createPrompt, sendPrompt } from '../../comfyui-bridge/p
 import { ComfyUIEvents } from '../../types';
 import { comflowyConsoleClient } from '../../utils/comflowy-console.client';
 import _ from "lodash";
+import { GlobalEvents, SlotGlobalEvent } from "../../utils/slot-event";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -17,6 +18,10 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
     },
     onSubmit: async () => {
       const state = get();
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.start_comfyui_execute,
+        data: null,
+      })
       const docJson = WorkflowDocumentUtils.toJson(state.doc);
       const prompt = createPrompt(docJson, state.widgets, state.clientId);
       const res = await sendPrompt(prompt);

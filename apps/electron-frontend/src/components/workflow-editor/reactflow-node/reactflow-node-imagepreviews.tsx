@@ -9,7 +9,7 @@ export const NodeImagePreviews = memo(({ imagePreviews }: {
 }) => {
   const imagePreviewsWithSrc = (imagePreviews || []).map((image, index) => {
     if (image.blob) {
-      const blobURL = URL.createObjectURL(image.blob)
+      const blobURL = URL.createObjectURL(image.blob);
       return {
         src: blobURL,
         filename: image.filename || "Untitled"
@@ -21,7 +21,7 @@ export const NodeImagePreviews = memo(({ imagePreviews }: {
       filename: image.filename
     }
   });
-
+  
   return (
     <div className={`node-images-preview ${imagePreviews.length > 1 ? "multiple" : "single"}`} >
       <div className="inner">
