@@ -636,9 +636,12 @@ function useCopyPaste(ref, reactFlowInstance) {
   }, []);
 
   const onCopy = React.useCallback((ev: ClipboardEvent) => {
-    if ((ev.target as HTMLElement)?.className === "node-error") {
+    if ((ev.target as HTMLElement)?.className === "node-error" ||
+      (ev.target as HTMLElement)?.tagName === 'INPUT' ||
+      (ev.target as HTMLElement)?.tagName === 'TEXTAREA') {
       return;
     }
+
     const state = useAppStore.getState();
     const selectedNodes = state.nodes.filter(node => node.selected);
     const workflowMap = state.doc.getMap("workflow");
@@ -654,6 +657,11 @@ function useCopyPaste(ref, reactFlowInstance) {
   }, [])
 
   const onPaste = React.useCallback((ev: ClipboardEvent) => {
+    if (
+      (ev.target as HTMLElement)?.tagName === 'INPUT' ||
+      (ev.target as HTMLElement)?.tagName === 'TEXTAREA' ) {
+      return;
+    }
     pasteNodes(ev);
   }, [reactFlowInstance])
 
