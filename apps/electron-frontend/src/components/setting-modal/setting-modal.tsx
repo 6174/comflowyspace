@@ -181,11 +181,17 @@ function SelectExecutionPrecisionMode() {
 
   const [FPValue, setFPValue] = useState('normal');
   const [VAEValue, setVAEValue] = useState('normal');
+  const [previewValue, setPreviewValue] = useState(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+  const [extraCommand, setExtraCommand] = useState(runConfig.extraCommand || "");
+  const [autoInstallDeps, setAutoInstallDeps] = useState<boolean>(runConfig.autoInstallDeps || true);
 
   useEffect(() => {
     if (runConfig) {
       setFPValue(runConfig.fpmode || 'normal');
       setVAEValue(runConfig.vaemode || 'normal');
+      setPreviewValue(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+      setExtraCommand(runConfig.extraCommand || "");
+      setAutoInstallDeps(runConfig.autoInstallDeps ?? true);
     }
   }, [runConfig]);
 
@@ -198,10 +204,6 @@ function SelectExecutionPrecisionMode() {
       message.error("Save faileld:" + err.message);
     }
   }
-
-  const [previewValue, setPreviewValue] = useState(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
-  const [extraCommand, setExtraCommand] = useState(runConfig.extraCommand || "");
-  const [autoInstallDeps, setAutoInstallDeps] = useState<boolean>(runConfig.autoInstallDeps || true);
 
   return (
     <>
