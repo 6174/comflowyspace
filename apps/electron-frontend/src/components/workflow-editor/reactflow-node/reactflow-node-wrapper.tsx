@@ -31,7 +31,7 @@ export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
     imagePreviews = [
       ...imagePreviews,
       {
-        blob: blobPreview.blob,
+        blobUrl: blobPreview.blobUrl,
         filename: "blob_preview"
       }
     ]

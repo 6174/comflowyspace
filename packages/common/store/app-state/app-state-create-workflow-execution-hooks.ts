@@ -13,8 +13,8 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
     onNewClientId: (id) => {
       set({ clientId: id })
     },
-    onBlobPreview: (id: NodeId, blob: Blob) => {
-      set({ blobPreview: { blob, nodeId: id } })
+    onBlobPreview: (id: NodeId, blobUrl: string) => {
+      set({ blobPreview: { blobUrl, nodeId: id } })
     },
     onSubmit: async () => {
       const state = get();

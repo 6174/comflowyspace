@@ -47,10 +47,10 @@ export function WsController(props: {clientId: string}): JSX.Element {
                   imageMime = "image/png"
               }
               const imageBlob = new Blob([buffer.slice(4)], { type: imageMime });
-              // const imageUrl = URL.createObjectURL(imageBlob);
+              const imageUrl = URL.createObjectURL(imageBlob);
               // console.log(imageUrl);
               // window.open(imageUrl, '_blank');
-              onBlobPreview(nodeIdInProgress, imageBlob);
+              onBlobPreview(nodeIdInProgress, imageUrl);
               break;
             }
           return

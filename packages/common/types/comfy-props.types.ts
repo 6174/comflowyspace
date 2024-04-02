@@ -218,7 +218,7 @@ export interface PreviewImage {
   filename: string;
   subfolder?: string;
   type?: 'output';
-  blob?: Blob;
+  blobUrl?: string;
 }
 
 export interface NodeInProgress {
