@@ -28,15 +28,18 @@ export async function startAppServer(params: {
 }) {
   const {port = 3333, staticFolder} = params;
   const app = express();
-
+  
   app.use(express.static(staticFolder ? staticFolder : 'public'));
   app.use(express.json());
-
+  
   app.use(cors({
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   }));
+  
+  setupComfyUIProxy(app);
+  
 
   app.use('/static', (req, res, next) => {
     const comfyDir = getComfyUIDir(); // 获取用户设置
@@ -45,7 +48,6 @@ export async function startAppServer(params: {
     }
   });
 
-  setupComfyUIProxy(app);
   
   app.get('/', (req: Request, res: Response) => {
     res.send('Hello, Express + TypeScript!');

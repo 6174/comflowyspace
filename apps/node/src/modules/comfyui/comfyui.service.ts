@@ -9,6 +9,7 @@ import { uuid } from "@comflowy/common";
 import { conda } from "../utils/conda";
 import { getPythonPackageRequirements } from "./requirements";
 import { appConfigManager } from "../config-manager";
+import { ComfyUIRunPreviewMode } from "@comflowy/common/types";
 
 export type ComfyUIProgressEventType = {
   type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
@@ -221,6 +222,8 @@ class ComfyuiService {
     // Adjust command based on selected mode
     const fpmode= runConfig.fpmode;
     const vaemode = runConfig.vaemode;
+    const previewMode = runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB;
+    const extraCommand = runConfig.extraCommand || "";
     if (fpmode === 'fp16') {
       command += ' --force-fp16';
     } else if(fpmode === 'fp32') {
@@ -232,7 +235,10 @@ class ComfyuiService {
       command += ' --fp32-vae';
     }
 
-    command += ' --preview-method latent2rgb'
+    command += ` --preview-method ${previewMode}`
+
+    command += ` ${extraCommand}`;
+
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 

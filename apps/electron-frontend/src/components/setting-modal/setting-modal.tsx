@@ -4,14 +4,13 @@ import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron } from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss';
 import { LanguageType, changeLaunguage, currentLang } from '@comflowy/common/i18n';
-import { getBackendUrl } from '@comflowy/common/config';
+import { getBackendUrl, getComfyUIBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
 import { updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
-import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
-import { stat } from 'fs';
+import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -199,7 +198,10 @@ function SelectExecutionPrecisionMode() {
       message.error("Save faileld:" + err.message);
     }
   }
- 
+
+  const [previewValue, setPreviewValue] = useState(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+  const [extraCommand, setExtraCommand] = useState(runConfig.extraCommand || "");
+
   return (
     <>
       <div className="precision-mode section">
@@ -229,6 +231,44 @@ function SelectExecutionPrecisionMode() {
             });
           }}
         />
+      </div>
+
+      <div className="preview-mode section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_preview_mode)}</div>
+        <Segmented
+          options={[{
+            value: ComfyUIRunPreviewMode.Auto,
+            label: "auto"
+          }, {
+            value: ComfyUIRunPreviewMode.Latent2RGB,
+            label: "latent2rgb(fast)"
+          }, {
+            value: ComfyUIRunPreviewMode.TAESD,
+            label: "taesd(slow)"
+          }, {
+            value: ComfyUIRunPreviewMode.NoPreviews,
+            label: "none(very fast)"
+          }]}
+          value={previewValue}
+          onChange={async (value) => {
+            const v = value.toString() as ComfyUIRunPreviewMode;
+            setPreviewValue(v);
+            saveConfig({
+              previewMode: v
+            });
+          }}
+        />
+      </div>
+
+      <div className="extra-command section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_extra_commands)}</div>
+        <Input value={extraCommand} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
+          const v = ev.target.value.toString().trim()
+          setExtraCommand(v);
+          saveConfig({
+            extraCommand: v
+          });
+        }}/>
       </div>
     </>
   )

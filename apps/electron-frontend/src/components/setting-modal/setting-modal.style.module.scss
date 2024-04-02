@@ -63,9 +63,11 @@
         margin-bottom: 10px;
       }
     }
-    
+
     .settings-content {
       height: 100%;
+      max-height: 500px;
+      overflow-y: auto;
       background-color: #212126;
       flex: 2;
       padding: 20px 14px;

@@ -1,4 +1,4 @@
-import config from '@comflowy/common/config';
+import config, { comfyuiApiConfig } from '@comflowy/common/config';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
@@ -17,7 +17,7 @@ export function WsController(props: {clientId: string}): JSX.Element {
   const onImageSave = useAppStore((st) => st.onImageSave);
   const editorEvent = useAppStore(st => st.editorEvent);
   const nodeIdInProgress = nodeInProgress?.id;
-  const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
+  const [socketUrl, setSocketUrl] = useState(`ws://${comfyuiApiConfig.host}/ws`);
   const [timestamp, setTimestamp] = useState(Date.now());
   const onChangeCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
 

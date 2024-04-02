@@ -1,4 +1,6 @@
 export enum KEYS {
+  comfyui_extra_commands = "comfyui_extra_commands",
+  comfyui_preview_mode = "comfyui_preview_mode",
   appName = "appName",
   workflows = "workflows",
   templates = "templates",

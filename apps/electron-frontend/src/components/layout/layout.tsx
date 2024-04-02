@@ -17,6 +17,8 @@ import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { NotificationModalEntry } from '../my-workflows/notification-modal';
+import { getComfyUIBackendUrl } from '@comflowy/common/config';
+import { ComfyUIRunPreviewMode } from '@comflowy/common/types';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
@@ -28,6 +30,19 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
       onInit();
     }
   }, [bootstraped]);
+
+  const previewMode = useDashboardState(state => state.appConfigs?.runConfig?.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+  useEffect(() => {
+    const changePreviewValue = async () => {
+      try {
+        const api = getComfyUIBackendUrl('/manager/preview_method?value=' + previewMode);
+        await fetch(api);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+    changePreviewValue();
+  }, [previewMode]);
 
   return (
     <>
@@ -71,6 +86,7 @@ const WorkspaceNav = () => {
   const changeRoute = useCallback((url) => {
     route.push(url);
   }, [route])
+
   return (
     <div className="workspace-nav">
       <div className="nav-main">
