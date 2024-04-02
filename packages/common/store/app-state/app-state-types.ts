@@ -50,6 +50,7 @@ export interface AppState {
   nodeInProgress?: NodeInProgress
   promptError?: ComfyUIExecuteError
   previewedImageIndex?: number
+  blobPreview?: { blob: Blob, nodeId: string }
 
   // group control
   draggingOverGroupId?: string;
@@ -104,6 +105,7 @@ export interface AppState {
   onNewClientId: (id: string) => void
   onNodeInProgress: (id: NodeId, progress: number) => void
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
+  onBlobPreview: (id: NodeId, blob: Blob) => void;
   onLoadImageWorkflow: (image: string) => void
   onChangeDragingAndResizingState: (val: boolean) => void;
   onUpdateWidgets: () => Promise<void>;

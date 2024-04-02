@@ -25,10 +25,19 @@ export const NodeWrapper = memo((props: NodeWrapperProps): JSX.Element => {
   };
   const nodeError = useAppStore(st => st.promptError?.node_errors[props.id]);
 
+  const blobPreview = useAppStore(st => st.blobPreview);
+
+  if (blobPreview && blobPreview.nodeId === props.id) {
+    imagePreviews.push({
+      blob: blobPreview.blob,
+      filename: "blob_preview"
+    });
+  }
+
   if (props.data.value.widget === SUBFLOW_WIDGET_TYPE_NAME) {
     return <SubflowNode node={props} imagePreviews={imagePreviews} nodeError={nodeError} />
   }
-  
+
   return (
     <NodeComponent
       node={props}

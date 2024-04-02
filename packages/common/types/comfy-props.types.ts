@@ -217,7 +217,8 @@ export const SDNODE_DEFAULT_COLOR = {
 export interface PreviewImage {
   filename: string;
   subfolder?: string;
-  type?: 'output'
+  type?: 'output';
+  blob?: Blob;
 }
 
 export interface NodeInProgress {

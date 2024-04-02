@@ -10,6 +10,7 @@ import { track } from '@/lib/tracker';
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
+  const onBlobPreview = useAppStore((st) => st.onBlobPreview);
   const onNewClientId = useAppStore((st) => st.onNewClientId);
   const onQueueUpdate = useQueueState((st) => st.onQueueUpdate);
   const onNodeInProgress = useAppStore((st) => st.onNodeInProgress);
@@ -23,6 +24,38 @@ export function WsController(props: {clientId: string}): JSX.Element {
   useWebSocket(socketUrl, {
     queryParams: clientId ? { clientId, timestamp } : {},
     onMessage: (ev) => {
+      // blob type
+      try {
+        if (ev.data instanceof ArrayBuffer) {
+          const view = new DataView(ev.data);
+          const eventType = view.getUint32(0);
+          const buffer = ev.data.slice(4);
+          switch (eventType) {
+            case 1:
+              const view2 = new DataView(ev.data);
+              const imageType = view2.getUint32(0)
+              let imageMime
+              switch (imageType) {
+                case 1:
+                default:
+                  imageMime = "image/jpeg";
+                  break;
+                case 2:
+                  imageMime = "image/png"
+              }
+              const imageBlob = new Blob([buffer.slice(4)], { type: imageMime });
+              onBlobPreview(nodeIdInProgress, imageBlob);
+              break;
+            default:
+              throw new Error(`Unknown binary websocket message of type ${eventType}`);
+          }
+
+          return
+        }
+      } catch(err) {
+        console.log("parse blob error", err);
+      }
+
       try {
         const msg = JSON.parse(ev.data);
       
