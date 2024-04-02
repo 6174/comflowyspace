@@ -5,6 +5,7 @@ node_modules
 **/dist/**
 .pnp
 .pnp.js
+.vscode
 
 # testing
 coverage
