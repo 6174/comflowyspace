@@ -30,6 +30,19 @@ export const UnknownWidget: Widget = {
 export type Widgets = Record<WidgetKey, Widget>
 
 export const Widget = {
+  isSeedParam(param: string): boolean {
+    return param === "seed" || param === "noise_seed"
+  },
+  findSeedFieldName(widget: Widget): string | undefined {
+    const inputs = widget.input.required;
+    if (inputs.seed) {
+      return 'seed'
+    }
+    if (inputs.noise_seed) {
+      return 'noise_seed'
+    }
+    return
+  },
   getDefaultFields(widget: Widget): Record<PropertyKey, any> {
     const fields: Record<PropertyKey, any> = {}
     for (const [key, input] of Object.entries(widget.input.required)) {
@@ -46,16 +59,6 @@ export const Widget = {
       }
     }
     return fields
-  },
-  findSeedFieldName(widget: Widget): string | undefined {
-    const inputs = widget.input.required;
-    if (inputs.seed) {
-      return 'seed'
-    }
-    if (inputs.noise_seed) {
-      return 'noise_seed'
-    }
-    return
   },
   isStaticPrimitive(name: string): boolean {
     const types = ["STRING", "BOOLEAN", "INT", "FLOAT"];

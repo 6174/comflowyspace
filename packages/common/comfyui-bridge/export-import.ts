@@ -1,5 +1,5 @@
 import exifr from 'exifr';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode } from '../types';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget } from '../types';
 import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
 
@@ -108,20 +108,16 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
         }
       }
 
-      // if (node.type === "KSampler") {
-      //   params.splice(1, 0, "control_after_generated")
+      // if (node.type === "KSamplerAdvanced") {
+      //   debugger
+      //   // params.splice(1, 0, "control_after_generated")
       // }
 
-      const seedIndex = params.findIndex(param => param === "seed");
+      const seedIndex = params.findIndex(param => Widget.isSeedParam(param));
       if (seedIndex >= 0 ) {
         params.splice(seedIndex + 1, 0, "control_after_generated")
       }
       
-      const noiseSeedIndex = params.findIndex(param => param === "noise_seed");
-      if (noiseSeedIndex >= 0 ) {
-        params.splice(seedIndex + 1, 0, "control_after_generated")
-      }
-
       // if (node.type === "KSamplerAdvanced" || 
       //   node.type === "ImpactKSamplerBasicPipe" || 
       //   node.type === "SamplerCustom" || 
