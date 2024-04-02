@@ -284,8 +284,7 @@ function SelectExecutionPrecisionMode() {
             width: 400,
             height: 40
           }} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
-            const v = ev.target.value.toString().trim()
-            setExtraCommand(v);
+            setExtraCommand(ev.target.value);
           }}/>
           <Button size='small' onClick={() => {
             saveConfig({

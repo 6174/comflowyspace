@@ -195,7 +195,7 @@ class ComfyuiService {
             message: "Start ComfyUI timed out"
           });
           reject(false);
-        }, (pip || runConfig.autoInstallDeps) ? 60 * 1000 * 8: 60 * 1000 * 3);
+        }, (pip || runConfig.autoInstallDeps) ? 60 * 1000 * 5: 60 * 1000 * 1);
       });
 
       return true;
