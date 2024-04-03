@@ -1,4 +1,8 @@
 export enum KEYS {
+  save = "save",
+  comfyui_auto_install_deps = "comfyui_auto_install_deps",
+  comfyui_extra_commands = "comfyui_extra_commands",
+  comfyui_preview_mode = "comfyui_preview_mode",
   appName = "appName",
   workflows = "workflows",
   templates = "templates",

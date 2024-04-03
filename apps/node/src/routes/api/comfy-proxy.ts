@@ -6,8 +6,8 @@ export function setupComfyUIProxy(app: Express) {
         target: 'http://127.0.0.1:8188',
         changeOrigin: true,
         ws: true,
-        pathRewrite: {
-            '^/comfyui': '',
+        pathRewrite: (path, req) => {
+            return path.replace(/^\/comfyui/, '');
         },
     });
 

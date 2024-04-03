@@ -268,12 +268,18 @@ export async function ApiGetAllConfig(req: Request, res: Response) {
 export async function ApiSetRunConfig(req: Request, res: Response) {
   try {
     const configs = req.body;
+    const restart = req.query.restart === "true";
+    console.log("restart", req.query.restart, restart);
     let runMode = appConfigManager.getRunConfig();
     appConfigManager.set(CONFIG_KEYS.runConfig, JSON.stringify({
         ...runMode,
         ...configs
     }));
-    await comfyuiService.restartComfyUI();
+
+    if (restart) {
+        await comfyuiService.restartComfyUI();
+    }
+
     res.send({
         success: true,
     });
@@ -327,7 +333,7 @@ export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response
 
 export async function ApiRestartComfyUI(req: Request, res: Response) {
     try {
-        await comfyuiService.restartComfyUI(true);
+        await comfyuiService.restartComfyUI();
         res.send({
             success: true,
         });

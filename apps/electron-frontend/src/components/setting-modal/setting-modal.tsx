@@ -1,17 +1,16 @@
 import React, { useState, useCallback, use, useEffect } from 'react';
-import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert } from 'antd';
+import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert, Switch } from 'antd';
 import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron } from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss';
 import { LanguageType, changeLaunguage, currentLang } from '@comflowy/common/i18n';
-import { getBackendUrl } from '@comflowy/common/config';
+import { getBackendUrl, getComfyUIBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
 import { updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
-import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
-import { stat } from 'fs';
+import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -124,7 +123,7 @@ function SelectSDPath() {
       <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
       <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height: 40 }} />
       <div className="row" style={{marginTop: 10}}>
-        {electronEnv && <Button onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
+        {electronEnv && <Button size='small' onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
       </div>
     </div>
   )
@@ -182,26 +181,48 @@ function SelectExecutionPrecisionMode() {
 
   const [FPValue, setFPValue] = useState('normal');
   const [VAEValue, setVAEValue] = useState('normal');
+  const [previewValue, setPreviewValue] = useState(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+  const [extraCommand, setExtraCommand] = useState(runConfig.extraCommand || "");
+  const [autoInstallDeps, setAutoInstallDeps] = useState<boolean>(runConfig.autoInstallDeps || true);
 
   useEffect(() => {
     if (runConfig) {
       setFPValue(runConfig.fpmode || 'normal');
       setVAEValue(runConfig.vaemode || 'normal');
+      setPreviewValue(runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB);
+      setExtraCommand(runConfig.extraCommand || "");
+      setAutoInstallDeps(runConfig.autoInstallDeps ?? true);
     }
   }, [runConfig]);
 
-  const saveConfig = async (props: Partial<AppConfigs["runConfig"]>) => {
+  const saveConfig = async (props: Partial<AppConfigs["runConfig"]>, restart = false) => {
     try {
-      await updateComflowyRunConfig(props);
+      await updateComflowyRunConfig(props, restart);
       message.success("Save success");
       onLoadAppConfig();
     } catch (err) {
       message.error("Save faileld:" + err.message);
     }
   }
- 
+
   return (
     <>
+      <div className="comfyui_auto_install_deps section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_auto_install_deps)}</div>
+        <Switch 
+          size='small'
+          checkedChildren="ON"
+          unCheckedChildren="OFF" 
+          value={autoInstallDeps} 
+          onChange={v => {
+            setAutoInstallDeps(v);
+            saveConfig({
+              autoInstallDeps: v
+            });
+          }}
+        />
+      </div>
+
       <div className="precision-mode section">
         <div className='general-startup-settings-title section-title'>{t(KEYS.floatingPointPrecision)}</div>
         <Segmented
@@ -212,7 +233,7 @@ function SelectExecutionPrecisionMode() {
             setFPValue(v);
             saveConfig({ 
               fpmode: v as ComfyUIRunFPMode
-            });
+            }, true);
           }}
         />
       </div>
@@ -226,9 +247,53 @@ function SelectExecutionPrecisionMode() {
             setVAEValue(v);
             saveConfig({
               vaemode: v as ComfyUIRunVAEMode
-            });
+            }, true);
           }}
         />
+      </div>
+
+      <div className="preview-mode section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_preview_mode)}</div>
+        <Segmented
+          options={[{
+            value: ComfyUIRunPreviewMode.Auto,
+            label: "auto"
+          }, {
+            value: ComfyUIRunPreviewMode.Latent2RGB,
+            label: "latent2rgb(fast)"
+          }, {
+            value: ComfyUIRunPreviewMode.TAESD,
+            label: "taesd(slow)"
+          }, {
+            value: ComfyUIRunPreviewMode.NoPreviews,
+            label: "none(very fast)"
+          }]}
+          value={previewValue}
+          onChange={async (value) => {
+            const v = value.toString() as ComfyUIRunPreviewMode;
+            setPreviewValue(v);
+            saveConfig({
+              previewMode: v
+            }, false);
+          }}
+        />
+      </div>
+
+      <div className="extra-command section">
+        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_extra_commands)}:</div>
+        <Space>
+          <Input value={extraCommand} style={{
+            width: 400,
+            height: 40
+          }} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
+            setExtraCommand(ev.target.value);
+          }}/>
+          <Button size='small' onClick={() => {
+            saveConfig({
+              extraCommand: extraCommand.trim() as any
+            }, true);
+          } }>{t(KEYS.save)}</Button>
+        </Space>
       </div>
     </>
   )
@@ -243,7 +308,7 @@ function AboutComflowySpace() {
         </div>
         <div>
           <div className='about-content-title'>Comflowy</div>
-          <div>{t(KEYS.version)} 0.1.4-alpha</div>
+          <div>{t(KEYS.version)} 0.1.5-alpha</div>
         </div>
       </div>
       <Divider />

@@ -26,9 +26,9 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 ## Download
 
 * **MacOS:**
-    * [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.1.4-alpha/comflowy-0.1.4-alpha.dmg) (Note that if you have an Intel Macbook, make sure it has AMD graphics before installing, otherwise it won't work!)
-    * [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.1.4-alpha/comflowy-0.1.4-alpha-arm64.dmg)  
-* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.1.4-alpha/comflowy-0.1.4-alpha.zip)**
+    * [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.1.5-alpha/comflowy-0.1.5-alpha.dmg) (Note that if you have an Intel Macbook, make sure it has AMD graphics before installing, otherwise it won't work!)
+    * [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.1.5-alpha/comflowy-0.1.5-alpha-arm64.dmg)  
+* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.1.5-alpha/comflowy-0.1.5-alpha.zip)**
 
 
 ## Key Features
@@ -38,10 +38,9 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 * **Simpler Setup**: In ComflowySpace, you can use various templates to build workflows, making workflow construction simpler and more convenient.
 * **Friendlier User Experience**: We've optimized a great many detailed experiences to make your usage smoother. At the same time, ComflowySpace is integrated with our tutorials, reducing your learning threshold.
 
-## Demo
-![](./assets/editor.jpg)
-![](./assets/home.jpg)
-![](./assets/gallery.jpg)
+## Product Screenshots
+![](./assets/editor.png)
+![](./assets/home.png)
 
 ## Contributing
 We are grateful to the community for contributing bug fixes and improvements. For more information please read:
@@ -63,6 +62,12 @@ This project exists thanks to all the people who contributed:
 <a href="https://github.com/6174/comflowyspace/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=6174/comflowyspace" height="50px">
 </a>
+
+Additionally, I am very grateful for the contributions of the open-source community:
+
+<a href="https://github.com/comfyanonymous/ComfyUI"><img src="https://avatars.githubusercontent.com/u/121283862?v=4" width="50" height="50" alt=""/></a>
+<a href="https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation"><img src="https://avatars.githubusercontent.com/u/122320001?v=4" width="50" height="50" alt=""/></a>
+
 
 ## Star History
 

@@ -2,7 +2,7 @@ import { Space, Tooltip, message } from "antd";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
-import { memo, use, useCallback, useEffect, useState } from "react";
+import { memo, use, useCallback, useEffect, useRef, useState } from "react";
 import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
 import { Widget } from "@comflowy/common/types";
@@ -85,8 +85,10 @@ export function RunButton() {
     const onInterruptQueue = useQueueState(st => st.onInterruptQueue);
     // const queue = useQueueState(st => st.queue);
     const currentPromptId = useQueueState(st => st.currentPromptId);
-    const running = currentPromptId && currentPromptId !== "";
-    console.log("change promptId", currentPromptId);
+    const queue = useQueueState(st => st.queue);
+    const running = currentPromptId && currentPromptId !== "" && queue.queue_running.length > 0;
+
+    const intervalId = useRef<number>()
 
     const doSubmit = async () => {
         // setRunning(true);
@@ -100,19 +102,42 @@ export function RunButton() {
         track("comfyui-execute-submit");
     }
 
+    /**
+     * key event
+     */
     useEffect(() => {
         function handleKeyDown(event: KeyboardEvent) {
             if ((event.metaKey || event.ctrlKey) && event.key === 'e') {
                 doSubmit();
             }
         }
-
         window.addEventListener('keydown', handleKeyDown);
-
-        // 在组件卸载时移除事件监听器
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
+    }, [running]);
+
+
+    const onQueueUpdate = useQueueState(st => st.onQueueUpdate);
+    const setCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
+    /**
+     * interval to check run state
+     */
+    useEffect(() => {
+        if (running) {
+            intervalId.current = window.setInterval(() => {
+                onQueueUpdate();
+            }, 1000 * 3);
+        } else {
+            intervalId.current && window.clearInterval(intervalId.current);
+            intervalId.current = undefined;
+            setCurrentPromptId("")
+        }
+        return () => {
+            intervalId.current && window.clearInterval(intervalId.current);
+            intervalId.current = undefined;
+            setCurrentPromptId("")
+        }
     }, [running]);
 
     if (running) {

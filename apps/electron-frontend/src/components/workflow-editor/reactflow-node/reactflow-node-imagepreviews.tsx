@@ -8,6 +8,12 @@ export const NodeImagePreviews = memo(({ imagePreviews }: {
   imagePreviews: PreviewImage[]
 }) => {
   const imagePreviewsWithSrc = (imagePreviews || []).map((image, index) => {
+    if (image.blobUrl) {
+      return {
+        src: image.blobUrl,
+        filename: image.filename || "Untitled"
+      }
+    }
     const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
     return {
       src: imageSrc,

@@ -1,4 +1,4 @@
-import { ComfyUIRunFPMode, ComfyUIRunVAEMode } from "./comfy-workflow.types";
+import { ComfyUIRunConfig, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from "./comfy-workflow.types";
 
 export type EnvRequirements = {
   isCondaInstalled: boolean;
@@ -18,10 +18,7 @@ export type AppConfigs = {
     comfyUIDir: string,
     stableDiffusionDir: string
   },
-  runConfig?: {
-    fpmode: ComfyUIRunFPMode;
-    vaemode: ComfyUIRunVAEMode;
-  }
+  runConfig?: ComfyUIRunConfig
 };
 
 export type BootstrapError = {

@@ -1,6 +1,30 @@
 import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.save]: {
+    'en-US': 'Save',
+    'zh-CN': '保存',
+    'ja': '保存',
+    'ru': 'Сохранить'
+  },
+  [KEYS.comfyui_auto_install_deps]: {
+    'zh-CN': '启动时自动安装依赖（会花更多时间）',
+    'ja': '起動時に依存関係を自動的にインストールする（時間がかかります）',
+    'ru': 'Автоматическая установка зависимостей при запуске (займет больше времени)',
+    'en-US': 'Auto install dependencies on startup (will take more time)'
+  },
+  [KEYS.comfyui_extra_commands]: {
+    'en-US': 'ComfyUI Extra Commands',
+    'zh-CN': 'ComfyUI 额外命令',
+    'ja': 'ComfyUI 追加コマンド',
+    'ru': 'Дополнительные команды ComfyUI'
+  },
+  [KEYS.comfyui_preview_mode]: {
+    'en-US': 'ComfyUI Preview Mode',
+    'zh-CN': 'ComfyUI 预览模式',
+    'ja': 'ComfyUI プレビューモード',
+    'ru': 'Режим предпросмотра ComfyUI'
+  },
   [KEYS.languageChangeNotice]: {
     'zh-CN': '为了支持编辑器内节点的翻译，请前往扩展中心安装 https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation',
     'ja': "エディタ内のノードの翻訳をサポートするために、拡張センターに行って https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation をインストールしてください。",

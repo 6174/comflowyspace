@@ -20,8 +20,8 @@ log.transports.file.format = '{level} {text}';
 
 app.setAboutPanelOptions({
   applicationName: 'Comflowy',
-  applicationVersion: '0.1.4-alpha',
-  version: '0.1.4-alpha',
+  applicationVersion: '0.1.5-alpha',
+  version: '0.1.5-alpha',
   copyright: 'Copyright © 2024 https://www.comflowy.com',
   authors: ['@Marc Chen', '@Jimmy Wang'],
   website: 'https://www.comflowy.com',

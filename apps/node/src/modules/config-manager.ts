@@ -1,6 +1,7 @@
 import Configstore from 'configstore';
 import * as path from 'path';
 import { getAppDataDir } from './utils/get-appdata-dir';
+import { ComfyUIRunConfig } from '@comflowy/common/types';
 
 class MyConfigManager {
   private config: Configstore;
@@ -32,12 +33,10 @@ class MyConfigManager {
     return this.config.all;
   }
 
-  getRunConfig(): {
-    fpmode?: string;
-    vaemode?: string;
-    condaEnv?: string;
-  } {
-    return this.#getJSONKey(CONFIG_KEYS.runConfig)
+  getRunConfig(): ComfyUIRunConfig {
+    const config = this.#getJSONKey(CONFIG_KEYS.runConfig)
+    config.autoInstallDeps = config.autoInstallDeps ?? true;
+    return config;
   }
 
   getSetupConfig(): {

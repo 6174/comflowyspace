@@ -3,8 +3,8 @@
 //   host: window.location.host,
 //   protocol: window.location.protocol,
 // }
-const comfyuiApiConfig = {
-  host: 'localhost:3333/comfyui',
+export const comfyuiApiConfig = {
+  host: '127.0.0.1:8188',
   protocol: 'http:',
 }
 
@@ -22,4 +22,3 @@ export function getComfyUIBackendUrl(endpoint: string): string {
 }
 
 export default config
-  

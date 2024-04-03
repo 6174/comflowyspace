@@ -9,6 +9,7 @@ import { uuid } from "@comflowy/common";
 import { conda } from "../utils/conda";
 import { getPythonPackageRequirements } from "./requirements";
 import { appConfigManager } from "../config-manager";
+import { ComfyUIRunPreviewMode } from "@comflowy/common/types";
 
 export type ComfyUIProgressEventType = {
   type: "INPUT" | "OUTPUT" | "OUTPUT_WARPED" | "EXIT" | "START" | "RESTART" | "START_SUCCESS" | "STOP" | "INFO" | "WARNING" | "ERROR" | "WARNING" | "TIMEOUT",
@@ -168,7 +169,7 @@ class ComfyuiService {
    * start comfyUI
    * @param pip 
    */
-  async startComfyUI(pip: boolean = true): Promise<boolean> {
+  async startComfyUI(pip: boolean = false): Promise<boolean> {
     try {
       this.comfyuiprelogs = this.comfyuilogs;
       this.comfyuilogs = "";
@@ -187,13 +188,14 @@ class ComfyuiService {
             resolve(null);
           }
         });
+        const runConfig = appConfigManager.getRunConfig();
         setTimeout(() => {
           this.comfyuiProgressEvent.emit({
             type: "TIMEOUT",
             message: "Start ComfyUI timed out"
           });
           reject(false);
-        }, pip ? 60 * 1000 * 30: 60 * 1000 * 5);
+        }, (pip || runConfig.autoInstallDeps) ? 60 * 1000 * 5: 60 * 1000 * 1);
       });
 
       return true;
@@ -214,13 +216,20 @@ class ComfyuiService {
   #getComfyUIRunCommand(pip: boolean = true) {
     const { PIP_PATH, PYTHON_PATH } = conda.getCondaPaths();
     const requirements = getPythonPackageRequirements();
-
-    // Default command with no extra options
-    let command = `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements}; ${PYTHON_PATH} main.py --enable-cors-header`;
+    let command = "";
     const runConfig = appConfigManager.getRunConfig();
+
+    if (pip || runConfig.autoInstallDeps) {
+      command += `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements};`;
+    }
+
+    command += `${PYTHON_PATH} main.py --enable-cors-header `;
+
     // Adjust command based on selected mode
     const fpmode= runConfig.fpmode;
     const vaemode = runConfig.vaemode;
+    const previewMode = runConfig.previewMode || ComfyUIRunPreviewMode.Latent2RGB;
+    const extraCommand = runConfig.extraCommand || "";
     if (fpmode === 'fp16') {
       command += ' --force-fp16';
     } else if(fpmode === 'fp32') {
@@ -231,6 +240,11 @@ class ComfyuiService {
     } else if(vaemode === 'fp32') {
       command += ' --fp32-vae';
     }
+
+    // command += ` --preview-method ${previewMode}`
+
+    command += ` ${extraCommand}`;
+
     return `cd ${getComfyUIDir()}; ${command} \r`;
   }
 
@@ -246,7 +260,7 @@ class ComfyuiService {
    * restart comfyUI
    * @param pip 
    */
-  async restartComfyUI(pip: boolean = true): Promise<boolean> {
+  async restartComfyUI(): Promise<boolean> {
     try {
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
@@ -254,7 +268,7 @@ class ComfyuiService {
       });
       this.stopComfyUI();
       await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
-      await this.startComfyUI(pip);
+      await this.startComfyUI();
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
         message: "Restart ComfyUI Success"

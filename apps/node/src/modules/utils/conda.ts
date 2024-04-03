@@ -36,7 +36,7 @@ class Conda {
   updateCondaInfo () {
     this.info = getCondaInfo();
     this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
-    console.log("env", this.env);
+    console.log("env", this.info, this.env);
     logger.info("update conda info" + JSON.stringify(this.info) + JSON.stringify(this.env));
   }
 
@@ -69,11 +69,12 @@ export function getCondaEnv(env: string, condaInfo: CondaInfo): CondaEnvInfo | u
       encoding: 'utf-8',
 
     });
+    // console.log("result", result);
     const lines = result.toString().split('\n');
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.includes(env)) {
-        const CONDA_ENV_PATH = line.split(/\s+/)[1].trim();
+        const CONDA_ENV_PATH = line.split(/\s+/).filter(w => w !== "*")[1].trim();
         if (isWindows) {
           return {
             CONDA_ENV_PATH,

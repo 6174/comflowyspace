@@ -1,4 +1,4 @@
-import config from '@comflowy/common/config';
+import config, { comfyuiApiConfig } from '@comflowy/common/config';
 import { useWebSocket } from 'react-use-websocket/dist/lib/use-websocket'
 import { Message } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
@@ -10,19 +10,55 @@ import { track } from '@/lib/tracker';
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
+  const onBlobPreview = useAppStore((st) => st.onBlobPreview);
   const onNewClientId = useAppStore((st) => st.onNewClientId);
   const onQueueUpdate = useQueueState((st) => st.onQueueUpdate);
   const onNodeInProgress = useAppStore((st) => st.onNodeInProgress);
   const onImageSave = useAppStore((st) => st.onImageSave);
   const editorEvent = useAppStore(st => st.editorEvent);
   const nodeIdInProgress = nodeInProgress?.id;
-  const [socketUrl, setSocketUrl] = useState(`ws://${config.host}/comfyui/ws`);
+  const [socketUrl, setSocketUrl] = useState(`ws://${comfyuiApiConfig.host}/ws`);
   const [timestamp, setTimestamp] = useState(Date.now());
   const onChangeCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
 
-  useWebSocket(socketUrl, {
+  const {getWebSocket} = useWebSocket(socketUrl, {
     queryParams: clientId ? { clientId, timestamp } : {},
-    onMessage: (ev) => {
+    reconnectAttempts: 10,
+    reconnectInterval: 3000,
+    onMessage: async (ev) => {
+      // blob type
+      try {
+        if (ev.data instanceof Blob) {
+          const arrayBuffer = await ev.data.arrayBuffer();
+          const view = new DataView(arrayBuffer);
+          const eventType = view.getUint32(0);
+          const buffer = arrayBuffer.slice(4);
+          switch (eventType) {
+            case 1:
+              const view2 = new DataView(arrayBuffer);
+              const imageType = view2.getUint32(0)
+              let imageMime
+              switch (imageType) {
+                case 1:
+                default:
+                  imageMime = "image/jpeg";
+                  break;
+                case 2:
+                  imageMime = "image/png"
+              }
+              const imageBlob = new Blob([buffer.slice(4)], { type: imageMime });
+              const imageUrl = URL.createObjectURL(imageBlob);
+              // console.log(imageUrl);
+              // window.open(imageUrl, '_blank');
+              onBlobPreview(nodeIdInProgress, imageUrl);
+              break;
+            }
+          return
+        }
+      } catch(err) {
+        console.log("parse blob error", err);
+      }
+
       try {
         const msg = JSON.parse(ev.data);
       
@@ -79,21 +115,21 @@ export function WsController(props: {clientId: string}): JSX.Element {
       if (event.type === GlobalEvents.comfyui_process_error) {
         // message.error("Runtime Error: " + event.data.message);
       }
-    })
-
-    const disposable2 = SlotGlobalEvent.on((event) => {
-      if (event.type === GlobalEvents.restart_comfyui_success) {
+      if (
+        event.type === GlobalEvents.restart_comfyui_success || 
+        event.type === GlobalEvents.start_comfyui_execute
+      ) {
+        getWebSocket().close();
         // console.log("try to reconncet websocket")
-        setTimestamp(Date.now())
+        setTimestamp(Date.now());
         // window.location.reload();
       }
     })
 
     return () => {
       disposable.dispose();
-      disposable2.dispose();
     }
-  }, []);
+  }, [getWebSocket]);
 
   // const [pongReceived, setPongReceived] = useState(true);
   // // Send a ping every 5 seconds
