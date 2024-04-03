@@ -47,7 +47,7 @@ export async function loadI18NFromExtension() {
           translations[realKey][lang.lang] = v;
         }
       } catch(err) {
-        console.error(err);
+        // console.error(err);
       }
     }
   }
