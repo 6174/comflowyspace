@@ -118,12 +118,14 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
   for (const edge of workflow.connections) {
     const target = prompt[edge.target!]
-    const source = prompt[edge.source!]
-    if (target && source) {
-      const value = findEdgeSourceValue(edge);
-      if (value) {
-        target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
-      }
+    // target must be exist in prompt nodes
+    if (!target) {
+      continue
+    }
+
+    const value = findEdgeSourceValue(edge);
+    if (value) {
+      target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
     }
   }
 
@@ -134,19 +136,10 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   }
 
   function findEdgeSourceValue(edge: PersistedWorkflowConnection) {
-    const target = workflow.nodes[edge.target!]
-    if (!target) {
-      return undefined
-    }
-
-    const inputKeys = (target.value.inputs || []).map((input) => input.name.toUpperCase());
-    // This is for some case the edge exist ,but port connection is not exist
-    if (!inputKeys.includes(edge.targetHandle!)) {
-      return undefined;
-    }
-
     const source = workflow.nodes[edge.source!]
-    if (source === undefined) {
+
+    // edge should be valid
+    if (!source) {
       return undefined
     }
 
@@ -172,8 +165,8 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   }
 
   function findRerouteNodeInputValue(source: PersistedWorkflowNode): any {
-    const inputLinkId = source.value.inputs[0].link + "";
-    const edge = workflow.connections.find((connection) => connection.id === inputLinkId);
+    const rerouteId = source.id;
+    const edge = workflow.connections.find((connection) => connection.target === rerouteId);
     if (edge) {
       return findEdgeSourceValue(edge);
     }
