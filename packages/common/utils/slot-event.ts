@@ -141,7 +141,7 @@ export enum GlobalEvents {
   open_pannels = 'open_pannels',
   toggle_panel_container = 'toggle_panel_container',
   show_notification_modal = 'show_notification_modal',
-
+  start_comfyui_execute = 'start_comfyui_execute',
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;
