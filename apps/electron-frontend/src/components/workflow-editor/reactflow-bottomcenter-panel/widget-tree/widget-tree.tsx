@@ -8,7 +8,7 @@ import { XYPosition } from 'reactflow';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
 import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
-import { dt } from '@comflowy/common/i18n';
+import { dt, currentLang } from '@comflowy/common/i18n';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -271,6 +271,10 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
 
     const [isHovered, setIsHovered] = useState(false);
 
+    const dtDisplatyName = dt(`Nodes.${widget.display_name}.title`, widget.display_name);
+    const dtDisplayNameTip = dtDisplatyName !== widget.display_name ? `(${widget.display_name})` : "";
+    const dtWidgetName = dt(`Nodes.${widget.name}.title`, widget.name);
+    const dtWidgetNameTip = dtWidgetName !== widget.name ? `(${widget.name})` : "";
     return (
         <div className={`widget-node action ${draggable ? "dndnode" : ""}`}
             draggable={draggable}
@@ -283,9 +287,9 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
             onMouseLeave={() => setIsHovered(false)} 
             title={widget?.name}>
             <div className= "widget-title">
-                <div className="display-name">{dt(`Nodes.${widget.display_name}.title`, widget.display_name)}</div>
+                <div className="display-name">{dtDisplatyName}{dtDisplayNameTip}</div>
                 <div className='class_name'>
-                    Type: {dt(`Nodes.${widget.name}.title`, widget.name)}
+                    Type: {dtWidgetName}{dtWidgetNameTip}
                 </div>
             </div>
             {isHovered && (
