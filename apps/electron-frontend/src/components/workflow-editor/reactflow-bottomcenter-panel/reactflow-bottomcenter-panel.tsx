@@ -2,7 +2,7 @@ import { Space, Tooltip, message } from "antd";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
-import { memo, useCallback, useEffect, useRef} from "react";
+import { memo, useCallback, useEffect, useRef, useState} from "react";
 import { ExtensionIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
 import { track } from "@/lib/tracker";
@@ -87,27 +87,40 @@ export function RunButton() {
     const running = hasWorkingPrompt && queue.queue_running.length > 0;
     const onQueueUpdate = useQueueState(st => st.onQueueUpdate);
     const intervalId = useRef<number>()
+
+    const [submitting, setSubmitting] = useState(false);
     
     // const setCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
     // console.log("running", !!running, currentPromptId, queue.queue_running.length, queue.queue_pending.length)
 
     const doSubmit = async () => {
         // setRunning(true);
-        const ret = await onSubmit();
-        await onQueueUpdate();
-        console.log("submit queue", ret);
-        if (ret.error) {
-            SlotGlobalEvent.emit({
-                type: GlobalEvents.show_execution_error,
-                data: {
-                    title: ret.error.error.message,
-                    message: ret.error.error.details
-                }
-            });
-        } else {
-            message.info("Execution started, check the terminal for details.");
+        if (submitting) {
+            return
         }
-        track("comfyui-execute-submit");
+        try {
+            setSubmitting(true);
+            const ret = await onSubmit();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await onQueueUpdate();
+            console.log("submit queue", ret);
+            if (ret.error) {
+                SlotGlobalEvent.emit({
+                    type: GlobalEvents.show_execution_error,
+                    data: {
+                        title: ret.error.error.message,
+                        message: ret.error.error.details
+                    }
+                });
+            } else {
+                message.info("Execution started, check the terminal for details.");
+            }
+            track("comfyui-execute-submit");
+        } catch(err) {
+            console.error(err);
+            message.error("Failed to submit execution" + err.message);
+        }
+        setSubmitting(false);
     }
 
     /**
@@ -143,7 +156,7 @@ export function RunButton() {
         }
     }, [hasWorkingPrompt]);
 
-    if (running) {
+    if (running || submitting) {
         return (
             <Tooltip title={"Click to stop execution"}>
                 <div className="action action-stop" onClick={ev => {
