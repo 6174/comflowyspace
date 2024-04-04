@@ -83,16 +83,20 @@ export function RefreshPageButton() {
 export function RunButton() {
     const onSubmit = useAppStore(st => st.onSubmit);
     const onInterruptQueue = useQueueState(st => st.onInterruptQueue);
-    // const queue = useQueueState(st => st.queue);
     const currentPromptId = useQueueState(st => st.currentPromptId);
     const queue = useQueueState(st => st.queue);
-    const running = currentPromptId && currentPromptId !== "" && queue.queue_running.length > 0;
-
+    const hasWorkingPrompt = currentPromptId && currentPromptId !== ""
+    const running = hasWorkingPrompt && queue.queue_running.length > 0;
+    const onQueueUpdate = useQueueState(st => st.onQueueUpdate);
     const intervalId = useRef<number>()
+    
+    // const setCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
+    // console.log("running", !!running, currentPromptId, queue.queue_running.length, queue.queue_pending.length)
 
     const doSubmit = async () => {
         // setRunning(true);
         const ret = await onSubmit();
+        await onQueueUpdate();
         console.log("submit queue", ret);
         if (ret.error) {
             message.error(ret.error.error.message + " " + ret.error.error.details, 3)
@@ -116,29 +120,24 @@ export function RunButton() {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [running]);
-
-
-    const onQueueUpdate = useQueueState(st => st.onQueueUpdate);
-    const setCurrentPromptId = useQueueState(st => st.onChangeCurrentPromptId);
+    
     /**
      * interval to check run state
      */
     useEffect(() => {
-        if (running) {
+        if (hasWorkingPrompt) {
             intervalId.current = window.setInterval(() => {
                 onQueueUpdate();
-            }, 1000 * 3);
+            }, 1000 * 1);
         } else {
             intervalId.current && window.clearInterval(intervalId.current);
             intervalId.current = undefined;
-            setCurrentPromptId("")
         }
         return () => {
             intervalId.current && window.clearInterval(intervalId.current);
             intervalId.current = undefined;
-            setCurrentPromptId("")
         }
-    }, [running]);
+    }, [hasWorkingPrompt]);
 
     if (running) {
         return (

@@ -61,7 +61,8 @@ export function WsController(props: {clientId: string}): JSX.Element {
 
       try {
         const msg = JSON.parse(ev.data);
-      
+        
+        console.log("msg", msg);
         editorEvent.emit({
           type: ComfyUIEvents.RunMessage,
           data: msg
