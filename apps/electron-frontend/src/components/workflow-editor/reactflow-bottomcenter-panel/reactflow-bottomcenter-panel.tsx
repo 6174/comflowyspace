@@ -2,10 +2,8 @@ import { Space, Tooltip, message } from "antd";
 import styles from "./reactflow-bottomcenter-panel.style.module.scss";
 import { WidgetPopover } from "./widget-tree/widget-tree-popover";
 import { useAppStore } from "@comflowy/common/store";
-import { memo, use, useCallback, useEffect, useRef, useState } from "react";
-import { ExtensionIcon, GalleryIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
-import { ImageIcon, ModelIcon, PromptIcon, SamplerIcon, VaeIcon, WIDGET_ICONS, getWidgetIcon } from "../reactflow-node/reactflow-node-icons";
-import { Widget } from "@comflowy/common/types";
+import { memo, useCallback, useEffect, useRef} from "react";
+import { ExtensionIcon, PlusIcon, ReloadIcon, SelectionIcon, StartIcon, TerminalIcon } from "ui/icons";
 import { ExtensionListPopover } from "@/lib/extensions/extensions-list-popover";
 import { track } from "@/lib/tracker";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
@@ -99,7 +97,13 @@ export function RunButton() {
         await onQueueUpdate();
         console.log("submit queue", ret);
         if (ret.error) {
-            message.error(ret.error.error.message + " " + ret.error.error.details, 3)
+            SlotGlobalEvent.emit({
+                type: GlobalEvents.show_execution_error,
+                data: {
+                    title: ret.error.error.message,
+                    message: ret.error.error.details
+                }
+            });
         } else {
             message.info("Execution started, check the terminal for details.");
         }

@@ -7,6 +7,9 @@ import {useQueueState} from '@comflowy/common/store/comfyui-queue-state';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { ComfyUIEvents } from '@comflowy/common/types';
 import { track } from '@/lib/tracker';
+import { message } from 'antd';
+import { ExecutionErrorModal } from './flow-error-modal';
+
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;
   const nodeInProgress = useAppStore((st) => st.nodeInProgress);
@@ -97,6 +100,14 @@ export function WsController(props: {clientId: string}): JSX.Element {
           if (Array.isArray(images)) {
             onImageSave(msg.data.node, images)
           }
+        } else if (Message.isExecutingError(msg)) {
+          track('comfyui-executed-error');
+          onChangeCurrentPromptId("");
+          onNodeInProgress(null);
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.show_execution_error,
+            data: Message.formatExecutionError(msg.data)
+          });
         } else if (Message.isExecutingInterrupted(msg)) {
           track('comfyui-executed-interrupted');
           onChangeCurrentPromptId("");
@@ -113,9 +124,6 @@ export function WsController(props: {clientId: string}): JSX.Element {
 
   useEffect(() => {
     const disposable = SlotGlobalEvent.on((event) => {
-      if (event.type === GlobalEvents.comfyui_process_error) {
-        // message.error("Runtime Error: " + event.data.message);
-      }
       if (
         event.type === GlobalEvents.restart_comfyui_success || 
         event.type === GlobalEvents.start_comfyui_execute
@@ -162,5 +170,9 @@ export function WsController(props: {clientId: string}): JSX.Element {
   //   }
   // }, [pongReceived]);
 
-  return <></>
+  return (
+    <>
+      <ExecutionErrorModal/>
+    </>
+  )
 }

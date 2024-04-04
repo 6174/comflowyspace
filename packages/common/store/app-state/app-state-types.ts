@@ -103,7 +103,7 @@ export interface AppState {
   onLoadWorkflow: (persisted: PersistedFullWorkflow) => void
   onExportWorkflow: () => void
   onNewClientId: (id: string) => void
-  onNodeInProgress: (id: NodeId, progress: number) => void
+  onNodeInProgress: (id: NodeId | undefined, progress?: number) => void
   onImageSave: (id: NodeId, images: PreviewImage[]) => void
   onBlobPreview: (id: NodeId, blobUrl: string) => void;
   onLoadImageWorkflow: (image: string) => void

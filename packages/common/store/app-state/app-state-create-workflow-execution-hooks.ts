@@ -68,8 +68,14 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
     updateErrorCheck: () => {
       set(AppState.attatchStaticCheckErrors(get()));
     },
-    onNodeInProgress: (id, progress) => {
+    onNodeInProgress: (id, progress = 0) => {
       const { graph, subflowStore } = get();
+
+      if (!id) {
+        set({ nodeInProgress: undefined })
+        return;
+      }
+
       if (graph[id]) {
         set({ nodeInProgress: { id, progress } })
       } else {
