@@ -32,7 +32,9 @@ export function ExecutionErrorModal() {
   }, [])
 
   const $title = (
-    <Space>
+    <Space style={{
+      lineHeight: "14px"
+    }}>
       <ErrorIcon/>
       <span>Executing Error</span>
     </Space>
