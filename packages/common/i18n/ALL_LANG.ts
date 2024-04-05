@@ -28,8 +28,8 @@ const ALLLang: i18nAllLang = {
   [KEYS.languageChangeNotice]: {
     'zh-CN': '为了支持编辑器内节点的翻译，请前往扩展中心安装 https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation',
     'ja': "エディタ内のノードの翻訳をサポートするために、拡張センターに行って https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation をインストールしてください。",
-    'ru': "",
-    'en-US': ""
+    'ru': "Чтобы поддержать перевод узлов в редакторе, перейдите в центр расширений и установите https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.",
+    'en-US': "To support the translation of nodes in the editor, please go to the extension center to install https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation"
   },
   [KEYS.community]: {
     'en-US': 'Community',
@@ -269,7 +269,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Select a template to start',
     'zh-CN': '选择一个模板开始',
     'ja': 'テンプレートを選択して開始',
-    'ru': 'Выберите шаблон для начала'
+    'ru': 'Сначала выберите шаблон'
   },
   [KEYS.remove]: {
     'en-US': 'Remove',
@@ -369,7 +369,7 @@ const ALLLang: i18nAllLang = {
   },
   [KEYS.pipPlaceholder]: {
     'en-US': 'Input pip package name e.g. numpy pandas tensorflow',
-    'zh-CN': '输入 pip 包名称，例如 numbpy pandas tensorflow',
+    'zh-CN': '输入 pip 包名称，例如 numpy pandas tensorflow',
     'ja': 'pip パッケージ名を入力してください 例：numpy pandas tensorflow',
     'ru': 'Введите имя пакета для pip, например numpy pandas tensorflow'
   },
@@ -407,7 +407,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Floating Point Precision: ',
     'zh-CN': '浮点数精度：',
     'ja': '浮動小数点精度：',
-    'ru': 'Точность с плавающей запятой: '
+    'ru': 'Точность с плавающей точкой: '
   },
   [KEYS.vaePrecision]: {
     'en-US': 'VAE Precision: ',
@@ -431,7 +431,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Change Location',
     'zh-CN': '更改路径',
     'ja': '場所を変更',
-    'ru': 'Изменить местоположение'
+    'ru': 'Изменить расположение'
   },
   [KEYS.version]: {
     'en-US': 'Version: ',
@@ -473,7 +473,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'ComfyUI Server may not started, check the server status',
     'zh-CN': 'ComfyUI 服务器可能未启动，请检查服务器状态',
     'ja': 'ComfyUI サーバーが起動していない可能性があります。サーバーの状態を確認してください',
-    'ru': 'Сервер ComfyUI может не быть запущен, проверьте статус сервера'
+    'ru': 'Сервер ComfyUI не может быть запущен, проверьте статус сервера'
   }
 };
 
