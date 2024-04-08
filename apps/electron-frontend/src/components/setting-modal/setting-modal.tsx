@@ -6,11 +6,12 @@ import styles from './setting-modal.style.module.scss';
 import { LanguageType, changeLaunguage, currentLang } from '@comflowy/common/i18n';
 import { getBackendUrl, getComfyUIBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
-import { SettingsIcon, InfoIcon, PersonIcon } from 'ui/icons';
+import { SettingsIcon, InfoIcon, PersonIcon, TrayAndArrowDown } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
 import { updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
 import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
+import Color from 'color';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -123,7 +124,7 @@ function SelectSDPath() {
       <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
       <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height: 40 }} />
       <div className="row" style={{marginTop: 10}}>
-        {electronEnv && <Button size='small' onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
+        {electronEnv && <Button size='large' onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
       </div>
     </div>
   )
@@ -147,12 +148,14 @@ function SelectLanguage() {
 
   const showNotice = ['zh-CN', 'ja'].indexOf(currentLang) >= 0;
   return (
-    <div className='section'>
-      <div className='section-title'>{t(KEYS.language)}</div>
-      <div className="section-content">
+    <div className='lr-section'>
+      <div className='lr-section-title'>{t(KEYS.language)}</div>
+      <div className="lr-section-content">
         <Select
           defaultValue={currentLanguage}
-          style={{ width: 120 }}
+          style={{ 
+            width: 120,
+          }}
           onChange={handleChange}
           options={[
             { value: 'en-US', label: 'English' },
@@ -207,13 +210,17 @@ function SelectExecutionPrecisionMode() {
 
   return (
     <>
-      <div className="comfyui_auto_install_deps section">
-        <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_auto_install_deps)}</div>
-        <Switch 
+      <div className="comfyui_auto_install_deps lr-section">
+        <div className='general-startup-settings-title lr-section-title'>{t(KEYS.comfyui_auto_install_deps)}</div>
+        <div className='lr-section-content'>
+          <Switch 
           size='small'
           checkedChildren="ON"
           unCheckedChildren="OFF" 
           value={autoInstallDeps} 
+          style={{ 
+            marginBottom: 20,
+          }}
           onChange={v => {
             setAutoInstallDeps(v);
             saveConfig({
@@ -221,37 +228,40 @@ function SelectExecutionPrecisionMode() {
             });
           }}
         />
+        </div>
       </div>
-
-      <div className="precision-mode section">
-        <div className='general-startup-settings-title section-title'>{t(KEYS.floatingPointPrecision)}</div>
-        <Segmented
-          options={options}
-          value={FPValue}
-          onChange={(value) => {
-            const v = value.toString()
-            setFPValue(v);
-            saveConfig({ 
-              fpmode: v as ComfyUIRunFPMode
-            }, true);
-          }}
-        />
+      <Divider style={{ margin: '0 0 20px 0' }} />
+      <div className='lr-section'>
+        <div className="precision-mode section">
+          <div className='general-startup-settings-title section-title'>{t(KEYS.floatingPointPrecision)}</div>
+          <Segmented
+            options={options}
+            value={FPValue}
+            onChange={(value) => {
+              const v = value.toString()
+              setFPValue(v);
+              saveConfig({ 
+                fpmode: v as ComfyUIRunFPMode
+              }, true);
+            }}
+          />
+        </div>
+        <div className="vae-mode section">
+          <div className='general-startup-settings-title section-title'>{t(KEYS.vaePrecision)}</div>
+          <Segmented
+            options={options}
+            value={VAEValue}
+            onChange={(value) => {
+              const v = value.toString()
+              setVAEValue(v);
+              saveConfig({
+                vaemode: v as ComfyUIRunVAEMode
+              }, true);
+            }}
+          />
+        </div>
       </div>
-      <div className="vae-mode section">
-        <div className='general-startup-settings-title section-title'>{t(KEYS.vaePrecision)}</div>
-        <Segmented
-          options={options}
-          value={VAEValue}
-          onChange={(value) => {
-            const v = value.toString()
-            setVAEValue(v);
-            saveConfig({
-              vaemode: v as ComfyUIRunVAEMode
-            }, true);
-          }}
-        />
-      </div>
-
+      <Divider style={{ margin: '0 0 20px 0' }} />
       <div className="preview-mode section">
         <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_preview_mode)}</div>
         <Segmented
@@ -288,11 +298,15 @@ function SelectExecutionPrecisionMode() {
           }} placeholder={t(KEYS.comfyui_extra_commands)} onChange={(ev) => {
             setExtraCommand(ev.target.value);
           }}/>
-          <Button size='small' onClick={() => {
-            saveConfig({
-              extraCommand: extraCommand.trim() as any
-            }, true);
-          } }>{t(KEYS.save)}</Button>
+          <Button 
+            className='save-button'
+            icon={<TrayAndArrowDown />} 
+            size='large' 
+            onClick={() => {
+              saveConfig({
+                extraCommand: extraCommand.trim() as any
+              }, true);
+          }}>{t(KEYS.save)}</Button>
         </Space>
       </div>
     </>
