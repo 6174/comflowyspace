@@ -146,7 +146,7 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
   const targetHandle = edge.targetHandle;
   const targetWidget = st.widgets[targetNode.widget];
 
-  const inputs = [...Object.entries(targetWidget?.input?.required), ...Object.entries(targetWidget?.input?.optional || {})]
+  const inputs = [...Object.entries(targetWidget?.input?.required || {}), ...Object.entries(targetWidget?.input?.optional || {})]
 
   const refParams = [];
   for (const input of inputs) {
