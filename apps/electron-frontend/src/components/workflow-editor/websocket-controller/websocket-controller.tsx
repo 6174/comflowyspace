@@ -111,6 +111,7 @@ export function WsController(props: {clientId: string}): JSX.Element {
         } else if (Message.isExecutingInterrupted(msg)) {
           track('comfyui-executed-interrupted');
           onChangeCurrentPromptId("");
+          onNodeInProgress(null);
           SlotGlobalEvent.emit({
             type: GlobalEvents.execution_interrupted,
             data: null
