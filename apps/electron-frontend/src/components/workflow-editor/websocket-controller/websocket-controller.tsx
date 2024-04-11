@@ -72,10 +72,8 @@ export function WsController(props: {clientId: string}): JSX.Element {
         });
         
         // console.log("msg", msg)
-        if (Message.isExecutingStart(msg) || Message.isProgress(msg)) {
-          if (msg.data?.prompt_id) {
-            onChangeCurrentPromptId(msg.data.prompt_id);
-          }
+        if (msg.data?.prompt_id) {
+          onChangeCurrentPromptId(msg.data.prompt_id);
         }
 
         if (Message.isStatus(msg)) {

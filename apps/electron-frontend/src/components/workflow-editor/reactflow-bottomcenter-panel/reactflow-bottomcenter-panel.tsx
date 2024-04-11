@@ -155,7 +155,8 @@ export function RunButton() {
             intervalId.current = undefined;
         }
     }, [hasWorkingPrompt]);
-
+    
+    console.log("running", running, submitting, currentPromptId)
     if (running || submitting) {
         return (
             <Tooltip title={"Click to stop execution"}>
