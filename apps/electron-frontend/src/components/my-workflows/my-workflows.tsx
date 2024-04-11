@@ -18,8 +18,38 @@ import {KEYS, t} from "@comflowy/common/i18n";
 import { NotificationModalEntry } from './notification-modal';
 
 function MyWorkflowsPage() {
+  const [draggingOver, setDraggingOver] = React.useState(false);
+  const handleDragEnter = (ev) => {
+    ev.preventDefault();
+    setDraggingOver(true);
+  }
+
+  const handleDragLeave = (ev) => {
+    ev.preventDefault();
+    if (ev.currentTarget.contains(ev.relatedTarget)) {
+      return;
+    }
+    console.log("drag leave")
+    setDraggingOver(false);
+  }
+
+  const handleDrop = async (ev) => {
+    ev.preventDefault();
+    setDraggingOver(false);
+    console.log(ev.dataTransfer.files)
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+      SlotGlobalEvent.emit({
+        type: GlobalEvents.import_workflow,
+        data: files[0]
+      });
+    }
+  }
+
   return (
-    <div className={styles.myWorkflows}>
+    <div className={styles.myWorkflows} style={{
+      border: draggingOver ? "2px solid var(--primaryColor)" : "2px dashed transparent"
+    }} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={(ev) => ev.preventDefault()}  onDrop={handleDrop}>
       <WorkflowCreateBox/>
       <h2>{t(KEYS.myWorkflows)}</h2>
       <WorkflowList/>
