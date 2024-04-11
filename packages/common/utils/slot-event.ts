@@ -143,6 +143,7 @@ export enum GlobalEvents {
   show_notification_modal = 'show_notification_modal',
   start_comfyui_execute = 'start_comfyui_execute',
   show_execution_error = 'show_execution_error',
+  import_workflow = 'import_workflow',
 }
 
 export type GlobalEventKeys = keyof typeof GlobalEvents;

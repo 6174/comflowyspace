@@ -4,10 +4,11 @@ import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comf
 import { documentDatabaseInstance } from '@comflowy/common/storage/document-database';
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ImageIcon } from 'ui/icons';
 import {KEYS, t} from "@comflowy/common/i18n";
 import { PersistedWorkflowDocument } from '@comflowy/common/types';
+import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -64,6 +65,17 @@ export const ImportWorkflow = () => {
       fileInputRef.current.click();
     }
   };
+
+  useEffect(() => {
+    const disposable = SlotGlobalEvent.on((ev) => {
+      if (ev.type === GlobalEvents.import_workflow) {
+        onFileSelected(ev.data)
+      }
+    })
+    return () => {
+      disposable.dispose();
+    }
+  }, [])
 
   return (
     <div className='create-button' onClick={handleButtonClick}>
