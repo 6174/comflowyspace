@@ -82,10 +82,12 @@ export function WsController(props: {clientId: string}): JSX.Element {
           }
           void onQueueUpdate()
         } else if (Message.isExecuting(msg)) {
-          if (msg.data.node !== undefined) {
+          if (msg.data.node) {
             onNodeInProgress(msg.data.node, 0)
-          } else if (nodeIdInProgress !== undefined) {
-            onNodeInProgress(nodeIdInProgress, 0)
+          } else {
+            // every workflow end will enter this logic
+            onChangeCurrentPromptId("");
+            onNodeInProgress(null);
           }
         } else if (Message.isProgress(msg)) {
           if (nodeIdInProgress !== undefined) {
@@ -94,7 +96,6 @@ export function WsController(props: {clientId: string}): JSX.Element {
         } else if (Message.isExecuted(msg)) {
           track('comfyui-executed-success');
           const images = msg.data.output.images
-          onChangeCurrentPromptId("");
           if (Array.isArray(images)) {
             onImageSave(msg.data.node, images)
           }
