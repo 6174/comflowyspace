@@ -22,6 +22,9 @@
       "output": "out"
     },
     "win": {
+      "asarUnpack": [
+        "node_modules/regedit/**/*"
+      ],
       "target": "nsis",
       "icon": "logo.ico"
     },
