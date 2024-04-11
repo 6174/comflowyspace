@@ -49,8 +49,9 @@ export async function ApiGetCondaInfo(req: Request, res: Response) {
         });
     } catch (err: any) {
         res.send({
-            success: false,
-            error: err.message + err.stack
+            success: true,
+            condaInfo: CONDA_ENV_NAME + "===" + systemProxyString,
+            packageInfo: err.message + err.stack
         })
     }
 }

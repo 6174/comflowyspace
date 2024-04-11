@@ -26,6 +26,9 @@
       "asarUnpack": [
         "**/node_modules/regedit/**/*"
       ],
+      "extraResources": [
+        "./assets/vbs/**/*"
+      ],
       "target": "nsis",
       "icon": "logo.ico"
     },
