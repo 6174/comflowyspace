@@ -52,6 +52,7 @@
                 .node-params {
                     max-height: 1000px;
                     overflow-y: auto;
+                    overflow-x: hidden;
                     padding-bottom: 20px;
                     &::-webkit-scrollbar {
                         background: transparent !important;
