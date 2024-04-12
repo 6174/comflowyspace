@@ -479,13 +479,13 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Reset via workflow file',
     'zh-CN': '通过工作流文件重置',
     'ja': 'ワークフローファイルを使用してリセット',
-    'ru': 'Сброс через файл рабочего процесса'
+    'ru': 'Сброс используя файл рабочего процесса'
   },
   [KEYS.resetViaDefault]: {
     'en-US': 'Reset via default workflow',
     'zh-CN': '通过默认工作流重置',
     'ja': 'デフォルトのワークフローを使用してリセット',
-    'ru': 'Сброс через рабочий процесс по умолчанию'
+    'ru': 'Сброс используя процесс "по умолчанию"'
   },
   [KEYS.exportWorkflow]: {
     'en-US': 'Export Workflow',
@@ -557,7 +557,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Toggle select mode',
     'zh-CN': '切换选择模式',
     'ja': '選択モードを切り替える',
-    'ru': 'Переключить режим выбора'
+    'ru': 'Переключить режим'
   },
   [KEYS.addNewNode]: {
     'en-US': 'Add new node',
