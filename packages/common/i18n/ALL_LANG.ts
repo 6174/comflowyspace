@@ -485,7 +485,7 @@ const ALLLang: i18nAllLang = {
     'en-US': 'Reset via default workflow',
     'zh-CN': '通过默认工作流重置',
     'ja': 'デフォルトのワークフローを使用してリセット',
-    'ru': 'Сброс используя процесс "по умолчанию"'
+    'ru': 'Сброс на рабочий процесс "по умолчанию"'
   },
   [KEYS.exportWorkflow]: {
     'en-US': 'Export Workflow',
