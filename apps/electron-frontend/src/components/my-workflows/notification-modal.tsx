@@ -5,6 +5,7 @@ import { NotificationIcon } from "ui/icons";
 import { Badge, Tooltip } from "antd";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import ComlowyConsole, { ConsoleSocketController, useUnreadLogs } from "../comflowy-console/comflowy-console";
+import { KEYS, t } from "@comflowy/common/i18n";
 
 export function NotificationModal() {
   const [visible, setVisible] = useState(false);
@@ -31,7 +32,7 @@ export function NotificationModal() {
   return (
     <>
       <DraggableModal
-        title={"Notifications"}
+        title={t(KEYS.notifications)}
         footer={null}
         onCancel={handleCancel}
         initialWidth={450}
@@ -56,7 +57,7 @@ export function NotificationModalEntry() {
   console.log("unreadLogs", unreadLogs)
   return (
     <div>
-      <Tooltip title="Comfyui execution messages and notifications">
+      <Tooltip title={t(KEYS.notifications)}>
         <div className="action" onClick={() => {
           showModal();
         }}>

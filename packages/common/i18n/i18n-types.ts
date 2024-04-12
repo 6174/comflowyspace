@@ -77,7 +77,25 @@ export enum KEYS {
   communityDesc = "communityDesc",
   joinDiscordCommunity = "joinDiscordCommunity",
   confyuiNotStarted = "confyuiNotStarted",
-  languageChangeNotice = "languageChangeNotice"
+  languageChangeNotice = "languageChangeNotice",
+  resetViaFile = "resetViaFile",
+  resetViaDefault = "resetViaDefault",
+  exportWorkflow = "exportWorkflow",
+  failedToExportWorkflow = "failedToExportWorkflow",
+  file = "file",
+  notifications = "notifications",
+  controlboard = "controlboard",
+  clickToReloadApp = "clickToReloadApp",
+  clickToEditTitle = "clickToEditTitle",
+  clickToStopExecution = "clickToStopExecution",
+  clickToRunWorkflow = "clickToRunWorkflow",
+  clickToOpenControlboard = "clickToOpenControlboard",
+  clickToShowExecutionMessages = "clickToShowExecutionMessages",
+  toggleSelectMode = "toggleSelectMode",
+  addNewNode = "addNewNode",
+  comfyUIProcessTerminal = "comfyUIProcessTerminal",
+  gallery = "gallery",
+  executionQueue = "executionQueue",
 }
 
 export type i18nKey = keyof typeof KEYS;
