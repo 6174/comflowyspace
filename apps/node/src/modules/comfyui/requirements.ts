@@ -9,9 +9,9 @@ const windowsPackages = `
 diffusers                 0.27.0                   pypi_0    pypi
 huggingface-hub           0.20.3                   pypi_0    pypi
 insightface               0.7.3                    pypi_0    pypi
-numpy                     1.25.2                   pypi_0    pypi
+numpy                     1.22.4                   pypi_0    pypi
 onnx                      1.15.0                   pypi_0    pypi
-onnxruntime               1.17.0                   pypi_0    pypi
+onnxruntime               1.16.3                   pypi_0    pypi
 onnxruntime-gpu           1.15.1                   pypi_0    pypi
 open-clip-torch           2.24.0                   pypi_0    pypi
 opencv-contrib-python     4.9.0.80                 pypi_0    pypi
@@ -34,9 +34,9 @@ const macPackages = `
 diffusers                 0.25.0                   pypi_0    pypi
 huggingface-hub           0.20.2                   pypi_0    pypi
 insightface               0.7.3                    pypi_0    pypi
-numpy                     1.26.3                   pypi_0    pypi
+numpy                     1.22.4                   pypi_0    pypi
 onnx                      1.15.0                   pypi_0    pypi
-onnxruntime               1.17.0                   pypi_0    pypi
+onnxruntime               1.16.3                   pypi_0    pypi
 open-clip-torch           2.24.0                   pypi_0    pypi
 opencv-contrib-python     4.9.0.80                 pypi_0    pypi
 opencv-python             4.7.0.72                 pypi_0    pypi
