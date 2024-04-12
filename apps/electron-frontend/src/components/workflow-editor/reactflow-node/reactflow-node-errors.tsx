@@ -1,12 +1,12 @@
 import { ComfyUIErrorTypes, ComfyUINodeError, SDNode } from "@comflowy/common/types";
-import { useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { Alert, Button, Popover } from "antd";
 import { useExtensionsState } from "@comflowy/common/store/extension-state";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { openExternalURL } from "@/lib/electron-bridge";
 
-export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
+export const NodeError = memo(({ nodeError }: { nodeError?: ComfyUINodeError }) => {
   const [visible, setVisible] = useState(false);
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
@@ -37,12 +37,12 @@ export function NodeError({ nodeError }: { nodeError?: ComfyUINodeError }) {
       </Popover>
     </div>
   )
-}
+})
 
-export function InstallMissingWidget(props: {
+export const InstallMissingWidget = memo((props: {
   nodeError?: ComfyUINodeError;
   node: SDNode;
-}) {
+}) => {
   const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
   const { nodeError, node } = props;
   const installWidget = useCallback((extension) => {
@@ -109,6 +109,6 @@ export function InstallMissingWidget(props: {
       
     </div>
   )
-}
+})
 
 
