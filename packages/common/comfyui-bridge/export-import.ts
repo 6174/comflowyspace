@@ -297,17 +297,22 @@ export function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocu
         }
       }
 
-      if (node.value.widget === "KSampler") {
-        params.splice(1, 0, "control_after_generated")
+      const seedIndex = params.findIndex(param => Widget.isSeedParam(param));
+      if (seedIndex >= 0 ) {
+        params.splice(seedIndex + 1, 0, "control_after_generated")
       }
 
-      if (node.value.widget === "KSamplerAdvanced" ||
-        node.value.widget === "ImpactKSamplerBasicPipe" ||
-        node.value.widget === "SamplerCustom" ||
-        node.value.widget === "ImpactKSamplerAdvancedBasicPipe"
-      ) {
-        params.splice(2, 0, "control_after_generated")
-      }
+      // if (node.value.widget === "KSampler") {
+      //   params.splice(1, 0, "control_after_generated")
+      // }
+
+      // if (node.value.widget === "KSamplerAdvanced" ||
+      //   node.value.widget === "ImpactKSamplerBasicPipe" ||
+      //   node.value.widget === "SamplerCustom" ||
+      //   node.value.widget === "ImpactKSamplerAdvancedBasicPipe"
+      // ) {
+      //   params.splice(2, 0, "control_after_generated")
+      // }
 
       comfyUINode.widgets_values = params.map(param => node.value.fields[param]);
     } else {
