@@ -565,12 +565,6 @@ const ALLLang: i18nAllLang = {
     'ja': '新しいノードを追加',
     'ru': 'Добавить новый узел'
   },
-  [KEYS.comfyUIProcessTerminal]: {
-    'en-US': 'ComfyUI Process Terminal',
-    'zh-CN': 'ComfyUI 进程终端',
-    'ja': 'ComfyUI プロセスターミナル',
-    'ru': 'Окно терминала ComfyUI'
-  },
   [KEYS.gallery]: {
     'en-US': 'Gallery',
     'zh-CN': '历史图片',

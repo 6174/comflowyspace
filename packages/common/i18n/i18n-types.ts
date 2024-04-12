@@ -93,7 +93,6 @@ export enum KEYS {
   clickToShowExecutionMessages = "clickToShowExecutionMessages",
   toggleSelectMode = "toggleSelectMode",
   addNewNode = "addNewNode",
-  comfyUIProcessTerminal = "comfyUIProcessTerminal",
   gallery = "gallery",
   executionQueue = "executionQueue",
 }
