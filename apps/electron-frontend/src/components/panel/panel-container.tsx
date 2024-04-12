@@ -7,6 +7,7 @@ import { Tabs, TabsProps } from "antd";
 import { isWindow } from "ui/utils/is-window";
 import { useDashboardState } from "@comflowy/common/store/dashboard-state";
 import { useRouter } from "next/router";
+import { KEYS, t } from "@comflowy/common/i18n";
 import { ControlBoard } from "../workflow-editor/reactflow-controlboard/controlboard";
 import { ReactFlowShare } from "../workflow-editor/reactflow-share/reactflow-share";
 
@@ -149,12 +150,12 @@ export function PanelsContainer(props: PanelContainerProps) {
     items = [
       {
         key: "controlboard",
-        label: 'Controlboard',
+        label: t(KEYS.controlboard),
         children: <ControlBoard />
       },
       {
         key: 'messages',
-        label: 'Messages',
+        label: t(KEYS.notifications),
         children: <AsyncComflowyConsole />,
       },
     ]

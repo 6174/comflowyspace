@@ -33,12 +33,12 @@ export const Widget = {
   isSeedParam(param: string): boolean {
     return param === "seed" || param === "noise_seed"
   },
-  findSeedFieldName(widget: Widget): string | undefined {
+  findSeedFieldName(widget: Widget, inputSlots: string[] = []): string | undefined {
     const inputs = widget.input.required;
-    if (inputs.seed) {
+    if (inputs.seed && !inputSlots.includes("seed")) {
       return 'seed'
     }
-    if (inputs.noise_seed) {
+    if (inputs.noise_seed && !inputSlots.includes("noise_seed")) {
       return 'noise_seed'
     }
     return

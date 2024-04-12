@@ -3,6 +3,7 @@ import { Button, Input, Menu, Popover, Space, Tooltip, message } from "antd"
 import IconDown from "ui/icons/icon-down";
 import styles from "./reactflow-topleft-panel.style.module.scss";
 import { useCallback, useEffect, useState } from "react";
+import { KEYS, t } from "@comflowy/common/i18n";
 import { MenuItem, getMenuItem } from "../reactflow-context-menu/reactflow-context-menu";
 export default function ReactflowTopLeftPanel() {
     return (
@@ -116,7 +117,7 @@ function FileMenu() {
             onOpenChange={handleVisibleChange}
         >
             <div className="action action-file-dropdown">
-                <span>File</span>
+                <span>{t(KEYS.file)}</span>
                 <span className="icon">
                     <IconDown style={{
                         transform: "scale(.8)",
@@ -186,7 +187,7 @@ function ChangeTitle() {
             placement='bottom'
             onOpenChange={handleVisibleChange}
         >
-            <Tooltip title={"Click to edit title"}>
+            <Tooltip title={t(KEYS.clickToEditTitle)}>
                 <div className="action action-file-name">
                     {title || "Untitled"}
                 </div>

@@ -9,6 +9,7 @@ import { ControlBoardUtils } from "@comflowy/common/workflow-editor/controlboard
 import nodeStyles from "../reactflow-node/reactflow-node.style.module.scss";
 import _ from "lodash";
 import Color from "color";
+import { KEYS, t } from "@comflowy/common/i18n";
 import { SubflowParams, SubflowSlots } from "../reactflow-node/reactflow-subflow-node";
 import { parseSubflow } from "@comflowy/common/store/subflow-state";
 import React from "react";

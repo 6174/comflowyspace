@@ -37,7 +37,7 @@ export class ComflowyTerminal {
   }
 
   write(message: string) {
-    this.term.write(message);
+    this.term.write(message || "");
   }
 
   _onKeyHandler(e: { key: string; domEvent: KeyboardEvent }) {

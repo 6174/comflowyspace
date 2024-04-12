@@ -1,6 +1,6 @@
 import { PartialTaskEvent, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import {  checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, getInstallPyTorchForGPUCommand} from '../../modules/comfyui/bootstrap';
-import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
+import { checkIfInstalled, installPyTorchForGPU, checkIfInstalledComfyUI, cloneComfyUI, installCondaPackageTask, installCondaTask, installPythonTask, getInstallPyTorchForGPUCommand} from '../../modules/comfyui/bootstrap';
+import { CONFIG_KEYS, appConfigManager } from '../../modules/config-manager';
 import { checkBasicRequirements } from '../../modules/comfyui/bootstrap';
 import { Request, Response } from 'express';
 import path from 'path';
@@ -11,6 +11,8 @@ import logger from '../../modules/utils/logger';
 import { comfyuiService } from '../../modules/comfyui/comfyui.service';
 import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 import { runCommand } from '../../modules/utils/run-command';
+import { systemProxyString } from '../../modules/utils/env';
+import { conda } from '../../modules/utils/conda';
 
 /**
  * fetch all extensions
@@ -38,18 +40,20 @@ export async function ApiEnvCheck(req: Request, res: Response) {
  * @param res 
  */
 export async function ApiGetCondaInfo(req: Request, res: Response) {
+    const CONDA_ENV_PATH = conda.env?.CONDA_ENV_PATH
     try {
         const condaInfo = await runCommand("conda info");
-        const packageInfo = await runCommand(`conda list -n ${CONDA_ENV_NAME}`);
+        const packageInfo = await runCommand(`conda list -p ${CONDA_ENV_PATH}`);
         res.send({
             success: true,
-            condaInfo: condaInfo.stderr + condaInfo.stdout,
+            condaInfo: condaInfo.stderr + condaInfo.stdout + systemProxyString,
             packageInfo: packageInfo.stderr + packageInfo.stdout
         });
     } catch (err: any) {
         res.send({
-            success: false,
-            error: err.message + err.stack
+            success: true,
+            condaInfo: CONDA_ENV_PATH + "===" + systemProxyString,
+            packageInfo: err.message + err.stack
         })
     }
 }

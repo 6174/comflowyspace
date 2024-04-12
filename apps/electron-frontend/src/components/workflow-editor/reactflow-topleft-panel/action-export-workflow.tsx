@@ -4,6 +4,7 @@ import { exportWorkflowToJSONFile } from "@comflowy/common/comfyui-bridge/export
 import { useAppStore } from "@comflowy/common/store";
 import { message } from "antd";
 import { useCallback } from "react";
+import { KEYS, t } from "@comflowy/common/i18n";
 
 export default function ExportWorkflow() {
   const doc = useAppStore(st => st.doc);
@@ -15,13 +16,13 @@ export default function ExportWorkflow() {
       await exportWorkflowToJSONFile(workflow, widgets);
       // message.success("Workflow exported successfully");
     } catch(err) {
-      message.error("Failed to export workflow:" + err.message, 5);
+      message.error(t(KEYS.failedToExportWorkflow) + err.message, 5);
     }
     track('export-workflow-to-json');
   }, [doc, widgets])
   return (
     <div>
-      <span onClick={exportWorkflow}>Export workflow</span>
+      <span onClick={exportWorkflow}>{t(KEYS.exportWorkflow)}</span>
     </div>
   )
 }

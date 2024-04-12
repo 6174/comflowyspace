@@ -26,10 +26,10 @@ const ALLLang: i18nAllLang = {
     'ru': 'Режим предпросмотра ComfyUI'
   },
   [KEYS.languageChangeNotice]: {
-    'zh-CN': '为了支持编辑器内节点的翻译，请前往扩展中心安装 https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation',
-    'ja': "エディタ内のノードの翻訳をサポートするために、拡張センターに行って https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation をインストールしてください。",
-    'ru': "Чтобы поддержать перевод узлов в редакторе, перейдите в центр расширений и установите https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation.",
-    'en-US': "To support the translation of nodes in the editor, please go to the extension center to install https://github.com/AIGODLIKE/AIGODLIKE-ComfyUI-Translation"
+    'zh-CN': '为了支持编辑器内节点的翻译，请前往插件中心安装 AIGODLIKE-ComfyUI-Translation',
+    'ja': "エディタ内のノードの翻訳をサポートするために、拡張センターに行って AIGODLIKE-ComfyUI-Translation をインストールしてください。",
+    'ru': "Чтобы поддержать перевод узлов в редакторе, перейдите в центр расширений и установитеAIGODLIKE-ComfyUI-Translation.",
+    'en-US': "To support the translation of nodes in the editor, please go to the extension center to install AIGODLIKE-ComfyUI-Translation"
   },
   [KEYS.community]: {
     'en-US': 'Community',
@@ -474,7 +474,109 @@ const ALLLang: i18nAllLang = {
     'zh-CN': 'ComfyUI 服务器可能未启动，请检查服务器状态',
     'ja': 'ComfyUI サーバーが起動していない可能性があります。サーバーの状態を確認してください',
     'ru': 'Сервер ComfyUI не может быть запущен, проверьте статус сервера'
-  }
+  },
+  [KEYS.resetViaFile]: {
+    'en-US': 'Reset via workflow file',
+    'zh-CN': '通过工作流文件重置',
+    'ja': 'ワークフローファイルを使用してリセット',
+    'ru': 'Сброс через файл рабочего процесса'
+  },
+  [KEYS.resetViaDefault]: {
+    'en-US': 'Reset via default workflow',
+    'zh-CN': '通过默认工作流重置',
+    'ja': 'デフォルトのワークフローを使用してリセット',
+    'ru': 'Сброс через рабочий процесс по умолчанию'
+  },
+  [KEYS.exportWorkflow]: {
+    'en-US': 'Export Workflow',
+    'zh-CN': '导出工作流',
+    'ja': 'ワークフローをエクスポート',
+    'ru': 'Экспорт рабочего процесса'
+  },
+  [KEYS.failedToExportWorkflow]: {
+    'en-US': 'Failed to export workflow: ',
+    'zh-CN': '导出工作流失败: ',
+    'ja': 'ワークフローのエクスポートに失敗しました: ',
+    'ru': 'Не удалось экспортировать рабочий процесс: '
+  },
+  [KEYS.file]: {
+    'en-US': 'File',
+    'zh-CN': '文件',
+    'ja': 'ファイル',
+    'ru': 'Файл'
+  },
+  [KEYS.notifications]: {
+    'en-US': 'Notifications',
+    'zh-CN': '通知',
+    'ja': 'メッセージ',
+    'ru': 'Сообщения'
+  },
+  [KEYS.controlboard]: {
+    'en-US': 'Controlboard',
+    'zh-CN': '控制面板',
+    'ja': 'コントロールボード',
+    'ru': 'Панель управления'
+  },
+  [KEYS.clickToReloadApp]: {
+    'en-US': 'Click to reload app',
+    'zh-CN': '点击重新加载应用',
+    'ja': 'クリックしてアプリを再読み込み',
+    'ru': 'Нажмите, чтобы перезагрузить приложение'
+  },
+  [KEYS.clickToEditTitle]: {
+    'en-US': 'Click to edit title',
+    'zh-CN': '点击编辑标题',
+    'ja': 'クリックしてタイトルを編集',
+    'ru': 'Нажмите, чтобы изменить заголовок'
+  },
+  [KEYS.clickToStopExecution]: {
+    'en-US': 'Click to stop execution',
+    'zh-CN': '点击停止执行插件',
+    'ja': 'クリックして実行を停止',
+    'ru': 'Нажмите, чтобы остановить выполнение'
+  },
+  [KEYS.clickToRunWorkflow]: {
+    'en-US': 'Click to run workflow',
+    'zh-CN': '点击运行工作流',
+    'ja': 'ワークフローを実行するにはクリック',
+    'ru': 'Нажмите, чтобы запустить рабочий процесс'
+  },
+  [KEYS.clickToOpenControlboard]: {
+    'en-US': 'Click to open controlboard',
+    'zh-CN': '点击打开控制面板',
+    'ja': 'クリックしてコントロールボードを開く',
+    'ru': 'Нажмите, чтобы открыть панель управления'
+  },
+  [KEYS.clickToShowExecutionMessages]: {
+    'en-US': 'Click to show execution messages',
+    'zh-CN': '点击显示执行消息',
+    'ja': 'クリックして実行メッセージを表示',
+    'ru': 'Нажмите, чтобы показать сообщения выполнения'
+  },
+  [KEYS.toggleSelectMode]: {
+    'en-US': 'Toggle select mode',
+    'zh-CN': '切换选择模式',
+    'ja': '選択モードを切り替える',
+    'ru': 'Переключить режим выбора'
+  },
+  [KEYS.addNewNode]: {
+    'en-US': 'Add new node',
+    'zh-CN': '添加新节点',
+    'ja': '新しいノードを追加',
+    'ru': 'Добавить новый узел'
+  },
+  [KEYS.gallery]: {
+    'en-US': 'Gallery',
+    'zh-CN': '历史图片',
+    'ja': 'ギャラリー',
+    'ru': 'Галерея'
+  },
+  [KEYS.executionQueue]: {
+    'en-US': 'Execution Queue',
+    'zh-CN': '执行队列',
+    'ja': '実行キュー',
+    'ru': 'Очередь выполнения'
+  },
 };
 
 export default ALLLang;

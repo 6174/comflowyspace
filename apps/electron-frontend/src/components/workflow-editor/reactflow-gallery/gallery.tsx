@@ -5,6 +5,7 @@ import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import styles from "./gallery.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
 import { GalleryIcon } from 'ui/icons';
+import { KEYS, t } from "@comflowy/common/i18n";
 import { ImageWithDownload, PreviewGroupWithDownload } from './image-with-download';
 
 const Gallery = () => {
@@ -58,7 +59,7 @@ export const GalleryEntry = React.memo(() => {
 
   return (
     <>
-      <Tooltip title="Saved Image Gallery">
+      <Tooltip title={t(KEYS.gallery)}>
         <div className="action action-gallery" style={{
           transform: "scale(.9)"
         }} onClick={showModal}>

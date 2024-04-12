@@ -13,15 +13,15 @@ import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event
 export const ImportWorkflow = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const widgets = useAppStore(st => st.widgets);
   const onFileSelected = async (file: File) => {
     try {
+      const widgets = useAppStore.getState().widgets;
       let workflow: PersistedWorkflowDocument | null = null;
       if (file.type === 'image/png') {
         workflow = await readWorkflowFromPng(file, widgets);
         track('import-png-workflow');
       }
-  
+
       if (file.type === 'application/json') {
         workflow = await readWorkflowFromFile(file, widgets);
         track('import-json-workflow');

@@ -5,6 +5,7 @@ import styles from "./reactflow-queue.module.scss";
 import { DraggableModal } from 'ui/antd/draggable-modal';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 import { QueueIcon } from 'ui/icons';
+import { KEYS, t } from '@comflowy/common/i18n';
 
 const Queue = () => {
   const queue = useQueueState(st => st.queue);
@@ -87,7 +88,7 @@ export const QueueEntry = React.memo(() => {
 
   return (
     <>
-      <Tooltip title="Execution Queue">
+      <Tooltip title={t(KEYS.executionQueue)}>
         <div className="action action-queue" onClick={showModal} >
           <QueueIcon />
         </div>

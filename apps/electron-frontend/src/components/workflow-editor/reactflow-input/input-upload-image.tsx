@@ -30,12 +30,14 @@ export function InputUploadImage({widget, node, id}: {
 
     const [previewImage, setPreviewImage] = useState(null);
     useEffect(() => {
-        const parsedName = value.split("/");
-        let imgsrc = getImagePreviewUrl(value);
-        if (parsedName.length > 1) {
-            imgsrc = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
+        if (value) {
+            const parsedName = value.split("/");
+            let imgsrc = getImagePreviewUrl(value);
+            if (parsedName.length > 1) {
+                imgsrc = getImagePreviewUrl(parsedName[1], "input", parsedName[0]);
+            }
+            setPreviewImage(imgsrc);
         }
-        setPreviewImage(imgsrc);
     }, [value]);
 
     const customRequest = async ({file, onSuccess, onError}: any ) => {

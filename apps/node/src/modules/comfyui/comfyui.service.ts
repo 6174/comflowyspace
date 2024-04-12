@@ -267,7 +267,7 @@ class ComfyuiService {
         message: "Restart ComfyUI"
       });
       this.stopComfyUI();
-      await new Promise(resolve => setTimeout(resolve, isWindows ? 1000 : 100));
+      await new Promise(resolve => setTimeout(resolve, isWindows ? 2000 : 100));
       await this.startComfyUI();
       this.comfyuiProgressEvent.emit({
         type: "RESTART",
