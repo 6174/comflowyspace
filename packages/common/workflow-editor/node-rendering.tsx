@@ -78,7 +78,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   }
 
   // if it has a seed, add seed control_after_generated param
-  const seedFieldName = Widget.findSeedFieldName(widget);
+  const seedFieldName = Widget.findSeedFieldName(widget, inputs.map(i => i.name));
   if (seedFieldName) {
     const index = params.findIndex(param => param.property === seedFieldName);
     params.splice(index + 1, 0, {

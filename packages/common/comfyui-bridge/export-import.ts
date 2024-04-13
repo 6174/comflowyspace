@@ -1,5 +1,5 @@
 import exifr from 'exifr';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget } from '../types';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget, Input } from '../types';
 import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
 
@@ -95,16 +95,21 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       const inputs = node.inputs || [];
       const inputKeys = inputs.map(input => input.name);
       for (const [property, input] of Object.entries(widget.input.required)) {
-        if (!inputKeys.includes(property)) {
+        if (Input.isParameterOrList(input)) {
           params.push(property)
         }
+        // if (!inputKeys.includes(property)) {
+        // }
       }
 
       if (widget.input.optional) {
         for (const [property, input] of Object.entries(widget.input.optional)) {
-          if (!inputKeys.includes(property)) {
-            params.push(property);
+          if (Input.isParameterOrList(input)) {
+            params.push(property)
           }
+          // if (!inputKeys.includes(property)) {
+          //   params.push(property);
+          // }
         }
       }
 
@@ -291,23 +296,42 @@ export function persistedWorkflowDocumentToComfyUIWorkflow(persistedWorkflowDocu
       const params: string[] = [];
       const inputs = node.value.inputs || [];
       const inputKeys = inputs.map(input => input.name);
+
       for (const [property, input] of Object.entries(widget.input.required)) {
-        if (!inputKeys.includes(property)) {
+        if (Input.isParameterOrList(input)) {
+          params.push(property)
+        }
+        // if (!inputKeys.includes(property)) {
+        // }
+      }
+
+      if (widget.input.optional) {
+        for (const [property, input] of Object.entries(widget.input.optional)) {
+          if (Input.isParameterOrList(input)) {
             params.push(property)
+          }
+          // if (!inputKeys.includes(property)) {
+          //   params.push(property);
+          // }
         }
       }
 
-      if (node.value.widget === "KSampler") {
-        params.splice(1, 0, "control_after_generated")
+      const seedIndex = params.findIndex(param => Widget.isSeedParam(param));
+      if (seedIndex >= 0 ) {
+        params.splice(seedIndex + 1, 0, "control_after_generated")
       }
 
-      if (node.value.widget === "KSamplerAdvanced" ||
-        node.value.widget === "ImpactKSamplerBasicPipe" ||
-        node.value.widget === "SamplerCustom" ||
-        node.value.widget === "ImpactKSamplerAdvancedBasicPipe"
-      ) {
-        params.splice(2, 0, "control_after_generated")
-      }
+      // if (node.value.widget === "KSampler") {
+      //   params.splice(1, 0, "control_after_generated")
+      // }
+
+      // if (node.value.widget === "KSamplerAdvanced" ||
+      //   node.value.widget === "ImpactKSamplerBasicPipe" ||
+      //   node.value.widget === "SamplerCustom" ||
+      //   node.value.widget === "ImpactKSamplerAdvancedBasicPipe"
+      // ) {
+      //   params.splice(2, 0, "control_after_generated")
+      // }
 
       comfyUINode.widgets_values = params.map(param => node.value.fields[param]);
     } else {

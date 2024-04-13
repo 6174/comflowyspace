@@ -32,7 +32,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       state.nodes.forEach(node => {
         const widget = node.data.widget as Widget;
         const sdnode = node.data.value as SDNode;
-        const seedFieldName = Widget.findSeedFieldName(widget);
+        const seedFieldName = Widget.findSeedFieldName(widget, sdnode.inputs.map(i => i.name));
         if (seedFieldName) {
           const control_after_generated = sdnode.fields.control_after_generated;
           const oldSeed = sdnode.fields[seedFieldName];

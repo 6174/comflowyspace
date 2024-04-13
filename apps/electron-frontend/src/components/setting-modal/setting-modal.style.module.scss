@@ -1,5 +1,5 @@
 .settingsModal {
-  min-width: 700px;
+  min-width: 800px;
   min-height: 300px;
   :global {
     .ant-modal-content {
@@ -50,9 +50,22 @@
           }
         }
         .ant-menu-item-selected {
-            background-color: var(--primaryColor);
+            background-color: #31333F;
             color: #FFF;
           }
+      }
+    }
+
+    .lr-section {
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      .lr-section-title {
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      .lr-section-content {
+        margin-left: 20px;
       }
     }
 
@@ -64,6 +77,10 @@
       }
     }
 
+    .vae-mode{
+      margin-left: 60px;
+    }
+
     .settings-content {
       height: 100%;
       max-height: 500px;
@@ -71,6 +88,11 @@
       background-color: #212126;
       flex: 2;
       padding: 20px 14px;
+    }
+
+    .save-button {
+      background-color:  var(--primaryColor);
+      color: #FFF;
     }
 
     .about-content {

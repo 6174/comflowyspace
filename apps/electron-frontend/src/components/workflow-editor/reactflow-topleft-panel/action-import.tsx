@@ -3,6 +3,7 @@ import { readWorkflowFromFile, readWorkflowFromPng } from '@comflowy/common/comf
 import { useAppStore } from '@comflowy/common/store';
 import { message } from 'antd';
 import React, { useState, useRef } from 'react';
+import { KEYS, t } from "@comflowy/common/i18n";
 
 export const ImportWorkflow = () => {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
@@ -64,7 +65,7 @@ export const ImportWorkflow = () => {
       <div style={{ display: 'none' }}>
         <input ref={fileInputRef} type="file" accept="image/png,application/json" onChange={handleFileChange} />
       </div>
-      <div className="name">Reset via file</div>
+      <div className="name">{t(KEYS.resetViaFile)}</div>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { GalleryEntry } from "../reactflow-gallery/gallery";
 import { QueueEntry } from "../reactflow-queue/reactflow-queue";
 import { useQueueState } from "@comflowy/common/store/comfyui-queue-state";
 import { isWindows } from "ui/utils/is-windows";
+import { KEYS, t } from "@comflowy/common/i18n";
 import { CreateSubflowNodeEntry } from "./create-subflow-node/create-subflow-node";
 
 function ReactflowBottomCenterPanel() {
@@ -19,14 +20,14 @@ function ReactflowBottomCenterPanel() {
     return (
         <div className={styles.bottomCenterPanel}>
              <Space>
-                <Tooltip title={"Toggle select mode"}>
+                <Tooltip title={t(KEYS.toggleSelectMode)}>
                     <div className={`action action-select ${selectionMode === "figma" && "active"}`} onClick={ev => {
                         onChangeSelectMode(selectionMode === "figma" ? "default" : "figma");
                     }}>
                         <SelectionIcon/>
                     </div>
                 </Tooltip>
-                <Tooltip title={"Add new node"}>
+                <Tooltip title={t(KEYS.addNewNode)}>
                     <div className="action action-node-picker">
                         <WidgetPopover showCategory>
                             <Space>
@@ -44,7 +45,7 @@ function ReactflowBottomCenterPanel() {
                         </Space>
                     </div>
                 </ExtensionListPopover>
-                <Tooltip title={"ComfyUI Process Terminal"}>
+                <Tooltip title={t(KEYS.comfyUIProcessTerminal)}>
                     <div className="action action-open-terminal" onClick={ev => {
                         SlotGlobalEvent.emit({
                             type: GlobalEvents.show_comfyprocess_manager,
@@ -70,7 +71,7 @@ export function RefreshPageButton() {
         document.location.reload();
     }, []);
     return (
-        <Tooltip title={"Click to reload app"}>
+        <Tooltip title={t(KEYS.clickToReloadApp)}>
             <div className="action action-refresh" onClick={triggerSyncup}>
                 <ReloadIcon />
             </div>
@@ -155,10 +156,11 @@ export function RunButton() {
             intervalId.current = undefined;
         }
     }, [hasWorkingPrompt]);
-
+    
+    console.log("running", running, submitting, currentPromptId)
     if (running || submitting) {
         return (
-            <Tooltip title={"Click to stop execution"}>
+            <Tooltip title={t(KEYS.clickToStopExecution)}>
                 <div className="action action-stop" onClick={ev => {
                     // setRunning(false);
                     onInterruptQueue();
@@ -170,7 +172,7 @@ export function RunButton() {
     }
 
     return (
-        <Tooltip title={`Click to run workflow (${getCommandString()})`}>
+        <Tooltip title={t(KEYS.clickToRunWorkflow)+`(${getCommandString()})`}>
             <div className="action action-Run" onClick={ev => {
                 doSubmit();
             }}>

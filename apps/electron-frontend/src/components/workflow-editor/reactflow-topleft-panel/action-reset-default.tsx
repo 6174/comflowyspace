@@ -2,6 +2,7 @@ import { useAppStore } from "@comflowy/common/store";
 import { getWorkflowTemplate } from "@comflowy/common/templates/templates";
 import { Modal, Popconfirm } from "antd";
 import { useCallback } from "react";
+import { KEYS, t } from "@comflowy/common/i18n";
 
 export default function ResetDefault() {
   const onResetFromPersistedWorkflow = useAppStore(st => st.onResetFromPersistedWorkflow);
@@ -29,7 +30,7 @@ export default function ResetDefault() {
   return (
     <div>
       {contextHolder}
-      <span onClick={resetDefault}>Reset via default</span>
+      <span onClick={resetDefault}>{t(KEYS.resetViaDefault)}</span>
     </div>
   )
 }

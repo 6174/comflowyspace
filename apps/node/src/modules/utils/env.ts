@@ -1,6 +1,7 @@
 import * as os from "os";
 import { getAppDataDir, getAppTmpDir } from "./get-appdata-dir";
 import { execSync } from "child_process";
+import logger from "./logger";
 export const systemType = os.type().toUpperCase();
 export const isWindows = systemType.includes("WINDOWS");
 export const isMac = systemType.includes("DARWIN");
@@ -90,10 +91,16 @@ function parseMacProxySettings() {
 }
 
 async function parseWindowsProxySettings() {
-  const regedit = require('regedit').promisified;
   try {
+    const regedit = require('regedit');
+    const path = require('path');
+    const isProduction = (process as any).mainModule?.filename?.includes('app.asar');
+    if (isProduction) {
+      const scriptPath = path.join((process as any).resourcesPath, 'assets', 'vbs');
+      regedit.setExternalVBSLocation(scriptPath);
+    }
     const key = "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"
-    const proxySettings = (await regedit.list(key))[key].values;
+    const proxySettings = (await regedit.promisified.list(key))[key].values;
     
     const ret = {
       enabled: proxySettings.ProxyEnable.value,
@@ -108,7 +115,8 @@ async function parseWindowsProxySettings() {
       systemProxy.https_proxy = server;
     }
 
-  } catch (err) {
+  } catch (err: any) {
+    logger.error("get system proxy error" + err.message + err.stack)
     console.log("read error", err);
   }
 }

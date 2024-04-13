@@ -1,6 +1,6 @@
 {
   "name": "comflowy",
-  "version": "0.1.5-alpha",
+  "version": "0.1.6-alpha",
   "private": true,
   "main": "layers/main/dist/index.js",
   "scripts": {
@@ -22,6 +22,13 @@
       "output": "out"
     },
     "win": {
+      "asar": true,
+      "asarUnpack": [
+        "**/node_modules/regedit/**/*"
+      ],
+      "extraResources": [
+        "./assets/vbs/**/*"
+      ],
       "target": "nsis",
       "icon": "logo.ico"
     },

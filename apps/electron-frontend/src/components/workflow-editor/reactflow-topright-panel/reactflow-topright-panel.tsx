@@ -4,6 +4,7 @@ import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event
 import { useUnreadLogs } from "@/components/comflowy-console/comflowy-console";
 import { useRouter } from "next/router";
 import { ActionBoardSettingEntry } from "./action-board-settings";
+import { KEYS, t } from "@comflowy/common/i18n";
 export default function ReactflowTopRightPanel() {
     const router = useRouter();
     const currentWorkflowId = router.query.id;
@@ -11,7 +12,7 @@ export default function ReactflowTopRightPanel() {
     return (
         <div className={styles.topRightPanel}>
             <Space>
-                <Tooltip title={"Click to open controlboard"}>
+                <Tooltip title={t(KEYS.clickToOpenControlboard)}>
                     <div className="action action-toggle-controlboard" onClick={ev => {
                         ev.preventDefault();
                         SlotGlobalEvent.emit({
@@ -26,7 +27,7 @@ export default function ReactflowTopRightPanel() {
                         </svg>
                     </div>
                 </Tooltip>
-                <Tooltip title={"Click to show execution messages"}>
+                <Tooltip title={t(KEYS.clickToShowExecutionMessages)}>
                     <div className="action action-toggle-terminal" onClick={ev => {
                         ev.preventDefault();
                         SlotGlobalEvent.emit({
