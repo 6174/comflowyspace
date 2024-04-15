@@ -220,7 +220,7 @@ class ComfyuiService {
     const runConfig = appConfigManager.getRunConfig();
 
     if (pip || runConfig.autoInstallDeps) {
-      command += `${PIP_PATH} install -r requirements.txt; ${PIP_PATH} install ${requirements};`;
+      command += `${PIP_PATH} install -r requirements.txt;` //${PIP_PATH} install ${requirements};`;
     }
 
     command += `${PYTHON_PATH} main.py --enable-cors-header `;
