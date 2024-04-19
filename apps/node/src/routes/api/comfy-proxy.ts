@@ -2,6 +2,7 @@ import { Request, Response, Express } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import logger from "../../modules/utils/logger";
 import { comfyuiService } from "../../modules/comfyui/comfyui.service";
+import { channelService } from '../../modules/channel/channel.service';
 
 export function setupComfyUIProxy(app: Express) {
     const proxyMiddleware = createProxyMiddleware('/comfyui', {
@@ -25,10 +26,12 @@ async function updateObjectInfo() {
     cached_object_info = data
     return data
 }
+
 comfyuiService.comfyUIStartedSuccessEvent.on(async () => {
     try {
         console.log("update comfyui object info");
-        await updateObjectInfo();
+        const data = await updateObjectInfo();
+        channelService.emit('comfyui', { type: 'object_info_updated', payload: data});
         console.log("update comfyui object info success");
     } catch(err) {
         console.log(err);

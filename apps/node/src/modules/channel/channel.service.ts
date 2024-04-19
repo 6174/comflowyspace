@@ -16,7 +16,7 @@ class ChannelService {
     server.on("upgrade", (req: http.IncomingMessage, socket, head) => {
       const parsedUrl = url.parse(req.url as string, true);
       if (parsedUrl.pathname === '/ws/channel') {
-        const channel = parsedUrl.query.channel as string;
+        const channel = parsedUrl.query.c as string;
 
         if (!this.clients[channel]) {
           this.clients[channel] = [];
@@ -28,12 +28,10 @@ class ChannelService {
 
         wss.handleUpgrade(req, socket, head, ws => {
           this.clients[channel].push(ws);
-
           ws.on('message', (messageStr: string) => {
             const message = JSON.parse(messageStr) as ChannelMessage;
             this.channelSlots[channel].emit(message);
           });
-
           ws.on('close', () => {
             const index = this.clients[channel].indexOf(ws);
             if (index !== -1) {

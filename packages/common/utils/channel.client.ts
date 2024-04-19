@@ -1,6 +1,7 @@
 import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 import { SlotEvent } from './slot-event';
 import { ChannelMessage } from '../types/channel.types';
+import config from '../config';
 
 export class Channel {
   id: string;
@@ -9,8 +10,8 @@ export class Channel {
 
   constructor(id: string) {
     this.id = id;
+    this.client = new W3CWebSocket(`ws://${config.host}/ws/channel?c=${id}`);
     this.#subscribe();
-    this.client = new W3CWebSocket(`ws://localhost:8000/${id}`);
   }
   
   #subscribe() {
