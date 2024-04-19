@@ -132,10 +132,20 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       //   params.splice(2, 0, "control_after_generated")
       // }
 
-      node.widgets_values.forEach((value, index) => {
-        const key = params[index];
-        fields[key] = value;
-      });
+      node.widgets_values = node.widgets_values || [];
+      if (node.widgets_values instanceof Array) {
+        node.widgets_values.forEach((value, index) => {
+          const key = params[index];
+          fields[key] = value;
+        });
+      } else {
+        const values = node.widgets_values as Record<string, any>
+        params.forEach((key, index) => {
+          const value = values[key];
+          if (value)
+          fields[key] = value;
+        });
+      }
 
     } else {
       if (node.type === NODE_PRIMITIVE) {
