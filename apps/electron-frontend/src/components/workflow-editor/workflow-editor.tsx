@@ -305,7 +305,7 @@ function useNodeAndEdgesWithStyle(nodes: Node[], edges: Edge[], inprogressNodeId
       type: finalType,
       animated: edge.source === inprogressNodeId,
       style: {
-        strokeWidth: 2 / transform,
+        strokeWidth: (edgeSelect ? 3.5 : 2) / transform,
         opacity: edgeSelect ? 1 : .6,
         stroke: Input.getInputColor([edge.sourceHandle] as any),
       },
