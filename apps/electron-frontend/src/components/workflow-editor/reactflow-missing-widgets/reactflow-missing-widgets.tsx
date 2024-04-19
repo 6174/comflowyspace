@@ -55,7 +55,6 @@ export const MissingWidgetsPopoverEntry = memo(() => {
     extensionsArr.push(extension);
   });
 
-
   useEffect(() => {
     if (extensionsArr.length === 0) {
       handleCancel();
@@ -81,8 +80,31 @@ export const MissingWidgetsPopoverEntry = memo(() => {
 });
 
 function MissingWidgetInstallHelper({ extensions }: { extensions: Extension[]}) {
+   const { startTask, running } = useRemoteTask({
+    api: getBackendUrl(`/api/install_extension`),
+    onMessage: async (msg) => {
+      console.log(msg);
+      if (msg.type === "SUCCESS") {
+        message.success(`Installed successfully`);
+      }
+    }
+  });
+
+  const isLoading = running;
+  const installExtensions = useCallback(() => {
+    startTask({
+      name: "installExtension",
+      params: extensions
+    })
+  }, [extensions]);
+
   return (
     <div className={styles.missingWidgetsContent}>
+      <div className="actions" style={{ marginBottom: 20 }}>
+        <Space>
+          <Button loading={isLoading} disabled={isLoading} onClick={installExtensions}>Install All</Button>
+        </Space>
+      </div>
       {extensions.map(extension => {
         return <ExtensionItem extension={extension} key={extension.title}/>
       })}
