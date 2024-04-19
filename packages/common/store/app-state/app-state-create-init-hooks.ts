@@ -3,6 +3,7 @@ import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import _ from "lodash";
 import { getWidgetLibrary } from '../../comfyui-bridge/bridge';
 import { Widget } from "../../types";
+import { useExtensionsState } from "../extension-state";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -33,9 +34,11 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
         widgetCategory
       })
 
+      await useExtensionsState.getState().onInit(false);
+
       const st = get();
       st.onSyncFromYjsDoc();
-      
+
       set(AppState.attatchStaticCheckErrors(get()));
     },
   }

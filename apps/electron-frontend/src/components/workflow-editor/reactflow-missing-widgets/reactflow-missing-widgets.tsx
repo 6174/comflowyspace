@@ -99,7 +99,6 @@ function ExtensionItem(props: {
     onMessage: async (msg) => {
       console.log(msg);
       if (msg.type === "SUCCESS") {
-        await useAppStore.getState().onUpdateWidgets();
         message.success(`${extension.title} installed successfully`);
       }
     }

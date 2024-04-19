@@ -6,7 +6,7 @@ import { useExtensionsState } from "@comflowy/common/store/extension-state";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { openExternalURL } from "@/lib/electron-bridge";
 
-export const NodeError = memo(({ nodeError }: { nodeError?: ComfyUINodeError }) => {
+export const NodeError = ({ nodeError }: { nodeError?: ComfyUINodeError }) => {
   const [visible, setVisible] = useState(false);
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
@@ -37,9 +37,9 @@ export const NodeError = memo(({ nodeError }: { nodeError?: ComfyUINodeError }) 
       </Popover>
     </div>
   )
-})
+}
 
-export const InstallMissingWidget = memo((props: {
+export const InstallMissingWidget = (props: {
   nodeError?: ComfyUINodeError;
   node: SDNode;
 }) => {
@@ -109,6 +109,6 @@ export const InstallMissingWidget = memo((props: {
       
     </div>
   )
-})
+}
 
 
