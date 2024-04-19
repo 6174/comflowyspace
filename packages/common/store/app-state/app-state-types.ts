@@ -224,6 +224,9 @@ export const AppState = {
       if (nodeError.errors) {
         nodeError.errors = nodeError.errors.filter(err => err.type !== ComfyUIErrorTypes.widget_not_found);
       }
+      if (!nodeError.errors || nodeError.errors.length === 0) {
+        delete node_errors[nodeId];
+      }
     }
 
     const staticErrors = staticCheckWorkflowErrors(widgets, workflow);
