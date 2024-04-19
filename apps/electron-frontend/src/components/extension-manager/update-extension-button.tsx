@@ -4,8 +4,11 @@ import { Button, message } from "antd";
 import { useCallback, useState } from "react";
 import {KEYS, t} from "@comflowy/common/i18n";
 
-export function UpdateExtensionButton(props: {extension: Extension}) {
-    const {extension} = props;
+export function UpdateExtensionButton(props: {
+    extensions: Extension[],
+    buttonSize?: "small" | "middle" | "large"
+}) {
+    const {extensions} = props;
     const [running, setRunning] = useState(false);
     const api = getBackendUrl("/api/update_extensions");
     const {onInit} = useExtensionsState()
@@ -18,7 +21,7 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    extensions: [extension],
+                    extensions: extensions,
                 }),
             });
             const ret = await res.json();
@@ -32,15 +35,15 @@ export function UpdateExtensionButton(props: {extension: Extension}) {
             message.error("Unexpected error: ", err);
         }
         setRunning(false);
-    }, [extension, onInit]);
+    }, [extensions, onInit]);
 
-    if (!extension.need_update || extension.disabled) {
+    if (extensions.length === 0) {
         return null
     }
 
     return (
         <div className="update-extension-button-wrapper">
-            <Button loading={running} disabled={running} onClick={ev => {
+            <Button size={props.buttonSize || "middle"} loading={running} disabled={running} onClick={ev => {
                 if (!running) {
                     action();
                 }
