@@ -78,8 +78,6 @@ const useDashboardState = create<DashboardState & DashboardAction>((set, get) =>
         if (ret.data) {
             const tasks = checkEnvRequirements(ret.data).filter(t => !t.finished);
             const allTaskFinished = tasks.every(t => t.finished);
-            const rawAppConfig = ret.data.appConfig;
-        
             set({
                 env: ret.data,
                 bootstrapTasks: tasks,

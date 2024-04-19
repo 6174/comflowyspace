@@ -24,7 +24,6 @@ import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflo
 import { GroupNode } from './reactflow-group/reactflow-group';
 import { isRectContain } from "@comflowy/common/utils/math";
 import { loadI18NFromExtension } from './reactflow-i18n/use-flow-i18n';
-import { debug } from 'console';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
