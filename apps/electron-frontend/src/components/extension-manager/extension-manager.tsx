@@ -131,6 +131,13 @@ function ExtensionListItem({extension}: {
           </div>
         </div>
         <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
+        {extension.need_update && 
+          (
+            <div className="update-badge">
+              Need Update
+            </div>
+          )
+        }
       </div>
     </>
   )
