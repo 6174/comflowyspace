@@ -3,7 +3,7 @@ import styles from "./reactflow-missing-widgets.style.module.scss";
 import { DraggableModal } from "ui/antd/draggable-modal";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useAppStore } from "@comflowy/common/store";
-import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
+import { Extension, findExtensionByWidgetName, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { ExtensionIcon } from "ui/icons";
 import { openExternalURL } from "@/lib/electron-bridge";
 import { Button, Space, message } from "antd";
@@ -40,13 +40,12 @@ export const MissingWidgetsPopoverEntry = memo(() => {
   }, []);
 
   const unknownWidgets = useAppStore(st => st.unknownWidgets);
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
 
   const extensions = new Set<Extension>();
   unknownWidgets.forEach(widgetName => {
-    const extension = extensionsNodeMap[widgetName];
-    if (extension) {
-      extensions.add(extension);
+    const extension = findExtensionByWidgetName(widgetName);
+    if(extension) {
+      extensions.add(extension)
     }
   });
 

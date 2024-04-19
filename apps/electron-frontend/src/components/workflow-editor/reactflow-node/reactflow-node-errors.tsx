@@ -2,7 +2,7 @@ import { ComfyUIErrorTypes, ComfyUINodeError, SDNode } from "@comflowy/common/ty
 import { memo, useCallback, useState } from "react";
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { Alert, Button, Popover } from "antd";
-import { useExtensionsState } from "@comflowy/common/store/extension-state";
+import { findExtensionByWidgetName, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { openExternalURL } from "@/lib/electron-bridge";
 
@@ -43,7 +43,6 @@ export const InstallMissingWidget = (props: {
   nodeError?: ComfyUINodeError;
   node: SDNode;
 }) => {
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
   const { nodeError, node } = props;
   const installWidget = useCallback((extension) => {
     SlotGlobalEvent.emit({
@@ -63,7 +62,7 @@ export const InstallMissingWidget = (props: {
   }
 
   const widget = node.widget;
-  const extension = extensionsNodeMap[widget];
+  const extension = findExtensionByWidgetName(widget);
 
   if (!extension) {
     return null
