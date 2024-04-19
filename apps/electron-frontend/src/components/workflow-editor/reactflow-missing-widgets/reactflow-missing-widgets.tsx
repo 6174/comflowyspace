@@ -94,17 +94,12 @@ function ExtensionItem(props: {
   extension: Extension
 }) {
   const {extension} = props;
-  const onInitAppState = useAppStore(st => st.onInit);
-  const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
-  const updateErrorCheck = useAppStore(st => st.updateErrorCheck);
   const { startTask, running } = useRemoteTask({
     api: getBackendUrl(`/api/install_extension`),
     onMessage: async (msg) => {
       console.log(msg);
       if (msg.type === "SUCCESS") {
-        await onInitAppState();
-        onSyncFromYjsDoc();
-        updateErrorCheck();
+        await useAppStore.getState().onUpdateWidgets();
         message.success(`${extension.title} installed successfully`);
       }
     }

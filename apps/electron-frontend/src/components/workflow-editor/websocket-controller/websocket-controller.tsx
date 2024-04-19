@@ -144,8 +144,7 @@ export function WsController(props: {clientId: string}): JSX.Element {
   useEffect(() => {
     const channel = new Channel("comfyui")
     channel.on("object_info_updated", (data) => {
-      console.log("reload object info")
-      useAppStore.getState().onInit();
+      useAppStore.getState().onUpdateWidgets();
     });
     return () => {
       channel.unsubscribe();

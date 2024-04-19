@@ -32,6 +32,11 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
         widgets,
         widgetCategory
       })
+
+      const st = get();
+      st.onSyncFromYjsDoc();
+      
+      set(AppState.attatchStaticCheckErrors(get()));
     },
   }
 }
