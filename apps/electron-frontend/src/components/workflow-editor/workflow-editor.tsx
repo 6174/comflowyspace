@@ -1,7 +1,7 @@
 import * as React from 'react'
 import styles from "./workflow-editor.style.module.scss";
 import {useAppStore} from "@comflowy/common/store";
-import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds, ReactFlowInstance, useUpdateNodeInternals} from 'reactflow';
+import ReactFlow, { Background, BackgroundVariant, Controls, NodeProps, OnConnectStartParams, Panel, SelectionMode, useStore, useStoreApi, Node, getNodesBounds, ReactFlowInstance, useUpdateNodeInternals, Edge} from 'reactflow';
 import { NodeWrapper } from './reactflow-node/reactflow-node-wrapper';
 import { NODE_IDENTIFIER } from './reactflow-node/reactflow-node';
 import { WsController } from './websocket-controller/websocket-controller';
@@ -24,6 +24,7 @@ import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflo
 import { GroupNode } from './reactflow-group/reactflow-group';
 import { isRectContain } from "@comflowy/common/utils/math";
 import { loadI18NFromExtension } from './reactflow-i18n/use-flow-i18n';
+import { debug } from 'console';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
@@ -274,9 +275,11 @@ function useSelectionModeRelatedProps(selectionMode) {
   } : {};
 }
 
-function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
+function useNodeAndEdgesWithStyle(nodes: Node[], edges: Edge[], inprogressNodeId, transform) {
+  const graph = {};
   const edgeType = useAppStore(st => st.edgeType);
   const nodesWithStyle = nodes.map(node => {
+    graph[node.id] = node;
     return {
       ...node,
       style: {
@@ -292,13 +295,19 @@ function useNodeAndEdgesWithStyle(nodes, edges, inprogressNodeId, transform) {
     if (edgeType === "bezier") {
       finalType = "default"
     }
+    const targetNode = graph[edge.target];
+    const sourceNode = graph[edge.source];
+    let edgeSelect = edge.selected;
+    if ((targetNode && targetNode.selected) || (sourceNode && sourceNode.selected)) {
+      edgeSelect = true;
+    }
     return {
       ...edge,
       type: finalType,
       animated: edge.source === inprogressNodeId,
       style: {
         strokeWidth: 2 / transform,
-        opacity: edge.selected ? 1 : .6,
+        opacity: edgeSelect ? 1 : .6,
         stroke: Input.getInputColor([edge.sourceHandle] as any),
       },
     }
