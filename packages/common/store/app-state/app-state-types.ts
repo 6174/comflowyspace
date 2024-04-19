@@ -109,6 +109,7 @@ export interface AppState {
   onLoadImageWorkflow: (image: string) => void
   onChangeDragingAndResizingState: (val: boolean) => void;
   onUpdateWidgets: () => Promise<void>;
+  onUpdateGallery: (images: PreviewImage[]) => void;
 }
 
 export const AppState = {

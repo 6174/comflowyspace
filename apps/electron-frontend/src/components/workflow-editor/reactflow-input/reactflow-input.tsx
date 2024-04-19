@@ -7,7 +7,7 @@ import {
 } from '@comflowy/common/comfyui-bridge/bridge';
 import { imageFallBack } from '@/assets/image-fallback';
 import { dt } from '@comflowy/common/i18n';
-const MAX_SELECT_NAME = 30;
+const MAX_SELECT_NAME = 100;
 
 interface InputProps {
 	value: any;
@@ -49,6 +49,7 @@ function InputComponent({
 						options={options}
 						optionRender={(option) => (
 							<div
+								title={option.value + ""}
 								style={{
 									display: 'flex',
 									flexDirection: 'row',

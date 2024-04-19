@@ -6,7 +6,7 @@ import { throttledUpdateDocument } from "../../storage";
 import { writeWorkflowToFile, } from '../../comfyui-bridge/export-import';
 import { getBackendUrl } from '../../config'
 import _ from "lodash";
-import { ControlBoardConfig, PersistedFullWorkflow, PersistedWorkflowDocument } from "../../types";
+import { ControlBoardConfig, PersistedFullWorkflow, PersistedWorkflowDocument, PreviewImage } from "../../types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -108,5 +108,19 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
         get().onLoadWorkflow(JSON.parse(res.workflow))
       })
     },
+    onUpdateGallery: (images: PreviewImage[]) => {
+      const st = get();
+      const last_edit_time = +new Date();
+      const newPersistedWorkflow = {
+        ...st.persistedWorkflow!,
+        last_edit_time,
+        gallery: images,
+      };
+      // sync gallery state
+      set({
+        persistedWorkflow: newPersistedWorkflow,
+      });
+      throttledUpdateDocument(newPersistedWorkflow)
+    }
   }
 }
