@@ -1,7 +1,7 @@
 import express, { Request, Response, response } from 'express';
 import cors from 'cors';
 import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
-import { setupComfyUIProxy } from './routes/api/comfy-proxy';
+import { setupComfyUIProxy, ApiGetObjectInfo } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions, ApiInstallPipPackages } from './routes/api/extension';
@@ -76,6 +76,8 @@ export async function startAppServer(params: {
   app.post('/api/restart_comfy', ApiRestartComfyUI);
   app.post('/api/update_comfy', ApiUpdateComfyUIAndRestart)
   app.get('/api/get_conda_env_info', ApiGetCondaInfo);
+  app.get('/api/object_info', ApiGetObjectInfo)
+
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });
