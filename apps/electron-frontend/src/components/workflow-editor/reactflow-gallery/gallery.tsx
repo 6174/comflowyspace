@@ -94,7 +94,7 @@ export const GalleryEntry = React.memo(() => {
   
   const [editing, setEditing] = useState(false);
   const [selectedImages, setSelectedImages] = useState<PreviewImage[]>([]);
-
+  const allImages = useAppStore(st => st.persistedWorkflow.gallery || [])
   const handleDeleteImages = useCallback(() => {
     setEditing(false);
     const allImages = useAppStore.getState().persistedWorkflow.gallery;
@@ -143,7 +143,11 @@ export const GalleryEntry = React.memo(() => {
                     setEditing(false)
                   }} size='small' >Done</Button>
                 </Space>
-              ) : <Button onClick={ev => {setEditing(true)}} type="text" size='small'>Edit</Button> }
+              ) : (
+                <>
+                  {allImages.length > 0 && <Button onClick={ev => {setEditing(true)}} type="text" size='small'>Edit</Button>}
+                </>
+              ) }
             </div>
           </div>
           }
