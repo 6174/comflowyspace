@@ -94,7 +94,7 @@ export const GalleryEntry = React.memo(() => {
   
   const [editing, setEditing] = useState(false);
   const [selectedImages, setSelectedImages] = useState<PreviewImage[]>([]);
-  const allImages = useAppStore(st => st.persistedWorkflow.gallery || [])
+  const allImages = useAppStore(st => st.persistedWorkflow?.gallery || [])
   const handleDeleteImages = useCallback(() => {
     setEditing(false);
     const allImages = useAppStore.getState().persistedWorkflow.gallery;

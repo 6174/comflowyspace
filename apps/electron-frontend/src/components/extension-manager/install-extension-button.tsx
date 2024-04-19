@@ -28,7 +28,7 @@ export function InstallExtensionButton(props: {extension: Extension}) {
     const installExtension = useCallback(() => {
         startTask({
             name: "installExtension",
-            params: extension
+            params: [extension]
         })
     }, [extension]);
     return (
@@ -89,11 +89,11 @@ export function InstallExtensionFromGitUrl() {
 
         startTask({
             name: "installExtension",
-            params: {
+            params: [{
                 custom_extension: true,
                 install_type: "git-clone",
                 files: [url]
-            }
+            }]
         });
     }, [url]);
 

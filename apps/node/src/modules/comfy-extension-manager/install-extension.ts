@@ -24,13 +24,16 @@ const appTmpDir = getAppTmpDir();
  */
 export async function installExtension(dispatcher: TaskEventDispatcher, extension: Extension): Promise<boolean> {
     const {PIP_PATH} = conda.getCondaPaths();
-    dispatcher({
-        message: `Start installing ${extension.title}`
-    });
-
+ 
     const install_type: string = extension.install_type;
 
     let res: boolean = false;
+    dispatcher({
+        message: `
+        Extension info:
+        ${JSON.stringify(extension, null, 2)}
+        `
+    });
 
     if (extension.files.length === 0) {
         dispatcher({
@@ -164,7 +167,7 @@ async function copyInstall(dispatcher: TaskEventDispatcher, files: string[], jsP
                 dispatcher({
                     message: `Start copy ${cleanUrl} to install`
                 });
-                await downloadUrl(dispatcher, url, path.resolve(EXTENTION_FOLDER, fileNameWithExt));
+                await downloadUrl(dispatcher, url, path.resolve(EXTENTION_FOLDER, filename));
             } else {
                 const targetPath: string = path.join(WEB_EXTENTION_FOLDER, jsPathName || '', fileNameWithExt);
                 if (!fs.existsSync(targetPath)) {

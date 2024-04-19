@@ -108,7 +108,7 @@ function ExtensionItem(props: {
   const installExtension = useCallback(() => {
     startTask({
       name: "installExtension",
-      params: extension
+      params: [extension]
     })
   }, [extension]);
 
