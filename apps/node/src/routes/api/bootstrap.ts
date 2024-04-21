@@ -256,7 +256,7 @@ export async function ApiGetAllConfig(req: Request, res: Response) {
         res.send({
             success: true,
             data: {
-                [CONFIG_KEYS.runConfig]: runConfig,
+                runConfig: runConfig,
                 [CONFIG_KEYS.appSetupConfig]: setupConfig
             }
         });
