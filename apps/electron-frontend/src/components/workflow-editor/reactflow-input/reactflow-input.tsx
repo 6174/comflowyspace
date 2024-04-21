@@ -204,9 +204,8 @@ const getOptions = (
 			let k = "";
 			let src = "";
 			if (typeof it === "string") {
-				const lora = k.replace(/\.[^.]*$/, '') + '.png';
 				k = it;
-				src = getModelImagePreviewUrl('lora', lora);
+				src = getModelImagePreviewUrl('lora', k.replace(/\.[^.]*$/, '') + '.png');
 			} else {
 				k = it.content;
 				src = it.image;
