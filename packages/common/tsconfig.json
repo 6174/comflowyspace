@@ -1,5 +1,8 @@
 {
   "extends": "tsconfig/react-library.json",
+  "compilerOptions": {
+    "target": "ES2015"
+  },
   "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx", "jsondb"],
   "exclude": ["dist", "build", "node_modules"]
 }

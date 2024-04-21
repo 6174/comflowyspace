@@ -11,10 +11,10 @@ export class Channel {
   constructor(id: string) {
     this.id = id;
     this.client = new W3CWebSocket(`ws://${config.host}/ws/channel?c=${id}`);
-    this.#subscribe();
+    this.subscribe();
   }
   
-  #subscribe() {
+  private subscribe() {
     this.client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
