@@ -91,7 +91,7 @@ export async function getModelInfos(): Promise<any> {
 export async function getWidgetLibrary(): Promise<Record<string, Widget>> {
   let ret: any = {};
   try {
-    const rest = await fetch(getComfyUIBackendUrl('/object_info'));
+    const rest = await fetch(getBackendUrl('/api/object_info'));
     if (rest.status >= 500) {
       throw new Error(t(KEYS.confyuiNotStarted));
     }

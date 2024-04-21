@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
-import { Button, Col, Input, Modal, Row, Space } from "antd";
+import { Button, Col, Input, Modal, Row, Space, Tooltip } from "antd";
 import { InstallExtensionButton, InstallExtensionFromGitUrl } from "./install-extension-button";
 import { CloseIcon, ExtensionIcon, MoreIcon, ReloadIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
@@ -22,6 +22,7 @@ function ExtensionManager() {
   }, []);
 
   const installedExtensions = extensions.filter(ext => ext.installed);
+  const extensionsNeedUpdate = extensions.filter(ext => ext.need_update);
 
   return (
     <div className={styles.extensionManager}>
@@ -32,6 +33,9 @@ function ExtensionManager() {
           <h2> {t(KEYS.installedExtensions)} </h2>
           <div className="actions">
             <InstallExtensionFromGitUrl/>
+            <Tooltip title="Update all extensions">
+              <UpdateExtensionButton extensions={extensionsNeedUpdate} buttonSize={"small"}/>
+            </Tooltip>
           </div>
         </div>
         <p className="sub">{t(KEYS.extensionsInstalled)}</p>
@@ -127,6 +131,13 @@ function ExtensionListItem({extension}: {
           </div>
         </div>
         <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
+        {extension.need_update && 
+          (
+            <div className="update-badge">
+              Need Update
+            </div>
+          )
+        }
       </div>
     </>
   )
@@ -180,7 +191,7 @@ export function ExtensionModal(props: {
         <Space>
           {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
           {extension.installed && <RemoveExtensionButton extension={extension}/>}
-          {extension.installed && extension.need_update && <UpdateExtensionButton extension={extension}/>}
+          {extension.installed && extension.need_update && <UpdateExtensionButton extensions={[extension]}/>}
           {extension.installed && <DisableExtensionButton extension={extension}/>}
         </Space>
       </div>

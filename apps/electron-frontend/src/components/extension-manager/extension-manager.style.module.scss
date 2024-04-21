@@ -21,6 +21,14 @@
       padding: 10px;
       background-color: var(--backgroundColorL1);
       transition: var(--transition);
+      position: relative;
+      .update-badge {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        font-size: 10px;
+        opacity: .5;
+      }
       &:hover {
         background-color: var(--backgroundColorL2);
       }

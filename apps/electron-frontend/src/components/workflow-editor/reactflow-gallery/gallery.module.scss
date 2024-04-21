@@ -10,17 +10,27 @@
   grid-gap: 10px;
   padding: 10px;
   :global {
-    .ant-image {
+
+    .ant-image, .image-item {
       display: flex;
       justify-content: center;
       align-items: center;
       background: var(--backgroundColor);
       border-radius: 6px;
+      min-height: 60px;
+      position: relative;
       img {
         border-radius: 4px;
         max-width: 98%;
         max-height: 98%;
       }
+
+      .ant-checkbox-wrapper {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+      }
+
     }
   }
 }

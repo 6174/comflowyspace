@@ -9,6 +9,7 @@ import { ComfyUIEvents } from '@comflowy/common/types';
 import { track } from '@/lib/tracker';
 import { message } from 'antd';
 import { ExecutionErrorModal } from './flow-error-modal';
+import {Channel} from "@comflowy/common/utils/channel.client";
 
 export function WsController(props: {clientId: string}): JSX.Element {
   const clientId = props.clientId;
@@ -139,6 +140,16 @@ export function WsController(props: {clientId: string}): JSX.Element {
       disposable.dispose();
     }
   }, [getWebSocket]);
+
+  useEffect(() => {
+    const channel = new Channel("comfyui")
+    channel.on("object_info_updated", (data) => {
+      useAppStore.getState().onUpdateWidgets();
+    });
+    return () => {
+      channel.unsubscribe();
+    }
+  }, []);
 
   // const [pongReceived, setPongReceived] = useState(true);
   // // Send a ping every 5 seconds

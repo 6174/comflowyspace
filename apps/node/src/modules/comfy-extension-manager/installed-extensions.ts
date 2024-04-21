@@ -51,7 +51,6 @@ export async function findAllInstalledExtensions({
       }
     }
     await checkExtensionsInstalled(ret, doFetch, doUpdateCheck, doUpdate);
-    console.log("extensions", ret);
     return ret;
   } catch (err: any) {
     logger.info("findAllFrontendExtensions:", err);

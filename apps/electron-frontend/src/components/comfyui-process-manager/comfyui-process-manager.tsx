@@ -135,6 +135,7 @@ const ComfyUIProcessManager = () => {
       } else {
         message.error("Update faild: " + data.error);
       }
+      await useDashboardState.getState().onInit()
     } catch (err) {
       console.log(err);
       message.error("Failed to update comfyui: " + err.message)
@@ -252,11 +253,6 @@ function InstallPipActions() {
   const [visible, setVisible] = useState(false);
   const showModal = () => {
     setVisible(true);
-  };
-
-  const handleOk = e => {
-    console.log(e);
-    setVisible(false);
   };
 
   const handleCancel = useCallback(() => {

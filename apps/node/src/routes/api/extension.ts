@@ -29,17 +29,37 @@ export async function ApiRouteInstallExtension(req: Request, res: Response) {
                         message: event.message || event.error
                     })
                 }
-                const extension = taskParams.params as Extension;
-                await checkAExtensionInstalled(extension)
-                if (extension.installed) {
-                    newDispatcher({
-                        message: "Extension already installed"
-                    });
+                const extensions = taskParams.params as Extension[];
+                let updated = false;
+
+                newDispatcher({
+                    message: `\n Start to install ${extensions.map(e => e.title).join(", ")}\n`
+                });
+
+                for (const extension of extensions) {
+                    await checkAExtensionInstalled(extension)
+                    if (extension.installed) {
+                        newDispatcher({
+                            message: `\nExtension ${extension.title} installed`
+                        });
+                        continue;
+                    }
+                    const ret = await installExtension(newDispatcher, extension);
+                    if (ret) {
+                        updated = true
+                    } else {
+                        newDispatcher({
+                            error: `\nExtension ${extension.title} install failed`
+                        });
+                    }
+                }
+
+                if (updated) {
+                    await comfyuiService.restartComfyUI();
                     return true;
                 }
-                await installExtension(newDispatcher, taskParams.params);
-                await comfyuiService.restartComfyUI();
-                return true;
+
+                return false;
             }
         };
         taskQueue.addTask(task);

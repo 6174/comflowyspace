@@ -1,7 +1,7 @@
 import express, { Request, Response, response } from 'express';
 import cors from 'cors';
 import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
-import { setupComfyUIProxy } from './routes/api/comfy-proxy';
+import { setupComfyUIProxy, ApiGetObjectInfo } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
 import { ApiRouteInstallExtension, ApiRouteGetExtensions, ApiRouteEnableExtensions, ApiRouteDisableExtensions, ApiRouteRemoveExtensions, ApiRouteUpdateExtensions, ApiRouteGetFrontendExtensions, ApiInstallPipPackages } from './routes/api/extension';
@@ -13,6 +13,7 @@ import { downloadDefaultModel } from './modules/model-manager/install-model';
 
 import * as Sentry from "@sentry/node";
 import ComflowyConsole from './modules/comflowy-console';
+import { channelService } from './modules/channel/channel.service';
 
 Sentry.init({
   dsn: "https://c22ceb8e2ea24010369ea2497e96fbd6@o4506737077256192.ingest.sentry.io/4506737079156736",
@@ -76,6 +77,8 @@ export async function startAppServer(params: {
   app.post('/api/restart_comfy', ApiRestartComfyUI);
   app.post('/api/update_comfy', ApiUpdateComfyUIAndRestart)
   app.get('/api/get_conda_env_info', ApiGetCondaInfo);
+  app.get('/api/object_info', ApiGetObjectInfo)
+
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;
     res.json({ message: `Received data: ${data}` });
@@ -85,6 +88,7 @@ export async function startAppServer(params: {
 
   JSONDB.serve(app, server, wss);
   ComflowyConsole.serve(app, server, wss);
+  channelService.serve(app, server, wss);
   server.listen(port, () => {
     logger.info(`Server is running at http://localhost:${port}`);
   });

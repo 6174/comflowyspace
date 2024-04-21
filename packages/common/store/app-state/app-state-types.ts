@@ -1,7 +1,7 @@
 import * as Y from "yjs";
 import { type Edge, type Node, type OnNodesChange, type OnEdgesChange, type OnConnect, type XYPosition, type Connection as FlowConnecton, addEdge, applyNodeChanges, OnEdgesDelete, OnEdgeUpdateFunc, OnConnectStart, OnConnectEnd, OnConnectStartParams, ReactFlowInstance, EdgeTypes} from 'reactflow';
 import { WorkflowDocumentUtils } from '../ydoc-utils';
-import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, NodeVisibleState } from '../../types'
+import { type NodeId, type NodeInProgress, type PropertyKey, SDNode, Widget, type WidgetKey, NODE_IDENTIFIER, Connection, PreviewImage, UnknownWidget, ContrlAfterGeneratedValues, NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowNode, PersistedWorkflowDocument, PersistedWorkflowConnection, SUBFLOW_WIDGET_TYPE_NAME, parseSubflowSlotId, NodeVisibleState, ComfyUIErrorTypes } from '../../types'
 import { throttledUpdateDocument } from "../../storage";
 import { PromptResponse } from '../../comfyui-bridge/prompt';
 import { SlotEvent } from '../../utils/slot-event';
@@ -109,6 +109,7 @@ export interface AppState {
   onLoadImageWorkflow: (image: string) => void
   onChangeDragingAndResizingState: (val: boolean) => void;
   onUpdateWidgets: () => Promise<void>;
+  onUpdateGallery: (images: PreviewImage[]) => void;
 }
 
 export const AppState = {
@@ -214,14 +215,36 @@ export const AppState = {
     const workflowMap = state.doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     const widgets = state.widgets;
-    const staticErrors = staticCheckWorkflowErrors(widgets, workflow);
-    const ret: ComfyUIExecuteError = {
-      ...promptError,
-      node_errors: {
-        ...promptError?.node_errors,
-        ...staticErrors.node_errors,
+
+    // remove all ComfyUIErrorTypes.widget_not_found type errors in prompt.node_errors,
+    // because these errors will be update in next step
+    const node_errors = promptError?.node_errors || {};
+    for (const nodeId in node_errors) {
+      const nodeError = node_errors[nodeId];
+      if (nodeError.errors) {
+        nodeError.errors = nodeError.errors.filter(err => err.type !== ComfyUIErrorTypes.widget_not_found);
+      }
+      if (!nodeError.errors || nodeError.errors.length === 0) {
+        delete node_errors[nodeId];
       }
     }
+
+    const staticErrors = staticCheckWorkflowErrors(widgets, workflow);
+
+    // mix staticErrors and old node_errors
+    for (const nodeId in staticErrors.node_errors) {
+      if (node_errors[nodeId]) {
+        node_errors[nodeId].errors = node_errors[nodeId].errors.concat(staticErrors.node_errors[nodeId].errors);
+      } else {
+        node_errors[nodeId] = staticErrors.node_errors[nodeId];
+      }
+    }
+
+    const ret: ComfyUIExecuteError = {
+      ...promptError,
+      node_errors
+    }
+
     return {
       ...state,
       promptError: ret
