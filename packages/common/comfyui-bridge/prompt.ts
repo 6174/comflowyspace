@@ -27,7 +27,15 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
       body: JSON.stringify(prompt),
     })
     if (resp.status >= 500) {
-      throw new Error(t(KEYS.confyuiNotStarted));
+      return {
+        error: {
+          error: {
+            type: "server error",
+            message: t(KEYS.confyuiNotStarted),
+          },
+          node_errors: {}
+        },
+      }
     }
     const error = resp.status !== 200 ? await resp.json() : undefined
     return { error }
@@ -36,7 +44,7 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
       error: {
         error: {
           type: "server error",
-          message: err.message,
+          message: t(KEYS.confyuiNotStarted),
         },
         node_errors: {}
       },
