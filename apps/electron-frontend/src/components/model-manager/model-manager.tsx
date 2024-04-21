@@ -8,7 +8,6 @@ import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model-state';
 import { FolderIcon, ReloadIcon } from 'ui/icons';
 import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
-import { ModelSettings } from './model-settings';
 import ModelCards from './model-recommend';
 import {KEYS, t} from "@comflowy/common/i18n";
 
@@ -39,7 +38,6 @@ const ModelManagement = () => {
               </Button>
             </div>
           }
-          <ModelSettings />
           <div className="refresh-button">
             <Button size='small' loading={loading} disabled={loading} onClick={() => {
               onInit();
