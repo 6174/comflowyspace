@@ -33,12 +33,12 @@ install_python() {
         return 0
     fi
 
-    echo "Start installing Python=3.10.8 in conda..."
-    conda create -n ${CONDA_ENV_NAME} python=3.10.8 -y
+    echo "Start installing Python=3.11.9 in conda..."
+    conda create -n ${CONDA_ENV_NAME} python=3.11.9 -y
     if [ $? -eq 0 ]; then
-        echo "Installed Python=3.10.8 successfully."
+        echo "Installed Python=3.11.9 successfully."
     else
-        echo "Failed to install Python=3.10.8."
+        echo "Failed to install Python=3.11.9."
         return 1
     fi
 }
