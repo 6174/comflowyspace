@@ -9,6 +9,7 @@ export type Extension = {
     reference: string;
     disabled: boolean;
     need_update: boolean;
+    nodename_pattern?: string;
     [_: string]: any
 }
 
@@ -71,4 +72,30 @@ export function transformModeMap(extensionNodeMap: Record<string, string[]>, ext
     }
     // console.log("mapping", ret);
     return ret;
+}
+
+export function findExtensionByWidgetName(widgetName: string): Extension | undefined {
+    const {extensions, extensionNodeMap} = useExtensionsState.getState();
+    let node = extensionNodeMap[widgetName];
+    if (node) {
+        return node;
+    }
+    const regex_to_extension = [];
+    for (let i in extensions) {
+        const ext = extensions[i];
+        if (ext.nodename_pattern) {
+            let item = { 
+                regex: new RegExp(ext.nodename_pattern), 
+                extension: ext
+            };
+            regex_to_extension.push(item);
+        }
+    }
+
+    for (let j in regex_to_extension) {
+        if (regex_to_extension[j].regex.test(widgetName)) {
+            node = regex_to_extension[j].extension;
+        }
+    }
+    return node
 }

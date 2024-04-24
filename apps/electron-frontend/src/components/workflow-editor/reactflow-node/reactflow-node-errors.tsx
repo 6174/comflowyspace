@@ -2,11 +2,11 @@ import { ComfyUIErrorTypes, ComfyUINodeError, SDNode } from "@comflowy/common/ty
 import { memo, useCallback, useState } from "react";
 import nodeStyles from "./reactflow-node.style.module.scss";
 import { Alert, Button, Popover } from "antd";
-import { useExtensionsState } from "@comflowy/common/store/extension-state";
+import { findExtensionByWidgetName, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { openExternalURL } from "@/lib/electron-bridge";
 
-export const NodeError = memo(({ nodeError }: { nodeError?: ComfyUINodeError }) => {
+export const NodeError = ({ nodeError }: { nodeError?: ComfyUINodeError }) => {
   const [visible, setVisible] = useState(false);
   const handleVisibleChange = (visible: boolean) => {
     setVisible(visible);
@@ -37,29 +37,18 @@ export const NodeError = memo(({ nodeError }: { nodeError?: ComfyUINodeError }) 
       </Popover>
     </div>
   )
-})
+}
 
-export const InstallMissingWidget = memo((props: {
+export const InstallMissingWidget = (props: {
   nodeError?: ComfyUINodeError;
   node: SDNode;
 }) => {
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
   const { nodeError, node } = props;
   const installWidget = useCallback((extension) => {
     SlotGlobalEvent.emit({
       type: GlobalEvents.show_missing_widgets_modal,
       data: null
     });
-    setTimeout(() => {
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.install_missing_widget,
-        data: extension
-      });
-      SlotGlobalEvent.emit({
-        type: GlobalEvents.show_comfyprocess_manager,
-        data: null
-      });
-    }, 10);
   }, []);
 
   if (!nodeError) {
@@ -73,7 +62,7 @@ export const InstallMissingWidget = memo((props: {
   }
 
   const widget = node.widget;
-  const extension = extensionsNodeMap[widget];
+  const extension = findExtensionByWidgetName(widget);
 
   if (!extension) {
     return null
@@ -109,6 +98,6 @@ export const InstallMissingWidget = memo((props: {
       
     </div>
   )
-})
+}
 
 

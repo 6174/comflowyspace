@@ -103,7 +103,11 @@ export function RunButton() {
             setSubmitting(true);
             const ret = await onSubmit();
             await new Promise(resolve => setTimeout(resolve, 1000));
-            await onQueueUpdate();
+            try {
+                await onQueueUpdate();
+            } catch(err) {
+                console.error("Failed to update queue", err);
+            }
             console.log("submit queue", ret);
             if (ret.error) {
                 SlotGlobalEvent.emit({

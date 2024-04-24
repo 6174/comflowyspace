@@ -3,7 +3,7 @@ import styles from "./reactflow-missing-widgets.style.module.scss";
 import { DraggableModal } from "ui/antd/draggable-modal";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { useAppStore } from "@comflowy/common/store";
-import { Extension, useExtensionsState } from "@comflowy/common/store/extension-state";
+import { Extension, findExtensionByWidgetName, useExtensionsState } from "@comflowy/common/store/extension-state";
 import { ExtensionIcon } from "ui/icons";
 import { openExternalURL } from "@/lib/electron-bridge";
 import { Button, Space, message } from "antd";
@@ -40,13 +40,12 @@ export const MissingWidgetsPopoverEntry = memo(() => {
   }, []);
 
   const unknownWidgets = useAppStore(st => st.unknownWidgets);
-  const extensionsNodeMap = useExtensionsState(st => st.extensionNodeMap);
 
   const extensions = new Set<Extension>();
   unknownWidgets.forEach(widgetName => {
-    const extension = extensionsNodeMap[widgetName];
-    if (extension) {
-      extensions.add(extension);
+    const extension = findExtensionByWidgetName(widgetName);
+    if(extension) {
+      extensions.add(extension)
     }
   });
 
@@ -54,7 +53,6 @@ export const MissingWidgetsPopoverEntry = memo(() => {
   extensions.forEach(extension => {
     extensionsArr.push(extension);
   });
-
 
   useEffect(() => {
     if (extensionsArr.length === 0) {
@@ -81,8 +79,31 @@ export const MissingWidgetsPopoverEntry = memo(() => {
 });
 
 function MissingWidgetInstallHelper({ extensions }: { extensions: Extension[]}) {
+   const { startTask, running } = useRemoteTask({
+    api: getBackendUrl(`/api/install_extension`),
+    onMessage: async (msg) => {
+      console.log(msg);
+      if (msg.type === "SUCCESS") {
+        message.success(`Installed successfully`);
+      }
+    }
+  });
+
+  const isLoading = running;
+  const installExtensions = useCallback(() => {
+    startTask({
+      name: "installExtension",
+      params: extensions
+    })
+  }, [extensions]);
+
   return (
     <div className={styles.missingWidgetsContent}>
+      <div className="actions" style={{ marginBottom: 20 }}>
+        <Space>
+          <Button loading={isLoading} disabled={isLoading} onClick={installExtensions}>Install All</Button>
+        </Space>
+      </div>
       {extensions.map(extension => {
         return <ExtensionItem extension={extension} key={extension.title}/>
       })}
@@ -94,17 +115,11 @@ function ExtensionItem(props: {
   extension: Extension
 }) {
   const {extension} = props;
-  const onInitAppState = useAppStore(st => st.onInit);
-  const onSyncFromYjsDoc = useAppStore(st => st.onSyncFromYjsDoc);
-  const updateErrorCheck = useAppStore(st => st.updateErrorCheck);
   const { startTask, running } = useRemoteTask({
     api: getBackendUrl(`/api/install_extension`),
     onMessage: async (msg) => {
       console.log(msg);
       if (msg.type === "SUCCESS") {
-        await onInitAppState();
-        onSyncFromYjsDoc();
-        updateErrorCheck();
         message.success(`${extension.title} installed successfully`);
       }
     }
@@ -114,7 +129,7 @@ function ExtensionItem(props: {
   const installExtension = useCallback(() => {
     startTask({
       name: "installExtension",
-      params: extension
+      params: [extension]
     })
   }, [extension]);
 

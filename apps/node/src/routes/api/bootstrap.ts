@@ -256,8 +256,8 @@ export async function ApiGetAllConfig(req: Request, res: Response) {
         res.send({
             success: true,
             data: {
-                runConfig,
-                setupConfig
+                runConfig: runConfig,
+                [CONFIG_KEYS.appSetupConfig]: setupConfig
             }
         });
     } catch (err: any) {

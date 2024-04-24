@@ -200,7 +200,7 @@ export const WidgetTree = (props: {
     
     return (
         <div className={styles.widgetTree} style={{
-            width: showCategory ? 360 : 280
+            width: showCategory ? 460 : 280
         }}>
             <div className="search-box">
                 <Input
