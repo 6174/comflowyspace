@@ -136,7 +136,7 @@ function NodeMenu(props: NodeMenuProps) {
     }
   };
 
-  const hasInputs = node.inputs && node.inputs.length > 0;
+  const hasInputs = node.fields && node.fields.length > 0 ;
   const items: MenuItem[] = [
     getMenuItem(<div className="menu-item-title"> <CopyIcon /> Duplicate</div>, 'MENU_ITEM_DUPLICATE_NODE', null, null),
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
