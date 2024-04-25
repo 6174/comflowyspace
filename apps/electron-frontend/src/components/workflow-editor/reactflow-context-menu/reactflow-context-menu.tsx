@@ -136,7 +136,7 @@ function NodeMenu(props: NodeMenuProps) {
     }
   };
 
-  const hasInputs = node.fields && node.fields.length > 0 ;
+  //const hasInputs = node.fields && node.fields.length > 0 ;
   const items: MenuItem[] = [
     getMenuItem(<div className="menu-item-title"> <CopyIcon /> Duplicate</div>, 'MENU_ITEM_DUPLICATE_NODE', null, null),
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
@@ -158,10 +158,10 @@ function NodeMenu(props: NodeMenuProps) {
   }
   items.push({ type: "divider" });
 
-  if (hasInputs) {
+  //if (hasInputs) {
     items.push(getMenuItem(<ChangeInputMenuItem {...props} />, 'MENU_ITEM_CHANGE_INPUT', null, null))
     items.push({ type: "divider" })
-  }
+  //}
 
   if (needEditImage(node)) {
     items.push(getMenuItem(<EditImageMenuItem {...props} />, 'MENU_ITEM_EDIT_IMAGE', null, null))
