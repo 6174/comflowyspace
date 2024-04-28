@@ -163,16 +163,16 @@ const ComfyUIProcessManager = () => {
       }
     });
 
-    if (missingModules.length > 0) {
-      showModal();
-    }
+    // if (missingModules.length > 0) {
+    //   showModal();
+    // }
 
     return () => {
       dispose();
       dispose2.dispose();
       dispose3.dispose();
     }
-  }, [missingModules])
+  }, [])
 
 
   const env = useDashboardState(state => state.env);
