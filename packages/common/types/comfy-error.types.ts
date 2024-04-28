@@ -8,6 +8,7 @@ export type ComfyUIError = {
   type?: ComfyUIErrorTypes | string;
   message: string;
   details?: string;
+  static?: boolean;
   extra_info?: {
     input_name: string;
     input_config: string[][] | any;

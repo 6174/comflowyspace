@@ -211,18 +211,17 @@ export const AppState = {
   },
   attatchStaticCheckErrors(state: AppState, promptError?: ComfyUIExecuteError): AppState {
     // check all nodes are valid;
-    promptError = promptError || state.promptError;
     const workflowMap = state.doc.getMap("workflow");
     const workflow = workflowMap.toJSON() as PersistedWorkflowDocument;
     const widgets = state.widgets;
 
-    // remove all ComfyUIErrorTypes.widget_not_found type errors in prompt.node_errors,
+    // remove all static type errors in prompt.node_errors,
     // because these errors will be update in next step
     const node_errors = promptError?.node_errors || {};
     for (const nodeId in node_errors) {
       const nodeError = node_errors[nodeId];
       if (nodeError.errors) {
-        nodeError.errors = nodeError.errors.filter(err => err.type !== ComfyUIErrorTypes.widget_not_found);
+        nodeError.errors = nodeError.errors.filter(err => !err.static);
       }
       if (!nodeError.errors || nodeError.errors.length === 0) {
         delete node_errors[nodeId];

@@ -33,6 +33,7 @@ export function staticCheckWorkflowErrors(
     if (!widget) {
       error.errors.push({
         type: ComfyUIErrorTypes.widget_not_found,
+        static: true,
         message: `Widget \`${sdnode.widget}\` not found`,
         details: `${sdnode.widget}`,
         extra_info: {
@@ -42,22 +43,23 @@ export function staticCheckWorkflowErrors(
       flowError.node_errors[id] = error as any;
     }
 
-    if (widget && widget.name === "LoadImage") {
-      const image = sdnode.fields.image;
-      if (image) {
-        const options = widget.input.required.image[0] as [string];
-        const parsedImage = image.split('/');
-        // if parsedImage length > 1 , it is a image from temporary storage
-        if (options.indexOf(image) < 0 && parsedImage.length === 1) {
-          error.errors.push({
-            type: ComfyUIErrorTypes.image_not_in_list,
-            message: `Image ${image} not in list`,
-            details: `[ ${options.join(", ")} ]`,
-          });
-          flowError.node_errors[id] = error;
-        }
-      }
-    }
+    // if (widget && widget.name === "LoadImage") {
+    //   const image = sdnode.fields.image;
+    //   if (image) {
+    //     const options = widget.input.required.image[0] as [string];
+    //     const parsedImage = image.split('/');
+    //     // if parsedImage length > 1 , it is a image from temporary storage
+    //     if (options.indexOf(image) < 0 && parsedImage.length === 1) {
+    //         error.errors.push({
+    //           static: true,
+    //           type: ComfyUIErrorTypes.image_not_in_list,
+    //           message: `Image ${image} not found. Please reupload the image.`,
+    //           details: `Available options: [ ${options.join(", ")} ]`,
+    //         });
+    //       flowError.node_errors[id] = error;
+    //     }
+    //   }
+    // }
   });
   return flowError;
 }

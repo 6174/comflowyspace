@@ -109,7 +109,8 @@ export function RunButton() {
                 console.error("Failed to update queue", err);
             }
             console.log("submit queue", ret);
-            if (ret.error) {
+
+            if (ret?.error?.error) {
                 SlotGlobalEvent.emit({
                     type: GlobalEvents.show_execution_error,
                     data: {
@@ -117,7 +118,9 @@ export function RunButton() {
                         message: ret.error.error.details
                     }
                 });
-            } else {
+            }
+            
+            if (!ret?.error?.error && !ret?.error?.node_errors) {
                 message.info("Execution started, check the terminal for details.");
             }
             track("comfyui-execute-submit");

@@ -37,7 +37,7 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
         },
       }
     }
-    const error = resp.status !== 200 ? await resp.json() : undefined
+    const error = await resp.json()
     return { error }
   } catch (err: any) {
     return {

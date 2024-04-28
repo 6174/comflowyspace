@@ -193,14 +193,14 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       onSyncFromYjsDoc();
     },
     onNodeFieldChange: (id, key, value) => {
-      const { doc, onSyncFromYjsDoc } = get();
+      const { doc, onSyncFromYjsDoc, updateErrorCheck } = get();
       WorkflowDocumentUtils.onNodeFieldChange(doc, {
         id,
         key,
         value
       });
       onSyncFromYjsDoc();
-      set(AppState.attatchStaticCheckErrors(get()));
+      updateErrorCheck();
     },
     onNodePropertyChange: (id: NodeId, updates: Partial<SDNode["properties"]>) => {
       const st = get();

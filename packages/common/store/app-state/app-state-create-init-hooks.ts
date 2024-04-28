@@ -39,7 +39,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       const st = get();
       st.onSyncFromYjsDoc();
 
-      set(AppState.attatchStaticCheckErrors(get()));
+      set(AppState.attatchStaticCheckErrors(st, st.promptError));
     },
   }
 }
