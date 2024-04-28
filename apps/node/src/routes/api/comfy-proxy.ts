@@ -40,12 +40,15 @@ comfyuiService.comfyUIStartedSuccessEvent.on(async () => {
 
 export async function ApiGetObjectInfo(req: Request, res: Response) {
     try {
-        if (cached_object_info) {
-            res.status(200).send(cached_object_info);
-            return
+        try {
+            const data = await updateObjectInfo();
+            return res.status(200).send(data);
+        } catch(err) {
+            if (cached_object_info) {
+                res.status(200).send(cached_object_info);
+                return
+            }
         }
-        const data = await updateObjectInfo();
-        return res.status(200).send(data);
     } catch(err: any) {
         logger.error(err.message + ":" + err.stack);
         res.status(500).send({
