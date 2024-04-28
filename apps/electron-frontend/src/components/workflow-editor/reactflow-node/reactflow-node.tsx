@@ -77,7 +77,7 @@ export const NodeComponent = memo(({
       {!collapsed && <ComflowyNodeResizer setResizing={setResizing} minWidth={minWidth} minHeight={minHeight} node={node} /> }
 
       {!invisible ? (
-        <div className={'node-inner ' + widget.name}>
+        <div className={`node-inner ${widget.input.required.upload ? "LoadImage" : ""}`}>
           <div className="node-header">
             <h2 className="node-title" style={getTransformStyle(transform)}>
               {getWidgetIcon(widget)} 

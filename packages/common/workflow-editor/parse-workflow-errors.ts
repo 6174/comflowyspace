@@ -53,8 +53,8 @@ export function staticCheckWorkflowErrors(
           return;
         }
 
-        // Skip LoadImage 
-        if (widget.name === "LoadImage" && field === "upload") {
+        // Skip upload check
+        if (field === "upload") {
           return
         }
 

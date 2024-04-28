@@ -6,6 +6,8 @@ import { SDNode, Widget } from '@comflowy/common/types';
 import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
+import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
+import { AsyncVideoPlayer } from './input-video-player-async';
 
 export function InputUploadVideo({widget, node, id}: {
     widget: Widget,
@@ -15,7 +17,8 @@ export function InputUploadVideo({widget, node, id}: {
     const onUpdateWidgets = useAppStore(st => st.onUpdateWidgets);
     const graph = useAppStore(st => st.graph);
     const onNodeFieldChange = useAppStore(st => st.onNodeFieldChange);
-    const value = graph[id]?.fields.image;
+    const value = graph[id]?.fields.video;
+    const isGif = value?.endsWith(".gif");
     const onChange = useCallback(async (val) => {
         try {
             await onUpdateWidgets();
@@ -61,7 +64,7 @@ export function InputUploadVideo({widget, node, id}: {
     const props: UploadProps = {
         name: 'video',
         multiple: false,
-        accept: "video/webm, video/mp4,video/mkv, image/gif",
+        accept: "video/webm, video/mp4, video/mkv, image/gif",
         showUploadList: false,
         customRequest: customRequest,
         style: {
@@ -85,7 +88,6 @@ export function InputUploadVideo({widget, node, id}: {
             console.log('Dropped files', e.dataTransfer.files);
         },
     };
-
     return (
         <div className='upload-image-wrapper'>
             <Upload {...props}>
@@ -101,7 +103,17 @@ export function InputUploadVideo({widget, node, id}: {
                 justifyContent: "center",
                 marginTop: 10
             }}>
-                {previewImage}
+                {isGif && <ImageWithDownload
+                    src={previewImage}
+                    fileName={'image'}
+                    editable={true}
+                    editHandler={() => {
+                        // 
+                    }}
+                />}
+                {!isGif && previewImage && (
+                    <AsyncVideoPlayer url={previewImage}/>
+                )}
             </div>
         </div>
     )
