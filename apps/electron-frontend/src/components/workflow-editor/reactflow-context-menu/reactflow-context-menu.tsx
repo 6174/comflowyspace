@@ -8,7 +8,7 @@ import { NodeMenuProps } from './types';
 import ChangeColorMenuItem from './context-menu-item-change-color';
 import ChangeInputMenuItem from './context-menu-item-change-input';
 import { useAppStore } from '@comflowy/common/store';
-import { BypassIcon, CollapseIcon, CopyIcon, DeleteIcon, DisableRunIcon, EnableRunIcon, ExpandIcon } from 'ui/icons';
+import { EnabledIcon, CollapseIcon, CopyIcon, DeleteIcon, DisableRunIcon, EnableRunIcon, ExpandIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
 
@@ -90,7 +90,7 @@ function NodeMenu(props: NodeMenuProps) {
   const onDuplicateNodes = useAppStore(st => st.onDuplicateNodes);
   const onDeleteNodes = useAppStore(st => st.onDeleteNodes);
   const onChangeNodeVisibleState = useAppStore(st => st.onChangeNodeVisibleState)
-  const onChangeNodeBypass = useAppStore(st => st.onChangeNodeBypass);
+  const onChangeNodeEnabledState = useAppStore(st => st.onChangeNodeEnabledState);
   const onClick: MenuProps['onClick'] = (e) => {
     e.domEvent.preventDefault();
     e.domEvent.stopPropagation();
@@ -123,12 +123,12 @@ function NodeMenu(props: NodeMenuProps) {
         onChangeNodeVisibleState(id, NodeVisibleState.Expaned);
         props.hide();
         break;
-      case 'MENU_ITEM_UN_BYPASS':
-        onChangeNodeBypass(id, false);
+      case 'MENU_ITEM_UN_ENABLE':
+        onChangeNodeEnabledState(id, false);
         props.hide();
         break;
-      case 'MENU_ITEM_BYPASS':
-        onChangeNodeBypass(id, true);
+      case 'MENU_ITEM_ENABLE':
+        onChangeNodeEnabledState(id, true);
         props.hide();
         break;
       default:
@@ -150,11 +150,11 @@ function NodeMenu(props: NodeMenuProps) {
     items.push(getMenuItem(<div className="menu-item-title"> <ExpandIcon/> EXPAND </div>, 'MENU_ITEM_EXPAND_NODE', null, null));
   }
 
-  const bypassState = node.bypass || false;
-  if (bypassState) {
-    items.push(getMenuItem(<div className="menu-item-title"> <EnableRunIcon /> Enable Node</div>, 'MENU_ITEM_UN_BYPASS', null, null));
+  const enabledState = node.enabled || false;
+  if (enabledState) {
+    items.push(getMenuItem(<div className="menu-item-title"> <EnableRunIcon /> Enable Node</div>, 'MENU_ITEM_UN_ENABLE', null, null));
   } else {
-    items.push(getMenuItem(<div className="menu-item-title"> <DisableRunIcon /> Disable Node</div>, 'MENU_ITEM_BYPASS', null, null));
+    items.push(getMenuItem(<div className="menu-item-title"> <DisableRunIcon /> Disable Node</div>, 'MENU_ITEM_ENABLE', null, null));
   }
   items.push({ type: "divider" });
 

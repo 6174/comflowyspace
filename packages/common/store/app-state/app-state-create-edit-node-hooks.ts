@@ -8,10 +8,10 @@ import {Node, NodeChange, XYPosition, applyNodeChanges} from "reactflow";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
-    onChangeNodeBypass: (nodeId: string, bypass: boolean) => {
+    onChangeNodeEnabledState: (nodeId: string, enabled: boolean) => {
       const st = get();
       st.onNodeAttributeChange(nodeId, {
-        bypass
+        enabled
       });
     },
     onChangeNodeVisibleState: (nodeId: string, state: NodeVisibleState) => {

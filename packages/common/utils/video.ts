@@ -73,3 +73,14 @@ function getVideoMetadata(file: File) {
     reader.readAsArrayBuffer(file);
   });
 }
+
+function isVideoFile(file: File) {
+  if (file?.name?.endsWith(".webm")) {
+    return true;
+  }
+  if (file?.name?.endsWith(".mp4")) {
+    return true;
+  }
+
+  return false;
+}

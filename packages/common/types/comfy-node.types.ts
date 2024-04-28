@@ -26,7 +26,7 @@ export type WorkflowNodeRenderInfo = {
   outputs: ComfyUIWorkflowNodeOutput[];
   nodeColor: string;
   nodeBgColor: string;
-  bypass?: boolean;
+  enabled?: boolean;
 }
 
 export type SubflowNodeRenderingInfo = {
@@ -67,7 +67,7 @@ export interface SDNode {
   color?: string;
   bgcolor?: string;
   title?: string;
-  bypass?: boolean;
+  enabled?: boolean;
   properties?: { 
     nodeVisibleState?: NodeVisibleState, 
     nodeSize?: [number, number],

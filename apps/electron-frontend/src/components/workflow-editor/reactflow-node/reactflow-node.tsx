@@ -70,7 +70,7 @@ export const NodeComponent = memo(({
         '--node-width': node.data.dimensions.width + "px",
         '--node-color': nodeColor,
         '--node-border-color': nodeColor,
-        'opacity': renderInfo.bypass ? 0.5 : 1,
+        'opacity': renderInfo.enabled ? 0.5 : 1,
         '--node-bg-color': (isInProgress || !!nodeError) ? nodeBgColor : Color(nodeBgColor).alpha(.95).hexa(),
     } as React.CSSProperties}>
 

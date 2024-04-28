@@ -53,7 +53,7 @@ export async function sendPrompt(prompt: PromptRequest): Promise<PromptResponse>
 }
 
 /**
- * if node has bypass properties, skip the connection and the node
+ * if node has enabled properties, skip the connection and the node
  * @param workflow 
  * @param widgets 
  * @param clientId 
@@ -66,12 +66,12 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
   const nodes = Object.entries(workflow.nodes)
 
-  // set bypass for group nodes;
+  // set enabled for group nodes;
   nodes.forEach(([pid, node]) => {
-    if (node.value.widget === NODE_GROUP && node.value.bypass) {
+    if (node.value.widget === NODE_GROUP && node.value.enabled) {
       nodes.forEach(([id, node]) => {
         if (node.value.parent === pid) {
-          node.value.bypass = true;
+          node.value.enabled = true;
         }
       });
     }
@@ -83,7 +83,7 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       continue
     }
 
-    if (node.value.bypass) {
+    if (node.value.enabled) {
       continue
     }
 
