@@ -22,8 +22,8 @@ contextBridge.exposeInMainWorld("comfyElectronApi", {
         ipcRenderer.on(channel, callback);
         return () => ipcRenderer.removeListener(channel, callback);
     },
-    selectDirectory: async () => {
-        const ret = await ipcRenderer.invoke('select-directory');
+    selectDirectory: async (type: "directory" | "file" | "both" = "directory") => {
+        const ret = await ipcRenderer.invoke('select-directory', type);
         return ret;
     },
     selectHomeDir: async () => {

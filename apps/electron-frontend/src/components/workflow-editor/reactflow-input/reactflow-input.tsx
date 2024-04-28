@@ -1,12 +1,13 @@
 import { Input, Widget } from '@comflowy/common/types';
 import { memo, useState, useEffect } from 'react';
-import { Input as AntInput, InputNumber, Select, Switch, Image, Space } from 'antd';
+import { Input as AntInput, InputNumber, Select, Switch, Image, Space, Button, Row } from 'antd';
 import {
 	getImagePreviewUrl,
 	getModelImagePreviewUrl,
 } from '@comflowy/common/comfyui-bridge/bridge';
 import { imageFallBack } from '@/assets/image-fallback';
 import { dt } from '@comflowy/common/i18n';
+import { comfyElectronApi, isElectron } from '@/lib/electron-bridge';
 const MAX_SELECT_NAME = 100;
 
 interface InputProps {
@@ -27,6 +28,8 @@ function InputComponent({
 	widget,
 	onChange,
 }: InputProps): JSX.Element {
+	const [isElectronEnv, setIsElectronEnv] = useState(isElectron());
+
 	if (Input.isList(input)) {
 		if (name === 'image' || name === 'lora_name') {
 			const options = getOptions(name, input[0]);
@@ -143,6 +146,13 @@ function InputComponent({
 		);
 	}
 	if (Input.isString(input)) {
+		// If is input local file path, replace input to file select
+		if (isElectronEnv && isSelectPathInput(name, widget)) {
+			return (
+				<SelectPathInput value={value} onChange={onChange} input={input} widget={widget} name={name}/>
+			)
+		}
+
 		const args = input[1];
 		if (args.multiline === true) {
 			return (
@@ -243,3 +253,82 @@ const getOptions = (
 		});
 	}
 };
+
+export function SelectPathInput({ name, input, value, widget, onChange }: InputProps): JSX.Element {
+	const [isElectronEnv, setIsElectronEnv] = useState(isElectron());
+	const [path, setPath] = useState<string>(value);
+
+	useEffect(() => {
+		setPath(value)
+	}, [value])
+
+	const [isSelecting, setIsSelecting] = useState(false);
+
+	const handleSelectPath = async () => {
+		setIsSelecting(true);
+		const path = await comfyElectronApi.selectDirectory("both");
+		setIsSelecting(false);
+		if (path) {
+			setPath(path);
+			onChange(path);
+		}
+	}
+
+	return (
+		<Labelled name={name} widget={widget}>
+			<div style={{
+				display: "block"
+			}}>
+				<div className="row" style={{
+					display: "flex",
+					justifyContent: "flex-end"
+				}}>
+					<AntInput
+						type='text'
+						placeholder='Input the path or click to select'
+						value={path}
+						onChange={(ev) => {
+							setPath(ev.target.value)
+							onChange(ev.target.value)
+						}}
+					/>
+				</div>		
+				<div className="actions">
+					<Button
+						type="link"
+						size="small"
+						disabled={isSelecting}
+						onClick={handleSelectPath}
+						style={{
+							fontSize: 11
+						}}
+					>
+						Select Path
+					</Button>
+				</div>
+			</div>
+		</Labelled>
+	);
+}
+
+export function isSelectPathInput(name: string, widget: Widget): boolean {
+	const widgetNameInputPair = {
+		"VHS_LoadVideoPath": "video", 
+		"VHS_LoadImagesPath": "directory",
+		"VHS_LoadAudio": "audio_file",
+		"LoadImagesFromPath": "file_path",
+		"Batch Load Images": "image_directory",
+		"Create Video from Path": ["input_path", "output_path"],
+		"Create Morph Image from Path": ["input_path", "output_path"],
+		"Text Load Line From File": "file_path",
+	}
+	const widgetName = widget.name;
+	if (widgetName in widgetNameInputPair) {
+		const input = widgetNameInputPair[widgetName];
+		if (Array.isArray(input)) {
+			return input.includes(name);
+		}
+		return name === input;
+	}
+	return false;
+}

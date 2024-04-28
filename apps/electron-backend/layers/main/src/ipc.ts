@@ -4,7 +4,7 @@ import { shell } from 'electron';
 import path from "path";
 
 export function startIPC() {
-  ipcMain.handle('select-directory', openDirectoryDialog)
+  ipcMain.handle('select-directory', selectDirectoryDialog)
   ipcMain.handle('select-home-dir', getHomeDir)
   ipcMain.handle('open-url', openURL) 
   ipcMain.handle('open-directory', openDirectory)
@@ -25,8 +25,16 @@ async function openDirectory(ev: any, directoryPath: string) {
   return true;
 }
 
-async function openDirectoryDialog() {
-  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
+async function selectDirectoryDialog(ev: any, type: "directory" | "file" | "both" = "directory") {
+  const properties = [];
+  if (type === "directory") {
+    properties.push("openDirectory");
+  } else if (type === "file") {
+    properties.push("openFile");
+  } else {
+    properties.push("openDirectory", "openFile");
+  }
+  const result = await dialog.showOpenDialog({ properties: properties as any });
   return result.filePaths;
 }
 

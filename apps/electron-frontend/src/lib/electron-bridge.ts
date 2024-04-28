@@ -4,7 +4,7 @@ import { isWindow } from "ui/utils/is-window";
   export interface ComfyElectronApi {
   name: string;
   version: number;
-  selectDirectory: () => Promise<any>;
+  selectDirectory: (type?: "directory" | "file" | "both") => Promise<any>;
   selectHomeDir:() => Promise<string>;
   receiveFromMain:(channel: string, func: any) => () => void;
   openURL: (url: string) => Promise<any>;
