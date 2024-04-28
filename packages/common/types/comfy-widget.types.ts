@@ -33,6 +33,10 @@ export const Widget = {
   isSeedParam(param: string): boolean {
     return param === "seed" || param === "noise_seed"
   },
+  isSaveImageNode(widgetName: string): boolean {
+    const nodes = ["SaveImage", "SaveAnimatedWEBP"];
+    return nodes.includes(widgetName);
+  },
   findSeedFieldName(widget: Widget, inputSlots: string[] = []): string | undefined {
     const inputs = widget.input.required;
     if (inputs.seed && !inputSlots.includes("seed")) {

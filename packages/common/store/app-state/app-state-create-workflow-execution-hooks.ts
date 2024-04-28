@@ -93,15 +93,17 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
        * if find node in graph, the node is in main workflow, save to state and storage
        * else if the node is a subflow‘s sub node, then set the state to the subflow
        */
+      const widgetName = node?.data?.widget.name;
+      const isSaveImageNode = Widget.isSaveImageNode(widgetName);
       if (graph[id]) {
         st.editorEvent.emit({ type: ComfyUIEvents.ImageSave, data: { id, images } });
         temporalSaveImage(id, images);
-        if (node?.data?.widget.name === "SaveImage") {
+        if (isSaveImageNode) {
           persistSaveImage(id, images);
         }
       } else {
         subflowStore.getState().onImageSave(id, images);
-        if (node?.data?.widget.name !== "SaveImage") {
+        if (!isSaveImageNode) {
           return;
         }
         const { relations } = subflowStore.getState();
@@ -127,7 +129,9 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
         const st = get();
         const { nodes, graph, subflowStore } = st;
         const node = nodes.find(node => node.id === id);
-        if (node?.data?.widget.name !== "SaveImage") {
+        const widgetName = node?.data?.widget.name;
+        const isSaveImageNode = Widget.isSaveImageNode(widgetName);
+        if (!isSaveImageNode) {
           return;
         }
         const last_edit_time = +new Date();

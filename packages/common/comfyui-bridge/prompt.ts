@@ -107,7 +107,7 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       }
     }
 
-    if (widget.name === "SaveImage") {
+    if (Widget.isSaveImageNode(widget.name)) {
       const filename_prefix = fields.filename_prefix || "";
       fields.filename_prefix = `${filename_prefix}_${uuid().substring(0, 4)}`;
     }
