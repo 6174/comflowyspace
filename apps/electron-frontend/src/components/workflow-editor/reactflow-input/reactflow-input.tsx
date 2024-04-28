@@ -31,6 +31,7 @@ function InputComponent({
 	const [isElectronEnv, setIsElectronEnv] = useState(isElectron());
 
 	if (Input.isList(input)) {
+
 		if (name === 'image' || name === 'lora_name') {
 			const options = getOptions(name, input[0]);
 			const hasRealValue = options[0]?.realValue;
@@ -81,31 +82,43 @@ function InputComponent({
 					/>
 				</Labelled>
 			);
-		} else {
-			const options = input[0].map((k) => {
-				return {
-					value: k,
-					label: dt(`Nodes.${widget.name}.widgets.${k}`, k),
-				};
-			});
+		} 
 
-			if (name === "control_after_generated") {
-				value = value || defaultValue
-			}
-
-			return (
-				<Labelled name={name} widget={widget}>
-					<Select
-						value={value}
-						defaultValue={defaultValue}
-						showSearch
-						popupMatchSelectWidth={false}
-						onChange={onChange}
-						options={options}
-					/>
-				</Labelled>
-			);
+		let rawOptions = input[0];
+		if (name === "format" && widget.name === "VHS_VideoCombine") {
+			rawOptions = rawOptions.map(it => {
+				if (typeof it == "string") {
+					return it;
+				}
+				if (typeof it == "object") {
+					return it[0]
+				}
+			})
 		}
+		
+		const options = rawOptions.map((k) => {
+			return {
+				value: k,
+				label: dt(`Nodes.${widget.name}.widgets.${k}`, k),
+			};
+		});
+
+		if (name === "control_after_generated") {
+			value = value || defaultValue
+		}
+
+		return (
+			<Labelled name={name} widget={widget}>
+				<Select
+					value={value}
+					defaultValue={defaultValue}
+					showSearch
+					popupMatchSelectWidth={false}
+					onChange={onChange}
+					options={options}
+				/>
+			</Labelled>
+		);
 	}
 	if (Input.isBool(input)) {
 		let label = "";
