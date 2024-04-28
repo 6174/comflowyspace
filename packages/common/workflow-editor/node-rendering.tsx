@@ -34,7 +34,11 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   }
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
-    widget.input.required.upload = ["IMAGEUPLOAD"];
+    widget.input.required.upload = ["IMAGEUPLOAD", {type: "image"}];
+  }
+
+  if (widget?.input?.required?.video && Input.isList(widget?.input?.required?.video)) {
+    widget.input.required.upload = ["IMAGEUPLOAD", { type: "video" }];
   }
 
   for (const [property, input] of Object.entries(widget?.input?.required || {})) {

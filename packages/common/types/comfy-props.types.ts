@@ -59,8 +59,9 @@ export const FlowPropsArray = [
   "UPSCALE_MODEL", 
   "SAMPLER", 
   "SIGMAS",
-  "IMAGEUPLOAD"
 ] as const;
+
+export type ImageUploadProp = ["IMAGEUPLOAD", {type: "image" | "video" | "other"}];
 export type FlowPropsKey = typeof FlowPropsArray[number]
 export type FlowProps = [FlowPropsKey];
 // export type FlowProps = 'MODEL' | 'CONDITIONING' | 'CLIP' | 'IMAGE' | 'LATENT' | 'CONTROL_NET' | 'MASK' | 'VAE'
@@ -69,7 +70,7 @@ type Parameter<K extends keyof InputType> = [K, InputType[K][1]]
 
 export type FlowStaticPrimitiveType = 'INT' | 'BOOL' | 'FLOAT' | 'STRING' | 'BOOLEAN';
 
-export type Input = Parameter<keyof InputType> | [string[]] | [string[], {image_upload?: boolean,  default?: string}] | FlowProps
+export type Input = Parameter<keyof InputType> | [string[]] | [string[], { image_upload?: boolean, default?: string }] | FlowProps | ImageUploadProp
 
 export const Input = {
   getTypeName(i: Input): string {
@@ -127,8 +128,12 @@ export const Input = {
     return i[0] === 'VAE'
   },
 
-  isImageUpload(i: Input): i is FlowProps {
-    return i[0] === 'IMAGEUPLOAD'
+  isImageUpload(i: Input): i is ImageUploadProp {
+    return i[0] === 'IMAGEUPLOAD' && i[1].type === "image"
+  },
+
+  isVideoUpload(i: Input): i is ImageUploadProp {
+    return i[0] === 'IMAGEUPLOAD' && i[1].type === "video"
   },
 
   isConditioning(i: Input): i is FlowProps {

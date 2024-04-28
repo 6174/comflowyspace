@@ -59,7 +59,11 @@ export function staticCheckWorkflowErrors(
         }
 
         if (!value) {
-          // @TODO: need check connections to define whether the field is missing
+          const defaultValue = ((input[1] ?? {}) as any).default;
+          // check is default value exist
+          if (defaultValue !== undefined) {
+            return;
+          }
           error.errors.push({
             type: ComfyUIErrorTypes.required_field_missing,
             static: true,
