@@ -26,9 +26,9 @@ If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/co
 ## Download
 
 * **MacOS:**
-    * [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.1.7-alpha/comflowy-0.1.7-alpha.dmg) (Note that if you have an Intel Macbook, make sure it has AMD graphics before installing, otherwise it won't work!)
-    * [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.1.7-alpha/comflowy-0.1.7-alpha-arm64.dmg)  
-* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.1.7-alpha/comflowy-0.1.7-alpha.zip)**
+    * [Mac Intel](https://github.com/6174/comflowyspace/releases/download/v0.1.8-alpha/comflowy-0.1.8-alpha.dmg) (Note that if you have an Intel Macbook, make sure it has AMD graphics before installing, otherwise it won't work!)
+    * [Mac M](https://github.com/6174/comflowyspace/releases/download/v0.1.8-alpha/comflowy-0.1.8-alpha-arm64.dmg)  
+* **[Windows](https://github.com/6174/comflowyspace/releases/download/v0.1.8-alpha/comflowy-0.1.8-alpha.zip)**
 
 
 ## Key Features
