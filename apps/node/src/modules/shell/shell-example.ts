@@ -1,6 +1,5 @@
 import * as nodePty from "node-pty"
 import { getAppDataDir, getComfyUIDir } from "../utils/get-appdata-dir";
-import { SHELL_ENV_PATH } from "../utils/run-command";
 import path from "path";
 import logger from "../utils/logger";
 
@@ -12,7 +11,7 @@ const pty = nodePty.spawn(shell, [], {
   rows: 30,
   cwd: appDir,
   env: {
-    PATH: SHELL_ENV_PATH
+    PATH: process.env.PATH
   },
 });
 

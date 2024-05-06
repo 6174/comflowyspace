@@ -131,6 +131,9 @@ export function getCondaInfo(): CondaInfo {
       CONDA_SCRIPTS_PATH: DEFAULT_CONDA_PATH,
       CONDA_ENV_PATH: DEFAULT_CONDA_ENV_PATH
     });
+    console.log("Use custom shell path to resolve conda", SHELL_ENV_PATH);
+
+    let ret;
     try {
       const result = execSync(`conda info --base`, {
         env: {
@@ -140,11 +143,36 @@ export function getCondaInfo(): CondaInfo {
         },
         encoding: 'utf-8',
       });
-      return result.toString().trim();
-    } catch (err) {
-      console.log("get conda default prefix error", err);
-      return undefined
+      ret = result.toString().trim();
+    } catch (err1: any) {
+      console.log("get conda default prefix error", err1);
     }
+
+    if (ret && ret !== "") {
+      return ret;
+    }
+
+    console.log("Try Use default PATH to resolve conda", process.env.PATH);
+
+    try {
+      const result = execSync(`conda info --base`, {
+        env: {
+          ...process.env,
+          PATH: process.env.PATH,
+          Path: process.env.PATH
+        },
+        encoding: 'utf-8',
+      });
+      ret = result.toString().trim();
+    } catch (err2: any) {
+      console.log("get conda default prefix error", err2);
+      logger.error("Get conda prefix error: " + err2.message)
+    }
+
+    if (ret && ret !== "") {
+      console.log("Find default conda path", ret);
+    }
+    return ret;
   }
 }
 
