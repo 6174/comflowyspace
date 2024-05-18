@@ -9,6 +9,7 @@ export type ExtensionManifest = {
 }
 
 export type Extension = {
+  id: string;
   title: string;
   custom_extension?: boolean;
   reference: string;

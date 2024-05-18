@@ -17,16 +17,25 @@ import { getExtensionPath } from "./extension-utils";
 
 const appTmpDir = getAppTmpDir();
 
+const CUSTOM_INSTALL_COMMANDS: any = {
+    "inference-core": {
+        "commands": [
+            "$python install.py"
+        ]
+    }
+}
+
 /**
  * Install extension
  * @param extension 
  * @returns 
  */
 export async function installExtension(dispatcher: TaskEventDispatcher, extension: Extension): Promise<boolean> {
-    const {PIP_PATH} = conda.getCondaPaths();
+    const {PIP_PATH, PYTHON_PATH} = conda.getCondaPaths();
  
     const install_type: string = extension.install_type;
-
+    const id = extension.id || "";
+    const customInstallConfig = CUSTOM_INSTALL_COMMANDS[id] || {};
     let res: boolean = false;
     dispatcher({
         message: `
@@ -92,6 +101,21 @@ export async function installExtension(dispatcher: TaskEventDispatcher, extensio
                 await runCommand(`${PIP_PATH} install -r requirements.txt`, dispatcher, {
                     cwd: extensionPath
                 });
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        if (customInstallConfig) {
+            try {
+                const commands = customInstallConfig.commands || [];
+                for (const command of commands) {
+                    let realCommand = command;
+                    realCommand = command.replace(/\$python/g, PYTHON_PATH).replace(/\$pip/g, PIP_PATH);
+                    await runCommand(realCommand, dispatcher, {
+                        cwd: extensionPath
+                    });
+                }
             } catch(err) {
                 console.log(err);
             }

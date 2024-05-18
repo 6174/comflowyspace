@@ -33,6 +33,7 @@ export async function findAllInstalledExtensions({
       } else {
         const readme = await readExtensionReadmeContent(file);
         ret.push({
+          id: file,
           custom_extension: true,
           title: file,
           reference: file,
