@@ -1,5 +1,5 @@
 import exifr from 'exifr';
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget, Input } from '../types';
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget, Input, NODE_REROUTE } from '../types';
 import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
 
@@ -184,7 +184,7 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
     const sourceNodeId = link[1] + "";
     const sourceHandleId = link[2];
     const targetNodeId = link[3] + "";
-    const targetHandleId = link[4];
+    let targetHandleId = link[4];
     const connectionType = link[5];
 
     const sourceNode = nodesMap[sourceNodeId];
@@ -219,10 +219,17 @@ export function comfyUIWorkflowToPersistedWorkflowDocument(comfyUIWorkflow: Comf
       }
       return ret;
     });
+    
+    if (targetHandleId === -1 && targetNode.value.widget === NODE_REROUTE) {
+      targetHandleId = 0;
+    }
+
     const inputKey = inputs[targetHandleId];
+
     if (!inputKey) {
       throw new Error("inputKey not found");
     }
+
     const targetHandle = inputKey.toUpperCase();
 
     return {

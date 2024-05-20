@@ -1,4 +1,4 @@
-import { FlowPropsKey, Input } from "./comfy-props.types"
+import { ContrlAfterGeneratedValues, FlowPropsKey, Input } from "./comfy-props.types"
 export const NODE_GROUP = 'Group';
 export const NODE_REROUTE = "Reroute";
 export const NODE_PRIMITIVE = "PrimitiveNode";
@@ -46,6 +46,25 @@ export const Widget = {
       return 'noise_seed'
     }
     return
+  },
+  getControlledSeedValue(controlType: string, oldSeed: number = 0): number {
+    const MAX_VALUE = 18446744073709551615;
+    let newSeed = oldSeed;
+    switch (controlType) {
+      case "randomnized":
+      case ContrlAfterGeneratedValues.Randomnized:
+        newSeed = Math.random() * MAX_VALUE;
+        break;
+      case ContrlAfterGeneratedValues.Incremental:
+        newSeed = Math.min(MAX_VALUE, oldSeed + 1);
+        break;
+      case ContrlAfterGeneratedValues.Decremental:
+        newSeed = Math.max(-1, oldSeed - 1);
+      default:
+        break;
+    }
+
+    return newSeed
   },
   getDefaultFields(widget: Widget): Record<PropertyKey, any> {
     const fields: Record<PropertyKey, any> = {}

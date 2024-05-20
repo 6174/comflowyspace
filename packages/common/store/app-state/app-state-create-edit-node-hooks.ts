@@ -3,7 +3,7 @@ import { WorkflowDocumentUtils, createNodeId } from '../ydoc-utils';
 import { uuid } from '../../utils';
 import { getNodePositionInGroup, getNodePositionOutOfGroup } from "../../utils/workflow";
 import _ from "lodash";
-import { NODE_GROUP, NodeId, NodeVisibleState, PersistedFullWorkflow, PersistedWorkflowNode, SDNode, Widget } from "../../types";
+import { ContrlAfterGeneratedValues, NODE_GROUP, NodeId, NodeVisibleState, PersistedFullWorkflow, PersistedWorkflowNode, SDNode, Widget } from "../../types";
 import {Node, NodeChange, XYPosition, applyNodeChanges} from "reactflow";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
@@ -193,12 +193,28 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
       onSyncFromYjsDoc();
     },
     onNodeFieldChange: (id, key, value) => {
-      const { doc, onSyncFromYjsDoc, updateErrorCheck } = get();
+      const { doc, onSyncFromYjsDoc, updateErrorCheck, graph } = get();
+
       WorkflowDocumentUtils.onNodeFieldChange(doc, {
         id,
         key,
         value
       });
+
+      if (key === "control_after_generated" && value !== ContrlAfterGeneratedValues.Fixed) {
+        const sdnode = graph[id];
+        const widget = sdnode.flowNode.data.widget;
+        const seedFieldName = Widget.findSeedFieldName(widget, sdnode.inputs.map(i => i.name));
+        if (seedFieldName) {
+          let newSeed = Widget.getControlledSeedValue(value, sdnode.fields[seedFieldName]);
+          WorkflowDocumentUtils.onNodeFieldChange(doc, {
+            id,
+            key: seedFieldName,
+            value: newSeed
+          });
+        }
+      }
+      
       onSyncFromYjsDoc();
       updateErrorCheck();
     },
