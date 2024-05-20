@@ -205,6 +205,10 @@ export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<stri
       if (Array.isArray(inputValue) && inputValue.length === 2) {
         continue;
       }
+      // skip image type
+      if (inputValue.length > 300) {
+        continue
+      }
       fields[inputKey] = inputValue;
     }
 
@@ -212,6 +216,10 @@ export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<stri
       data[id] = {
         id,
         position: { x: 0, y: 0 },
+        dimensions: {
+          width: 240,
+          height: 80
+        },
         value: {
           widget: node.class_type,
           fields,
@@ -226,6 +234,10 @@ export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<stri
     data[id] = {
       id,
       position: { x: 0, y: 0 },
+      dimensions: {
+        width: 240,
+        height: 80
+      },
       value: {
         ...sdnode,
         fields
@@ -246,9 +258,9 @@ export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<stri
           connections.push({
             id: uuid(),
             source,
-            sourceHandle: widgets[data[source].value.widget].output[sourceHandle][0],
+            sourceHandle: output,
             target: id,
-            targetHandle: inputKey,
+            targetHandle: inputKey.toUpperCase(),
           });
         }
       }
