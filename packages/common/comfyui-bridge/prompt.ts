@@ -1,5 +1,5 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP, SDNode } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { KEYS, t } from "../i18n";
@@ -191,3 +191,74 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   }
 }
 
+
+export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<string, Widget>): PersistedWorkflowDocument {
+ 
+  const data: Record<NodeId, PersistedWorkflowNode> = {}
+
+  // Reconstruct nodes from prompt
+  for (const [id, node] of Object.entries(prompt)) {
+    const widget = widgets[node.class_type];
+    // Reconstruct fields from inputs
+    const fields: any = {};
+    for (const [inputKey, inputValue] of Object.entries(node.inputs)) {
+      if (Array.isArray(inputValue) && inputValue.length === 2) {
+        continue;
+      }
+      fields[inputKey] = inputValue;
+    }
+
+    if (!widget) {
+      data[id] = {
+        id,
+        position: { x: 0, y: 0 },
+        value: {
+          widget: node.class_type,
+          fields,
+          inputs: [],
+          outputs: []
+        }
+      }
+      continue;
+    }
+
+    const sdnode = SDNode.fromWidget(widget);
+    data[id] = {
+      id,
+      position: { x: 0, y: 0 },
+      value: {
+        ...sdnode,
+        fields
+      },
+    }
+  }
+
+  // Reconstruct connections from prompt
+  const connections: PersistedWorkflowConnection[] = [];
+  for (const [id, node] of Object.entries(prompt)) {
+    for (const [inputKey, inputValue] of Object.entries(node.inputs)) {
+      const source = Array.isArray(inputValue) ? inputValue[0] : undefined;
+      const sourceHandle = Array.isArray(inputValue) ? inputValue[1] : undefined;
+      if (source && sourceHandle !== undefined) {
+        const widget = widgets[data[source].value.widget];
+        const output = widget && widgets[data[source].value.widget].output[sourceHandle];
+        if (output) {
+          connections.push({
+            id: uuid(),
+            source,
+            sourceHandle: widgets[data[source].value.widget].output[sourceHandle][0],
+            target: id,
+            targetHandle: inputKey,
+          });
+        }
+      }
+    }
+  }
+
+  return {
+    id: uuid(),
+    title: "Untitled",
+    nodes: data,
+    connections,
+  }
+}

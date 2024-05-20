@@ -2,6 +2,7 @@ import exifr from 'exifr';
 import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIWorkflow, ComfyUIWorkflowConnection, ComfyUIWorkflowGroup, ComfyUIWorkflowNode, Widget, Input, NODE_REROUTE } from '../types';
 import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
+import { reversePrompt } from './prompt';
 
 /**
  *  1) Transform comflowyspace workflow JSON format to comfyui JSON format
@@ -39,6 +40,19 @@ export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
 function safeLoadWorkflow(workflow: any, widgets: Widgets): PersistedWorkflowDocument {
   console.log("source workflow", workflow);
   if (!workflow || !workflow.nodes) {
+    const keys = Object.keys(workflow);
+    if (keys.length === 0) {
+      throw new Error('Invalid workflow file. Please check if the file is correct workflow format.')
+    }
+    const key0 = keys[0];
+    const item = workflow[key0];
+    //
+    if (item.class_type && item.inputs) {
+      const prompt = workflow as Record<string, any>
+      const workflowDoc = reversePrompt(prompt, widgets);
+      console.log("workflowDoc", workflowDoc);
+      return workflowDoc;
+    }
     throw new Error('Invalid workflow file. Please check if the file is correct workflow format.')
   }
   // if (workflow.version !== 1) {
