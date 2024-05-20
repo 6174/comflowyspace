@@ -3,6 +3,7 @@ import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkfl
 import { Widgets, NODE_PRIMITIVE } from '../types';
 import { uuid } from '../utils';
 import { reversePrompt } from './prompt';
+import { layoutWorkflow } from './workflow-layout';
 
 /**
  *  1) Transform comflowyspace workflow JSON format to comfyui JSON format
@@ -37,7 +38,7 @@ export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
   a.click()
 }
 
-function safeLoadWorkflow(workflow: any, widgets: Widgets): PersistedWorkflowDocument {
+async function safeLoadWorkflow(workflow: any, widgets: Widgets): Promise<PersistedWorkflowDocument> {
   console.log("source workflow", workflow);
   if (!workflow || !workflow.nodes) {
     const keys = Object.keys(workflow);
@@ -51,6 +52,9 @@ function safeLoadWorkflow(workflow: any, widgets: Widgets): PersistedWorkflowDoc
       const prompt = workflow as Record<string, any>
       const workflowDoc = reversePrompt(prompt, widgets);
       console.log("workflowDoc", workflowDoc);
+      await layoutWorkflow(workflowDoc, {
+        algorithm: 'mrtree'
+      });
       return workflowDoc;
     }
     throw new Error('Invalid workflow file. Please check if the file is correct workflow format.')

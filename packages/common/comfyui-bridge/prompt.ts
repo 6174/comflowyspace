@@ -191,7 +191,6 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   }
 }
 
-
 export function reversePrompt(prompt: Record<NodeId, Node>, widgets: Record<string, Widget>): PersistedWorkflowDocument {
  
   const data: Record<NodeId, PersistedWorkflowNode> = {}

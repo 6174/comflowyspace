@@ -1,6 +1,6 @@
 import { useAppStore } from '@comflowy/common/store';
 import { AppState } from '@comflowy/common/store/app-state';
-import { NODE_GROUP } from '@comflowy/common/types';
+import { NODE_GROUP, PersistedFullWorkflow, PersistedWorkflowDocument } from '@comflowy/common/types';
 import { Button, Space } from 'antd';
 import ELK from 'elkjs/lib/elk.bundled.js';
 import _ from 'lodash';
@@ -128,7 +128,6 @@ function calculateChanges(layoutedNodes, inGroup) {
   return changes;
 }
 
-const elk = new ELK();
 
 /**
  * Turn nodes to ELK layout elments, consider react flow node has parentNode relation ship
@@ -139,6 +138,7 @@ function getELKLayoutElements(
   graph: AppState["graph"], 
   options: any
   ) {
+  const elk = new ELK();
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const inGroup = options?.['inGroup'];
 
@@ -210,3 +210,4 @@ function flowNodeToLayoutNode(node: Node, isHorizontal, graph: AppState["graph"]
   }
   return ret;
 }
+
