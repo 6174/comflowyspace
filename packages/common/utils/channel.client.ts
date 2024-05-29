@@ -11,10 +11,9 @@ export class Channel {
   constructor(id: string) {
     this.id = id;
     this.client = new W3CWebSocket(`ws://${config.host}/ws/channel?c=${id}`);
-    this.subscribe();
   }
   
-  private subscribe() {
+  subscribe() {
     this.client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
@@ -42,6 +41,6 @@ export class Channel {
   }
 }
 
-export function channel(id: string) {
+export function createChannel(id: string) {
   return new Channel(id);
 }

@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, CSSProperties } from 'react';
+import React, { Component, ReactNode, CSSProperties, useState, useEffect } from 'react';
 import { throttle } from 'throttle-debounce';
 import { ThresholdUnits, parseThreshold } from './utils/threshold';
 
@@ -32,7 +32,28 @@ interface State {
   prevDataLength: number | undefined;
 }
 
-export default class InfiniteScroll extends Component<Props, State> {
+export default function InfiniteScroll(props: Props) {
+  const [visible, setVisible] = useState(false);
+  const target = props.scrollableTarget;
+  console.log("target", target);
+  useEffect(() => {
+    if (target) {
+      setVisible(true);
+    }
+  }, [target]);
+
+  if (!visible) {
+    return (
+      <div style={{ height: props.height || 'auto' }}>
+        {props.loader}
+      </div>
+    );
+  }
+
+  return <InfiniteScrollInner {...props} />;
+}
+
+class InfiniteScrollInner extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -71,11 +92,14 @@ export default class InfiniteScroll extends Component<Props, State> {
     if (typeof this.props.dataLength === 'undefined') {
       throw new Error(
         `mandatory prop "dataLength" is missing. The prop is needed` +
-          ` when loading more content. Check README.md for usage`
+        ` when loading more content. Check README.md for usage`
       );
     }
+    this.bindScrollListener(this.getScrollableTarget(this.props));
+  }
 
-    this._scrollableNode = this.getScrollableTarget();
+  bindScrollListener = (scrollTarget: any) => {
+    this._scrollableNode = scrollTarget;
     this.el = this.props.height
       ? this._infScroll
       : this._scrollableNode || window;
@@ -164,13 +188,13 @@ export default class InfiniteScroll extends Component<Props, State> {
     return null;
   }
 
-  getScrollableTarget = () => {
-    if (this.props.scrollableTarget instanceof HTMLElement)
-      return this.props.scrollableTarget;
-    if (typeof this.props.scrollableTarget === 'string') {
-      return document.getElementById(this.props.scrollableTarget);
+  getScrollableTarget = (props: Props) => {
+    if (props.scrollableTarget instanceof HTMLElement)
+      return props.scrollableTarget;
+    if (typeof props.scrollableTarget === 'string') {
+      return document.getElementById(props.scrollableTarget);
     }
-    if (this.props.scrollableTarget === null) {
+    if (props.scrollableTarget === null) {
       console.warn(`You are trying to pass scrollableTarget but it is null. This might
         happen because the element may not have been added to DOM yet.
         See https://github.com/ankeetmaini/react-infinite-scroll-component/issues/59 for more info.
@@ -306,8 +330,8 @@ export default class InfiniteScroll extends Component<Props, State> {
       this.props.height || this._scrollableNode
         ? (event.target as HTMLElement)
         : document.documentElement.scrollTop
-        ? document.documentElement
-        : document.body;
+          ? document.documentElement
+          : document.body;
 
     // return immediately if the action has already been triggered,
     // prevents multiple triggers.
@@ -350,7 +374,7 @@ export default class InfiniteScroll extends Component<Props, State> {
         : {};
     return (
       <div
-        style={{...outerDivStyle, width: '100%'}}
+        style={{ ...outerDivStyle, width: '100%' }}
         className="infinite-scroll-component__outerdiv"
       >
         <div

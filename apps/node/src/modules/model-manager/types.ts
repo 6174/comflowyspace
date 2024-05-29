@@ -29,6 +29,8 @@ export interface FolderPaths {
   'T2I-Style': [string[], ModelExt[]];
 }
 
+// export {MarketModel} from '@comflowy/common/types/model.types';
+
 export type MarketModel = {
   name: string;
   type: ModelType;

@@ -126,14 +126,9 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       }
     }
 
-    dispatch({
-      message: `Downloading ${url}`
-    });
-
     const fileSize: number = fs.existsSync(tmpFilePath) ? fs.statSync(tmpFilePath).size : 0;
     const headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
 
-    console.log(fileSize, headers);
     const response: Response = await fetch(url, {
       headers: {
         ...headers,
@@ -184,11 +179,14 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       progressBar.tick(chunk.length);
       downloadedSize += chunk.length;
       dispatch({
-        message: `Download progress: ${progressBar.curr}/${progressBar.total}`
+        message: `Download progress: ${progressBar.curr}/${progressBar.total}`,
+        data: {
+          downloaded: downloadedSize,
+          total: totalSize
+        }
       })
     });
 
-    
     try {
       response.body!.pipe(bufferStream);
       bufferStream.pipe(writeStream);
@@ -207,6 +205,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
         throw new Error(`Error downloading from ${url}: ${err.message}`);
       }
     }
+
     if (sha) {
       const verified = await verifySHA(tmpFilePath, sha);
       if (!verified) {

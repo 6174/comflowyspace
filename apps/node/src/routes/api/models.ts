@@ -2,9 +2,11 @@ import { modelManager } from '../../modules/model-manager/model-manager';
 import { uuid } from '@comflowy/common';
 import { Request, Response } from 'express';
 import { installModel } from '../../modules/model-manager/install-model';
-import { TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
+import { PartialTaskEvent, TaskEventDispatcher, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { MarketModel } from '../../modules/model-manager/types';
-import { getFolderNamesAndPaths, getModelDir } from '../../modules/model-manager/model-paths';
+import { getFolderNamesAndPaths, getModelDir, getModelPath } from '../../modules/model-manager/model-paths';
+import { channelService } from 'src/modules/channel/channel.service';
+import { ModelDownloadChannelEvents } from "@comflowy/common/types/model.types";
 
 /**
  * fetch all extensions
@@ -33,7 +35,7 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
     }
     
 }
-
+import * as fs from "fs";
 
 /**
  * install a model
@@ -42,14 +44,32 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
  */
 export async function ApiRouteInstallModel(req: Request, res: Response) {
     try {
-        const {data} = req.body;
-        const model = data as MarketModel;
+        const {data, taskId} = req.body;
+        const model = data;
+
+        const modelPath = getModelPath(model.type, model.save_path, model.filename);
+        if (fs.existsSync(modelPath)) {
+            res.send({
+                success: true,
+                status: "exist",
+            })
+            return
+        }
+
         const task: TaskProps = {
-            taskId: uuid(),
+            taskId,
             name: `download-model-${model.name}`,
             params: model,
             executor: async (dispatcher) => {
-               return await installModel(dispatcher, model);
+                const newDispatcher: TaskEventDispatcher = (event: PartialTaskEvent) => {
+                    dispatcher(event);
+                    let type = event.type || ModelDownloadChannelEvents.onModelDownloadProgress;
+                    channelService.emit(taskId, {
+                        type,
+                        payload: event
+                    });
+                }
+                return await installModel(newDispatcher, model);
             }
         };
         taskQueue.addTask(task);

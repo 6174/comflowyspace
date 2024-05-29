@@ -155,9 +155,9 @@ export function getModelDir(type: ModelType, save_path: string = "default"): str
   }
 }
 
-export function getModelPath(data: MarketModel): string {
-  const modelDir = getModelDir(data.type, data.save_path);
-  return path.join(modelDir, data.filename); // Add the appropriate value for getModelPath
+export function getModelPath(type: string, save_path: string, file_name: string): string {
+  const modelDir = getModelDir(type as any, save_path);
+  return path.join(modelDir, file_name); // Add the appropriate value for getModelPath
 }
 
 const STABLE_DIFFUSION_MODEL_MAPPING_CONFIG_NAME = "a1111";

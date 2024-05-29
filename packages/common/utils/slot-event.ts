@@ -127,6 +127,7 @@ export class SlotEvent<T = void> implements IDisposable {
 }
 
 export enum GlobalEvents {
+  on_close_model_selector = "on_close_model_selector",
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",
   restart_comfyui_success = 'restart_comfyui_success',
@@ -150,6 +151,6 @@ export type GlobalEventKeys = keyof typeof GlobalEvents;
 
 export const SlotGlobalEvent = new SlotEvent<{
   type: GlobalEventKeys,
-  data: any
+  data?: any
 }>();
 
