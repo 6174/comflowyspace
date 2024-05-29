@@ -10,6 +10,10 @@ import { ModelDownloadChannel } from "./model-download-channel";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 import styles from "./reactflow-model-selector.style.module.scss";
+/**
+ * Select CivitiAI models in nodes
+ * @returns 
+ */
 export function SelectCivitaiModels() {
   const civitai = useModelState(state => state.civitai);
   const models = civitai.models || [];
@@ -39,15 +43,7 @@ export function SelectCivitaiModels() {
           dataLength={models.length}
           next={loadMoreData}
           hasMore={hasMoreDocs}
-          loader={
-            <div className='workflow-list-item'>
-              <div className='carousel-wrapper'>
-              </div>
-              <div className="load-text">
-                Loading...
-              </div>
-            </div>
-          }
+          loader={<Loaders />}
           endMessage={
             <div className="load-text">
 
@@ -69,15 +65,14 @@ export function CivitaiModelListPage() {
   const civitai = useModelState(state => state.civitai);
   const models = civitai.models || [];
   const hasMoreDocs = civitai.hasMorePage;
-  const scrollContainer = useRef(null);
   const loadCivitAIModels = useModelState(state => state.loadCivitAIModels);
   const loadMoreData = useCallback(() => {
     loadCivitAIModels();
   }, []);
-  const [target, setTarget] = useState(null);
   useEffect(() => {
-    setTarget(scrollContainer.current);
-  }, [scrollContainer.current])
+    loadCivitAIModels();
+  }, []);
+  console.log("models", models);
   const modelDetail = useModelState(state => state.civitai.modelDetail);
   return (
     <div className={styles.civitai_models_list_page}>
@@ -87,24 +82,16 @@ export function CivitaiModelListPage() {
         dataLength={models.length}
         next={loadMoreData}
         hasMore={hasMoreDocs}
-        loader={
-          <div className='workflow-list-item'>
-            <div className='carousel-wrapper'>
-            </div>
-            <div className="load-text">
-              Loading...
-            </div>
-          </div>
-        }
+        loader={<Loaders/>}
         endMessage={
           <div className="load-text">
-
           </div>
         }
       >
         {models.map((model) => <ModelCardItem model={model} key={model.id} />)}
       </InfiniteScroll>
       <Modal
+        className={styles.civitai_models_detail_modal}
         title={modelDetail?.name || "Model Detail"}
         open={!!modelDetail}
         onCancel={ev => {
@@ -342,6 +329,18 @@ export function CivitModelDetailPage() {
         </div>
       </div>
       <ModelDownloadChannel runId={downloadInfo?.taskId}/>
+    </div>
+  )
+}
+
+function Loaders() {
+  return (
+    <div className='workflow-list-item'>
+      <div className='carousel-wrapper'>
+      </div>
+      <div className="load-text">
+        Loading...
+      </div>
     </div>
   )
 }

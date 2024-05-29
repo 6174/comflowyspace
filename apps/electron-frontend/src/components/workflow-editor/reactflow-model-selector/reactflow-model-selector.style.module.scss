@@ -188,6 +188,14 @@
   }
 }
 
+.civitai_models_detail_modal {
+  :global {
+    .ant-modal-body {
+      height: 70vh;
+    }
+  }
+}
+
 .civitai_models_detail_page {
   display: flex;
   height: 100%;
