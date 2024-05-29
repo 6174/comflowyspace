@@ -33,8 +33,9 @@ export function ModelDownloadChannel(props: {
     });
   }, [runId]);
 
-  const onModelDownloadFailed = useCallback(() => {
-    message.error("Model download failed, please contact us to get support.");
+  const onModelDownloadFailed = useCallback((ev) => {
+    console.log("error message", ev)
+    message.error("Model download failed, please contact us to get support." + ev.error);
     console.log("onfailed");
     updateDownloadInfo(runId, {
       status: "failed"

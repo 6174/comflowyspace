@@ -28,10 +28,10 @@ export async function installModel(dispatch: TaskEventDispatcher, model: MarketM
             type: ModelDownloadChannelEvents.onModelDownloadSuccess,
         })
         return true;
-    } catch(err) {
+    } catch(err: any) {
         dispatch({
-            type: ModelDownloadChannelEvents.onModelDownloadSuccess,
-            error: err,
+            type: ModelDownloadChannelEvents.onModelDownloadFailed,
+            error: err.message,
         })
         return false;
     }

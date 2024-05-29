@@ -28,6 +28,7 @@ class ChannelService {
 
         wss.handleUpgrade(req, socket, head, ws => {
           this.clients[channel].push(ws);
+          console.log("add clients for channel", channel)
           ws.on('message', (messageStr: string) => {
             const message = JSON.parse(messageStr) as ChannelMessage;
             this.channelSlots[channel].emit(message);
@@ -48,6 +49,7 @@ class ChannelService {
   }
 
   emit(channel: string, message: ChannelMessage) {
+    console.log("emit", channel, message, this.clients[channel]);
     this.channelSlots[channel]?.emit(message);
     this.clients[channel]?.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {

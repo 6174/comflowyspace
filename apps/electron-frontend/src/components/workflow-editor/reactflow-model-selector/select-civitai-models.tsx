@@ -5,11 +5,11 @@ import { CivitAIModel, MarketModel, ModelType, getFilePathFromMarktModel, turnCi
 import { Button, Carousel, Input, Modal, Progress, Select, Space, Tag, message } from "antd";
 import { ArrowLeftIcon, SearchIcon } from "ui/icons";
 import { Image } from "antd/lib";
-import { debug } from "console";
 import { ModelDownloadChannel } from "./model-download-channel";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 import styles from "./reactflow-model-selector.style.module.scss";
+import { getBackendUrl } from "@comflowy/common/config";
 /**
  * Select CivitiAI models in nodes
  * @returns 
@@ -72,7 +72,6 @@ export function CivitaiModelListPage() {
   useEffect(() => {
     loadCivitAIModels();
   }, []);
-  console.log("models", models);
   const modelDetail = useModelState(state => state.civitai.modelDetail);
   return (
     <div className={styles.civitai_models_list_page}>
@@ -149,6 +148,10 @@ export function CivitAIModelFilter() {
           const checked = currentTags.indexOf(tag) > -1
           return (
             <Tag.CheckableTag className={checked ? "active" : "inactive"} checked={checked} key={tag} onChange={checked => {
+              // const tags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
+              const tags = checked ? [tag] : []
+              changeFilter({types: tags});
+              handleSearch();
             }}>{tag}</Tag.CheckableTag>
           )
         })}
@@ -199,34 +202,47 @@ export function CivitModelDetailPage() {
   const [modelVersion, setModelVersion] = useState(model?.modelVersions[0].id);
   const [selecting, setSelecting] = useState(false);
   const downloadInfo = useModelState(state => {
-    const taskId = state.modelTaskMap[model.id];
+    const taskId = state.modelTaskMap[model?.id];
     return state.downloadingTasks[taskId];
   });
 
   const modelVersionData = model?.modelVersions.find(version => version.id === modelVersion);
 
   const onChange = useModelState(st => st.selectContext?.onChange);
+  const selectMode = !!onChange
   const handleSelect = useCallback(async () => {
     setSelecting(true);
+    const selectMode = !!onChange
     try {
       const modelData = turnCivitAiModelToMarketModel(model, modelVersionData)
-      const input = useModelState.getState().selectContext?.input;
       const { withHashPath, withOutHashPath } = getFilePathFromMarktModel(modelData);
-      const options = input[0] as string[];
-      const finded = options.find(option => {
-        return option === withHashPath || option === withOutHashPath;
-      });
-
-      if (finded) {
-        onChange(modelData);
-        SlotGlobalEvent.emit({
-          type: GlobalEvents.on_close_model_selector
+      
+      if (selectMode) {
+        const input = useModelState.getState().selectContext?.input;
+        const options = input[0] as string[];
+        const finded = options.find(option => {
+          return option === withHashPath || option === withOutHashPath;
         });
-        return;
+  
+        if (finded) {
+          onChange(modelData);
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.on_close_model_selector
+          });
+          return;
+        }
       }
 
       const runId = model.id + "";
-      const response = await fetch("/api/models/install-model", {
+      useModelState.getState().updateDownloadInfo(runId, {
+        taskId: runId,
+        model,
+        params: modelData,
+        progress: 0,
+        status: "downloading"
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch(getBackendUrl("/api/install_model"), {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -239,19 +255,16 @@ export function CivitModelDetailPage() {
       const json = await response.json();
       console.log(json);
       if (json.status === "exist") {
-        onChange(modelData)
-        SlotGlobalEvent.emit({
-          type: GlobalEvents.on_close_model_selector
-        });
+        if (selectMode) {
+          onChange(modelData)
+          SlotGlobalEvent.emit({
+            type: GlobalEvents.on_close_model_selector
+          });
+        } else {
+          message.info("Model already exist, you can use it now...");
+        }
       } else if (json.status === "downloading") {
         message.info("Model download started...");
-        useModelState.getState().updateDownloadInfo(runId, {
-          taskId: runId,
-          model,
-          params: modelData,
-          progress: 0,
-          status: "downloading"
-        });
       } else {
         message.error("Select model failed, please contact us to get support.");
       }
@@ -323,7 +336,7 @@ export function CivitModelDetailPage() {
             (downloadInfo && downloadInfo.status === "downloading") ? (
               <Progress percent={downloadInfo.progress} />
             ) : (
-              <Button type = "primary" loading={selecting} disabled={selecting} onClick={ handleSelect }>Select</Button>
+              <Button type = "primary" loading={selecting} disabled={selecting} onClick={ handleSelect }>Download</Button>
             )
           }
         </div>

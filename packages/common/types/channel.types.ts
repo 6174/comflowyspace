@@ -1,4 +1,5 @@
 export type ChannelMessage = {
+  subChannel?: string;
   type: string;
   payload: any;
 }

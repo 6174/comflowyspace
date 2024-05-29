@@ -45,8 +45,7 @@ import * as fs from "fs";
  */
 export async function ApiRouteInstallModel(req: Request, res: Response) {
     try {
-        const {data, taskId} = req.body;
-        const model = data;
+        const { model, runId } = req.body;
 
         const modelPath = getModelPath(model.type, model.save_path, model.filename);
         if (fs.existsSync(modelPath)) {
@@ -57,15 +56,22 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
             return
         }
 
+        res.send({
+            success: true,
+            status: "downloading"
+        });
+
         const task: TaskProps = {
-            taskId,
+            taskId: runId,
             name: `download-model-${model.name}`,
             params: model,
             executor: async (dispatcher) => {
+                console.log('installing model', model);
                 const newDispatcher: TaskEventDispatcher = (event: PartialTaskEvent) => {
+                    console.log('installing model message', event);
                     dispatcher(event);
                     let type = event.type || ModelDownloadChannelEvents.onModelDownloadProgress;
-                    channelService.emit(taskId, {
+                    channelService.emit(runId, {
                         type,
                         payload: event
                     });
@@ -74,13 +80,6 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
             }
         };
         taskQueue.addTask(task);
-        res.send({
-            success: true,
-            data: {
-                taskId: task.taskId,
-                taskName: task.name,
-            }
-        });
     } catch (err) {
         res.send({
             success: false,

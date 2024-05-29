@@ -7,6 +7,7 @@ export class Channel {
   id: string;
   private client: W3CWebSocket;
   channelSlot: SlotEvent<ChannelMessage> = new SlotEvent();
+  #subscribed = false;
 
   constructor(id: string) {
     this.id = id;
@@ -14,6 +15,10 @@ export class Channel {
   }
   
   subscribe() {
+    if (this.#subscribed) {
+      return
+    }
+    this.#subscribed = true;
     this.client.onopen = () => {
       console.log('WebSocket Client Connected');
     };
@@ -51,7 +56,6 @@ export function getMainChannel() {
     return mainChannel;
   }
   mainChannel = new Channel(CHANNELS.MAIN);
-  mainChannel.subscribe();
   return mainChannel
 }
 
