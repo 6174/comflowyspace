@@ -2,13 +2,14 @@ import { use, useCallback, useEffect, useRef, useState } from "react"
 import { useModelState } from "@comflowy/common/store/model.state";
 import InfiniteScroll from "ui/infinite-scroller";
 import { CivitAIModel, MarketModel, ModelType, getFilePathFromMarktModel, turnCivitAiModelToMarketModel } from "@comflowy/common/types/model.types";
-import { Button, Carousel, Input, Progress, Select, Space, Tag, message } from "antd";
+import { Button, Carousel, Input, Modal, Progress, Select, Space, Tag, message } from "antd";
 import { ArrowLeftIcon, SearchIcon } from "ui/icons";
 import { Image } from "antd/lib";
 import { debug } from "console";
 import { ModelDownloadChannel } from "./model-download-channel";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
+import styles from "./reactflow-model-selector.style.module.scss";
 export function SelectCivitaiModels() {
   const civitai = useModelState(state => state.civitai);
   const models = civitai.models || [];
@@ -18,15 +19,13 @@ export function SelectCivitaiModels() {
   const loadMoreData = useCallback(() => {
     loadCivitAIModels();
   }, []);
-
-  const modelDetail = useModelState(state => state.civitai.modelDetail);
   const [target, setTarget] = useState(null);
   useEffect(() => {
     setTarget(scrollContainer.current);
   }, [scrollContainer.current])
-
+  const modelDetail = useModelState(state => state.civitai.modelDetail);
   return (
-    <div className="civitai-models-list-page">
+    <div className={styles.civitai_models_list_page}>
       {modelDetail && <CivitModelDetailPage />}
       <div style={{
         height: "100%",
@@ -34,33 +33,91 @@ export function SelectCivitaiModels() {
         overflowX: "hidden",
         visibility: modelDetail ? "hidden" : "visible"
       }} ref={scrollContainer}>
-          <CivitAIModelFilter />
-          <InfiniteScroll
-            scrollableTarget={target}
-            dataLength={models.length}
-            next={loadMoreData}
-            hasMore={hasMoreDocs}
-            loader={
-              <div className='workflow-list-item'>
-                <div className='carousel-wrapper'>
-                </div>
-                <div className="load-text">
-                  Loading...
-                </div>
+        <CivitAIModelFilter />
+        <InfiniteScroll
+          scrollableTarget={target}
+          dataLength={models.length}
+          next={loadMoreData}
+          hasMore={hasMoreDocs}
+          loader={
+            <div className='workflow-list-item'>
+              <div className='carousel-wrapper'>
               </div>
-            }
-            endMessage={
               <div className="load-text">
-
+                Loading...
               </div>
-            }
-          >
-            {models.map((model) => <ModelCardItem model={model} key={model.id} />)}
-          </InfiniteScroll>
+            </div>
+          }
+          endMessage={
+            <div className="load-text">
+
+            </div>
+          }
+        >
+          {models.map((model) => <ModelCardItem model={model} key={model.id} />)}
+        </InfiniteScroll>
       </div>
     </div>
   )
 }
+
+/**
+ * List CivitiAI models In HomePage dashboard
+ * @returns 
+ */
+export function CivitaiModelListPage() {
+  const civitai = useModelState(state => state.civitai);
+  const models = civitai.models || [];
+  const hasMoreDocs = civitai.hasMorePage;
+  const scrollContainer = useRef(null);
+  const loadCivitAIModels = useModelState(state => state.loadCivitAIModels);
+  const loadMoreData = useCallback(() => {
+    loadCivitAIModels();
+  }, []);
+  const [target, setTarget] = useState(null);
+  useEffect(() => {
+    setTarget(scrollContainer.current);
+  }, [scrollContainer.current])
+  const modelDetail = useModelState(state => state.civitai.modelDetail);
+  return (
+    <div className={styles.civitai_models_list_page}>
+      <CivitAIModelFilter />
+      <InfiniteScroll
+        scrollableTarget={"ModelScrollContainer"}
+        dataLength={models.length}
+        next={loadMoreData}
+        hasMore={hasMoreDocs}
+        loader={
+          <div className='workflow-list-item'>
+            <div className='carousel-wrapper'>
+            </div>
+            <div className="load-text">
+              Loading...
+            </div>
+          </div>
+        }
+        endMessage={
+          <div className="load-text">
+
+          </div>
+        }
+      >
+        {models.map((model) => <ModelCardItem model={model} key={model.id} />)}
+      </InfiniteScroll>
+      <Modal
+        title={modelDetail?.name || "Model Detail"}
+        open={!!modelDetail}
+        onCancel={ev => {
+          useModelState.getState().setCivitModelDetailPage();
+        }}
+        footer={null}
+        width={800}>
+        <CivitModelDetailPage />
+      </Modal>
+    </div>
+  )
+}
+
 
 export function CivitAIModelFilter() {
   const changeFilter = useModelState(state => state.updateCivitAIModelFilters);
@@ -112,7 +169,6 @@ export function CivitAIModelFilter() {
     </div>
   )
 }
-
 
 export function ModelCardItem(props: {
   model: CivitAIModel
@@ -222,7 +278,7 @@ export function CivitModelDetailPage() {
   if (!model) return null;
 
   return (
-    <div className="civit-model-detail-page">
+    <div className={styles.civitai_models_detail_page}>
       <div className="header">
         <div className="header-title">
           <Space>

@@ -2,12 +2,19 @@
 .modelManagement {
   padding-right: 20px;
   :global{
+
+    .scroll-container {
+      overflow-y: auto;
+      height: calc(100vh - 80px);
+    }
+
     .model-list {
       margin: 20px 0;
     }
+
     .model-market,.model-recommend,.installed-models {
-      height: calc(100vh - 330px);
-      overflow-y: auto;
+      // height: calc(100vh - 330px);
+      // overflow-y: auto;
     }
     .model-list-item {
       border-bottom: solid 1px var(--borderColor);

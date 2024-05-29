@@ -14,7 +14,7 @@ import { Button, Card, Space } from 'antd';
 //     // Add more types and models as needed
 // };
 
-import { useModelState } from '@comflowy/common/store/model-state';
+import { useModelState } from '@comflowy/common/store/model.state';
 import { comfyElectronApi, useIsElectron } from '@/lib/electron-bridge';
 
 const InstalledModels = () => {
