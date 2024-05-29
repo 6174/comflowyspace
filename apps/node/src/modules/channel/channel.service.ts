@@ -43,7 +43,7 @@ class ChannelService {
     });
   }
 
-  on(channel: string, event: string, callback: (data: any) => void) {
+  on(channel: string, event: string, callback: (data: ChannelMessage) => void) {
     return this.channelSlots[channel]?.on(callback);
   }
 

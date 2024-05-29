@@ -42,6 +42,7 @@ class MyConfigManager {
   getSetupConfig(): {
     comfyUIDir?: string;
     sdwebuiPath?: string;
+    civitaiToken?: string;
   } {
     return this.#getJSONKey(CONFIG_KEYS.appSetupConfig)
   }

@@ -1,11 +1,69 @@
 import * as path from 'path';
-import { getFolderNamesAndPaths, getModelDir } from './model-paths';
+import { getFolderNamesAndPaths, getModelDir, getModelPath } from './model-paths';
 import * as fs from 'fs';
 import {models} from './models';
 import { AllModels, MarketModel, ModelType } from './types';
 import { getFileSizeSync } from '../utils/file-size';
+import { getAppDataDir } from '../utils/get-appdata-dir';
+import { channel } from 'diagnostics_channel';
+import { channelService } from '../channel/channel.service';
+import { CHANNELS, CHANNEL_EVENTS } from '@comflowy/common/types/channel.types';
 
 class ModelManager {
+    constructor() {
+        channelService.on(CHANNELS.MAIN, CHANNEL_EVENTS.UPDATE_MODEL_META, (ev) => {
+            this.updateModelMeta(ev.payload);
+        });
+    }
+
+    getMetaFilePath = () => {
+        const appDir = getAppDataDir();
+        return path.resolve(appDir, 'models.meta.json');
+    }
+
+    /**
+     * update market model meta info from file_name
+     * @param model 
+     */
+    updateModelMeta = (models: [MarketModel]) => {
+        const metaPath = this.getMetaFilePath();
+        const exist = fs.existsSync(metaPath);
+        let data:any = {};
+        if (exist) {
+            data = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+        } 
+
+        models.forEach(model => {
+            const modelKey = model.filename;
+            data[modelKey] = model;
+        });
+
+        fs.writeFileSync(metaPath, JSON.stringify(data, null, 2));
+    }
+
+    /**
+     * get all model meta infos
+     * @returns 
+     */
+    getModelMetas = () => {
+        const metaPath = this.getMetaFilePath();
+        const exist = fs.existsSync(metaPath);
+        if (exist) {
+            return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+        }
+        return {};
+    }
+
+    /**
+     * get meta info of a model
+     * @param modelKey 
+     * @returns 
+     */
+    getModelMeta = (modelKey: string) => {
+        const metas = this.getModelMetas();
+        return metas[modelKey];
+    }
+
     getAllInstalledModels = (): AllModels => {
         const models: AllModels = {};
         const {FOLDER_NAMES_AND_PATHS} = getFolderNamesAndPaths();
@@ -44,7 +102,7 @@ class ModelManager {
     }
 
     getAllUninstalledModels = () => {
-        return models as MarketModel[];
+        return models;
     }
 
     getModelDir = (type: ModelType, save_path: string = "default") => {

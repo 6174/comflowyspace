@@ -29,19 +29,7 @@ export interface FolderPaths {
   'T2I-Style': [string[], ModelExt[]];
 }
 
-// export {MarketModel} from '@comflowy/common/types/model.types';
-
-export type MarketModel = {
-  name: string;
-  type: ModelType;
-  base: string;
-  save_path: string;
-  description: string;
-  reference: string;
-  filename: string;
-  sha?: string;
-  url: string;
-}
+export {type MarketModel} from '@comflowy/common/types/model.types';
 
 /**
  * Manage models

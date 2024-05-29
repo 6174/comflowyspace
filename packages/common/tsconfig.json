@@ -3,6 +3,6 @@
   "compilerOptions": {
     "target": "ES2015"
   },
-  "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx", "jsondb"],
+  "include": [".", "../ui/icons/icon-down.tsx", "../ui/icons/icon-down.tsx", "jsondb", "../../apps/node/src/modules/utils/file-hash.ts"],
   "exclude": ["dist", "build", "node_modules"]
 }

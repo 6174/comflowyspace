@@ -3,7 +3,6 @@ import { uuid } from '@comflowy/common';
 import { Request, Response } from 'express';
 import { installModel } from '../../modules/model-manager/install-model';
 import { PartialTaskEvent, TaskEventDispatcher, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
-import { MarketModel } from '../../modules/model-manager/types';
 import { getFolderNamesAndPaths, getModelDir, getModelPath } from '../../modules/model-manager/model-paths';
 import { channelService } from 'src/modules/channel/channel.service';
 import { ModelDownloadChannelEvents } from "@comflowy/common/types/model.types";

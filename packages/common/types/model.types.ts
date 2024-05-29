@@ -71,6 +71,7 @@ export type MarketModel = {
     image_url?: string;
     [_: string]: any
   };
+  source_data?: any;
 }
 
 export enum ModelDownloadChannelEvents {

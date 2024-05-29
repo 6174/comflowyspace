@@ -4,7 +4,6 @@ import exampleResponse from "./example-response.json";
 import { CivitAIModel, MarketModel } from "@comflowy/common/types/model.types";
 import { Input } from "@comflowy/common/types";
 import lodash from "lodash";
-import { wait } from "@comflowy/common";
 
 export type InstalledModel = {
   name: string;
@@ -143,7 +142,7 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
     const {civitai} = get();
     const { currentPage, pageSize, filters, hasMorePage, cursor } = civitai;
     if (!hasMorePage) return;
-    const ret = await cachedGetCivitModels(currentPage, pageSize, filters, cursor)
+    const ret = exampleResponse//await cachedGetCivitModels(currentPage, pageSize, filters, cursor)
     const models = ret.data.items as unknown as CivitAIModel[] || []; 
     set({
       civitai: {

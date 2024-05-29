@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { getComfyUIDir } from "../utils/get-appdata-dir";
-import { FolderPaths, MarketModel, ModelExt, ModelType } from './types';
+import { FolderPaths, ModelExt, ModelType } from './types';
 import * as fsExtra from "fs-extra";
 import yaml from 'js-yaml';
 import { uuid } from '@comflowy/common';

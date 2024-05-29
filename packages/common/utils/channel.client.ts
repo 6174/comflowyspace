@@ -1,6 +1,6 @@
 import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 import { SlotEvent } from './slot-event';
-import { ChannelMessage } from '../types/channel.types';
+import { CHANNELS, ChannelMessage } from '../types/channel.types';
 import config from '../config';
 
 export class Channel {
@@ -44,3 +44,15 @@ export class Channel {
 export function createChannel(id: string) {
   return new Channel(id);
 }
+
+let mainChannel: Channel;
+export function getMainChannel() {
+  if (mainChannel) {
+    return mainChannel;
+  }
+  mainChannel = new Channel(CHANNELS.MAIN);
+  mainChannel.subscribe();
+  return mainChannel
+}
+
+
