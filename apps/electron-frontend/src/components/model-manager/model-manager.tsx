@@ -59,6 +59,12 @@ const ModelManagement = () => {
         >
           <ModelCards/>
         </Tabs.TabPane> 
+        <Tabs.TabPane
+          tab={'Civitai'}
+          key="civitai"
+        >
+          <ModelCards />
+        </Tabs.TabPane> 
         <Tabs.TabPane tab={t(KEYS.installed)} key="installed">
           <InstalledModels/>
         </Tabs.TabPane> 

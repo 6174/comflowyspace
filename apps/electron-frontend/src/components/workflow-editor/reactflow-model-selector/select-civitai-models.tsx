@@ -1,5 +1,5 @@
 import { use, useCallback, useEffect, useRef, useState } from "react"
-import { useModelState } from "./reactflow-model.state";
+import { useModelState } from "@comflowy/common/store/model.state";
 import InfiniteScroll from "ui/infinite-scroller";
 import { CivitAIModel, MarketModel, ModelType, getFilePathFromMarktModel, turnCivitAiModelToMarketModel } from "@comflowy/common/types/model.types";
 import { Button, Carousel, Input, Progress, Select, Space, Tag, message } from "antd";
@@ -8,7 +8,6 @@ import { Image } from "antd/lib";
 import { debug } from "console";
 import { ModelDownloadChannel } from "./model-download-channel";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
-import { find } from "lodash";
 
 export function SelectCivitaiModels() {
   const civitai = useModelState(state => state.civitai);

@@ -127,6 +127,7 @@ export class SlotEvent<T = void> implements IDisposable {
 }
 
 export enum GlobalEvents {
+  on_select_model = "on_select_model",
   on_close_model_selector = "on_close_model_selector",
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",

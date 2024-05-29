@@ -5,7 +5,8 @@ import { SelectHuggingfaceModels } from "./select-huggingface-models";
 import { SelectCivitaiModels } from "./select-civitai-models";
 import styles from "./reactflow-model-selector.style.module.scss";
 import { SelectFeaturedModels } from "./select-featured-models";
-import { useModelState } from "./reactflow-model.state";
+import { useModelState } from "@comflowy/common/store/model.state";
+
 import { ModelType } from "@comflowy/common/types/model.types";
 
 export function ReactFlowModelSelector() {

@@ -16,12 +16,14 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
     try {
         const installedModels = await modelManager.getAllInstalledModels();
         const marketModels = await modelManager.getAllUninstalledModels();
+        const modelMetas = await modelManager.getModelMetas();
         const paths = getFolderNamesAndPaths();
         res.send({
             success: true,
             data: {
                 installedModels,
                 marketModels,
+                modelMetas,
                 modelPath: paths.MODELS_DIR,
                 paths
             }

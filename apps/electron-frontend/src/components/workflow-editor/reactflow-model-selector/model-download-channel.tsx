@@ -1,6 +1,7 @@
 import { ModelDownloadChannelEvents } from "@comflowy/common/types/model.types";
 import { use, useCallback, useEffect, useState } from "react"
-import { useModelState } from "./reactflow-model.state";
+import { useModelState } from "@comflowy/common/store/model.state";
+
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { message } from "antd";
 import { createChannel } from "@comflowy/common/utils/channel.client";

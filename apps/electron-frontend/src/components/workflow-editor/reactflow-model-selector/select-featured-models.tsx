@@ -1,11 +1,12 @@
 import { MarketModel, ModelType } from "@comflowy/common/types/model.types"
-import { useModelState } from "./reactflow-model.state"
-import { CHECKPOINT_MODELS, LORA_MODELS } from "@comflowy/common/models/model-meta-defs";
+import { useModelState } from "@comflowy/common/store/model.state";
 import { Button, Carousel, Space, Tag } from "antd";
 import { useCallback, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {Image} from "antd";
 
+const CHECKPOINT_MODELS = []
+const LORA_MODELS = []
 /**
  * 显示所有内部提供的模型
  * @returns 
