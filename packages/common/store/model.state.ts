@@ -76,10 +76,6 @@ export type ModelAction = {
     onSearchCivitAI: () => Promise<void>;
 }
 
-const cachedGetCivitModels = lodash.memoize(getCivitModels, (currentPage, pageSize, filters) => {
-    return JSON.stringify({ currentPage, pageSize, filters });
-});
-
 export const useModelState = create<ModelState & ModelAction>((set, get) => ({
     downloadingTasks: {},
     modelTaskMap: {},
@@ -163,7 +159,10 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
         const { civitai } = get();
         const { currentPage, pageSize, filters, hasMorePage, cursor } = civitai;
         if (!hasMorePage) return;
-        const ret = exampleResponse//await cachedGetCivitModels(currentPage, pageSize, filters, cursor)
+        const ret = await getCivitModels(currentPage, pageSize, filters, cursor)
+        if (!ret.success) {
+            throw new Error("Load failed" + ret?.error?.cause?.message);
+        }
         const models = ret.data.items as unknown as CivitAIModel[] || [];
         set({
             civitai: {
@@ -210,8 +209,13 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
     }
 }));
 
+const API_CACHE: Map<string, any> = new Map();
 async function getCivitModels(currentPage: number, pageSize: number, filters: any, cursor?: string) {
-    const api = getBackendUrl("/api/civit/models");
+    const key = JSON.stringify({ currentPage, pageSize, filters, cursor });
+    if (API_CACHE.has(key)) {
+        return API_CACHE.get(key);
+    }
+    const api = getBackendUrl("/api/civitai/models");
     const ret = await fetch(api, {
         method: "POST",
         headers: {
@@ -224,5 +228,10 @@ async function getCivitModels(currentPage: number, pageSize: number, filters: an
             ...filters
         })
     });
-    return ret.json()
+
+    const data = await ret.json()
+    if (data.success) {
+        API_CACHE.set(key, data);
+    }
+    return data
 }

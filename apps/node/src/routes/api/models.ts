@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { installModel } from '../../modules/model-manager/install-model';
 import { PartialTaskEvent, TaskEventDispatcher, TaskProps, taskQueue } from '../../modules/task-queue/task-queue';
 import { getFolderNamesAndPaths, getModelDir, getModelPath } from '../../modules/model-manager/model-paths';
-import { channelService } from 'src/modules/channel/channel.service';
+import { channelService } from '../../modules/channel/channel.service';
 import { ModelDownloadChannelEvents } from "@comflowy/common/types/model.types";
 
 /**
@@ -37,6 +37,7 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
     
 }
 import * as fs from "fs";
+import { getCivitModelByHash, getCivitModelById, listCivitModels } from '../../modules/model-manager/civitai';
 
 /**
  * install a model
@@ -87,4 +88,38 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
         })
     }
     
+}
+
+export async function ApiGetCivitaiModels(req: Request, res: Response) {
+    try {
+        const params = req.body
+        if (params.modelId) {
+            const ret = await getCivitModelById(params.modelId)
+            res.send({
+                success: true,
+                data: ret
+            });
+            return
+        }
+        if (params.hash) {
+            const ret = await getCivitModelByHash(params.hash)
+            res.send({
+                success: true,
+                data: ret
+            });
+            return
+        }
+
+        const ret = await listCivitModels(params)
+        res.send({
+            success: true,
+            data: ret
+        });
+    } catch (err) {
+        console.log(err);
+        res.send({
+            success: false,
+            error: err
+        })
+    }
 }

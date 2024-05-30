@@ -1,6 +1,6 @@
 import express, { Request, Response, response } from 'express';
 import cors from 'cors';
-import { ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
+import { ApiGetCivitaiModels, ApiRouteGetModels, ApiRouteInstallModel } from './routes/api/models';
 import { setupComfyUIProxy, ApiGetObjectInfo } from './routes/api/comfy-proxy';
 import { setupWebsocketHandler } from './routes/api/websocket-handler';
 import { ApiRouteAddTask } from './routes/api/add-task';
@@ -78,6 +78,7 @@ export async function startAppServer(params: {
   app.post('/api/update_comfy', ApiUpdateComfyUIAndRestart)
   app.get('/api/get_conda_env_info', ApiGetCondaInfo);
   app.get('/api/object_info', ApiGetObjectInfo)
+  app.post('/api/civitai/models', ApiGetCivitaiModels)
 
   app.post('/api/data', (req: Request, res: Response) => {
     const { data } = req.body;

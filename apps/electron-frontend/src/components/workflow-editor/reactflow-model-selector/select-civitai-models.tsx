@@ -66,11 +66,15 @@ export function CivitaiModelListPage() {
   const models = civitai.models || [];
   const hasMoreDocs = civitai.hasMorePage;
   const loadCivitAIModels = useModelState(state => state.loadCivitAIModels);
-  const loadMoreData = useCallback(() => {
-    loadCivitAIModels();
+  const loadMoreData = useCallback(async () => {
+    try {
+      await loadCivitAIModels();
+    } catch(err) {
+      message.error(err.message)
+    }
   }, []);
   useEffect(() => {
-    loadCivitAIModels();
+    loadMoreData();
   }, []);
   const modelDetail = useModelState(state => state.civitai.modelDetail);
   return (

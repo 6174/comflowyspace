@@ -1,15 +1,22 @@
 import { appConfigManager } from "../config-manager";
 import { proxyFetch } from "../utils/proxy-fetch";
 
-function resolveCivitHeaders() {
-  const CIVITAI_TOKEN = appConfigManager.getSetupConfig().civitaiToken;
-  const headers: any = {
+const LIST_TOKEN = "eeec53d1caaade212b4a965ced83724c";
+
+export function getCivitAIToken(useDefault = true) {
+  let token = appConfigManager.getSetupConfig().civitaiToken;
+  if (token === undefined && useDefault) {
+    token = LIST_TOKEN
+  }
+  return token;
+}
+export function resolveCivitHeaders() {
+ 
+  const token = getCivitAIToken();
+  const headers = {
+    "Authorization": `Bearer ${token}`,
     "Content-Type": "application/json",
   };
-
-  if (CIVITAI_TOKEN !== undefined) {
-    headers["Authorization"] = `Bearer ${CIVITAI_TOKEN}`;
-  }
 
   return headers;
 }
@@ -73,12 +80,13 @@ export async function listCivitModels(params: any = {}) {
   }
 
   const headers = resolveCivitHeaders();
-  const queryString = Object.keys(filters).map(key => key + '=' + filters[key]).join('&');
+  const queryString = Object.keys(filters).filter(key => !!filters[key]).map(key => key + '=' + filters[key]).join('&');
   console.log("query string", queryString);
   const ret = await proxyFetch(`https://api.civitai.com/v1/models?${queryString}`, {
     headers
   });
 
   const data = await ret.json()
+
   return data
 }
