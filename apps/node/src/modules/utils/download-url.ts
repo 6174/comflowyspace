@@ -126,6 +126,10 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       }
     }
 
+    if (fs.existsSync(tmpFilePath)) {
+      return
+    }
+
     const fileSize: number = fs.existsSync(tmpFilePath) ? fs.statSync(tmpFilePath).size : 0;
     const headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
 
@@ -175,16 +179,21 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       throw new Error(msg)
     });
 
+    let last_send = Date.now();
     response.body!.on('data', (chunk) => {
       progressBar.tick(chunk.length);
       downloadedSize += chunk.length;
-      dispatch({
-        message: `Download progress: ${progressBar.curr}/${progressBar.total}`,
-        data: {
-          downloaded: downloadedSize,
-          total: totalSize
-        }
-      })
+      const now = Date.now();
+      if (now - last_send > 1000) {
+        last_send = now;
+        dispatch({
+          message: `Download progress: ${progressBar.curr}/${progressBar.total}`,
+          data: {
+            downloaded: downloadedSize,
+            total: totalSize
+          }
+        })
+      }
     });
 
     try {

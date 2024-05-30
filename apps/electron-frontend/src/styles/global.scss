@@ -119,3 +119,34 @@ body {
     stroke-dashoffset: 10;
   }
 }
+
+.ant-divider {
+  border-color: var(--borderColor);
+  margin: 16px 0;
+}
+
+
+.tool-effect {
+  /* Frame 1321316442 */
+  background: rgba(41, 42, 53, 0.65);
+  /* ToolEffect */
+  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.06), inset 0px 0.5px 1.5px rgba(197, 197, 211, 0.1);
+  backdrop-filter: blur(5px);
+  /* Note: backdrop-filter has minimal browser support */
+}
+
+.app-skeleton {
+  .ant-space {
+    display: flex;
+  }
+}
+
+span.meta, .ant-tag {
+  font-size: 12px;
+  opacity: .6;
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0px 4px;
+  background-color: #414356;
+  margin-right: 2px;
+}

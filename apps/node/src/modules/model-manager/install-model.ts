@@ -23,12 +23,14 @@ export async function installModel(dispatch: TaskEventDispatcher, model: MarketM
         return true;
     }
     try {
-        await downloadUrlPro(dispatch, modelPath, model.download_url)
+        console.log("download info", model);
+        await downloadUrlPro(dispatch, model.download_url, modelPath, model.sha256)
         dispatch({
             type: ModelDownloadChannelEvents.onModelDownloadSuccess,
         })
         return true;
     } catch(err: any) {
+        console.log(err);
         dispatch({
             type: ModelDownloadChannelEvents.onModelDownloadFailed,
             error: err.message,

@@ -26,7 +26,7 @@ export function ModelDownloadChannel(props: {
   }, [runId]);
 
   const onModelDownloadProgress = useCallback((ev) => {
-    const ret = ev.payload;
+    const ret = ev.data;
     console.log("progress", ret);
     updateDownloadInfo(runId, {
       progress: Math.floor((ret.downloaded / ret.total) * 10000)/100,

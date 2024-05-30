@@ -56,7 +56,7 @@ const ModelManagement = () => {
         </div>
         <Tabs defaultActiveKey="available" >
           <Tabs.TabPane
-            tab={t(KEYS.available)}
+            tab={"Featured"}
             key="available"
           >
             <ModelCards />

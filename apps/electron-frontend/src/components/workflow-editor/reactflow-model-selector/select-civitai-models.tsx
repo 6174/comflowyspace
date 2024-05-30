@@ -169,7 +169,6 @@ export function ModelCardItem(props: {
     <div className="model-card-item" onClick={ev => {
       setCivitModelDetailPage(model);
     }}>
-
       <div className="gallery">
         <Image preview={false} src={model.modelVersions[0].images.filter(image => image.nsfwLevel < 5)[0]?.url} />
       </div>
@@ -189,9 +188,6 @@ export function ModelCardItem(props: {
             <Tag key={tag}>{tag}</Tag>
           ))}
         </div>
-      </div>
-      <div className="model-card-item-footer">
-        <Button type="link" size="small">Select</Button>
       </div>
     </div>
   )
@@ -234,14 +230,6 @@ export function CivitModelDetailPage() {
       }
 
       const runId = model.id + "";
-      useModelState.getState().updateDownloadInfo(runId, {
-        taskId: runId,
-        model,
-        params: modelData,
-        progress: 0,
-        status: "downloading"
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       const response = await fetch(getBackendUrl("/api/install_model"), {
         method: "POST",
         headers: {
@@ -264,6 +252,13 @@ export function CivitModelDetailPage() {
           message.info("Model already exist, you can use it now...");
         }
       } else if (json.status === "downloading") {
+        useModelState.getState().updateDownloadInfo(runId, {
+          taskId: runId,
+          model,
+          params: modelData,
+          progress: 0,
+          status: "downloading"
+        });
         message.info("Model download started...");
       } else {
         message.error("Select model failed, please contact us to get support.");
@@ -341,7 +336,7 @@ export function CivitModelDetailPage() {
           }
         </div>
       </div>
-      <ModelDownloadChannel runId={downloadInfo?.taskId}/>
+      <ModelDownloadChannel runId={model.id + ""}/>
     </div>
   )
 }

@@ -49,7 +49,6 @@ class ChannelService {
   }
 
   emit(channel: string, message: ChannelMessage) {
-    console.log("emit", channel, message, this.clients[channel]);
     this.channelSlots[channel]?.emit(message);
     this.clients[channel]?.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
