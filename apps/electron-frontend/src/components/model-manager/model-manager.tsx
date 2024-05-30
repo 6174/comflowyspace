@@ -8,9 +8,9 @@ import InstalledModels from './installed-models';
 import { useModelState } from '@comflowy/common/store/model.state';
 import { FolderIcon, ReloadIcon } from 'ui/icons';
 import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
-import ModelCards from './model-recommend';
 import {KEYS, t} from "@comflowy/common/i18n";
 import { CivitaiModelListPage } from '../workflow-editor/reactflow-model-selector/select-civitai-models';
+import { SelectFeaturedModels } from '../workflow-editor/reactflow-model-selector/select-featured-models';
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
@@ -59,7 +59,7 @@ const ModelManagement = () => {
             tab={"Featured"}
             key="available"
           >
-            <ModelCards />
+            <SelectFeaturedModels />
           </Tabs.TabPane>
           <Tabs.TabPane
             tab={'Civitai'}

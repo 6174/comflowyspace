@@ -7,12 +7,12 @@ import { message } from "antd";
 import { createChannel } from "@comflowy/common/utils/channel.client";
 
 export function ModelDownloadChannel(props: {
-  runId: string
+  runId: string,
+  onSuccess: () => void,
+  onFailed: () => void,
 }) {
   const runId = props.runId;
   const updateDownloadInfo =  useModelState(st => st.updateDownloadInfo)
-  const onInit = useModelState(st => st.onInit);
-  const context = useModelState(st => st.selectContext);
   const onModelDownloadSuccess = useCallback(() => {
     console.log("onsuccess");
     message.success("Model download success, you can use the model now...");
@@ -20,12 +20,7 @@ export function ModelDownloadChannel(props: {
       progress: 100,
       status: "success"
     });
-    onInit();
-    context?.onChange(useModelState.getState().downloadingTasks[runId].params);
-    SlotGlobalEvent.emit({
-      type: GlobalEvents.on_close_model_selector
-    });
-
+    props.onSuccess();
   }, [runId]);
 
   const onModelDownloadProgress = useCallback((ev) => {
@@ -45,6 +40,7 @@ export function ModelDownloadChannel(props: {
     updateDownloadInfo(runId, {
       status: "failed"
     });
+    props.onFailed();
   }, [runId]);
 
   useEffect(() => {

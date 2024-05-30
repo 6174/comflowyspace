@@ -11,7 +11,7 @@ export type InstalledModel = {
 }
 export type ModelDownloadInfo = {
     taskId: string,
-    model: CivitAIModel,
+    model: MarketModel,
     params: any,
     status: "downloading" | "success" | "failed",
     progress: number,
@@ -148,7 +148,7 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
             set({
                 modelTaskMap: {
                     ...get().modelTaskMap,
-                    [info.model.id]: taskId
+                    [info.model.id || info.model.filename]: taskId
                 }
             })
         }

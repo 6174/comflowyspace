@@ -54,6 +54,7 @@ export enum ModelType {
 }
 
 export type MarketModel = {
+  id?: string;
   name: string;
   type: ModelType;
   base_model: BaseModel;
@@ -146,6 +147,7 @@ export function turnCivitAiModelToMarketModel(civitModel: CivitAIModel, civitMod
   }
 
   return {
+    id: civitModel.id + "",
     name: civitModel.name + "/" + civitModelVersion.name,
     type: civitModel.type as any,
     base_model: civitModelVersion.baseModel as any,

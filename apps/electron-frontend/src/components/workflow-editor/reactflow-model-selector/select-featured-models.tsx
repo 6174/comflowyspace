@@ -1,12 +1,12 @@
 import { MarketModel, ModelType } from "@comflowy/common/types/model.types"
 import { useModelState } from "@comflowy/common/store/model.state";
-import { Button, Carousel, Space, Tag } from "antd";
+import { Button, Carousel, Progress, Space, Tag } from "antd";
 import { useCallback, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {Image} from "antd";
-
-const CHECKPOINT_MODELS = []
-const LORA_MODELS = []
+import { CHECKPOINT_MODELS, LORA_MODELS } from "@comflowy/common/models/model-meta-defs";
+import styles from "./reactflow-model-selector.style.module.scss";
+import { ModelDownloadOrSelectButton } from "./select-or-download-model-button";
 /**
  * 显示所有内部提供的模型
  * @returns 
@@ -15,10 +15,9 @@ export function SelectFeaturedModels() {
   const types = useModelState(st => st.filters.types || [ModelType.Checkpoint])
   const hasCheckpoint = types.includes(ModelType.Checkpoint)
   const hasLora = types.includes(ModelType.LoRA)
-
   return (
-    <div className="curated-models">
-      <CivitAIModelFilter/>
+    <div className={styles.curated_models}>
+      <ModelFilters/>
       {hasCheckpoint && (
         <div className="model-list">
           {CHECKPOINT_MODELS.map(model => {
@@ -41,8 +40,10 @@ export function SelectFeaturedModels() {
     </div>
   )
 }
-export function CivitAIModelFilter() {
-  const currentTags = useModelState.getState().filters.types || [];
+
+
+export function ModelFilters() {
+  const currentTags = useModelState.getState().filters.types || [ModelType.Checkpoint];
   const tags = [ModelType.Checkpoint, ModelType.LoRA, ModelType.Controlnet, ModelType.Upscaler, ModelType.VAE]
   return (
     <div className="model-filter">
@@ -50,8 +51,13 @@ export function CivitAIModelFilter() {
         {tags.map(tag => {
           const checked = currentTags.indexOf(tag) > -1
           return (
-            <Tag.CheckableTag className={checked ? "active" : "inactive"} checked={checked} key={tag} onChange={checked => {
-            }}>{tag}</Tag.CheckableTag>
+            <span className={`filter-type ${checked ? "active" : "inactive"}`} key={tag} onClick={ev => {
+              // const tags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
+              const tags = checked ? [] : [tag]
+              useModelState.getState().updateFilters({
+                types: tags
+              })
+            }}>{tag}</span>
           )
         })}
       </Space>
@@ -101,9 +107,8 @@ function ModelCard(props: {
         </div>
       </div>
       <div className="model-card__footer">
-        <Button type={"link"} className="model-card__button" onClick={selectModel}>Select</Button>
+        <ModelDownloadOrSelectButton model={model}/>
       </div>
     </div>
   )
 }
-
