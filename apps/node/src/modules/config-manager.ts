@@ -1,7 +1,7 @@
 import Configstore from 'configstore';
 import * as path from 'path';
 import { getAppDataDir } from './utils/get-appdata-dir';
-import { ComfyUIRunConfig } from '@comflowy/common/types';
+import { AppConfigs, ComfyUIRunConfig } from '@comflowy/common/types';
 
 class MyConfigManager {
   private config: Configstore;
@@ -39,11 +39,7 @@ class MyConfigManager {
     return config;
   }
 
-  getSetupConfig(): {
-    comfyUIDir?: string;
-    sdwebuiPath?: string;
-    civitaiToken?: string;
-  } {
+  getSetupConfig(): AppConfigs["appSetupConfig"] {
     return this.#getJSONKey(CONFIG_KEYS.appSetupConfig)
   }
 

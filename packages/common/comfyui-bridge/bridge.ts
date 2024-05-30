@@ -63,6 +63,25 @@ export async function updateComflowyRunConfig(configs: Partial<AppConfigs["runCo
   return ret;
 }
 
+export async function updateComflowyAppConfig(configs: Partial<AppConfigs["appSetupConfig"]>, restart = true): Promise<any> {
+  let ret;
+  try {
+    const rest = await fetch(getBackendUrl(`/api/update_app_config?restart=${restart ? "true" : "false"}`), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(configs)
+    });
+    ret = await rest.json();
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+  return ret;
+}
+
+
 export async function getExtensionInfos(doUpdateCheck = false): Promise<any> {
   let ret;
   try {

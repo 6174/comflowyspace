@@ -296,6 +296,27 @@ export async function ApiSetRunConfig(req: Request, res: Response) {
   }
 }
 
+export async function ApiSetAppConfig(req: Request, res: Response) {
+    try {
+        const configs = req.body;
+        const oldConfigs = appConfigManager.getSetupConfig();
+        const newConfigs = {
+            ...oldConfigs,
+            ...configs
+        }
+        appConfigManager.set(CONFIG_KEYS.appSetupConfig, JSON.stringify(newConfigs));
+        res.send({
+            success: true,
+        });
+    } catch (err: any) {
+        logger.error(err.message + ":" + err.stack);
+        res.send({
+            success: false,
+            error: err.message
+        });
+    }
+} 
+
 export async function ApiUpdateStableDiffusionConfig(req: Request, res: Response) {
     try {
         const { data } = req.body;

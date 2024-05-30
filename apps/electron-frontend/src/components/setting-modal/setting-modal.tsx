@@ -9,7 +9,7 @@ import LogoIcon from 'ui/icons/logo';
 import { SettingsIcon, InfoIcon, PersonIcon, TrayAndArrowDown } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
-import { updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
+import { updateComflowyAppConfig, updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
 import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
 import Color from 'color';
 
@@ -55,8 +55,12 @@ const SettingsModal = ({ isVisible, handleClose }) => {
             {activeMenuKey === 'general' &&
               <>
                 <SelectLanguage/>
+                <Divider style={{ margin: '0 0 20px 0' }} />
                 <SelectExecutionPrecisionMode />
+                <Divider style={{ margin: '0 0 20px 0' }} />
                 <SelectSDPath/>
+                <Divider style={{ margin: '0 0 20px 0' }} />
+                <CivitaiToken/>
               </>
             }
             {activeMenuKey === 'about' && <AboutComflowySpace />}
@@ -66,6 +70,72 @@ const SettingsModal = ({ isVisible, handleClose }) => {
     </Modal>
   );
 };
+
+function CivitaiToken() {
+  const onLoadAppConfig = useDashboardState(state => state.onLoadAppConfig);
+  const civitaitoken = useDashboardState(state => state.appConfigs?.appSetupConfig?.civitaiToken || '');
+  const [value, onSetValue] = useState(civitaitoken);
+  useEffect(() => {
+    onSetValue(civitaitoken);
+  }, [civitaitoken]);
+
+  const [loading, setLoading] = useState(false);
+
+  const onSave = useCallback(async () => {
+    const val = value.trim();
+    if (val === civitaitoken) {
+      return;
+    }
+    if (val.length < 10) {
+      message.error("Please enter correct civitai token")
+      return
+    }
+
+    setLoading(true);
+    try {
+      await updateComflowyAppConfig({
+        civitaiToken: val
+      });
+      message.success("Save success");
+      onLoadAppConfig();
+    } catch (err) {
+      message.error("Save faileld:" + err.message);
+    }
+    try {
+
+    } catch(err) {
+      message.error("save error:" + err.message);
+    }
+
+    setLoading(false);
+  }, [value, civitaitoken]);
+  return (
+    <div className='section'>
+      <div className='section-title'>CivitAI Token</div>
+      <div className='section-description'>
+        Learn how to get your token from <a onClick={ev => {
+          comfyElectronApi.openURL("https://education.civitai.com/civitais-guide-to-downloading-via-api/#how-do-i-download-via-the-api")
+        }}target="_blank">CivitAI</a>
+      </div>
+
+      <Space>
+        <Input value={value} style={{
+          width: 400,
+          height: 40
+        }} placeholder={"Enter civitai token here"} onChange={(ev) => {
+          onSetValue(ev.target.value);
+        }} />
+        <Button
+          className='save-button'
+          icon={<TrayAndArrowDown />}
+          size='large'
+          onClick={() => {
+            onSave();
+          }}>{t(KEYS.save)}</Button>
+      </Space>
+    </div>
+  )
+}
 
 function SelectSDPath() {
   const onLoadAppConfig = useDashboardState(state => state.onLoadAppConfig);
@@ -119,12 +189,12 @@ function SelectSDPath() {
 
   const electronEnv = useIsElectron();
   return (
-    <div className='general-sdpath section'>
-      <div className='gerneral-sdpath-title section-title'>{t(KEYS.sdWebUIPath)}</div>
-      <div className='general-sdpath-content'>{t(KEYS.sdWebUIPathDesc)}</div>
+    <div className='section'>
+      <div className='section-title'>{t(KEYS.sdWebUIPath)}</div>
+      <div className='section-description'>{t(KEYS.sdWebUIPathDesc)}</div>
       <Input value={sdwebuiPath} placeholder="Input SD WebUI path if exists" disabled={true} style={{ width: 400, height: 40 }} />
       <div className="row" style={{marginTop: 10}}>
-        {electronEnv && <Button size='large' onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
+        {electronEnv && <Button onClick={selectFolder} >{t(KEYS.changeLocation)}</Button>}
       </div>
     </div>
   )
@@ -288,7 +358,7 @@ function SelectExecutionPrecisionMode() {
           }}
         />
       </div>
-
+      <Divider style={{ margin: '0 0 20px 0' }} />
       <div className="extra-command section">
         <div className='general-startup-settings-title section-title'>{t(KEYS.comfyui_extra_commands)}:</div>
         <Space>

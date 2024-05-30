@@ -16,7 +16,8 @@ export type EnvRequirements = {
 export type AppConfigs = {
   appSetupConfig?: {
     comfyUIDir: string,
-    stableDiffusionDir: string
+    stableDiffusionDir?: string
+    civitaiToken?: string
   },
   runConfig?: ComfyUIRunConfig
 };

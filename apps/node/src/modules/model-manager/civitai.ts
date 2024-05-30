@@ -4,7 +4,7 @@ import { proxyFetch } from "../utils/proxy-fetch";
 const LIST_TOKEN = "eeec53d1caaade212b4a965ced83724c";
 
 export function getCivitAIToken(useDefault = true) {
-  let token = appConfigManager.getSetupConfig().civitaiToken;
+  let token = appConfigManager.getSetupConfig()?.civitaiToken;
   if (token === undefined && useDefault) {
     token = LIST_TOKEN
   }
