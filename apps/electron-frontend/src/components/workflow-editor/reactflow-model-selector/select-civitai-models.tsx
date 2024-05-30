@@ -151,12 +151,12 @@ export function CivitAIModelFilter() {
         {tags.map(tag => {
           const checked = currentTags.indexOf(tag) > -1
           return (
-            <Tag.CheckableTag className={checked ? "active" : "inactive"} checked={checked} key={tag} onChange={checked => {
+            <span className={`filter-type ${checked ? "active" : "inactive"}`} key={tag} onClick={ev => {
               // const tags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
-              const tags = checked ? [tag] : []
+              const tags = checked ? [] : [tag]
               changeFilter({types: tags});
               handleSearch();
-            }}>{tag}</Tag.CheckableTag>
+            }}>{tag}</span>
           )
         })}
       </Space>
@@ -200,6 +200,9 @@ export function ModelCardItem(props: {
 export function CivitModelDetailPage() {
   const model = useModelState(state => state.civitai.modelDetail);
   const [modelVersion, setModelVersion] = useState(model?.modelVersions[0].id);
+  useEffect(() => {
+    setModelVersion(model?.modelVersions[0].id)
+  }, [model]);
   const [selecting, setSelecting] = useState(false);
   const downloadInfo = useModelState(state => {
     const taskId = state.modelTaskMap[model?.id];

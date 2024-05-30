@@ -127,10 +127,6 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       }
     }
 
-    if (fs.existsSync(tmpFilePath)) {
-      return
-    }
-
     const fileSize: number = fs.existsSync(tmpFilePath) ? fs.statSync(tmpFilePath).size : 0;
     let headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
 

@@ -1,8 +1,6 @@
 
 import { create } from "zustand";
-import exampleResponse from "./example-response";
-import lodash from "lodash";
-import { getExtensionInfos, getModelInfos } from "../comfyui-bridge/bridge";
+import { getModelInfos } from "../comfyui-bridge/bridge";
 import { CivitAIModel, MarketModel } from "../types/model.types";
 import { Input } from "../types";
 import { getBackendUrl } from "../config";

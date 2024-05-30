@@ -11,6 +11,7 @@ export function ModelDownloadChannel(props: {
 }) {
   const runId = props.runId;
   const updateDownloadInfo =  useModelState(st => st.updateDownloadInfo)
+  const onInit = useModelState(st => st.onInit);
   const context = useModelState(st => st.selectContext);
   const onModelDownloadSuccess = useCallback(() => {
     console.log("onsuccess");
@@ -19,18 +20,22 @@ export function ModelDownloadChannel(props: {
       progress: 100,
       status: "success"
     });
+    onInit();
     context?.onChange(useModelState.getState().downloadingTasks[runId].params);
     SlotGlobalEvent.emit({
       type: GlobalEvents.on_close_model_selector
     });
+
   }, [runId]);
 
   const onModelDownloadProgress = useCallback((ev) => {
     const ret = ev.data;
     console.log("progress", ret);
-    updateDownloadInfo(runId, {
-      progress: Math.floor((ret.downloaded / ret.total) * 10000)/100,
-    });
+    if (ret && ret.downloaded) {
+      updateDownloadInfo(runId, {
+        progress: Math.floor((ret.downloaded / ret.total) * 10000)/100,
+      });
+    }
   }, [runId]);
 
   const onModelDownloadFailed = useCallback((ev) => {
