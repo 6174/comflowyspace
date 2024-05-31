@@ -7,6 +7,7 @@ import {Image} from "antd";
 import { CHECKPOINT_MODELS, LORA_MODELS } from "@comflowy/common/models/model-meta-defs";
 import styles from "./reactflow-model-selector.style.module.scss";
 import { ModelDownloadOrSelectButton } from "./select-or-download-model-button";
+import { comfyElectronApi } from "@/lib/electron-bridge";
 /**
  * 显示所有内部提供的模型
  * @returns 
@@ -44,7 +45,7 @@ export function SelectFeaturedModels() {
         className={styles.civitai_models_detail_modal}
         title={modelDetail ? (
           <div className="text action" onClick={ev => {
-            window.open(modelDetail.reference, "_blank")
+            comfyElectronApi.openURL(modelDetail.reference)
           }}>
             {modelDetail.name} {modelDetail.meta?.size ? `(${modelDetail.meta.size})` : ""}
           </div>
@@ -82,6 +83,9 @@ function ModelDetailPage({model}: {model: MarketModel}) {
         <div className="metaInfo">
           <p><span>Size: {model.meta?.size}</span></p>
           <p><span>SHA256: {model.sha256}</span></p>
+          <p><span>Reference: <a onClick={ev => {
+            comfyElectronApi.openURL(model.reference)
+          }}>{model.reference}</a> </span></p>
         </div>
         <div className="tags">
           {tags.map(tag => (
@@ -98,7 +102,7 @@ function ModelDetailPage({model}: {model: MarketModel}) {
   )
 }
 
-export function ModelFilters() {
+function ModelFilters() {
   const currentTags = useModelState.getState().featuredModels.filters.types || [ModelType.Checkpoint];
   const tags = [ModelType.Checkpoint, ModelType.LoRA, ModelType.Controlnet, ModelType.Upscaler, ModelType.VAE]
   return (
@@ -110,7 +114,7 @@ export function ModelFilters() {
             <span className={`filter-type ${checked ? "active" : "inactive"}`} key={tag} onClick={ev => {
               // const tags = checked ? [...currentTags, tag] : currentTags.filter(t => t !== tag);
               const tags = checked ? [] : [tag]
-              useModelState.getState().updateFilters({
+              useModelState.getState().updateFeaturedFilters({
                 types: tags
               })
             }}>{tag}</span>
