@@ -7,6 +7,7 @@
     .extension-list {
       padding-right: 20px;
       overflow-y: auto;
+      overflow-x: hidden;
       height: calc(100vh - 150px);
     }
 
@@ -25,6 +26,7 @@
       background-color: var(--backgroundColorL1);
       transition: var(--transition);
       position: relative;
+      height: 130px;
       .update-badge {
         position: absolute;
         bottom: 4px;

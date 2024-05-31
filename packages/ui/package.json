@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "1.17.0",
+    "@tanstack/react-virtual": "^3.5.0",
     "@types/throttle-debounce": "^5.0.0",
     "antd": "5.12.5",
     "react-uid": "^2.3.3",

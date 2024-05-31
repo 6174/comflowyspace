@@ -10,7 +10,7 @@ import { DisableExtensionButton } from "./disable-extension-button";
 import { openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {KEYS, t} from "@comflowy/common/i18n";
-
+import { VirtualGrid } from "ui/virtual/virtual-grid";
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
@@ -81,9 +81,9 @@ function ExtensionList(props: {
 
   const displayedExtensions = (searchText?.trim() !== "") ? searchedExtensions : extensions;
   return (
-    <div className='extension-list'>
+    <div className="extension-list-wrapper">
       <Row>
-        {showFilter && 
+        {showFilter &&
           <Col span={12} style={{ marginBottom: 16 }}>
             <Input
               placeholder={t(KEYS.searchExtensions)}
@@ -97,11 +97,18 @@ function ExtensionList(props: {
       <p className="sub">
         {t(KEYS.totalExtensions)}: {displayedExtensions.length}
       </p>
-      <div className="result">
-        {displayedExtensions.map((ext, index) => {
-          return <ExtensionListItem extension={ext} key={ext.title + ext.author + index}/>
-        })}
-      </div>
+
+      <VirtualGrid 
+          className="extension-list"
+          items={displayedExtensions}
+          itemHeight={130}
+          renderItem={(ext) => {
+            return <ExtensionListItem extension={ext} />
+          }}
+          minItemWidth={250}
+          gridGap={10}
+        >
+      </VirtualGrid>
     </div>
   )
 }
