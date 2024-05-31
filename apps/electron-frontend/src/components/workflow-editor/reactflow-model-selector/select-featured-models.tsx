@@ -22,7 +22,7 @@ export function SelectFeaturedModels() {
     <div className={styles.curated_models}>
       <ModelFilters/>
       {hasCheckpoint && (
-        <div className="model-list">
+        <div className={styles.modelCardList}>
           {CHECKPOINT_MODELS.map(model => {
             return (
               <ModelCard model={model} key={model.filename}/>
@@ -32,7 +32,7 @@ export function SelectFeaturedModels() {
       )}
 
       {hasLora && (
-        <div className="model-list">
+        <div className={styles.modelCardList}>
           {LORA_MODELS.map(model => {
             return (
               <ModelCard model={model} key={model.filename} />

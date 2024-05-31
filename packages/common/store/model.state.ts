@@ -8,6 +8,10 @@ import { getBackendUrl } from "../config";
 export type InstalledModel = {
     name: string;
     size: number;
+    path: number;
+    meta?: MarketModel | {
+        failed: boolean
+    }
 }
 export type ModelDownloadInfo = {
     taskId: string,

@@ -166,7 +166,7 @@ export function turnCivitAiModelToMarketModel(civitModel: CivitAIModel, civitMod
     source_data: civitModelVersion,
     reference: `https://civitai.com/models/${civitModel.id}`,
     meta: {
-      modelId: civitModel.id,
+      modelId: civitModelVersion.modelId || civitModel.id,
       modelVersionId: civitModelVersion.id,
       image_url: civitModelVersion.images.filter(img => img.nsfwLevel <= 5)[0].url,
     }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Card, Space } from 'antd';
-
+import { Button, Card, Space, Image, Tag } from 'antd';
+import styles from "../workflow-editor/reactflow-model-selector/reactflow-model-selector.style.module.scss"
 // Your model data
 // const installedModels = {
 //     type1: [
@@ -16,6 +16,7 @@ import { Button, Card, Space } from 'antd';
 
 import { useModelState } from '@comflowy/common/store/model.state';
 import { comfyElectronApi, useIsElectron } from '@/lib/electron-bridge';
+import { BaseModel, MarketModel } from '@comflowy/common/types/model.types';
 
 const InstalledModels = () => {
     const {installedModels} = useModelState();
@@ -59,29 +60,64 @@ const InstalledModels = () => {
 };
 
 const ModelList = ({ models }) => {
-    const isElectron = useIsElectron();
     return (
-        <div className='model-list' style={{ width: '100%' }}>
+        <div className={styles.modelCardList} style={{ width: '100%' }}>
             {models.map((model, index) => {
+                let modelData: MarketModel = {
+                    name: model.name,
+                    type: model.folder,
+                    filename: model.name,
+                    save_path: model.folder,
+                    reference: '',
+                    source: "other",
+                    base_model: BaseModel.OTHER,
+                    sha256: '',
+                    download_url: ''
+                }
+                if (model.meta.filename) {
+                    modelData = model.meta
+                }
                 return (
-                    <div className="model-list-item" key={index}>
-                        <Space>
-                            {
-                                isElectron ? (
-                                    <a className='title' onClick={ev => {
-                                        comfyElectronApi.openDirectory(model.dir);
-                                    }}>{model.name}</a>
-                                ) : (
-                                    <div className="title">{model.name}</div>
-                                )
-                            }
-                            <div className="size">{"("}{model.size}{")"}</div>
-                        </Space>
-                    </div>
+                   <ModelCard model={modelData}/>
                 )
             })}
         </div>
     );
 };
+
+function ModelCard(props: {
+    model: MarketModel
+}) {
+    const model = props.model;
+    const imgs = model.meta?.image_urls ?? (model.meta?.image_url ? [model.meta.image_url] : []);
+    const img = imgs[0];
+    let reference = "";
+    if (model.source === "civitai") {
+        reference = "https://civitai.com/models/" + (model.source_data?.modelId || model.meta.modelId);
+    }
+    return (
+        <div className="model-card">
+            <div className="model-card__gallery">
+                {img &&<Image src={img} preview={false} />}
+            </div>
+            <div className="model-card__header">
+                <div className="model-card__title">
+                    <span className="action" onClick={ev => {
+                        if (reference  !== "") {
+                            comfyElectronApi.openURL(reference);
+                        } 
+                    }}> {props.model.name} </span>
+                </div>
+            </div>
+            <div className="model-card__content">
+                <div className="metas">
+                    <Space>
+                        <Tag>{props.model.base_model}</Tag>
+                    </Space>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default InstalledModels;
