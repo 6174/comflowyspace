@@ -22,7 +22,7 @@ export async function ApiRouteGetModels(req: Request, res: Response) {
             success: true,
             data: {
                 installedModels,
-                marketModels,
+                marketModels, 
                 modelMetas,
                 modelPath: paths.MODELS_DIR,
                 paths

@@ -28,6 +28,7 @@ export async function installModel(dispatch: TaskEventDispatcher, model: MarketM
         dispatch({
             type: ModelDownloadChannelEvents.onModelDownloadSuccess,
         })
+        modelManager.updateModelMeta([model]);
         return true;
     } catch(err: any) {
         console.log(err);
@@ -51,6 +52,7 @@ import { checkIfInstalledComfyUI } from "../comfyui/bootstrap";
 import { calculateSHA } from "../utils/sha";
 import logger from "../utils/logger";
 import { comfyuiService } from "../comfyui/comfyui.service";
+import { modelManager } from "./model-manager";
 
 export async function downloadDefaultModel(): Promise<boolean> { 
     try {

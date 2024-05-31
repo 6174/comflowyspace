@@ -142,6 +142,12 @@ export function turnCivitAiModelToMarketModel(civitModel: CivitAIModel, civitMod
     case ModelType.Controlnet:
       save_path = "controlnet";
       break;
+    case ModelType.Upscaler:
+      save_path = "upscale_models";
+      break;
+    case ModelType.VAE:
+      save_path = "vae";
+      break;
     default:
       break;
   }
@@ -157,6 +163,7 @@ export function turnCivitAiModelToMarketModel(civitModel: CivitAIModel, civitMod
     filename: civitModelVersion.files[0].name,
     save_path,
     source: "civitai",
+    source_data: civitModelVersion,
     reference: `https://civitai.com/models/${civitModel.id}`,
     meta: {
       modelId: civitModel.id,

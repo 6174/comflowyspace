@@ -37,6 +37,8 @@ export {type MarketModel} from '@comflowy/common/types/model.types';
 export type AllModels = {
   [key: string]: {
     name: string,
-    size: string
+    size: string,
+    path: string,
+    meta: any
   }[]
 }

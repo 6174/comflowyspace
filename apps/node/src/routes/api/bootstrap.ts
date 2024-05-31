@@ -13,6 +13,7 @@ import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 import { runCommand } from '../../modules/utils/run-command';
 import { systemProxyString } from '../../modules/utils/env';
 import { conda } from '../../modules/utils/conda';
+import { modelManager } from 'src/modules/model-manager/model-manager';
 
 /**
  * fetch all extensions
@@ -142,6 +143,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         task = cloneComfyUI(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Clone comfyUI"));
                     case BootStrapTaskType.startComfyUI:
+                        await modelManager.tryUpdateMetaFromCivitAI(dispatcher);
                         const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
                         if (isComfyUIStarted) {
                             return true;
