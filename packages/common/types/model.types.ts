@@ -147,7 +147,7 @@ export function turnCivitAiModelToMarketModel(civitModel: CivitAIModel, civitMod
   }
 
   return {
-    id: civitModel.id + "",
+    id: civitModelVersion.id + "",
     name: civitModel.name + "/" + civitModelVersion.name,
     type: civitModel.type as any,
     base_model: civitModelVersion.baseModel as any,

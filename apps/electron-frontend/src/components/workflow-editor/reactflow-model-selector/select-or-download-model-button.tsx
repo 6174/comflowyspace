@@ -1,10 +1,10 @@
 import { getBackendUrl } from "@comflowy/common/config";
 import { useModelState } from "@comflowy/common/store/model.state";
-import { MarketModel, getFilePathFromMarktModel } from "@comflowy/common/types/model.types";
+import { MarketModel, ModelDownloadChannelEvents, getFilePathFromMarktModel } from "@comflowy/common/types/model.types";
 import { Button, Progress, message } from "antd";
-import React, { useCallback, useState } from "react";
-import { ModelDownloadChannel } from "./model-download-channel";
-import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
+import React, { useCallback, useEffect, useState } from "react";
+import { ModelDownloadChannel, useDownloadInfo } from "./model-download-channel";
+import { GlobalEvents, IDisposable, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 export function ModelDownloadOrSelectButton(props: {
   model: MarketModel,
@@ -12,12 +12,10 @@ export function ModelDownloadOrSelectButton(props: {
 }) {
   const model = props.model
   const uuid = model?.id || model.filename;
-  const downloadInfo = useModelState(state => {
-    const taskId = state.modelTaskMap[uuid];
-    return state.downloadingTasks[taskId];
-  });
+  const { downloadingInfo, isAreadyDownloaded } = useDownloadInfo(uuid);
   const [selecting, setSelecting] = useState(false);
   const onChange = useModelState(st => st.selectContext?.onChange);
+
   const handleSelect = useCallback(async () => {
     const selectMode = !!onChange
     try {
@@ -66,6 +64,9 @@ export function ModelDownloadOrSelectButton(props: {
     }
   }, [model, uuid]);
 
+  /**
+   * on success handler
+   */
   const onInit = useModelState(st => st.onInit);
   const context = useModelState(st => st.selectContext);
   const onSuccessHandler = useCallback(async () => {
@@ -73,19 +74,49 @@ export function ModelDownloadOrSelectButton(props: {
     context?.onChange(useModelState.getState().downloadingTasks[uuid].params);
   }, [uuid])
 
+  /**
+   * on failed handler
+   */
   const onFailedHandler = useCallback(async () => {
     message.error("Model download failed.");
-  }, [])
+  }, [uuid])
+
+  /**
+   * listen to download success and failed
+   */
+  useEffect(() => {
+    const disposables: IDisposable[] = [];
+    disposables.push(SlotGlobalEvent.onEvent(ModelDownloadChannelEvents.onModelDownloadSuccess, (ev) => {
+      if (ev.data.runId === uuid) {
+        onSuccessHandler();
+      }
+    }));
+    disposables.push(SlotGlobalEvent.onEvent(ModelDownloadChannelEvents.onModelDownloadFailed, (ev) => {
+      if (ev.data.runId === uuid) {
+        onFailedHandler();
+      }
+    }));
+    return () => {
+      disposables.forEach(d => d.dispose());
+    }
+  }, [onSuccessHandler, onFailedHandler])
+
+  /**
+   * render download state
+   */
+  if (isAreadyDownloaded) {
+    return (
+      <>Downloaded</>
+    )
+  }
+
+  if (downloadingInfo && downloadingInfo.status === "downloading") {
+    return <Progress percent={downloadingInfo.progress} />
+  }
 
   return (
     <>
-      {
-        (downloadInfo && downloadInfo.status === "downloading") ? (
-          <Progress percent={downloadInfo.progress} />
-        ) : (
-          <Button type="primary" size="small" loading={selecting} disabled={selecting} onClick={handleSelect}>{props.text || "Download"}</Button>
-        )
-      }
+      <Button type="primary" size="small" loading={selecting} disabled={selecting} onClick={handleSelect}>{props.text || "Download"}</Button>
     </>
   )
 }

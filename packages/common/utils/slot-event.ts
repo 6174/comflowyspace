@@ -77,6 +77,14 @@ export class SlotEvent<T = void> implements IDisposable {
     };
   }
 
+  onEvent(event: string, callback: (v: T) => any): IDisposable {
+    return this.on((ev) => {
+      if (ev && (ev as any).type === event) {
+        callback(ev);
+      }
+    });
+  }
+
   unshift(callback: (v: T) => any): IDisposable {
     if (this.emitting) {
       const newCallback = [callback, ...this.callbacks];

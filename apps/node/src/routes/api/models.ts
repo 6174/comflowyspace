@@ -76,7 +76,8 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
                         type,
                         subChannel: runId,
                         payload: {
-                            ...model,
+                            model,
+                            ...event,
                             runId
                         }
                     });

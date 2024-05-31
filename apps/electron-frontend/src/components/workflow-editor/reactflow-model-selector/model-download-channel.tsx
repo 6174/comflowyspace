@@ -28,6 +28,7 @@ export function ModelDownloadChannel() {
     if (data && data.downloaded) {
       updateDownloadInfo(runId, {
         progress: Math.floor((data.downloaded / data.total) * 10000)/100,
+        status: "downloading"
       });
     }
   }, []);
@@ -59,4 +60,19 @@ export function ModelDownloadChannel() {
   return (
     <></>
   )
+}
+
+/**
+ * Downloading info webhooks
+ * @param uuid 
+ * @returns 
+ */
+export function useDownloadInfo(uuid: string) {
+  const downloadingInfo = useModelState(st => st.downloadingTasks[uuid]);
+  const isAreadyDownloaded = downloadingInfo?.status === "success"; // || alread find in installed models
+
+  return {
+    downloadingInfo,
+    isAreadyDownloaded
+  };
 }
