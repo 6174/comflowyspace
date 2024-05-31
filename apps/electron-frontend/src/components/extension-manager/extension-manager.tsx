@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
-import { Button, Col, Input, Modal, Row, Space, Tooltip } from "antd";
+import { Button, Col, Input, Modal, Row, Space, Tabs, Tooltip } from "antd";
 import { InstallExtensionButton, InstallExtensionFromGitUrl } from "./install-extension-button";
 import { CloseIcon, ExtensionIcon, MoreIcon, ReloadIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
@@ -30,7 +30,7 @@ function ExtensionManager() {
         <div style={{
           display: 'flex'
         }}>
-          <h2> {t(KEYS.installedExtensions)} </h2>
+          <h2> {t(KEYS.extensions)} </h2>
           <div className="actions">
             <InstallExtensionFromGitUrl/>
             <Tooltip title="Update all extensions">
@@ -38,14 +38,21 @@ function ExtensionManager() {
             </Tooltip>
           </div>
         </div>
-        <p className="sub">{t(KEYS.extensionsInstalled)}</p>
-        <ExtensionList extensions={installedExtensions} showFilter={false}/>
       </div>
-      <div className="extension-market">
-        <h2>{t(KEYS.communityExtensions)}</h2>
-        <p className="sub">{t(KEYS.installExtensionsFromCommunity)}</p>
-        <ExtensionList extensions={extensions}/>
-      </div>
+      <Tabs defaultActiveKey="available" >
+        <Tabs.TabPane
+          tab={t(KEYS.installedExtensions)}
+          key="installed"
+        >
+          <ExtensionList extensions={installedExtensions} />
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          tab={t(KEYS.communityExtensions)}
+          key="community"
+        >
+          <ExtensionList extensions={extensions} />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   )
 }

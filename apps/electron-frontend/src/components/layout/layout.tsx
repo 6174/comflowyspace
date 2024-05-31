@@ -58,7 +58,7 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => {
           <div id="app" className={styles.app}>
             <WorkspaceNav/>
             <div className="workspace-main" style={{
-              overflow: ['/models'].indexOf(path) !== -1 ? 'hidden' : 'auto',
+              overflow: ['/models', '/extensions'].indexOf(path) !== -1 ? 'hidden' : 'auto',
             }}>
               <div className='main-inner'>
                 {children}
