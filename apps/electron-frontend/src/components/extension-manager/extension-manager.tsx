@@ -11,6 +11,7 @@ import { openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {KEYS, t} from "@comflowy/common/i18n";
 import { VirtualGrid } from "ui/virtual/virtual-grid";
+import _ from "lodash";
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
@@ -65,19 +66,20 @@ function ExtensionList(props: {
   const [searchedExtensions, setSearchedExtensions] = useState(extensions);
   const [searchText, setSearchText] = useState('');
 
-  const doFilter = useCallback(() => {
+  const doFilter = useCallback(_.throttle((searchText) => {
+    console.log("doFilter: ", searchText);
     let filteredExtensions = extensions.filter(
       ext =>
         ext.title.toLowerCase().includes(searchText.toLowerCase()) ||
-        ext.description.toLowerCase().includes(searchText.toLowerCase())
+        ext.description.toLowerCase().includes(searchText.toLowerCase()) ||
+        ext.nodes?.some(node => node.toLowerCase().includes(searchText.toLowerCase()))
     );
-
     setSearchedExtensions(filteredExtensions);
-  }, [extensions, searchText]);
+  }, 100), [extensions]);
 
   useEffect(() => {
-    doFilter();
-  }, [extensions])
+    doFilter(searchText);
+  }, [extensions, searchText])
 
   const displayedExtensions = (searchText?.trim() !== "") ? searchedExtensions : extensions;
   return (
@@ -88,8 +90,13 @@ function ExtensionList(props: {
             <Input
               placeholder={t(KEYS.searchExtensions)}
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              onPressEnter={doFilter}
+              onChange={e => {
+                setSearchText(e.target.value)
+                doFilter(e.target.value);
+              }}
+              onPressEnter={ev => {
+                doFilter(searchText)
+              }}
             />
           </Col>
         }
@@ -188,8 +195,6 @@ export function ExtensionModal(props: {
       </Space>
     </div>
   )
-
-
   return (
     <Modal
       title={title}
@@ -201,6 +206,18 @@ export function ExtensionModal(props: {
       onCancel={handleCancel}
     >
       <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
+      <div className="nodes">
+        <h4>Extension Nodes:</h4>
+        <div className="node-list">
+          <pre>
+            {extension.nodes?.map(node => {
+              return (
+                <div className="node" key={node}>{node}</div>
+              )
+            })}
+          </pre>
+        </div>
+      </div>
       <div className="footer-actions">
         <Space>
           {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
@@ -212,6 +229,8 @@ export function ExtensionModal(props: {
     </Modal>
   )
 }
+
+
 
 
 export default ExtensionManager;

@@ -10,6 +10,7 @@ export type Extension = {
     disabled: boolean;
     need_update: boolean;
     nodename_pattern?: string;
+    nodes?: string[];
     [_: string]: any
 }
 
@@ -33,10 +34,11 @@ export const useExtensionsState = create<ExtensionsState & ExtensionsAction>((se
         const ret = await getExtensionInfos(doUpdateCheck);
         if (ret.success) {
             const { extensions, extensionNodeMap } = ret.data;
+            const transformed = transformModeMap(extensionNodeMap, extensions)
             set({
                 loading: false,
                 extensions: extensions,
-                extensionNodeMap: transformModeMap(extensionNodeMap, extensions)
+                extensionNodeMap: transformed
             });
             console.log("extension infos", ret);
         }
@@ -65,6 +67,7 @@ export function transformModeMap(extensionNodeMap: Record<string, string[]>, ext
         const widgetList = extensionNodeMap[extensionName];
         const extension = extensions.find(ext => ext.title === extensionName);
         if (extension) {
+            extension.nodes = widgetList;
             widgetList.forEach(widgetName => {
                 ret[widgetName] = extension;
             })

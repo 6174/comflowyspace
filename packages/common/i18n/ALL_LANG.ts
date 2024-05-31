@@ -164,8 +164,8 @@ const ALLLang: i18nAllLang = {
     'ru': 'Всего расширений'
   },
   [KEYS.searchExtensions]: {
-    'en-US': 'Search Extensions',
-    'zh-CN': '搜索插件',
+    'en-US': 'Search extensions by extension name or node name',
+    'zh-CN': '通过插件名称或者节点名称搜索插件',
     'ja': '拡張機能を検索',
     'ru': 'Поиск расширений'
   },

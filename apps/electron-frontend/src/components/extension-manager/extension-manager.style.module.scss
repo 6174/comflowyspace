@@ -124,6 +124,15 @@
         height: auto;
       }
     }
+    pre {
+      background-color: var(--backgroundColor);
+      padding: 10px;
+      border-radius: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-size: 12px;
+    }
     .footer-actions {
       margin-top: 20px;
     }
