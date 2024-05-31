@@ -134,24 +134,19 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
         })
     },
     updateDownloadInfo: (taskId: string, info: Partial<ModelDownloadInfo>) => {
+        const currentTasks: any = get().downloadingTasks || {};
+        if (!currentTasks[taskId]) {
+            currentTasks[taskId] = {};
+        }
         set({
             downloadingTasks: {
-                ...get().downloadingTasks,
+                ...currentTasks,
                 [taskId]: {
-                    ...get().downloadingTasks[taskId],
+                    ...currentTasks[taskId],
                     ...info
                 }
             }
         })
-
-        if (info.model) {
-            set({
-                modelTaskMap: {
-                    ...get().modelTaskMap,
-                    [info.model.id || info.model.filename]: taskId
-                }
-            })
-        }
     },
     loadCivitAIModels: async () => {
         const { civitai } = get();

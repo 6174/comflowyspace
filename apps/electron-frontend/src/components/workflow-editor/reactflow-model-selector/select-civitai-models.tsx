@@ -5,11 +5,7 @@ import { CivitAIModel, MarketModel, ModelType, getFilePathFromMarktModel, turnCi
 import { Button, Carousel, Input, Modal, Progress, Select, Space, Tag, message } from "antd";
 import { ArrowLeftIcon, SearchIcon } from "ui/icons";
 import { Image } from "antd/lib";
-import { ModelDownloadChannel } from "./model-download-channel";
-import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
-
 import styles from "./reactflow-model-selector.style.module.scss";
-import { getBackendUrl } from "@comflowy/common/config";
 import { ModelDownloadOrSelectButton } from "./select-or-download-model-button";
 /**
  * Select CivitiAI models in nodes
@@ -103,7 +99,7 @@ export function CivitaiModelListPage() {
         }}
         footer={null}
         width={800}>
-        <CivitModelDetailPage />
+        <CivitModelDetailPage showTitle={false}/>
       </Modal>
     </div>
   )
@@ -198,7 +194,10 @@ export function ModelCardItem(props: {
   )
 }
 
-export function CivitModelDetailPage() {
+export function CivitModelDetailPage(props: {
+  showTitle?: boolean
+}) {
+  const showTitle = props.showTitle ?? true;
   const model = useModelState(state => state.civitai.modelDetail);
   const [modelVersion, setModelVersion] = useState(model?.modelVersions[0].id);
   useEffect(() => {
@@ -212,20 +211,22 @@ export function CivitModelDetailPage() {
   return (
     <div className={styles.civitai_models_detail_page}>
       <div className="header">
-        <div className="header-title">
-          <Space>
-            <div className="icon action" onClick={ev => {
-              useModelState.getState().setCivitModelDetailPage();
-            }}>
-              <ArrowLeftIcon/>
-            </div>
-            <div className="action" onClick={ev => {
-              window.open(`https://civitai.com/models/${model.id}`, "_blank")
-            }}>
-              {model.name}
-            </div>
-          </Space>
-        </div>
+        {showTitle && (
+          <div className="header-title">
+            <Space>
+              <div className="icon action" onClick={ev => {
+                useModelState.getState().setCivitModelDetailPage();
+              }}>
+                <ArrowLeftIcon/>
+              </div>
+              <div className="action" onClick={ev => {
+                window.open(`https://civitai.com/models/${model.id}`, "_blank")
+              }}>
+                {model.name}
+              </div>
+            </Space>
+          </div>
+        )}
       </div>     
       <div className="body">
         <div className="gallery">

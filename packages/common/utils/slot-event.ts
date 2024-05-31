@@ -1,3 +1,4 @@
+import { ModelDownloadChannelEvents } from "../types/model.types";
 
 export interface IDisposable {
   dispose(): void;
@@ -148,7 +149,7 @@ export enum GlobalEvents {
   import_workflow = 'import_workflow'
 }
 
-export type GlobalEventKeys = keyof typeof GlobalEvents;
+export type GlobalEventKeys = (keyof typeof GlobalEvents) | keyof typeof ModelDownloadChannelEvents;
 
 export const SlotGlobalEvent = new SlotEvent<{
   type: GlobalEventKeys,

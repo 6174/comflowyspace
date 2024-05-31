@@ -1,5 +1,5 @@
 import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
-import { SlotEvent } from './slot-event';
+import { IDisposable, SlotEvent } from './slot-event';
 import { CHANNELS, ChannelMessage } from '../types/channel.types';
 import config from '../config';
 
@@ -7,6 +7,7 @@ export class Channel {
   id: string;
   private client: W3CWebSocket;
   channelSlot: SlotEvent<ChannelMessage> = new SlotEvent();
+  subChannelSlots: Map<string, SlotEvent<ChannelMessage>> = new Map();
   #subscribed = false;
 
   constructor(id: string) {
@@ -24,12 +25,32 @@ export class Channel {
     };
     this.client.onmessage = (ev: IMessageEvent) => {
       const message = JSON.parse(ev.data as string) as ChannelMessage;
+      console.log(message);
       this.channelSlot.emit(message);
+      if (message.subChannel) {
+        const subChannelSlot = this.subChannelSlots.get(message.subChannel);
+        if (subChannelSlot) {
+          subChannelSlot.emit(message);
+        }
+      }
     };
   }
 
-  on(event: string, callback: Function) {
-    this.channelSlot.on((ev) => {
+  on(event: string, callback: Function): IDisposable {
+    return this.channelSlot.on((ev) => {
+      if (ev.type === event) {
+        callback(ev)
+      }
+    });
+  }
+
+  onSub(channel: string, event: string, callback: Function): IDisposable {
+    let subChannelSlot = this.subChannelSlots.get(channel);
+    if (!subChannelSlot) {
+      subChannelSlot = new SlotEvent();
+      this.subChannelSlots.set(channel, subChannelSlot);
+    }
+    return subChannelSlot.on((ev) => {
       if (ev.type === event) {
         callback(ev.payload)
       }

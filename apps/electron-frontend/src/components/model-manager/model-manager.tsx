@@ -11,6 +11,7 @@ import { openDirectory, useIsElectron } from '@/lib/electron-bridge';
 import {KEYS, t} from "@comflowy/common/i18n";
 import { CivitaiModelListPage } from '../workflow-editor/reactflow-model-selector/select-civitai-models';
 import { SelectFeaturedModels } from '../workflow-editor/reactflow-model-selector/select-featured-models';
+import { ModelDownloadChannel } from '../workflow-editor/reactflow-model-selector/model-download-channel';
 
 const ModelManagement = () => {
   const { onInit, modelPath, loading} = useModelState();
@@ -72,6 +73,7 @@ const ModelManagement = () => {
           </Tabs.TabPane>
         </Tabs>
       </div>
+      <ModelDownloadChannel/>
     </div>
   );
 };

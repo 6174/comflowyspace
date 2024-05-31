@@ -16,13 +16,11 @@ export function ModelDownloadOrSelectButton(props: {
     const taskId = state.modelTaskMap[uuid];
     return state.downloadingTasks[taskId];
   });
-
   const [selecting, setSelecting] = useState(false);
   const onChange = useModelState(st => st.selectContext?.onChange);
   const handleSelect = useCallback(async () => {
     const selectMode = !!onChange
     try {
-
       const { withHashPath, withOutHashPath } = getFilePathFromMarktModel(model);
       if (selectMode) {
         const input = useModelState.getState().selectContext?.input;
@@ -39,7 +37,6 @@ export function ModelDownloadOrSelectButton(props: {
           return;
         }
       }
-
       const response = await fetch(getBackendUrl("/api/install_model"), {
         method: "POST",
         headers: {
@@ -86,10 +83,9 @@ export function ModelDownloadOrSelectButton(props: {
         (downloadInfo && downloadInfo.status === "downloading") ? (
           <Progress percent={downloadInfo.progress} />
         ) : (
-          <Button type="primary" loading={selecting} disabled={selecting} onClick={handleSelect}>{props.text || "Download"}</Button>
+          <Button type="primary" size="small" loading={selecting} disabled={selecting} onClick={handleSelect}>{props.text || "Download"}</Button>
         )
       }
-      <ModelDownloadChannel runId={model.id + ""} onSuccess={onSuccessHandler} onFailed={onFailedHandler} />
     </>
   )
 }

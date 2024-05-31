@@ -4,63 +4,58 @@ import { useModelState } from "@comflowy/common/store/model.state";
 
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { message } from "antd";
-import { createChannel } from "@comflowy/common/utils/channel.client";
+import { createChannel, getMainChannel } from "@comflowy/common/utils/channel.client";
+import { IDisposable } from "xterm";
 
-export function ModelDownloadChannel(props: {
-  runId: string,
-  onSuccess: () => void,
-  onFailed: () => void,
-}) {
-  const runId = props.runId;
+export function ModelDownloadChannel() {
   const updateDownloadInfo =  useModelState(st => st.updateDownloadInfo)
-  const onModelDownloadSuccess = useCallback(() => {
-    console.log("onsuccess");
+  const onModelDownloadSuccess = useCallback(({payload}) => {
+    const {runId} = payload
     message.success("Model download success, you can use the model now...");
     updateDownloadInfo(runId, {
       progress: 100,
       status: "success"
     });
-    props.onSuccess();
-  }, [runId]);
+    SlotGlobalEvent.emit({
+      type: ModelDownloadChannelEvents.onModelDownloadSuccess,
+      data: payload
+    })
+  }, []);
 
-  const onModelDownloadProgress = useCallback((ev) => {
-    const ret = ev.data;
-    console.log("progress", ret);
-    if (ret && ret.downloaded) {
+  const onModelDownloadProgress = useCallback(({payload}) => {
+    const {data, runId} = payload;
+    console.log("progress", data);
+    if (data && data.downloaded) {
       updateDownloadInfo(runId, {
-        progress: Math.floor((ret.downloaded / ret.total) * 10000)/100,
+        progress: Math.floor((data.downloaded / data.total) * 10000)/100,
       });
     }
-  }, [runId]);
+  }, []);
 
-  const onModelDownloadFailed = useCallback((ev) => {
-    console.log("error message", ev)
-    message.error("Model download failed, please contact us to get support." + ev.error);
+  const onModelDownloadFailed = useCallback((payload) => {
+    const {error, runId} = payload;
+    message.error("Model download failed, please contact us to get support." + error);
     console.log("onfailed");
     updateDownloadInfo(runId, {
       status: "failed"
     });
-    props.onFailed();
-  }, [runId]);
+    SlotGlobalEvent.emit({
+      type: ModelDownloadChannelEvents.onModelDownloadFailed,
+      data: payload
+    })
+  }, []);
 
   useEffect(() => {
-    if (runId && runId !== "") {
-      const channel = createChannel(runId)
-      channel.on(ModelDownloadChannelEvents.onModelDownloadProgress, onModelDownloadProgress)
-      channel.on(ModelDownloadChannelEvents.onModelDownloadSuccess, onModelDownloadSuccess)
-      channel.on(ModelDownloadChannelEvents.onModelDownloadFailed, onModelDownloadFailed)
-      
-      channel.subscribe();
-      return () => {
-        setTimeout(() => {
-          channel.unsubscribe();
-        }, 5000);
-      }
-    } else {
-      console.log("unsubscribing to comfyui channel")
+    const channel = getMainChannel();
+    const disposables: IDisposable[] = [];
+    disposables.push(channel.on(ModelDownloadChannelEvents.onModelDownloadProgress, onModelDownloadProgress));
+    disposables.push(channel.on(ModelDownloadChannelEvents.onModelDownloadSuccess, onModelDownloadSuccess));
+    disposables.push(channel.on(ModelDownloadChannelEvents.onModelDownloadFailed, onModelDownloadFailed));
+    return () => {
+      disposables.forEach(d => d.dispose());
     }
-  }, [runId, onModelDownloadProgress, onModelDownloadSuccess, onModelDownloadFailed])
-  
+  }, [])
+
   return (
     <></>
   )

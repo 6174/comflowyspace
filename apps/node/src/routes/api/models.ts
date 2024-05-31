@@ -72,9 +72,13 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
                     console.log('installing model message', event);
                     dispatcher(event);
                     let type = event.type || ModelDownloadChannelEvents.onModelDownloadProgress;
-                    channelService.emit(runId, {
+                    channelService.emit("main", {
                         type,
-                        payload: event
+                        subChannel: runId,
+                        payload: {
+                            ...model,
+                            runId
+                        }
                     });
                 }
                 return await installModel(newDispatcher, model);
