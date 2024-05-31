@@ -1,6 +1,6 @@
 import { MarketModel, ModelType } from "@comflowy/common/types/model.types"
 import { useModelState } from "@comflowy/common/store/model.state";
-import { Button, Carousel, Progress, Space, Tag } from "antd";
+import { Button, Carousel, Modal, Progress, Space, Tag } from "antd";
 import { useCallback, useState } from "react";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {Image} from "antd";
@@ -12,9 +12,11 @@ import { ModelDownloadOrSelectButton } from "./select-or-download-model-button";
  * @returns 
  */
 export function SelectFeaturedModels() {
-  const types = useModelState(st => st.filters.types || [ModelType.Checkpoint])
+  const types = useModelState(st => st.featuredModels.filters.types || [ModelType.Checkpoint])
   const hasCheckpoint = types.includes(ModelType.Checkpoint)
   const hasLora = types.includes(ModelType.LoRA)
+  const modelDetail = useModelState(st => st.featuredModels.modelDetail);
+
   return (
     <div className={styles.curated_models}>
       <ModelFilters/>
@@ -37,13 +39,67 @@ export function SelectFeaturedModels() {
           })}
         </div>
       )}
+
+      <Modal
+        className={styles.civitai_models_detail_modal}
+        title={modelDetail ? (
+          <div className="text action" onClick={ev => {
+            window.open(modelDetail.reference, "_blank")
+          }}>
+            {modelDetail.name} {modelDetail.meta?.size ? `(${modelDetail.meta.size})` : ""}
+          </div>
+        ): "Model detail"}
+        open={!!modelDetail}
+        onCancel={ev => {
+          useModelState.getState().setFeaturedDetailPage();
+        }}
+        footer={null}
+        width={800}>
+        {modelDetail && <ModelDetailPage model={modelDetail}/>}
+      </Modal>
     </div>
   )
 }
 
+function ModelDetailPage({model}: {model: MarketModel}) {
+  const tags = [model.base_model, ...model.meta?.tags || []]
+  return (
+    <div className={styles.civitai_models_detail_page}>
+      <div className="body">
+        <div className="gallery">
+          <Carousel arrows autoplay>
+            {(model.meta?.image_urls || []).map(image => {
+              return (
+                <div className="slide" key={image}>
+                  <Image src={image} />
+                </div>
+              )
+            })}
+          </Carousel>
+        </div>
+        <div className="description" dangerouslySetInnerHTML={{ __html: model.description }}>
+        </div>
+        <div className="metaInfo">
+          <p><span>Size: {model.meta?.size}</span></p>
+          <p><span>SHA256: {model.sha256}</span></p>
+        </div>
+        <div className="tags">
+          {tags.map(tag => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </div>
+      </div>
+      <div className="footer">
+        <div className="actions">
+          <ModelDownloadOrSelectButton model={model} />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function ModelFilters() {
-  const currentTags = useModelState.getState().filters.types || [ModelType.Checkpoint];
+  const currentTags = useModelState.getState().featuredModels.filters.types || [ModelType.Checkpoint];
   const tags = [ModelType.Checkpoint, ModelType.LoRA, ModelType.Controlnet, ModelType.Upscaler, ModelType.VAE]
   return (
     <div className="model-filter">
@@ -78,19 +134,13 @@ function ModelCard(props: {
   }, [onChange, model]);
 
   const imgs = model.meta?.image_urls ?? (model.meta.image_url ? [model.meta.image_url] : []);
-
+  const img = imgs[0];
   return (
-    <div className="model-card">
+    <div className="model-card" onClick={() => {
+      useModelState.getState().setFeaturedDetailPage(model)
+    }}>
       <div className="model-card__gallery">
-        <Carousel arrows autoplay>
-          {imgs.map(image => {
-            return (
-              <div className="slide" key={image}>
-                <Image src={image} />
-              </div>
-            )
-          })}
-        </Carousel>
+        <Image src={img} preview={false}/>
       </div>
       <div className="model-card__header">
         <div className="model-card__title">
@@ -105,9 +155,6 @@ function ModelCard(props: {
             <Tag>{props.model.base_model}</Tag>
           </Space>
         </div>
-      </div>
-      <div className="model-card__footer">
-        <ModelDownloadOrSelectButton model={model}/>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 
 import { create } from "zustand";
 import { getModelInfos } from "../comfyui-bridge/bridge";
-import { CivitAIModel, MarketModel } from "../types/model.types";
+import { CivitAIModel, MarketModel, ModelType } from "../types/model.types";
 import { Input } from "../types";
 import { getBackendUrl } from "../config";
 
@@ -59,13 +59,24 @@ export type ModelState = {
             query?: string,
             types?: string[],
         }
-    };
+    },
+    featuredModels: {
+        loading: boolean;
+        models: MarketModel[];
+        modelDetail?: MarketModel;
+        filters: {
+            query?: string,
+            types?: string[],
+        }
+    }
 }
 
 export type ModelAction = {
     onInit: () => Promise<void>;
     updateDownloadInfo: (taskId: string, info: Partial<ModelDownloadInfo>) => void;
     setCivitModelDetailPage: (model?: CivitAIModel) => void;
+    setFeaturedDetailPage: (model?: MarketModel) => void;
+    updateFeaturedFilters: (filters: { query?: string, types?: string[] }) => void;
     updateCivitAIModelFilters: (filters: { query?: string, types?: string[] }) => void;
     loadCivitAIModels: () => Promise<void>;
     onChangeContext: (context: ReactFlowModelSelectorContextProps) => void;
@@ -79,6 +90,14 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
     modelTaskMap: {},
     currentTab: SelectModelTabKey.featured,
     filters: {},
+    featuredModels: {
+        loading: true,
+        models: [],
+        filters: {
+            query: "",
+            types: [ModelType.Checkpoint]
+        }
+    },
     civitai: {
         loading: true,
         models: [],
@@ -173,6 +192,25 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
             civitai: {
                 ...get().civitai,
                 modelDetail: model
+            }
+        })
+    },
+    setFeaturedDetailPage: (model?: MarketModel) => {
+        set({
+            featuredModels: {
+                ...get().featuredModels,
+                modelDetail: model
+            }
+        })
+    },
+    updateFeaturedFilters: (filters: { query?: string, types?: string[] }) => {
+        set({
+            featuredModels: {
+                ...get().featuredModels,
+                filters: {
+                    ...get().featuredModels.filters,
+                    ...filters
+                }
             }
         })
     },
