@@ -52,7 +52,7 @@ export async function getCivitModelByHash(hash: string) {
   const headers = resolveCivitHeaders();
   const ret = await proxyFetch(`https://civitai.com/api/v1/model-versions/by-hash/${hash}`, {
     headers
-  });
+  }, 5);
   const data = await ret.json()
   return data
 }

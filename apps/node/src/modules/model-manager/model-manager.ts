@@ -57,6 +57,9 @@ class ModelManager {
 
         async function fetchFileInfo(modelKey: string, file: string) {
             try {
+                dispatch({
+                    message: "Start check model file: " + file
+                });
                 const fileHash = await calculateSHA(file);
                 const ext = path.extname(file);
                 if (supported_pt_extensions.indexOf(ext as any) === -1) {
@@ -69,8 +72,19 @@ class ModelManager {
                     });
                     const marketModel = turnCivitAiModelToMarketModel(civitAIModelVersion.model, civitAIModelVersion)
                     metas[modelKey] = marketModel
+                } else {
+                    dispatch({
+                        message: "Check model file: " + file + " with hash: " + fileHash + " on CivitAI failed"
+                    });
+                    metas[modelKey] = {
+                        failed: true,
+                        last_check: new Date().toISOString(),
+                    }
                 }
-            } catch (err) {
+            } catch (err: any) {
+                dispatch({
+                    message: "Check model file: " + file + " on CivitAI failed " + err.message
+                });
                 console.log(err);
                 metas[modelKey] = {
                     failed: true,
