@@ -334,10 +334,14 @@ export async function installPyTorchForGPU(dispatcher: TaskEventDispatcher, nigh
                     success = true;
                     break;
                 } 
-                
+
                 // https://github.com/Comfy-Org/comfy-cli/issues/50
                 else if (gpuType === "intel") {
+                    await runCommand(`${PIP_PATH} install mkl mkl-dpcpp`, dispatcher);
                     installCommand = `${PIP_PATH} install torch==2.1.0.post2 torchvision==0.16.0.post2 torchaudio==2.1.0.post2 intel-extension-for-pytorch==2.1.30 --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/`
+                    await runCommand(installCommand, dispatcher);
+                    success = true;
+                    break;
                 }
 
                 else {
