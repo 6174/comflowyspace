@@ -10,8 +10,20 @@ export async function getGPUType(): Promise<string> {
             await execa('rocm-smi');
             return 'amd';
         } catch (errorAMD) {
-            // 如果都失败，则可能没有 GPU 或者其他类型的 GPU
-            return 'unknown';
+            try {
+                const { stdout } = await execa('wmic', ['path', 'win32_VideoController', 'get', 'name']);
+                if (stdout.includes('AMD')) {
+                    return 'amd';
+                } else if (stdout.includes('Intel')) {
+                    return 'intel';
+                } else {
+                    // 如果都失败，则可能没有 GPU 或者其他类型的 GPU
+                    return 'unknown';
+                }
+            } catch (error) {
+                // 如果 wmic 命令失败，则可能没有 GPU 或者其他类型的 GPU
+                return 'unknown';
+            }
         }
     }
 }
