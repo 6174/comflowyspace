@@ -40,6 +40,7 @@ export enum SelectModelTabKey {
 export type ModelState = {
     loading: boolean;
     installedModels: AllInstalledModels,
+    installedModelsMap: Record<string, InstalledModel>;
     marketModels: MarketModel[],
     modelPath: string;
     downloadingTasks: Record<string, ModelDownloadInfo>,
@@ -111,6 +112,7 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
         filters: {}
     },
     installedModels: {},
+    installedModelsMap: {},
     marketModels: [],
     modelPath: "",
     loading: true,
@@ -119,7 +121,13 @@ export const useModelState = create<ModelState & ModelAction>((set, get) => ({
         const ret = await getModelInfos();
         if (ret.success) {
             const { installedModels, marketModels, modelPath } = ret.data;
-            set({ installedModels, marketModels, modelPath });
+            const installedModelsMap: Record<string, InstalledModel> = {};
+            for (const key in installedModels) {
+                installedModels[key].forEach((model: InstalledModel) => {
+                    installedModelsMap[`${key}/${model.name}`] = model;
+                })
+            }
+            set({ installedModels, installedModelsMap, marketModels, modelPath });
             console.log("model infos", ret);
         }
         set({ loading: false })
@@ -269,4 +277,26 @@ async function getCivitModels(currentPage: number, pageSize: number, filters: an
         API_CACHE.set(key, data);
     }
     return data
+}
+
+/**
+ * Downloading info webhooks
+ * @param model 
+ * @returns 
+ */
+export function useDownloadInfo(model: MarketModel) {
+    const uuid = useModelUUID(model);
+    const save_path = `${model.save_path}/${model.filename}`;
+    const downloadingInfo = useModelState(st => st.downloadingTasks[uuid]);
+    const installedModelsMap = useModelState(st => st.installedModelsMap);
+    const isAreadyDownloaded = installedModelsMap[save_path] || downloadingInfo?.status === "success"; // || alread find in installed models
+
+    return {
+        downloadingInfo,
+        isAreadyDownloaded
+    };
+}
+
+export function useModelUUID(model: MarketModel) {
+    return model?.id || model.filename;
 }

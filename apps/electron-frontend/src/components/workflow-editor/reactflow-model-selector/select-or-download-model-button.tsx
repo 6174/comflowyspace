@@ -1,9 +1,9 @@
 import { getBackendUrl } from "@comflowy/common/config";
-import { useModelState } from "@comflowy/common/store/model.state";
+import { useDownloadInfo, useModelState, useModelUUID } from "@comflowy/common/store/model.state";
 import { MarketModel, ModelDownloadChannelEvents, getFilePathFromMarktModel } from "@comflowy/common/types/model.types";
 import { Button, Progress, message } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
-import { ModelDownloadChannel, useDownloadInfo } from "./model-download-channel";
+import { ModelDownloadChannel } from "./model-download-channel";
 import { GlobalEvents, IDisposable, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 
 export function ModelDownloadOrSelectButton(props: {
@@ -11,8 +11,8 @@ export function ModelDownloadOrSelectButton(props: {
   text?: React.ReactNode 
 }) {
   const model = props.model
-  const uuid = model?.id || model.filename;
-  const { downloadingInfo, isAreadyDownloaded } = useDownloadInfo(uuid);
+  const uuid = useModelUUID(model);
+  const { downloadingInfo, isAreadyDownloaded } = useDownloadInfo(model);
   const [selecting, setSelecting] = useState(false);
   const onChange = useModelState(st => st.selectContext?.onChange);
 

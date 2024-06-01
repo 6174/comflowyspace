@@ -78,7 +78,7 @@ const ModelList = ({ models }) => {
                     modelData = model.meta
                 }
                 return (
-                   <ModelCard model={modelData}/>
+                   <ModelCard model={modelData} key={model.id}/>
                 )
             })}
         </div>

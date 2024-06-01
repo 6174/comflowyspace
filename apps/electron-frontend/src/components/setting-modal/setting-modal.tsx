@@ -1,17 +1,15 @@
 import React, { useState, useCallback, use, useEffect } from 'react';
 import { Modal, Menu, Layout, Divider, Select, Space, Input, Button, message, Segmented, Alert, Switch } from 'antd';
-import type { MenuProps } from 'antd';
 import { comfyElectronApi, openExternalURL, useIsElectron } from '@/lib/electron-bridge';
 import styles from './setting-modal.style.module.scss';
 import { LanguageType, changeLaunguage, currentLang } from '@comflowy/common/i18n';
-import { getBackendUrl, getComfyUIBackendUrl } from '@comflowy/common/config';
+import { getBackendUrl } from '@comflowy/common/config';
 import LogoIcon from 'ui/icons/logo';
-import { SettingsIcon, InfoIcon, PersonIcon, TrayAndArrowDown } from 'ui/icons';
+import { InfoIcon, PersonIcon, TrayAndArrowDown } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { useDashboardState } from '@comflowy/common/store/dashboard-state';
 import { updateComflowyAppConfig, updateComflowyRunConfig } from '@comflowy/common/comfyui-bridge/bridge';
 import { AppConfigs, ComfyUIRunFPMode, ComfyUIRunPreviewMode, ComfyUIRunVAEMode } from '@comflowy/common/types';
-import Color from 'color';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -101,12 +99,6 @@ function CivitaiToken() {
     } catch (err) {
       message.error("Save faileld:" + err.message);
     }
-    try {
-
-    } catch(err) {
-      message.error("save error:" + err.message);
-    }
-
     setLoading(false);
   }, [value, civitaitoken]);
   return (

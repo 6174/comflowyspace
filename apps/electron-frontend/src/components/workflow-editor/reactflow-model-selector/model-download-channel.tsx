@@ -61,18 +61,3 @@ export function ModelDownloadChannel() {
     <></>
   )
 }
-
-/**
- * Downloading info webhooks
- * @param uuid 
- * @returns 
- */
-export function useDownloadInfo(uuid: string) {
-  const downloadingInfo = useModelState(st => st.downloadingTasks[uuid]);
-  const isAreadyDownloaded = downloadingInfo?.status === "success"; // || alread find in installed models
-
-  return {
-    downloadingInfo,
-    isAreadyDownloaded
-  };
-}
