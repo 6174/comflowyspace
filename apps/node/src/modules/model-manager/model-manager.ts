@@ -12,6 +12,7 @@ import { getCivitModelByHash } from './civitai';
 import { turnCivitAiModelToMarketModel } from '@comflowy/common/types/model.types';
 import { TaskEventDispatcher } from '../task-queue/task-queue';
 
+let updatingMetaFromCivitAI = false;
 class ModelManager {
     constructor() {
         channelService.on(CHANNELS.MAIN, CHANNEL_EVENTS.UPDATE_MODEL_META, (ev) => {
@@ -25,6 +26,10 @@ class ModelManager {
     }
 
     tryUpdateMetaFromCivitAI = async (dispatch: TaskEventDispatcher) => {
+        if (updatingMetaFromCivitAI) {
+            return;
+        }
+        updatingMetaFromCivitAI = true;
         const metas = this.getModelMetas();
         const metaPath = this.getMetaFilePath();
         dispatch({
@@ -53,6 +58,7 @@ class ModelManager {
             console.error('Failed to update model meta from CivitAI', error);
         }
 
+        updatingMetaFromCivitAI = false;
         fs.writeFileSync(metaPath, JSON.stringify(metas, null, 2));
 
         async function fetchFileInfo(modelKey: string, file: string) {
