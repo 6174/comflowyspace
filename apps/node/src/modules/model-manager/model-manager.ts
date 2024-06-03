@@ -61,6 +61,13 @@ class ModelManager {
         updatingMetaFromCivitAI = false;
         fs.writeFileSync(metaPath, JSON.stringify(metas, null, 2));
 
+        channelService.emit(CHANNELS.MAIN, {
+            type: CHANNEL_EVENTS.MODEL_META_UPDATED,
+            payload: {
+                message: "Model meta updated from CivitAI successrm "
+            }
+        });
+
         async function fetchFileInfo(modelKey: string, file: string) {
             try {
                 dispatch({

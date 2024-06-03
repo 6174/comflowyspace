@@ -10,4 +10,5 @@ export enum CHANNELS {
 
 export enum CHANNEL_EVENTS {
   UPDATE_MODEL_META = "update_model_meta",
+  MODEL_META_UPDATED = "model_meta_updated",
 }
