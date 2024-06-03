@@ -7,7 +7,7 @@ import { KEYS, t } from "@comflowy/common/i18n";
 import { MenuItem, getMenuItem } from "../reactflow-context-menu/reactflow-context-menu";
 export default function ReactflowTopLeftPanel() {
     return (
-        <div className={styles.topLeftPanel}>
+        <div className={styles.topLeftPanel + " tool-effect"}>
             <Space size={2}>
                 <FileMenu/>
                 <div className="spliter"></div>

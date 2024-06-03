@@ -10,7 +10,7 @@ export default function ReactflowTopRightPanel() {
     const currentWorkflowId = router.query.id;
     const unreadLogs = useUnreadLogs(currentWorkflowId as string);
     return (
-        <div className={styles.topRightPanel}>
+        <div className={styles.topRightPanel + " tool-effect"}>
             <Space>
                 <Tooltip title={t(KEYS.clickToOpenControlboard)}>
                     <div className="action action-toggle-controlboard" onClick={ev => {
