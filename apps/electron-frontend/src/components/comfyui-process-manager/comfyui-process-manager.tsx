@@ -57,8 +57,11 @@ const ComfyUIProcessManager = () => {
 
   useEffect(() => {
     const initTerminal = async () => {
-      await new Promise(resolve => setTimeout(resolve, 300));
-
+      await new Promise(resolve => setTimeout(resolve, 400));
+      const termRef = document.getElementById("TERM");
+      if (!termRef) {
+        return
+      }
       const { ComflowyTerminal } = await import("./terminal");
       const terminal = term.current = new ComflowyTerminal((command: string) => {
         sendJsonMessage({
@@ -66,7 +69,7 @@ const ComfyUIProcessManager = () => {
           command
         });
       });
-      terminal.open(termRef.current);
+      terminal.open(termRef);
       const messages = useComfyUIProcessManagerState.getState().messages;
       messages.map(m => terminal.write(m.message));
 
@@ -81,7 +84,7 @@ const ComfyUIProcessManager = () => {
       });
 
       // Start observing the container
-      resizeObserver.observe(termRef.current);
+      resizeObserver.observe(termRef);
 
       return () => {
         try {
@@ -181,6 +184,7 @@ const ComfyUIProcessManager = () => {
       <div>{t(KEYS.comfyUIProcessTerminal)}</div>
     </div>
   )
+
   return (
     <div>
       <DraggableModal
@@ -192,7 +196,7 @@ const ComfyUIProcessManager = () => {
         initialHeight={480}
         open={visible}
       >
-        <div className="term" ref={termRef} >
+        <div className="term" id="TERM" >
           {/* {messages.map((msg, index) => {
             return (
               <div className="message" key={index}>{msg.message}</div>

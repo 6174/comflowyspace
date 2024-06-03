@@ -62,9 +62,9 @@ export const VirtualGrid: React.FC<VirtualGridListProps & React.PropsWithChildre
     <div
       ref={gridRef}
       className={`grid-list ${className}`}
-      style={{ position: 'relative',  ...style }}
+      style={{ position: 'relative',  ...style, paddingBottom: 100 }}
     >
-      <div style={{ height: `${totalSize}}px`, width: '100%' }}>
+      <div style={{ height: totalSize, width: '100%' }}>
         {rowVirtualizer.getVirtualItems().map((virtualRow: VirtualItem) => {
           return (
             <div

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Card, Space, Image, Tag } from 'antd';
 import styles from "../workflow-editor/reactflow-model-selector/reactflow-model-selector.style.module.scss"
+
+import CoverSvg from "../my-workflows/default-workflow-cover.svg";
 // Your model data
 // const installedModels = {
 //     type1: [
@@ -98,7 +100,7 @@ function ModelCard(props: {
     return (
         <div className="model-card">
             <div className="model-card__gallery">
-                {img &&<Image src={img} preview={false} />}
+                {img ? <Image src={img} preview={false} /> : <Image src={CoverSvg.src} width={30} preview={false} />}
             </div>
             <div className="model-card__header">
                 <div className="model-card__title">

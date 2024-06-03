@@ -171,7 +171,7 @@ export function ModelCardItem(props: {
       setCivitModelDetailPage(model);
     }}>
       <div className="gallery">
-        <Image preview={false} src={model.modelVersions[0].images.filter(image => image.nsfwLevel < 5)[0]?.url} />
+        <Image preview={false} src={model.modelVersions[0].images.filter(image => image.nsfwLevel < 5 && image.type === "image")[0]?.url} />
       </div>
       <div className="model-card-item-header">
         <div className="model-card-item-header-title">
@@ -208,6 +208,7 @@ export function CivitModelDetailPage(props: {
 
   if (!model) return null;
 
+  console.log(model.modelVersions[0].images);
   return (
     <div className={styles.civitai_models_detail_page}>
       <div className="header">
@@ -231,7 +232,7 @@ export function CivitModelDetailPage(props: {
       <div className="body">
         <div className="gallery">
           <Carousel arrows autoplay>
-            {model.modelVersions[0].images.filter(image => image.nsfwLevel < 5).map(image => {
+            {model.modelVersions[0].images.filter(image => image.nsfwLevel < 5 && image.type === "image").map(image => {
               return (
                 <div className="slide" key={image.id}>
                   <Image src={image.url} />

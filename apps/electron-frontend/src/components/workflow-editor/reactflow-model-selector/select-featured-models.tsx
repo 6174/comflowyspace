@@ -8,6 +8,8 @@ import { CHECKPOINT_MODELS, LORA_MODELS } from "@comflowy/common/models/model-me
 import styles from "./reactflow-model-selector.style.module.scss";
 import { ModelDownloadOrSelectButton } from "./select-or-download-model-button";
 import { comfyElectronApi } from "@/lib/electron-bridge";
+import CoverSvg from "../../my-workflows/default-workflow-cover.svg";
+
 /**
  * 显示所有内部提供的模型
  * @returns 
@@ -144,7 +146,7 @@ function ModelCard(props: {
       useModelState.getState().setFeaturedDetailPage(model)
     }}>
       <div className="model-card__gallery">
-        <Image src={img} preview={false}/>
+        {img ? <Image src={img} preview={false} /> : <Image src={CoverSvg.src} width={30} preview={false} />}
       </div>
       <div className="model-card__header">
         <div className="model-card__title">
