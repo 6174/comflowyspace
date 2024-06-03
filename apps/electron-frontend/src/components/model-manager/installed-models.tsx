@@ -76,7 +76,7 @@ const ModelList = ({ models }) => {
                     sha256: '',
                     download_url: ''
                 }
-                if (model.meta.filename) {
+                if (model.meta?.filename) {
                     modelData = model.meta
                 }
                 return (
