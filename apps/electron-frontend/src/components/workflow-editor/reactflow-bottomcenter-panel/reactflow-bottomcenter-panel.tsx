@@ -18,7 +18,7 @@ function ReactflowBottomCenterPanel() {
     const selectionMode = useAppStore(st => st.slectionMode);
     const onChangeSelectMode = useAppStore(st => st.onChangeSelectMode);
     return (
-        <div className={styles.bottomCenterPanel}>
+        <div className={styles.bottomCenterPanel + ' tool-effect'}>
              <Space>
                 <Tooltip title={t(KEYS.toggleSelectMode)}>
                     <div className={`action action-select ${selectionMode === "figma" && "active"}`} onClick={ev => {

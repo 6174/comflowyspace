@@ -7,9 +7,11 @@
     background-color: var(--backgroundColorL1);
     :global {
         .action {
-            height: 45px;
-            width: 45px;
+            background-color: var(--backgroundColorL2);
+            height: 36px;
+            width: 36px;
             border-radius: 8px;
+
         }
         .action svg {
             * {
@@ -19,11 +21,11 @@
         }
 
         .action:hover {
-            background-color: var(--backgroundColorL2);
+            background-color: var(--backgroundColorL3);
         }
         
         .action.active {
-            background-color: var(--backgroundColorL2);
+            background-color: var(--backgroundColorL3);
             color: var(--primaryColor);
         }
 
