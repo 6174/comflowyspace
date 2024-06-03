@@ -8,7 +8,7 @@ export class Channel {
   private client: W3CWebSocket;
   channelSlot: SlotEvent<ChannelMessage> = new SlotEvent();
   subChannelSlots: Map<string, SlotEvent<ChannelMessage>> = new Map();
-  #subscribed = false;
+  _subscribed = false;
 
   constructor(id: string) {
     this.id = id;
@@ -16,10 +16,10 @@ export class Channel {
   }
   
   subscribe() {
-    if (this.#subscribed) {
+    if (this._subscribed) {
       return
     }
-    this.#subscribed = true;
+    this._subscribed = true;
     this.client.onopen = () => {
       console.log('WebSocket Client Connected');
     };

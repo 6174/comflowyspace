@@ -184,7 +184,7 @@ export function getFilePathFromMarktModel(model: MarketModel): { withHashPath: s
 
 export function findValueInModelOptions(options: (string[] | LoRAOptionValue[]), value: string | LoRAOptionValue | MarketModel): string  | LoRAOptionValue | undefined {
   if (typeof value === "string") {
-    const ret = options.find(opt => {
+    const ret = (options as string[]).find(opt => {
       return opt === value;
     })
     return ret as string
@@ -192,7 +192,7 @@ export function findValueInModelOptions(options: (string[] | LoRAOptionValue[]),
 
   const loraValue = value as LoRAOptionValue;
   if (loraValue.content) {
-    const ret = options.find((opt) => {
+    const ret = (options as LoRAOptionValue[]).find((opt) => {
       return (opt as LoRAOptionValue).content === loraValue.content;
     })
     return ret as LoRAOptionValue
