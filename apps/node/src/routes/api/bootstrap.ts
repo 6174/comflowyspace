@@ -143,7 +143,7 @@ export async function ApiBootstrap(req: Request, res: Response) {
                         task = cloneComfyUI(newDispatcher);
                         return await withTimeout(task, 1000 * 60 * 10, msgTemplate("Clone comfyUI"));
                     case BootStrapTaskType.startComfyUI:
-                        await modelManager.tryUpdateMetaFromCivitAI(dispatcher);
+                        modelManager.tryUpdateMetaFromCivitAI(dispatcher);
                         const isComfyUIStarted = await comfyuiService.isComfyUIAlive();
                         if (isComfyUIStarted) {
                             return true;
