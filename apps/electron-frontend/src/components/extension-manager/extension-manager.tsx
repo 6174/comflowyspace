@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import styles from "./extension-manager.style.module.scss";
 import {Extension, useExtensionsState} from "@comflowy/common/store/extension-state";
-import { Button, Col, Input, Modal, Row, Space, Tooltip } from "antd";
+import { Button, Col, Input, Modal, Row, Space, Tabs, Tooltip } from "antd";
 import { InstallExtensionButton, InstallExtensionFromGitUrl } from "./install-extension-button";
 import { CloseIcon, ExtensionIcon, MoreIcon, ReloadIcon } from "ui/icons";
 import { RemoveExtensionButton } from "./remove-extension-button";
@@ -10,7 +10,8 @@ import { DisableExtensionButton } from "./disable-extension-button";
 import { openExternalURL } from "@/lib/electron-bridge";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import {KEYS, t} from "@comflowy/common/i18n";
-
+import { VirtualGrid } from "ui/virtual/virtual-grid";
+import _ from "lodash";
 function ExtensionManager() {
   const {onInit, extensions, loading} = useExtensionsState();
   useEffect(() => {
@@ -30,7 +31,7 @@ function ExtensionManager() {
         <div style={{
           display: 'flex'
         }}>
-          <h2> {t(KEYS.installedExtensions)} </h2>
+          <h2> {t(KEYS.extensions)} </h2>
           <div className="actions">
             <InstallExtensionFromGitUrl/>
             <Tooltip title="Update all extensions">
@@ -38,14 +39,21 @@ function ExtensionManager() {
             </Tooltip>
           </div>
         </div>
-        <p className="sub">{t(KEYS.extensionsInstalled)}</p>
-        <ExtensionList extensions={installedExtensions} showFilter={false}/>
       </div>
-      <div className="extension-market">
-        <h2>{t(KEYS.communityExtensions)}</h2>
-        <p className="sub">{t(KEYS.installExtensionsFromCommunity)}</p>
-        <ExtensionList extensions={extensions}/>
-      </div>
+      <Tabs defaultActiveKey="available" >
+        <Tabs.TabPane
+          tab={t(KEYS.installedExtensions)}
+          key="installed"
+        >
+          <ExtensionList extensions={installedExtensions} />
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          tab={t(KEYS.communityExtensions)}
+          key="community"
+        >
+          <ExtensionList extensions={extensions} />
+        </Tabs.TabPane>
+      </Tabs>
     </div>
   )
 }
@@ -58,31 +66,37 @@ function ExtensionList(props: {
   const [searchedExtensions, setSearchedExtensions] = useState(extensions);
   const [searchText, setSearchText] = useState('');
 
-  const doFilter = useCallback(() => {
+  const doFilter = useCallback(_.throttle((searchText) => {
+    console.log("doFilter: ", searchText);
     let filteredExtensions = extensions.filter(
       ext =>
         ext.title.toLowerCase().includes(searchText.toLowerCase()) ||
-        ext.description.toLowerCase().includes(searchText.toLowerCase())
+        ext.description.toLowerCase().includes(searchText.toLowerCase()) ||
+        ext.nodes?.some(node => node.toLowerCase().includes(searchText.toLowerCase()))
     );
-
     setSearchedExtensions(filteredExtensions);
-  }, [extensions, searchText]);
+  }, 100), [extensions]);
 
   useEffect(() => {
-    doFilter();
-  }, [extensions])
+    doFilter(searchText);
+  }, [extensions, searchText])
 
   const displayedExtensions = (searchText?.trim() !== "") ? searchedExtensions : extensions;
   return (
-    <div className='extension-list'>
+    <div className="extension-list-wrapper">
       <Row>
-        {showFilter && 
+        {showFilter &&
           <Col span={12} style={{ marginBottom: 16 }}>
             <Input
               placeholder={t(KEYS.searchExtensions)}
               value={searchText}
-              onChange={e => setSearchText(e.target.value)}
-              onPressEnter={doFilter}
+              onChange={e => {
+                setSearchText(e.target.value)
+                doFilter(e.target.value);
+              }}
+              onPressEnter={ev => {
+                doFilter(searchText)
+              }}
             />
           </Col>
         }
@@ -90,11 +104,18 @@ function ExtensionList(props: {
       <p className="sub">
         {t(KEYS.totalExtensions)}: {displayedExtensions.length}
       </p>
-      <div className="result">
-        {displayedExtensions.map((ext, index) => {
-          return <ExtensionListItem extension={ext} key={ext.title + ext.author + index}/>
-        })}
-      </div>
+
+      <VirtualGrid 
+          className="extension-list"
+          items={displayedExtensions}
+          itemHeight={130}
+          renderItem={(ext) => {
+            return <ExtensionListItem extension={ext} />
+          }}
+          minItemWidth={250}
+          gridGap={10}
+        >
+      </VirtualGrid>
     </div>
   )
 }
@@ -174,8 +195,6 @@ export function ExtensionModal(props: {
       </Space>
     </div>
   )
-
-
   return (
     <Modal
       title={title}
@@ -187,6 +206,18 @@ export function ExtensionModal(props: {
       onCancel={handleCancel}
     >
       <div className="description" dangerouslySetInnerHTML={{__html: extension.description}}></div>
+      <div className="nodes">
+        <h4>Extension Nodes:</h4>
+        <div className="node-list">
+          <pre>
+            {extension.nodes?.map(node => {
+              return (
+                <div className="node" key={node}>{node}</div>
+              )
+            })}
+          </pre>
+        </div>
+      </div>
       <div className="footer-actions">
         <Space>
           {extension.installed  === false && <InstallExtensionButton extension={extension}/>}
@@ -198,6 +229,8 @@ export function ExtensionModal(props: {
     </Modal>
   )
 }
+
+
 
 
 export default ExtensionManager;

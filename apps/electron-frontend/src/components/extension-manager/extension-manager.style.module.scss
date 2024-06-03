@@ -1,17 +1,21 @@
 .extensionManager {
-  overflow-y: auto;
   padding-top: 14px;
   padding-bottom: 20px;
   height: 100%;
+  overflow: hidden;
   :global {
     .extension-list {
       padding-right: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: calc(100vh - 150px);
     }
 
     .result {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       grid-gap: 10px;
+      padding-bottom: 50px;
     }
 
     .extension-card {
@@ -22,6 +26,7 @@
       background-color: var(--backgroundColorL1);
       transition: var(--transition);
       position: relative;
+      height: 130px;
       .update-badge {
         position: absolute;
         bottom: 4px;
@@ -118,6 +123,15 @@
         max-width: 100%;
         height: auto;
       }
+    }
+    pre {
+      background-color: var(--backgroundColor);
+      padding: 10px;
+      border-radius: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      font-size: 12px;
     }
     .footer-actions {
       margin-top: 20px;

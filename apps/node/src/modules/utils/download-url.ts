@@ -8,6 +8,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import {getSystemProxy} from './env';
 import * as fsExtra from "fs-extra";
 import { verifySHA } from './sha';
+import { getCivitAIToken, resolveCivitHeaders } from '../model-manager/civitai';
 const stream = require('stream');
 const util = require('util');
 
@@ -126,14 +127,16 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       }
     }
 
-    dispatch({
-      message: `Downloading ${url}`
-    });
-
     const fileSize: number = fs.existsSync(tmpFilePath) ? fs.statSync(tmpFilePath).size : 0;
-    const headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
+    let headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
 
-    console.log(fileSize, headers);
+    if(url.indexOf("civitai") > -1) {
+      const token = getCivitAIToken(false);
+      if (token) {
+        headers["Authorization"] = token
+      }
+    }
+
     const response: Response = await fetch(url, {
       headers: {
         ...headers,
@@ -180,15 +183,23 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
       throw new Error(msg)
     });
 
+    let last_send = Date.now();
     response.body!.on('data', (chunk) => {
       progressBar.tick(chunk.length);
       downloadedSize += chunk.length;
-      dispatch({
-        message: `Download progress: ${progressBar.curr}/${progressBar.total}`
-      })
+      const now = Date.now();
+      if (now - last_send > 1000) {
+        last_send = now;
+        dispatch({
+          message: `Download progress: ${progressBar.curr}/${progressBar.total}`,
+          data: {
+            downloaded: downloadedSize,
+            total: totalSize
+          }
+        })
+      }
     });
 
-    
     try {
       response.body!.pipe(bufferStream);
       bufferStream.pipe(writeStream);
@@ -207,6 +218,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
         throw new Error(`Error downloading from ${url}: ${err.message}`);
       }
     }
+
     if (sha) {
       const verified = await verifySHA(tmpFilePath, sha);
       if (!verified) {

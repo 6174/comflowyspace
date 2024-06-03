@@ -23,11 +23,13 @@ export async function calculateSHA(file: string): Promise<string> {
 
 export async function verifySHA(file: string, sha: string): Promise<boolean> {
   const hash = await calculateSHA(file);
-  return hash === sha;
+  return hash.toLocaleLowerCase() === sha.toLocaleLowerCase();
 }
 
-// calculateSHA('yourfile.txt')
+// calculateSHA('~/comfyui/models/loras/xx.safetensors.tmp')
 //   .then((hash) => {
 //     console.log(hash);
 //   })
-//   .catch((error: Error) =>
+//   .catch((error: Error) =>{
+//     console.log(error)
+//   })

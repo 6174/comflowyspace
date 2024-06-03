@@ -28,6 +28,7 @@ class ChannelService {
 
         wss.handleUpgrade(req, socket, head, ws => {
           this.clients[channel].push(ws);
+          console.log("add clients for channel", channel)
           ws.on('message', (messageStr: string) => {
             const message = JSON.parse(messageStr) as ChannelMessage;
             this.channelSlots[channel].emit(message);
@@ -43,7 +44,7 @@ class ChannelService {
     });
   }
 
-  on(channel: string, event: string, callback: (data: any) => void) {
+  on(channel: string, event: string, callback: (data: ChannelMessage) => void) {
     return this.channelSlots[channel]?.on(callback);
   }
 

@@ -1,3 +1,4 @@
+import { ModelDownloadChannelEvents } from "../types/model.types";
 
 export interface IDisposable {
   dispose(): void;
@@ -76,6 +77,14 @@ export class SlotEvent<T = void> implements IDisposable {
     };
   }
 
+  onEvent(event: string, callback: (v: T) => any): IDisposable {
+    return this.on((ev) => {
+      if (ev && (ev as any).type === event) {
+        callback(ev);
+      }
+    });
+  }
+
   unshift(callback: (v: T) => any): IDisposable {
     if (this.emitting) {
       const newCallback = [callback, ...this.callbacks];
@@ -127,6 +136,8 @@ export class SlotEvent<T = void> implements IDisposable {
 }
 
 export enum GlobalEvents {
+  on_select_model = "on_select_model",
+  on_close_model_selector = "on_close_model_selector",
   execution_interrupted = "execution_interrupted",
   restart_comfyui = "restart_comfyui",
   restart_comfyui_success = 'restart_comfyui_success',
@@ -146,10 +157,10 @@ export enum GlobalEvents {
   import_workflow = 'import_workflow'
 }
 
-export type GlobalEventKeys = keyof typeof GlobalEvents;
+export type GlobalEventKeys = (keyof typeof GlobalEvents) | keyof typeof ModelDownloadChannelEvents;
 
 export const SlotGlobalEvent = new SlotEvent<{
   type: GlobalEventKeys,
-  data: any
+  data?: any
 }>();
 

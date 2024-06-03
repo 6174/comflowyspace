@@ -1,6 +1,18 @@
 import { KEYS, i18nAllLang } from "./i18n-types";
 
 const ALLLang: i18nAllLang = {
+  [KEYS.run_on_cloud]: {
+    'en-US': 'Run on Cloud',
+    'zh-CN': '云端运行',
+    'ja': 'クラウドで実行',
+    'ru': 'Запустить в облаке'
+  },
+  [KEYS.whatsnew]: {
+    'en-US': 'What\'s New',
+    'zh-CN': '更新日志',
+    'ja': '更新情報',
+    'ru': 'Что нового'
+  },
   [KEYS.save]: {
     'en-US': 'Save',
     'zh-CN': '保存',
@@ -164,8 +176,8 @@ const ALLLang: i18nAllLang = {
     'ru': 'Всего расширений'
   },
   [KEYS.searchExtensions]: {
-    'en-US': 'Search Extensions',
-    'zh-CN': '搜索插件',
+    'en-US': 'Search extensions by extension name or node name',
+    'zh-CN': '通过插件名称或者节点名称搜索插件',
     'ja': '拡張機能を検索',
     'ru': 'Поиск расширений'
   },

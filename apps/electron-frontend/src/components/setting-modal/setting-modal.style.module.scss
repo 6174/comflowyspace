@@ -75,6 +75,10 @@
         font-size: 14px;
         margin-bottom: 10px;
       }
+      .section-description {
+        font-size: 12px;
+        margin: 4px 0 8px 0;
+      }
     }
 
     .vae-mode{
@@ -91,8 +95,10 @@
     }
 
     .save-button {
-      background-color:  var(--primaryColor);
       color: #FFF;
+      &:hover {
+        // color: #FFF !important;
+      }
     }
 
     .about-content {

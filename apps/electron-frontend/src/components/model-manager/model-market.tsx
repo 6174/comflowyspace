@@ -1,6 +1,6 @@
 import { Button, Col, Input, Row, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useModelState } from '@comflowy/common/store/model-state';
+import { useModelState } from '@comflowy/common/store/model.state';
 import { openExternalURL, openTabPage } from '@/lib/electron-bridge';
 
 const ModelMarket = () => {

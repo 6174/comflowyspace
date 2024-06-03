@@ -1,12 +1,13 @@
 import { TaskEventDispatcher } from "../task-queue/task-queue";
-import { downloadUrl, downloadUrlPro } from "../utils/download-url";
+import { downloadUrlPro } from "../utils/download-url";
 import { getModelDir, getModelPath } from "./model-paths";
 import * as fs from "fs";
-import { MarketModel } from "./types";
+import { MarketModel } from "@comflowy/common/types/model.types";
 import { isWindows } from "../utils/env";
 import { runCommand } from "../utils/run-command";
 import { getAppTmpDir } from "../utils/get-appdata-dir";
 import path from "path";
+import { ModelDownloadChannelEvents } from "@comflowy/common/types/model.types";
 
 /**
  * install a model
@@ -14,7 +15,7 @@ import path from "path";
  * @param model 
  */
 export async function installModel(dispatch: TaskEventDispatcher, model: MarketModel): Promise<boolean> {
-    const modelPath = getModelPath(model);
+    const modelPath = getModelPath(model.type, model.save_path, model.filename);
     if (fs.existsSync(modelPath)) {
         dispatch({
             message: `${modelPath} already installed`
@@ -22,13 +23,19 @@ export async function installModel(dispatch: TaskEventDispatcher, model: MarketM
         return true;
     }
     try {
-        await downloadUrlPro(dispatch, modelPath, model.url)
-        return true;
-    } catch(err) {
+        console.log("download info", model);
+        await downloadUrlPro(dispatch, model.download_url, modelPath, model.sha256)
         dispatch({
-            message: `Dowload ${modelPath} error`,
-            error: err,
-        });
+            type: ModelDownloadChannelEvents.onModelDownloadSuccess,
+        })
+        modelManager.updateModelMeta([model]);
+        return true;
+    } catch(err: any) {
+        console.log(err);
+        dispatch({
+            type: ModelDownloadChannelEvents.onModelDownloadFailed,
+            error: err.message,
+        })
         return false;
     }
 }
@@ -45,6 +52,7 @@ import { checkIfInstalledComfyUI } from "../comfyui/bootstrap";
 import { calculateSHA } from "../utils/sha";
 import logger from "../utils/logger";
 import { comfyuiService } from "../comfyui/comfyui.service";
+import { modelManager } from "./model-manager";
 
 export async function downloadDefaultModel(): Promise<boolean> { 
     try {
@@ -59,11 +67,11 @@ export async function downloadDefaultModel(): Promise<boolean> {
             "filename": "v1-5-dream-shaper.safetensors",
             "url": "https://civitai.com/api/download/models/128713",
             "size": "4067.78M"
-        } as MarketModel;
+        };
 
         bugfixForWrongModelName(modelConfig);
 
-        const finalOutputFile = getModelPath(modelConfig);
+        const finalOutputFile = getModelPath(modelConfig.type, modelConfig.save_path, modelConfig.filename);
 
         if (await fsExtra.exists(finalOutputFile)) {
             return true;
@@ -116,12 +124,11 @@ export async function downloadDefaultModel(): Promise<boolean> {
     return false;
 }
 
-function bugfixForWrongModelName(modelConfig: MarketModel) {
+function bugfixForWrongModelName(modelConfig: any) {
     try {
-        const modelDir = getModelDir(modelConfig.type, modelConfig.save_path);
-        const wrongInstallModel = path.join(modelDir, "v1-5-dream-shaper.ckpt");
+        const wrongInstallModel = getModelPath(modelConfig.type, modelConfig.save_path, "v1-5-dream-shaper.ckpt");
         if (fs.existsSync(wrongInstallModel)) {
-            fs.renameSync(wrongInstallModel, getModelPath(modelConfig));
+            fs.renameSync(wrongInstallModel, getModelPath(modelConfig.type, modelConfig.save_path, modelConfig.filename));
         }
     } catch(err: any) {
         logger.error("bugfixForWrongModelName error" + err.message + ":" + err.stack)

@@ -3,7 +3,7 @@ import type { queue as Queue, done as Done} from "fastq";
 
 import { SlotEvent } from "@comflowy/common/utils/slot-event";
 export type TaskEvent = {
-    type?: "SUCCESS" | "PROGRESS" | "FAILED" | "ERROR" | "TIMEOUT",
+    type?: "SUCCESS" | "PROGRESS" | "FAILED" | "ERROR" | "TIMEOUT" | string,
     task: TaskProps,
     progress?: number,
     message?: string,
