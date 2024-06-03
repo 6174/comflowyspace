@@ -1,4 +1,6 @@
 export enum KEYS {
+  run_on_cloud = "run_on_cloud",
+  whatsnew = "whatsnew",
   save = "save",
   comfyui_auto_install_deps = "comfyui_auto_install_deps",
   comfyui_extra_commands = "comfyui_extra_commands",

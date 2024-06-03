@@ -7,11 +7,11 @@ type Props = {
 }
 import styles from "./layout.style.module.scss";
 import SettingsModal from '../setting-modal/setting-modal'; 
-import { openExternalURL } from '@/lib/electron-bridge';
+import { comfyElectronApi, openExternalURL } from '@/lib/electron-bridge';
 import { Divider, Tooltip } from 'antd';
 import { useRouter } from 'next/router'
 import LogoIcon from 'ui/icons/logo'
-import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, TerminalIcon, QuestionIcon } from 'ui/icons'
+import { BulbIcon, ExtensionIcon, ModelIcon, TutorialIcon, WorkflowIcon, SettingsIcon, TerminalIcon, QuestionIcon, CloudIcon } from 'ui/icons'
 import { useDashboardState } from '@comflowy/common/store/dashboard-state'
 import { useAppStore } from '@comflowy/common/store'
 import Bootstrap from '../bootstrap/bootstrap'
@@ -19,6 +19,7 @@ import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event
 import { NotificationModalEntry } from '../my-workflows/notification-modal';
 import { getComfyUIBackendUrl } from '@comflowy/common/config';
 import { ComfyUIRunPreviewMode } from '@comflowy/common/types';
+import { WhatsNew } from './whats-new';
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => {
   const { bootstraped } = useDashboardState();
@@ -149,6 +150,19 @@ const WorkspaceNav = () => {
         </div>
       </div>
       <div className='nav-footer'>
+        <div className="list-items">
+          <WhatsNew/>
+          <div className="cloud item">
+            <div className="action" onClick={ev => {
+              ev.preventDefault();
+              comfyElectronApi.openURL("https://comflowy.com")
+            }}>
+              <div className="icon"><CloudIcon /></div>
+              <div className="text">{t(KEYS.run_on_cloud)}</div>
+            </div>
+          </div>
+        </div>
+        <Divider />
         <div className="workspace-nav-bottom-item">
           <div className="item">
             <Tooltip title={t(KEYS.appSettings)}>
