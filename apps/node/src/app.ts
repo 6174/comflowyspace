@@ -31,7 +31,9 @@ export async function startAppServer(params: {
   const app = express();
   
   app.use(express.static(staticFolder ? staticFolder : 'public'));
-  app.use(express.json());
+  app.use(express.json({
+    limit: '50mb'
+  }));
   
   app.use(cors({
     origin: '*',
