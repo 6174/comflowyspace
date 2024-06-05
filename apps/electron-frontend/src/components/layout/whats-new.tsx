@@ -20,7 +20,7 @@ export function WhatsNew() {
   }, []);
 
   const clickWhatsNew = useCallback(() => {
-    comfyElectronApi.openURL("https://comflowy.com/zh-CN/change-log")
+    comfyElectronApi.openURL("https://comflowy.com/change-log")
     if (show) {
       setShow(false);
       setWhatsNewViewed(currentVersion)
