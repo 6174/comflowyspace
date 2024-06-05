@@ -13,9 +13,7 @@
 Comflowyspace is an open-source AI image and video generation tool committed to providing a better, 
 interactive experience than the standard SDWebUI and ComfyUI. 
 
-The goal of ComflowySpace is to make ComfyUI & Stable Diffusion accessible to all. 
-From downloading and installing to plug-in management, 
-workflow templates, and process editing, every step is well designed.
+You can go to our [official website](https://www.comflowy.com) for more detials.
 
 If you like ComflowySpace, give our repo a [⭐ Star](https://github.com/6174/comflowyspace) and [👀 Watch](https://github.com/6174/comflowyspace/subscription) our repository to stay updated.
 
