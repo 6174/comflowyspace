@@ -3,7 +3,7 @@ import { Input } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { PersistedWorkflowNode, SDNode, Widget } from '@comflowy/common/types';
-import { SearchIcon, PinIcon, PinFilledIcon} from 'ui/icons';
+import { SearchIcon, PinIcon, PinFilledIcon } from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
@@ -31,7 +31,7 @@ export const WidgetTree = (props: {
     const [currentCategory, setCurrentCategory] = useState(() => {
         if (pinnedWidgets.length > 0) {
             return 'Pinned';
-        } 
+        }
         return firstLevelCategories.length > 0 ? firstLevelCategories[0] : '';
     });
 
@@ -56,7 +56,6 @@ export const WidgetTree = (props: {
         return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
     }
     const handleSearch = (value) => {
-        setSearchValue(value);
         const searchWords = value.toLowerCase().split(' ');
 
         const findedWidgets = Object.keys(widgets).filter(
@@ -163,7 +162,7 @@ export const WidgetTree = (props: {
                                 key={widgetName}
                                 position={props.position}
                                 onNodeCreated={props.onNodeCreated}
-                                isPinned={true} 
+                                isPinned={true}
                                 togglePin={() => {
                                     togglePin(widgetName, false);
                                 }}
@@ -197,7 +196,12 @@ export const WidgetTree = (props: {
             </div>
         </div>
     );
-    
+
+    const throttleSearch = useCallback(_.debounce((searchValue) => {
+        console.log("search");
+        handleSearch(searchValue);
+    }, 300), []);
+
     return (
         <div className={styles.widgetTree} style={{
             width: showCategory ? 460 : 280
@@ -207,7 +211,11 @@ export const WidgetTree = (props: {
                     autoFocus={props.autoFocus}
                     prefix={<SearchIcon />}
                     placeholder="Search widgets"
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) => {
+                        const value = e.target.value;
+                        setSearchValue(value);
+                        throttleSearch(value)
+                    }}
                     value={searchValue}
                 />
             </div>
@@ -219,14 +227,14 @@ export const WidgetTree = (props: {
                                 <div className='search-result-item' key={item.name + index}>
                                     <WidgetNode
                                         draggable={props.draggable}
-                                        widget={item} 
+                                        widget={item}
                                         position={props.position}
                                         onNodeCreated={props.onNodeCreated}
                                         isPinned={pinnedWidgets.indexOf(item.name) >= 0}
                                         togglePin={() => {
                                             togglePin(item.name, pinnedWidgets.indexOf(item.name) === -1);
                                         }}
-                                        />
+                                    />
                                 </div>
                             )
                         })}
@@ -241,13 +249,13 @@ export const WidgetTree = (props: {
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
  **/
-function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togglePin }: { 
+function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togglePin }: {
     widget: Widget,
     draggable?: boolean,
     position?: XYPosition,
-    onNodeCreated?: (node: PersistedWorkflowNode) => void 
+    onNodeCreated?: (node: PersistedWorkflowNode) => void
     isPinned?: boolean,
-    togglePin?: () => void 
+    togglePin?: () => void
 }) {
 
     const onDragStart = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -284,9 +292,9 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
             }}
             onDragStart={draggable ? onDragStart : null}
             onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)} 
+            onMouseLeave={() => setIsHovered(false)}
             title={widget?.name}>
-            <div className= "widget-title">
+            <div className="widget-title">
                 <div className="display-name">{dtDisplatyName}{dtDisplayNameTip}</div>
                 <div className='class_name'>
                     Type: {dtWidgetName}{dtWidgetNameTip}
