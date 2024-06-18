@@ -144,6 +144,10 @@ export const SDNode = {
       ret.color = '#2AAFF7';
       ret.bgcolor = '#21262A';
     }
+
+    if (widget.name === "SaveImage") {
+      ret.fields["filename_prefix"] = "comflowy_";
+    }
     
     return ret;
   },
