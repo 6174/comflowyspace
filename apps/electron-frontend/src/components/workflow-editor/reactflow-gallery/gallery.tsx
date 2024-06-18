@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Button, Checkbox, Image, Modal, Popover, Space, Tooltip } from "antd";
+import { Button, Checkbox, Image, Modal, Popover, Space, Tooltip, message } from "antd";
 import { useAppStore } from '@comflowy/common/store';
 import { getImagePreviewUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import styles from "./gallery.module.scss";
@@ -8,6 +8,7 @@ import { GalleryIcon } from 'ui/icons';
 import { KEYS, t } from "@comflowy/common/i18n";
 import { ImageWithDownload, PreviewGroupWithDownload } from './image-with-download';
 import { PreviewImage } from '@comflowy/common/types';
+import { downloadFile, downloadImagesAsZip } from '@comflowy/common/utils/download-helper';
 
 const Gallery = (props: {
   editing?: boolean;
@@ -104,6 +105,30 @@ export const GalleryEntry = React.memo(() => {
     setSelectedImages([]);
   }, [selectedImages]);
 
+  const downloadImages = useCallback(async () => {
+    try {
+      const selectImagesWithSrc = selectedImages.map(image => {
+        const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
+        return {
+          src: imageSrc,
+          filename: image.filename,
+          image
+        }
+      });;
+
+      if (selectImagesWithSrc.length === 1) {
+        await downloadFile(selectImagesWithSrc[0].src, selectImagesWithSrc[0].filename)
+      } else {
+        await downloadImagesAsZip(selectImagesWithSrc);
+      }
+      
+    } catch (err) {
+      message.error("Download images failed: " + err.message);
+      console.error(err);
+    }
+    message.success("Download success");
+  }, [selectedImages])
+  
   return (
     <>
       <Tooltip title={t(KEYS.gallery)}>
@@ -138,7 +163,14 @@ export const GalleryEntry = React.memo(() => {
             }}>
               {editing ? (
                 <Space>
-                  {selectedImages.length > 0 && <Button type="primary" danger onClick={handleDeleteImages} size='small' >Delete</Button>}
+                  {selectedImages.length > 0 && (
+                    <>
+                      <Button type="primary" danger onClick={handleDeleteImages} size='small' >Delete</Button>
+                      <Button type="text" size='small' onClick={ev => {
+                        downloadImages();
+                      }}>Download</Button>
+                    </>
+                  )}
                   <Button type="text" onClick={ev => {
                     setEditing(false)
                   }} size='small' >Done</Button>

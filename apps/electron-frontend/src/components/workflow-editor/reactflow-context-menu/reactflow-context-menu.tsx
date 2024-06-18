@@ -11,6 +11,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { EnabledIcon, CollapseIcon, CopyIcon, DeleteIcon, DisableRunIcon, EnableRunIcon, ExpandIcon } from 'ui/icons';
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
+import { SaveImageMenuItem, shouldShowSaveImageNode } from './context-menu-item-save-images';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -140,8 +141,15 @@ function NodeMenu(props: NodeMenuProps) {
   const items: MenuItem[] = [
     getMenuItem(<div className="menu-item-title"> <CopyIcon /> Duplicate</div>, 'MENU_ITEM_DUPLICATE_NODE', null, null),
     getMenuItem((<ChangeTitleMenuItem {...props}/>), 'MENU_ITEM_CHANGE_TITLE', null, null),
-    { type: "divider" },
   ];
+
+  if (shouldShowSaveImageNode(props.id)) {
+    items.push(getMenuItem(<SaveImageMenuItem {...props} />, 'MENU_ITEM_SAVE_IMAGE', null, null));
+  }
+
+  items.push(
+    { type: "divider" },
+  )
 
   const nodeVisibleState = node.properties?.nodeVisibleState || NodeVisibleState.Expaned;
   if (nodeVisibleState === NodeVisibleState.Expaned) {
