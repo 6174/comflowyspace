@@ -1,5 +1,5 @@
 import { use, useCallback, useEffect, useRef, useState } from "react"
-import { useModelState } from "@comflowy/common/store/model.state";
+import { getCivitModelByModelId, useModelState } from "@comflowy/common/store/model.state";
 import InfiniteScroll from "ui/infinite-scroller";
 import { CivitAIModel, MarketModel, ModelType, getFilePathFromMarktModel, turnCivitAiModelToMarketModel } from "@comflowy/common/types/model.types";
 import { Button, Carousel, Input, Modal, Progress, Select, Space, Tag, message } from "antd";
@@ -112,15 +112,40 @@ export function CivitAIModelFilter() {
   const currentTags = useModelState.getState().civitai.filters.types || [];
   const onSearchCivitAI = useModelState(state => state.onSearchCivitAI);
   const [searching, setSearching] = useState(false);
+  const setCivitModelDetailPage = useModelState(state => state.setCivitModelDetailPage);
+
+  const tryFetchCivitAIModelFromUrl = useCallback(async (url: string) => {
+    try {
+      const urlObj = new URL(url);
+      const pathParts = urlObj.pathname.split('/');
+      const id = pathParts[2];
+      const data = await getCivitModelByModelId(id);
+      setCivitModelDetailPage(data);
+    } catch (err) {
+      console.log(err);
+      message.error("Fetch model from civitai.com failed, please try again later.");
+    }
+    // useModelState.getState().fetchCivitAIModelById(parseInt(id));
+  }, []);
+
   const handleSearch = useCallback(async () => {
     setSearching(true);
     try {
-      await onSearchCivitAI();
-    } catch(err) {
+      const searchValue = (useModelState.getState().civitai.filters.query || "").trim();
+      if (searchValue.startsWith("https://civitai.com")) {
+        if (searchValue.startsWith("https://civitai.com/models/")) {
+          await tryFetchCivitAIModelFromUrl(searchValue);
+        } else {
+          message.info("I guess you want find model from civitai.com, but the url is not correct, you should use the model homepage url eg https://civitai.com/models/385453 instead.")
+        }
+      } else {
+        await onSearchCivitAI();
+      }
+    } catch (err) {
       console.error(err);
     }
     setSearching(false);
-  }, [])
+  }, []);
 
   const tags = [ModelType.Checkpoint, ModelType.LoRA, ModelType.Controlnet, ModelType.Upscaler, ModelType.VAE]
 
@@ -136,7 +161,7 @@ export function CivitAIModelFilter() {
             onPressEnter={ev => {
               handleSearch();
             }}
-            placeholder="Search models"
+            placeholder="Find by keyword or model url from civitai.com"
             value={searchValue}
           />
         </div>

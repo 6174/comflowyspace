@@ -4,6 +4,7 @@ import { getModelInfos } from "../comfyui-bridge/bridge";
 import { CivitAIModel, MarketModel, ModelType } from "../types/model.types";
 import { Input } from "../types";
 import { getBackendUrl } from "../config";
+import _ from "lodash";
 
 export type InstalledModel = {
     name: string;
@@ -279,6 +280,30 @@ async function getCivitModels(currentPage: number, pageSize: number, filters: an
     return data
 }
 
+export const getCivitModelByModelId = _.memoize(async (modelId: string): Promise<CivitAIModel> => {
+    const api = getBackendUrl("/api/civit/models");
+    const ret = await fetch(api, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            modelId
+        })
+    });
+    const json = await ret.json();
+    if (json.success) {
+        console.log("find result", json.data);
+        const data = json.data;
+        if (!data.error) {
+            return data;
+        }
+        throw new Error(data.error);
+    } else {
+        throw new Error(json.message);
+    }
+});
+
 /**
  * Downloading info webhooks
  * @param model 
@@ -300,3 +325,5 @@ export function useDownloadInfo(model: MarketModel) {
 export function useModelUUID(model: MarketModel) {
     return model?.id || model.filename;
 }
+
+
