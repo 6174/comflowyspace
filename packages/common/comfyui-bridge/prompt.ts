@@ -16,6 +16,12 @@ interface ExtraData {
   extra_pnginfo?: Record<string, any>
 }
 
+
+type PromptNodeItem = {
+  class_type: string,
+  inputs: Record<string, any>
+}
+
 export interface PromptResponse {
   error: ComfyUIExecuteError;
 }
@@ -143,7 +149,8 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     }
     const value = findEdgeSourceValue(edge);
     if (value) {
-      target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
+      const inputKey = findInputKeyFromHandle(target, edge.targetHandle!);
+      target.inputs[inputKey] = value;
     }
   }
 
@@ -178,6 +185,13 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       }
     });
     return infos;
+  }
+
+  function findInputKeyFromHandle(target: PromptNodeItem, targetHandle: string): string {
+    const widget = widgets[target.class_type];
+    const inputKeys = [...Object.keys(widget.input?.optional || {}), ...Object.keys(widget.input?.required || {})];
+    const inputKey = inputKeys.find((key) => key.toUpperCase() === targetHandle);
+    return inputKey ?? targetHandle.toLocaleLowerCase();
   }
 
   /**
