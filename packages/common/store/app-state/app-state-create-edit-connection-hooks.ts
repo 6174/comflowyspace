@@ -2,7 +2,7 @@ import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import { type Edge, type Connection as FlowConnecton,   applyEdgeChanges,  OnConnectStartParams, useStore, useEdgesState } from 'reactflow';
 import { WorkflowDocumentUtils } from '../ydoc-utils';
 import _ from "lodash";
-import { NODE_REROUTE, Widget } from "../../types";
+import { NODE_GET, NODE_REROUTE, NODE_SET, Widget } from "../../types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -96,6 +96,7 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
 
 export function validateEdge(st: AppState, connection: FlowConnecton): [boolean, string] {
   const { source, sourceHandle, target, targetHandle } = connection;
+
   if (!source || !target) {
     return [false, "source or target is null"];
   }
@@ -113,27 +114,16 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
   const sourceOutputs = sourceNode.outputs;
   const targetInputs = targetNode.inputs;
 
-  if (targetNode.widget === NODE_REROUTE) {
+  if (targetNode.widget === NODE_REROUTE || targetNode.widget === NODE_SET) {
     return [true, "success"];
   }
 
   /**
    * @TODO if source node is reroute，find the real source node and validate it
    */
-  if (sourceNode.widget === NODE_REROUTE) {
+  if (sourceNode.widget === NODE_REROUTE || sourceNode.widget === NODE_GET) {
     return [true, "success"];
-    // const edge = st.edges.find(edge => {
-    //   return edge.target === sourceNode.id
-    // });
-    // if (edge) {
-    //   const realSource = edge.source;
-    //   const realSourceNode = st.graph[realSource];
-    //   sourceNode = realSourceNode;
-    // } else {
-    //   return [false, "source node is reroute but no real source node found"]
-    // }
   }
-
 
   if (sourceHandle === "*" || targetHandle === "*") {
     return [true, "success"]

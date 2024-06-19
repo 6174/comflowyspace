@@ -1,5 +1,5 @@
 import { getComfyUIBackendUrl } from '../config'
-import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP, SDNode } from '../types'
+import { PersistedWorkflowConnection, PersistedWorkflowDocument, PersistedWorkflowNode, ComfyUIExecuteError, Input, Widget, type NodeId, NODE_REROUTE, NODE_PRIMITIVE, NODE_GROUP, SDNode, NODE_SET, NODE_GET, SetNodeInfo, NODE_GET_SELECT_FIELD_NAME } from '../types'
 import { persistedWorkflowDocumentToComfyUIWorkflow } from './export-import'
 import {Node} from "./bridge";
 import { KEYS, t } from "../i18n";
@@ -79,7 +79,16 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
   for (const [id, node] of nodes) {
     const widget = widgets[node.value.widget];
-    if (!widget || Widget.isPrimitive(widget.name) ||  widget.name === "Note" || widget.name === "Group" || Widget.isStaticPrimitive(widget.name) || widget.name === NODE_REROUTE) {
+    if (
+      !widget || 
+      Widget.isPrimitive(widget.name) ||  
+      widget.name === "Note" || 
+      widget.name === "Group" || 
+      Widget.isStaticPrimitive(widget.name) || 
+      widget.name === NODE_REROUTE || 
+      widget.name === NODE_SET || 
+      widget.name === NODE_GET
+    ) {
       continue
     }
 
@@ -124,13 +133,14 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     }
   }
 
+  const setNodes = resolveSetNodesInfo();
+
   for (const edge of workflow.connections) {
     const target = prompt[edge.target!]
     // target must be exist in prompt nodes
     if (!target) {
       continue
     }
-
     const value = findEdgeSourceValue(edge);
     if (value) {
       target.inputs[edge.targetHandle!.toLocaleLowerCase()] = value;
@@ -141,6 +151,45 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     prompt,
     client_id: clientId,
     extra_data: { extra_pnginfo: { workflow: persistedWorkflowDocumentToComfyUIWorkflow(workflow, widgets) } },
+  }
+
+  /**
+   * prepare all set nodes info
+   * @returns 
+   */
+  function resolveSetNodesInfo(): Record<string, SetNodeInfo> {
+    const infos: Record<string, SetNodeInfo> = {};
+    const connections = workflow.connections;
+    connections.forEach((connection) => {
+      const target = workflow.nodes[connection.target!];
+      const source = workflow.nodes[connection.source!];
+      if (target.value.widget === NODE_SET) {
+        const key = target.value.fields[NODE_GET_SELECT_FIELD_NAME]
+        infos[key] = ({
+          id: target.id,
+          reference: {
+            id: source.id,
+            referenceNode: source.value,
+            referenceField: connection.sourceHandle!,
+            edge: connection
+          },
+          field: key
+        })
+      }
+    });
+    return infos;
+  }
+
+  /**
+   * find a source value
+   * @param source 
+   */
+  function findGetNodeInputValue(source: PersistedWorkflowNode): any {
+    const referenceVarKey = source.value.fields[NODE_GET_SELECT_FIELD_NAME];
+    const setNodeInfo = setNodes[referenceVarKey];
+    if (setNodeInfo) {
+      return findEdgeSourceValue(setNodeInfo.reference.edge as PersistedWorkflowConnection);
+    }
   }
 
   function findEdgeSourceValue(edge: PersistedWorkflowConnection) {
@@ -156,6 +205,11 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     const outputs = source.value.outputs || [];
     const outputIndex = outputs.findIndex((output) => output.name.toUpperCase() === edge.sourceHandle);
     value = [edge.source, outputIndex];
+
+    if (source.value.widget === NODE_GET) {
+      value = findGetNodeInputValue(source);
+    }
+
     // special widget such as primitive_string & reroute node & combo 
     if (Widget.isStaticPrimitive(source.value.widget)) {
       value = source.value.fields[source.value.outputs[0].name];

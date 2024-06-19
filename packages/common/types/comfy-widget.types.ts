@@ -1,7 +1,12 @@
+import { Edge } from "reactflow";
 import { ContrlAfterGeneratedValues, FlowPropsKey, Input } from "./comfy-props.types"
+import { SDNode } from "./comfy-node.types";
 export const NODE_GROUP = 'Group';
 export const NODE_REROUTE = "Reroute";
 export const NODE_PRIMITIVE = "PrimitiveNode";
+export const NODE_GET = "GetNode";
+export const NODE_SET = "SetNode";
+export const NODE_GET_SELECT_FIELD_NAME = "Constant"
 export type WidgetKey = string
 /**
  * Stable Diffusion Widget Interface
@@ -28,6 +33,8 @@ export const UnknownWidget: Widget = {
 };
 
 export type Widgets = Record<WidgetKey, Widget>
+
+
 
 export const Widget = {
   isSeedParam(param: string): boolean {
@@ -93,7 +100,39 @@ export const Widget = {
   }
 }
 
-export const specialWidgets = {
+
+export enum FrontEndWidgetNames {
+  GetNode = "GetNode",
+  SetNode = "SetNode",
+  Reroute = "Reroute"
+}
+
+export const specialWidgets: Record<string, Widget> = {
+  SetNode: {
+    name: "SetNode",
+    display_name: "Set Node",
+    description: "Set Node",
+    category: "utils",
+    input: {
+      required: {
+        "Constant": ["STRING", {}] 
+      }
+    },
+    output: []
+  },
+  GetNode: {
+    name: "GetNode",
+    display_name: "Get Node",
+    description: "Get Node",
+    category: "utils",
+    input: {
+      required: {},
+      optional: {
+        "Constant": ["STRING", {}] 
+      }
+    },
+    output: []
+  },
   Note: {
     "name": "Note",
     "display_name": "Note",
@@ -147,17 +186,28 @@ export const specialWidgets = {
   }
 }
 
-function createPrimitiveWidget(type: string) {
+function createPrimitiveWidget(type: string): Widget {
   return {
     "name": `Primitive_${type}`,
     "input": {
       "required": {}
     },
     "output": [
-      type
+      type as any
     ],
     "display_name": `${type}`,
     "description": `Primitive type of ${type}`,
     "category": "utils",
   }
 }
+
+export type SetNodeInfo = {
+  id: string,
+  reference: {
+    id: string,
+    referenceNode: SDNode,
+    referenceField: string,
+    edge: Edge
+  },
+  field: string
+};

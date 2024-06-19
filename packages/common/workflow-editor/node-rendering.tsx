@@ -1,5 +1,5 @@
 import { NodeProps, type Node } from 'reactflow';
-import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo, NODE_REROUTE } from '../types';
+import { Input, SDNODE_DEFAULT_COLOR, SDNode, ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput,ContrlAfterGeneratedValuesOptions, Widget, SubflowNodeWithControl, WorkflowNodeRenderInfo, SubflowNodeRenderingInfo, NODE_REROUTE, NODE_GET, NODE_SET } from '../types';
 import { useEffect, useState } from 'react';
 import { useSubflowStore } from '../store/subflow-state';
 import { useAppStore } from '../store';
@@ -31,6 +31,16 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
   if (widget.name === NODE_REROUTE) {
     outputs = [{ name: "*", type: "*", links: [], slot_index: 0 }];
     inputs = [{ name: "value", type: "*" }];
+  }
+
+  if (widget.name === NODE_GET) {
+    outputs = [{ name: "value", type: "*", links: [], slot_index: 0 }];
+    inputs = [];
+  }
+
+  if (widget.name === NODE_SET) {
+    outputs = [{ name: "value", type: "*", links: [], slot_index: 0 }];
+    inputs = [{name: "value", type: "*"}];
   }
 
   if ((widget?.input?.required?.image?.[1] as any)?.image_upload === true) {
