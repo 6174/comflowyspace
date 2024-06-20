@@ -98,6 +98,7 @@ export async function ApiRouteInstallModel(req: Request, res: Response) {
 export async function ApiGetCivitaiModels(req: Request, res: Response) {
     try {
         const params = req.body
+        console.log("modelId", params);
         if (params.modelId) {
             const ret = await getCivitModelById(params.modelId)
             res.send({
@@ -106,6 +107,7 @@ export async function ApiGetCivitaiModels(req: Request, res: Response) {
             });
             return
         }
+
         if (params.hash) {
             const ret = await getCivitModelByHash(params.hash)
             res.send({

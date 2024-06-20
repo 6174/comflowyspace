@@ -32,7 +32,7 @@ export async function searchCivitModelFromSHA256(sha256: string) {
 
 export async function getCivitModelById(modelId: string) {
   const headers = resolveCivitHeaders();
-  const ret = await proxyFetch(`https://api.civitai.com/v1/model?modelId=${modelId}`, {
+  const ret = await proxyFetch(`https://api.civitai.com/v1/models/${modelId}`, {
     headers,
   })
   const data = await ret.json()

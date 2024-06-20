@@ -281,7 +281,7 @@ async function getCivitModels(currentPage: number, pageSize: number, filters: an
 }
 
 export const getCivitModelByModelId = _.memoize(async (modelId: string): Promise<CivitAIModel> => {
-    const api = getBackendUrl("/api/civit/models");
+    const api = getBackendUrl("/api/civitai/models");
     const ret = await fetch(api, {
         method: "POST",
         headers: {

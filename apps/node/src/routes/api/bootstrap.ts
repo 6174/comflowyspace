@@ -32,7 +32,7 @@ export async function ApiEnvCheck(req: Request, res: Response) {
             success: false,
             error: err.message + err.stack
         })
-    } 
+    }
 }
 
 /**
