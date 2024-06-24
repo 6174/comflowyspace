@@ -114,6 +114,45 @@ export function InputUploadImage({widget, node, id}: {
         }
     }
 
+    const handlePasteEvent = useCallback(async (event: ClipboardEvent) => {
+        try {
+            const items = event.clipboardData?.items;
+            if (items) {
+                const selectedNode = useAppStore.getState().nodes.filter(n => n.selected).map(it => it.id).join(",");
+                if (selectedNode === id) {
+                    for (let i = 0; i < items.length; i++) {
+                        if (items[i].type.indexOf('image') !== -1) {
+                            const blob = items[i].getAsFile();
+                            if (blob) {
+                                const file = new File([blob], `pasted_image_${new Date().getTime()}.png`, { type: blob.type });
+                                const cancel = message.loading('Uploading...', 1000);
+                                try {
+                                    await customRequest({ file, onSuccess: () => { 
+                                        message.success("upload success");  
+                                    }, onError: () => { 
+                                        message.error("upload faield")  
+                                    } });
+                                } catch(err) {
+                                    console.log("upload failed");
+                                }
+                                cancel();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }, [customRequest, id]);
+
+    useEffect(() => {
+        document.addEventListener('paste', handlePasteEvent as any);
+        return () => {
+            document.removeEventListener('paste', handlePasteEvent as any);
+        };
+    }, []);
+
     return (
         <div className='upload-image-wrapper'>
             <Upload {...props}>
