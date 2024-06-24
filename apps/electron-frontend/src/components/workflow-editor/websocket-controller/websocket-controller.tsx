@@ -96,8 +96,14 @@ export function WsController(props: {clientId: string}): JSX.Element {
           }
         } else if (Message.isExecuted(msg)) {
           track('comfyui-executed-success');
-          const images = msg.data.output.images
-          if (Array.isArray(images)) {
+          const images = msg.data.output.images || []
+          const a_images = msg.data.output?.a_images;
+          const b_images = msg.data.output?.b_images;
+          if (a_images && b_images) {
+            images.push(...a_images);
+            images.push(...b_images);
+          }
+          if (Array.isArray(images) && images.length > 0) {
             onImageSave(msg.data.node, images)
           }
         } else if (Message.isExecutingError(msg)) {
