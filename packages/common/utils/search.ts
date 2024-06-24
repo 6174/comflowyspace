@@ -1,4 +1,6 @@
-export function maxMatchLengthSearch(searchTerm: string, sourceString: string): number {
+import _ from "lodash";
+
+export const maxMatchLengthSearch = _.memoize((searchTerm: string, sourceString: string): number => {
   let maxMatch = 0;
   for (let i = 0; i < sourceString.length; i++) {
     for (let j = i + 1; j <= sourceString.length; j++) {
@@ -9,4 +11,4 @@ export function maxMatchLengthSearch(searchTerm: string, sourceString: string): 
     }
   }
   return maxMatch;
-}
+});
