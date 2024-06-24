@@ -10,6 +10,7 @@ import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-edit-image/context-menu-item-edit-image-async';
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
+let lastPasteTime = 0;
 export function InputUploadImage({widget, node, id}: {
     widget: Widget,
     node: SDNode,
@@ -115,6 +116,18 @@ export function InputUploadImage({widget, node, id}: {
     }
 
     const handlePasteEvent = useCallback(async (event: ClipboardEvent) => {
+        const now = Date.now();
+        const interval = 1000; // 设置的时间间隔，单位为毫秒
+
+        if (now - lastPasteTime < interval) {
+            // 如果距离上一次 paste 事件的时间间隔小于设定的时间间隔，则忽略该事件
+            return;
+        }
+
+        lastPasteTime = now; // 更新上一次 paste 事件的时间
+
+        console.log("paste me");
+        
         try {
             const items = event.clipboardData?.items;
             if (items) {
