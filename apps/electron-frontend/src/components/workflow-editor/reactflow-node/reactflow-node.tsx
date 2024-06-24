@@ -13,6 +13,7 @@ import { InstallMissingWidget, NodeError } from './reactflow-node-errors';
 import { ComflowyNodeResizer, useNodeAutoResize } from './reactflow-node-resize';
 import { NodeImagePreviews } from './reactflow-node-imagepreviews';
 import { NodeWrapperProps } from './reactflow-node-wrapper';
+import { ReactFlowNodeDynamic } from './reactflow-node-dynamic';
 export const NODE_IDENTIFIER = 'sdNode'
 
 interface Props {
@@ -124,7 +125,7 @@ export const NodeComponent = memo(({
                 )
               }
             </div>
-            {!collapsed && <NodeImagePreviews imagePreviews={imagePreviews}/> }
+            {!collapsed && <ReactFlowNodeDynamic renderInfo={renderInfo} node={node}  imagePreviews={imagePreviews}/>}
           </div>
         </div>
       ) : (

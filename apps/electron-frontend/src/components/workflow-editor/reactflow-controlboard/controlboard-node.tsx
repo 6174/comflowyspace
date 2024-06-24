@@ -7,12 +7,15 @@ import { type Node, useReactFlow } from "reactflow";
 import { useAppStore } from "@comflowy/common/store";
 import { ControlBoardNodeProps, WorkflowNodeRenderInfo } from "@comflowy/common/types";
 import React from "react";
+import { ReactFlowNodeDynamic } from "../reactflow-node/reactflow-node-dynamic";
 
 export const ControlBoardNode = React.memo(({ nodeControl, node }: ControlBoardNodeProps) => {
   const id = node.id;
-  const { title, params, widget } = getNodeRenderInfo({id: node.id, ...node.data.value}, node.data.widget);
+  const renderInfo = getNodeRenderInfo({id: node.id, ...node.data.value}, node.data.widget);
+  const { title, params, widget } = renderInfo;
   const isPositive = useAppStore(st => st.graph[id]?.isPositive);
   const isNegative = useAppStore(st => st.graph[id]?.isNegative);
+  const imagePreviews = useAppStore(st => st.graph[id]?.images || []);
   const nodeError = useAppStore(st => st.promptError?.node_errors[id]);
   const controlFields = nodeControl?.fields;
 
@@ -38,6 +41,7 @@ export const ControlBoardNode = React.memo(({ nodeControl, node }: ControlBoardN
       {paramsToRender.map(({ property, input }) => (
         <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
       ))}
+      <ReactFlowNodeDynamic node={node} renderInfo={renderInfo} imagePreviews={imagePreviews}/>
     </div>
   )
 });

@@ -87,13 +87,7 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     const widget = widgets[node.value.widget];
     if (
       !widget || 
-      Widget.isPrimitive(widget.name) ||  
-      widget.name === "Note" || 
-      widget.name === "Group" || 
-      Widget.isStaticPrimitive(widget.name) || 
-      widget.name === NODE_REROUTE || 
-      widget.name === NODE_SET || 
-      widget.name === NODE_GET
+      Widget.isLocalWidget(widget)
     ) {
       continue
     }

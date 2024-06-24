@@ -104,8 +104,16 @@ body {
   overflow: hidden;
 }
 
-.image-preview img, .ant-image-preview-img{
-  background-color: #1f1f1f;
+.image-preview img, .ant-image-preview-img, img{
+  // background-color: #1f1f1f;
+  $color: #1f1f1f;
+  background-image: 
+    linear-gradient(45deg,  $color 25%, transparent 25%), 
+    linear-gradient(-45deg, $color 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, $color 75%), 
+    linear-gradient(-45deg, transparent 75%, $color 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
 }
 
 @-webkit-keyframes dashdraw {

@@ -6,7 +6,9 @@ export const NODE_REROUTE = "Reroute";
 export const NODE_PRIMITIVE = "PrimitiveNode";
 export const NODE_GET = "GetNode";
 export const NODE_SET = "SetNode";
-export const NODE_GET_SELECT_FIELD_NAME = "Constant"
+export const NODE_GET_SELECT_FIELD_NAME = "Constant";
+export const NODE_IMAGE_COMPARE = "ImageCompare";
+
 export type WidgetKey = string
 /**
  * Stable Diffusion Widget Interface
@@ -35,8 +37,19 @@ export const UnknownWidget: Widget = {
 export type Widgets = Record<WidgetKey, Widget>
 
 
-
 export const Widget = {
+  isLocalWidget(widget: Widget): boolean {
+    return (
+      Widget.isPrimitive(widget.name) ||
+      widget.name === "Note" ||
+      widget.name === "Group" ||
+      Widget.isStaticPrimitive(widget.name) ||
+      widget.name === NODE_REROUTE ||
+      widget.name === NODE_SET ||
+      widget.name === NODE_GET || 
+      widget.name === NODE_IMAGE_COMPARE
+    )
+  },
   isSeedParam(param: string): boolean {
     return param === "seed" || param === "noise_seed"
   },
