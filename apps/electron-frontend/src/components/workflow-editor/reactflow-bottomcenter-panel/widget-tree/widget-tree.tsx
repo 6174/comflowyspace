@@ -10,6 +10,8 @@ import _ from 'lodash';
 import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
 import { dt, currentLang } from '@comflowy/common/i18n';
 
+import { VirtualList } from 'ui/virtual/virtual-list';
+
 export const WidgetTree = (props: {
     showCategory?: boolean;
     id: number;
@@ -219,12 +221,15 @@ export const WidgetTree = (props: {
                     value={searchValue}
                 />
             </div>
+
             {
                 searchValue == "" ? widgetCategoryPanel : (
                     <div className='search-result'>
-                        {searchResult.map((item, index) => {
-                            return (
-                                <div className='search-result-item' key={item.name + index}>
+                        <VirtualList 
+                            itemHeight={45}
+                            items={searchResult}
+                            renderItem={(item) => {
+                                return (
                                     <WidgetNode
                                         draggable={props.draggable}
                                         widget={item}
@@ -235,9 +240,9 @@ export const WidgetTree = (props: {
                                             togglePin(item.name, pinnedWidgets.indexOf(item.name) === -1);
                                         }}
                                     />
-                                </div>
-                            )
-                        })}
+                                )
+                            }}
+                            />
                     </div>
                 )
             }
@@ -245,6 +250,8 @@ export const WidgetTree = (props: {
         </div>
     );
 };
+
+
 
 /**
  *  Drag to create https://reactflow.dev/examples/interaction/drag-and-drop
