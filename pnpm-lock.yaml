@@ -216,8 +216,8 @@ importers:
         specifier: ^4.2.3
         version: 4.2.3
       comflowy-image-editor:
-        specifier: github:6174/comflowy-image-editor#1.0.3
-        version: github.com/6174/comflowy-image-editor/9d37054a22facff21d75ec5f83fb71b06c90db06(@types/react@18.2.21)(react-dom@18.2.0)(react-konva@18.2.10)(react@18.2.0)(styled-components@5.3.11)
+        specifier: github:6174/comflowy-image-editor#1.0.5
+        version: github.com/6174/comflowy-image-editor/40d5128384d01c89ae7681402ac9de7355d0c48d(@types/react@18.2.21)(react-dom@18.2.0)(react-konva@18.2.10)(react@18.2.0)(styled-components@5.3.11)
       dexie-react-hooks:
         specifier: ^1.1.7
         version: 1.1.7(@types/react@18.2.21)(dexie@3.2.4)(react@18.2.0)
@@ -13612,11 +13612,11 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/6174/comflowy-image-editor/9d37054a22facff21d75ec5f83fb71b06c90db06(@types/react@18.2.21)(react-dom@18.2.0)(react-konva@18.2.10)(react@18.2.0)(styled-components@5.3.11):
-    resolution: {tarball: https://codeload.github.com/6174/comflowy-image-editor/tar.gz/9d37054a22facff21d75ec5f83fb71b06c90db06}
-    id: github.com/6174/comflowy-image-editor/9d37054a22facff21d75ec5f83fb71b06c90db06
+  github.com/6174/comflowy-image-editor/40d5128384d01c89ae7681402ac9de7355d0c48d(@types/react@18.2.21)(react-dom@18.2.0)(react-konva@18.2.10)(react@18.2.0)(styled-components@5.3.11):
+    resolution: {tarball: https://codeload.github.com/6174/comflowy-image-editor/tar.gz/40d5128384d01c89ae7681402ac9de7355d0c48d}
+    id: github.com/6174/comflowy-image-editor/40d5128384d01c89ae7681402ac9de7355d0c48d
     name: comflowy-image-editor
-    version: 1.0.3
+    version: 1.0.5
     peerDependencies:
       react: '>=17.0.0'
       react-dom: '>=17.0.0'

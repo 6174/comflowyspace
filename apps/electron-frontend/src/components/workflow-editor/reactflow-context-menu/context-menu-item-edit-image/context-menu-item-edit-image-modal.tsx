@@ -101,8 +101,8 @@ export default function EditImageModal(props: {
               message.error("Save image failed: " + err.message);
             }
           }}
-          savingPixelRatio={0} 
-          previewPixelRatio={0} />
+          savingPixelRatio={4} 
+          previewPixelRatio={4} />
         {/* <img src={props.node.image} alt="image" /> */}
       </div>
     </DraggableModal>
