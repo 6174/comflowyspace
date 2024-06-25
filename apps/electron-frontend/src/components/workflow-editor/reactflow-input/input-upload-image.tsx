@@ -100,7 +100,7 @@ export function InputUploadImage({widget, node, id}: {
         if (parsedName.length > 1) {
             realImageName = parsedName[1];
         }
-        formData.append('image', blob, `edit_image_${realImageName.split(".")[0]}_${new Date().getTime().toString().substring(0, 4)}.png`);
+        formData.append('image', blob, `edit_image_${realImageName.split(".")[0]}_${new Date().getTime()}.png`);
         formData.append('subfolder', 'clipspace');
         const response = await fetch(getUploadImageUrl(), {
             method: 'POST',
@@ -127,7 +127,7 @@ export function InputUploadImage({widget, node, id}: {
         lastPasteTime = now; // 更新上一次 paste 事件的时间
 
         console.log("paste me");
-        
+ 
         try {
             const items = event.clipboardData?.items;
             if (items) {
