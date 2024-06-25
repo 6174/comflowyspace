@@ -46,6 +46,7 @@
             margin-top: -1px;
             margin-right: -1px;
             .node-main {
+                height: calc(100% - 26px);
                 .node-params {
                     max-height: 1000px;
                     padding-bottom: 20px;
