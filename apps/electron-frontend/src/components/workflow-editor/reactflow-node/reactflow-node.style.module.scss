@@ -39,28 +39,16 @@
     }
 
     :global {
-        .node-inner {
+         .node-inner {
             height: 100%;
+            overflow: hidden;
             margin-left: -1px;
             margin-top: -1px;
             margin-right: -1px;
-            display: flex;
-            flex-direction: column;
             .node-main {
-                overflow: hidden;
-                flex: 1;
                 .node-params {
                     max-height: 1000px;
-                    overflow-y: auto;
-                    overflow-x: hidden;
                     padding-bottom: 20px;
-                    &::-webkit-scrollbar {
-                        background: transparent !important;
-                        width: 10px;
-                    }
-                    &::-webkit-scrollbar-thumb {
-                        background: white !important;
-                    }
                 }
             }
             &.LoadImage {
@@ -70,7 +58,7 @@
                 }
             }
         }
-
+        
         .node-header {
             display: flex;
             flex-direction: row;

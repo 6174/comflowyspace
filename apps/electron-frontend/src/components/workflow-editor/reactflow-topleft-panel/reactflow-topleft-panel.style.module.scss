@@ -22,6 +22,14 @@
                 top: 1.5px;
             }
         }
+        .action-file-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: keep-all;
+            white-space: nowrap; 
+            max-width: 200px;
+            justify-content: flex-start;
+        }
         .icon {
             svg {
                 * {
