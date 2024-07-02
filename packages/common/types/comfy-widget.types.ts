@@ -9,6 +9,12 @@ export const NODE_SET = "SetNode";
 export const NODE_GET_SELECT_FIELD_NAME = "Constant";
 export const NODE_IMAGE_COMPARE = "ImageCompare";
 
+export const NODE_ANYTHING_EVERYWHERE = "Anything Everywhere";
+export const NODE_ANYTHING_EVERYWHERE3 = "Anything Everywhere3";
+export const NODE_ANYTHING_EVERYWHERE_PROMPT = "Prompts Everywhere";
+export const NODE_ANYTHING_EVERYWHERE_REGEX = "Anything Everywhere?";
+export const NODE_ANYTHING_EVERYWHERE_SEED = "Seed Everywhere";
+
 export type WidgetKey = string
 /**
  * Stable Diffusion Widget Interface

@@ -11,6 +11,7 @@ import { SubflowStoreType } from "../subflow-state";
 import { staticCheckWorkflowErrors } from "../../workflow-editor/parse-workflow-errors";
 import { getValueTypeOfNodeSlot } from "../../utils/workflow";
 import _ from "lodash";
+import { ComfyGraghVariables } from "../../types/comfy-variables.types";
 
 export type OnPropChange = (node: NodeId, property: PropertyKey, value: any) => void
 export type SelectionMode = "figma" | "default";
@@ -41,6 +42,7 @@ export interface AppState {
   edges: Edge[]
   controlboard?: ControlBoardConfig
   graph: Record<NodeId, (SDNode & {id: string, flowNode: Node})>
+  gragh_variables: ComfyGraghVariables,
   widgets: Record<WidgetKey, Widget>
   widgetCategory: any;
   draggingAndResizing: boolean;

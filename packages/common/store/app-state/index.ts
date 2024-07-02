@@ -16,6 +16,7 @@ import createCanvasHooks from "./app-state-create-edit-canvas";
 import createEditNodeHooks from "./app-state-create-edit-node-hooks";
 import createEditConnectionHooks from "./app-state-create-edit-connection-hooks";
 import createWorkflowExecutionHooks from "./app-state-create-workflow-execution-hooks";
+import { getDefaultComfyGraphVars } from "../../types/comfy-variables.types";
 
 export const useAppStore = create<AppState>((set, get) => {
   return {
@@ -26,6 +27,7 @@ export const useAppStore = create<AppState>((set, get) => {
     editorEvent: new SlotEvent<EditorEvent>(),
     resetWorkflowEvent: new SlotEvent<any>(),
     graph: {},
+    gragh_variables: getDefaultComfyGraphVars(),
     nodes: [],
     edges: [],
     unknownWidgets: new Set<string>(),
