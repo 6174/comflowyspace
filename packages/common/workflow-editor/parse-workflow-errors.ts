@@ -1,4 +1,5 @@
-import { ComfyUIErrorTypes, ComfyUIExecuteError, Input, NODE_REROUTE, PersistedWorkflowDocument, SUBFLOW_WIDGET_TYPE_NAME, Widgets } from "../types";
+import { ComfyUIErrorTypes, ComfyUIExecuteError, Input, NODE_REROUTE, PersistedWorkflowDocument, SUBFLOW_WIDGET_TYPE_NAME, Widget, Widgets } from "../types";
+import { ComfyGraghVariables } from "../types/comfy-variables.types";
 
 /**
  * Utility to parse comfyui workflow errors
@@ -8,7 +9,7 @@ import { ComfyUIErrorTypes, ComfyUIExecuteError, Input, NODE_REROUTE, PersistedW
  */
 export function staticCheckWorkflowErrors(
   widgets: Widgets,
-  workflow: PersistedWorkflowDocument
+  workflow: PersistedWorkflowDocument,
 ): ComfyUIExecuteError {
   const flowError: ComfyUIExecuteError = {
     node_errors: {}
@@ -19,8 +20,8 @@ export function staticCheckWorkflowErrors(
     const sdnode = node.value;
     const widget = widgets[sdnode.widget];
     const error = flowError.node_errors[id] || { errors: [] };
-    
-    if ([NODE_REROUTE, "PrimitiveNode", SUBFLOW_WIDGET_TYPE_NAME].indexOf(sdnode.widget) >= 0) {
+
+    if ([NODE_REROUTE, "PrimitiveNode"].indexOf(sdnode.widget) >= 0) {
       return;
     }
 

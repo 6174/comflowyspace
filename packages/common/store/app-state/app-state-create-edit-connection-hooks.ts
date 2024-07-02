@@ -3,6 +3,7 @@ import { type Edge, type Connection as FlowConnecton,   applyEdgeChanges,  OnCon
 import { WorkflowDocumentUtils } from '../ydoc-utils';
 import _ from "lodash";
 import { NODE_GET, NODE_REROUTE, NODE_SET, Widget } from "../../types";
+import { isAnywhereWidget, validateAnywhereEdge } from "../../types/comfy-variables.types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter): Partial<AppState> {
   return {
@@ -123,6 +124,10 @@ export function validateEdge(st: AppState, connection: FlowConnecton): [boolean,
    */
   if (sourceNode.widget === NODE_REROUTE || sourceNode.widget === NODE_GET) {
     return [true, "success"];
+  }
+
+  if (isAnywhereWidget(targetNode.widget)) {
+    return validateAnywhereEdge(st, connection);
   }
 
   if (sourceHandle === "*" || targetHandle === "*") {

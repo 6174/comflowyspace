@@ -5,6 +5,7 @@ import {Node} from "./bridge";
 import { KEYS, t } from "../i18n";
 import { uuid } from '../utils'
 import _ from 'lodash';
+import { getGraphVarPromptValue, isAnywhereWidget, isFieldMatchRegexVar, parseGraphVariables } from '../types/comfy-variables.types';
 
 interface PromptRequest {
   client_id?: string
@@ -71,6 +72,7 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   const data: Record<NodeId, PersistedWorkflowNode> = {}
 
   const nodes = Object.entries(workflow.nodes)
+  const graph_vars = parseGraphVariables(workflow, widgets)
 
   // set enabled for group nodes;
   nodes.forEach(([pid, node]) => {
@@ -89,6 +91,10 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       !widget || 
       Widget.isLocalWidget(widget)
     ) {
+      continue
+    }
+
+    if (isAnywhereWidget(widget.name)) {
       continue
     }
 
@@ -145,6 +151,34 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     if (value) {
       const inputKey = findInputKeyFromHandle(target, edge.targetHandle!);
       target.inputs[inputKey] = value;
+    }
+  }
+
+  // 如果一些 required 的 input，但是依然没有值，那么尝试通过 graph_vars 来赋值
+  for (const [id, node] of Object.entries(prompt)) {
+    const widget = widgets[node.class_type];
+    const node_title = workflow.nodes[id].value.title || widget.display_name || widget.name;
+    const inputs = widget.input.required || {};
+    for (const [inputKey, input] of Object.entries(inputs)) {
+      if (node.inputs[inputKey] !== undefined) {
+        continue
+      }
+      const input_type = input[0];
+      if (typeof input_type == "string") {
+        const input_name = inputKey;
+        // 在普通的全局变量中查找
+        const var_info = graph_vars.global[input_type];
+        if (var_info) {
+          node.inputs[inputKey] = getGraphVarPromptValue(var_info);
+        }
+        // 在正则全局变量中查找
+        const regex_var = graph_vars.regex[input_type];
+        if (regex_var) {
+          if (isFieldMatchRegexVar(node_title, input_name, regex_var)) {
+            node.inputs[inputKey] = getGraphVarPromptValue(regex_var);
+          }
+        }
+      }
     }
   }
 

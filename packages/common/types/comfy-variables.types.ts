@@ -1,6 +1,8 @@
+import { Connection } from "reactflow";
+import { AppState } from "../store/app-state";
 import { PersistedWorkflowConnection } from "./comfy-connection.types";
 import { PersistedWorkflowNode } from "./comfy-node.types";
-import { NODE_ANYTHING_EVERYWHERE, NODE_ANYTHING_EVERYWHERE3, NODE_ANYTHING_EVERYWHERE_PROMPT, NODE_ANYTHING_EVERYWHERE_REGEX, NODE_GET_SELECT_FIELD_NAME, NODE_SET, Widget } from "./comfy-widget.types";
+import { NODE_ANYTHING_EVERYWHERE, NODE_ANYTHING_EVERYWHERE3, NODE_ANYTHING_EVERYWHERE_PROMPT, NODE_ANYTHING_EVERYWHERE_REGEX, NODE_ANYTHING_EVERYWHERE_SEED, NODE_GET_SELECT_FIELD_NAME, NODE_SET, Widget } from "./comfy-widget.types";
 import { PersistedWorkflowDocument } from "./comfy-workflow.types";
 
 export type ComfyGraphVar = {
@@ -11,17 +13,34 @@ export type ComfyGraphVar = {
   target_node: PersistedWorkflowNode
 }
 
+export type ComfyGraphRegexVar = ComfyGraphVar & {
+  // filter input field value
+  input_regex?: string,
+  // filter node title
+  title_regex?: string
+  // filter group name
+  group_regex?: string
+}
+
 export type ComfyGraghVariables = {
-  regex: Record<string, ComfyGraphVar & {
-    // filter input field value
-    input_regex?: string,
-    // filter node title
-    title_regex?: string
-    // filter group name
-    group_regex?: string
-  }>;
+  regex: Record<string, ComfyGraphRegexVar>;
   setter: Record<string, ComfyGraphVar>;
   global: Record<string, ComfyGraphVar>;
+}
+
+
+export function isFieldMatchRegexVar(node_title: string, input_name: string, var_info: ComfyGraphRegexVar): boolean {
+  if (var_info.title_regex) {
+    const regex = new RegExp(var_info.title_regex);
+    return regex.test(node_title);
+  }
+
+  if (var_info.input_regex) {
+    const regex = new RegExp(var_info.input_regex);
+    return regex.test(input_name);
+  }
+  
+  return true;
 }
 
 export function getDefaultComfyGraphVars(): ComfyGraghVariables {
@@ -30,6 +49,71 @@ export function getDefaultComfyGraphVars(): ComfyGraghVariables {
     setter: {},
     regex: {}
   }
+}
+
+/**
+ * 获取一个变量对应的值
+ * @param item 
+ */
+export function getGraphVarPromptValue(item: ComfyGraphVar): any {
+  const source_node = item.source_node;
+  const ret = [source_node.id, 0];
+  ret[1] = source_node.value.outputs.findIndex((output) => output.name.toUpperCase() === item.type);
+  return ret;
+}
+
+/**
+ * 判断是否是 anywhere widget
+ * @param widgetName 
+ * @returns 
+ */
+export function isAnywhereWidget(widgetName: string): boolean {
+  return [
+    NODE_ANYTHING_EVERYWHERE,
+    NODE_ANYTHING_EVERYWHERE3,
+    NODE_ANYTHING_EVERYWHERE_PROMPT,
+    NODE_ANYTHING_EVERYWHERE_REGEX,
+    // NODE_ANYTHING_EVERYWHERE_SEED
+  ].includes(widgetName);
+}
+
+/**
+ * 在连接的时候校验是否可以连接到 anywhere 类型的节点
+ * @param st 
+ * @param connection 
+ * @returns 
+ */
+export function validateAnywhereEdge(st: AppState, connection: Connection): [boolean, string] {
+  const { source, sourceHandle, target, targetHandle } = connection;
+  const sourceNode = st.graph[source!];
+  const targetNode = st.graph[target!];
+  const sourceOutputs = sourceNode.outputs;
+  const sourceWidget = st.widgets[sourceNode.widget];
+  if (targetHandle === "*") {
+    return [false, "success"];
+  }
+
+  if (Widget.isLocalWidget(sourceWidget)) {
+    return [false, "can't use anywhere for local widget"]
+  }
+
+  // 判断是否已经有了对应的全局变量定义了
+  const vars = st.gragh_variables;
+  const possible_global_var_names = [sourceHandle!,`${sourceHandle!}.positive`, `${sourceHandle!}.negative`];
+
+  const has_var_info = possible_global_var_names.find(var_name => {
+    const var_info = vars.global[var_name];
+    if (var_info) {
+      return true;
+    }
+    return false;
+  })
+
+  if (has_var_info) {
+    return [false, "Already has a global variable of this type"]
+  }
+
+  return [true, "success"]
 }
 
 /**

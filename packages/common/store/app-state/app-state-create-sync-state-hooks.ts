@@ -2,6 +2,7 @@ import { AppState, AppStateGetter, AppStateSetter } from "./app-state-types";
 import { throttledUpdateDocument } from "../../storage";
 import _ from "lodash";
 import { NODE_GROUP, NodeVisibleState, PersistedWorkflowDocument, UnknownWidget } from "../../types";
+import { parseGraphVariables } from "../../types/comfy-variables.types";
 
 export default function createHook(set: AppStateSetter, get: AppStateGetter) {
   return {
@@ -178,8 +179,10 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter) {
           }
         }
 
+        const graph_vars = parseGraphVariables(workflow, state.widgets);
         return {
           ...state,
+          gragh_variables: graph_vars,
           unknownWidgets
         }
       }, true)
