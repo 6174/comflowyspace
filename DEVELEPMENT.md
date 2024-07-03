@@ -4,7 +4,7 @@ Comflowyspace is a typical Client-Server app, for long term design, it can work 
 and a electron app.
 
 1. /apps/electron-backend: Electron App Related Code
-2. /apps/electron-prontend: A next.js app as the front-layer for app
+2. /apps/electron-frontend: A next.js app as the front-layer for app
 3. /apps/node: A node application to connect comfyUI and front-end
 4. /apps/electron-package: Electron app builder 
 
