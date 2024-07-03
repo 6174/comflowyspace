@@ -35,7 +35,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
       secureProtocol: 'TLSv1_2_method',
     };
     const response: Response = await fetch(
-      url, { 
+      url, {
         headers,
         agent: systemProxy.http_proxy ? new HttpsProxyAgent(systemProxy.http_proxy as string, agentOptions) : undefined,
       });
@@ -52,7 +52,7 @@ export async function downloadUrl(dispatch: TaskEventDispatcher, url: string, ta
     });
 
     const finished = util.promisify(stream.finished);
-    
+
     const bufferStream = new stream.PassThrough();
     const writeStream = fs.createWriteStream(targetPath);
 
@@ -111,6 +111,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
   const { systemProxy } = await getSystemProxy();
   const filename: string = path.basename(url);
   const tmpFilePath: string = targetPath + ".tmp";
+  const isCivitai = url.includes("civitai");
 
   try {
 
@@ -130,7 +131,7 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
     const fileSize: number = fs.existsSync(tmpFilePath) ? fs.statSync(tmpFilePath).size : 0;
     let headers: Record<string, string> = fileSize > 0 ? { Range: `bytes=${fileSize}-` } : {};
 
-    if(url.indexOf("civitai") > -1) {
+    if(isCivitai) {
       const token = getCivitAIToken(false);
       if (token) {
         headers["Authorization"] = token
@@ -147,9 +148,14 @@ export async function downloadUrlPro(dispatch: TaskEventDispatcher, url: string,
 
     if (!response.ok) {
       throw new Error(`Failed to download from ${url}. Status: ${response.status} ${response.statusText}`);
-    } else {
-      console.log("Download Reponse from " + url);
     }
+
+    if(isCivitai && response.redirected && response.url.startsWith('https://civitai.com/login')) {
+      // is download from civitai but this model need login to download
+      throw new Error(`Failed to download this model without config civitai token. You can config your token in settings before continue`);
+    }
+
+    console.log("Download Reponse from " + url);
 
     const totalSize = Number(response.headers.get('content-length')) + fileSize;
     let downloadedSize = fileSize;
