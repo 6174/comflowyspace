@@ -60,7 +60,7 @@ export function SubflowNode({
             </h2>
           </div>
           <div className="node-main" ref={mainRef}>
-            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} />
+            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} node_id={node.id}/>
             <SubflowParams subflowRenderingInfo={subflowRenderingInfo} subflowNode={node}/>
           </div>
           <NodeImagePreviews imagePreviews={imagePreviews || []} />
@@ -75,8 +75,9 @@ export function SubflowNode({
   )
 }
 
-export function SubflowSlots({ subflowRenderingInfo }: {
+export function SubflowSlots({ subflowRenderingInfo, node_id }: {
   subflowRenderingInfo: SubflowNodeRenderingInfo;
+  node_id: string
 }) {
   const inputs = subflowRenderingInfo.inputs;
   const outputs = subflowRenderingInfo.outputs;
@@ -84,12 +85,12 @@ export function SubflowSlots({ subflowRenderingInfo }: {
     <div className="node-slots">
       <div className="node-inputs">
         {inputs.map((input, index) => (
-          <Slot key={input.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME} valueType={input.type} id={input.id} label={input.name} type="target" position={Position.Left} />
+          <Slot node_id={node_id} key={input.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME} valueType={input.type} id={input.id} label={input.name} type="target" position={Position.Left} />
         ))}
       </div>
       <div className="node-outputs">
         {outputs.map((output, index) => (
-          <Slot key={output.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME}  valueType={output.type} id={output.id} label={output.name} type="source" position={Position.Right} />
+          <Slot node_id={node_id} key={output.name + index} widget={SUBFLOW_WIDGET_TYPE_NAME}  valueType={output.type} id={output.id} label={output.name} type="source" position={Position.Right} />
         ))}
       </div>
     </div>

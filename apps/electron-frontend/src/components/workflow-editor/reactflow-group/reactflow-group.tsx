@@ -122,7 +122,7 @@ function GroupCollapsed(props: {
               {childrenWidthRenderInfo.map(childWidthRenderInfo => {
                 const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
                 return inputs.map((input, index) => (
-                  <Slot key={input.name + index} widget={NODE_GROUP} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                  <Slot node_id={node.id} key={input.name + index} widget={NODE_GROUP} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
                 ))
               })}
             </div>
@@ -130,7 +130,7 @@ function GroupCollapsed(props: {
               {childrenWidthRenderInfo.map(childWidthRenderInfo => { 
                 const { inputs, outputs, title } = childWidthRenderInfo.renderInfo;
                 return outputs.map((output, index) => (
-                  <Slot key={output.name + index} widget={NODE_GROUP} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                  <Slot node_id={node.id} key={output.name + index} widget={NODE_GROUP} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
                 ))
               })}
             </div>

@@ -102,12 +102,12 @@ export const NodeComponent = memo(({
               <div className="node-slots">
                 <div className="node-inputs">
                   {inputs.map((input, index) => (
-                    <Slot key={input.name + index} widget={widget.name} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
+                    <Slot node_id={node.id}  key={input.name + index} widget={widget.name} valueType={input.type} id={input.name} label={input.name} type="target" position={Position.Left} />
                   ))}
                 </div>
                 <div className="node-outputs">
                   {outputs.map((output, index) => (
-                    <Slot key={output.name + index} widget={widget.name} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
+                    <Slot node_id={node.id} key={output.name + index} widget={widget.name} valueType={output.type} id={output.name} label={output.name} type="source" position={Position.Right} />
                   ))}
                 </div>
               </div>

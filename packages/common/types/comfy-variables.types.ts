@@ -28,7 +28,6 @@ export type ComfyGraghVariables = {
   global: Record<string, ComfyGraphVar>;
 }
 
-
 export function isFieldMatchRegexVar(node_title: string, input_name: string, var_info: ComfyGraphRegexVar): boolean {
   if (var_info.title_regex) {
     const regex = new RegExp(var_info.title_regex);
@@ -39,7 +38,7 @@ export function isFieldMatchRegexVar(node_title: string, input_name: string, var
     const regex = new RegExp(var_info.input_regex);
     return regex.test(input_name);
   }
-  
+
   return true;
 }
 
