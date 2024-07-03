@@ -29,17 +29,18 @@ export type ComfyGraghVariables = {
 }
 
 export function isFieldMatchRegexVar(node_title: string, input_name: string, var_info: ComfyGraphRegexVar): boolean {
+  const test_items = []
   if (var_info.title_regex) {
     const regex = new RegExp(var_info.title_regex);
-    return regex.test(node_title);
+    test_items.push(regex.test(node_title));
   }
 
   if (var_info.input_regex) {
     const regex = new RegExp(var_info.input_regex);
-    return regex.test(input_name);
+    test_items.push(regex.test(input_name))
   }
 
-  return true;
+  return test_items.every((v) => v);
 }
 
 export function getDefaultComfyGraphVars(): ComfyGraghVariables {
@@ -82,6 +83,7 @@ export function isAnywhereWidget(widgetName: string): boolean {
  * @param connection 
  * @returns 
  */
+export const ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE = "Already has a global variable of this type"
 export function validateAnywhereEdge(st: AppState, connection: Connection): [boolean, string] {
   const { source, sourceHandle, target, targetHandle } = connection;
   const sourceNode = st.graph[source!];
@@ -98,18 +100,13 @@ export function validateAnywhereEdge(st: AppState, connection: Connection): [boo
 
   // 判断是否已经有了对应的全局变量定义了
   const vars = st.gragh_variables;
-  const possible_global_var_names = [sourceHandle!,`${sourceHandle!}.positive`, `${sourceHandle!}.negative`];
+  let varName = sourceHandle!;
+  if (sourceHandle === "CONDITIONING") {
+    varName = targetHandle === "+VE" ? "CONDITIONING.positive" : "CONDITIONING.negative";
+  }
 
-  const has_var_info = possible_global_var_names.find(var_name => {
-    const var_info = vars.global[var_name];
-    if (var_info) {
-      return true;
-    }
-    return false;
-  })
-
-  if (has_var_info) {
-    return [false, "Already has a global variable of this type"]
+  if (vars.global[varName!]) {
+    return [false, ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE]
   }
 
   return [true, "success"]
@@ -160,16 +157,16 @@ export function parseGraphVariables(workflow: PersistedWorkflowDocument, widgets
         vars.global[output_handle] = var_info
         break;
       case NODE_ANYTHING_EVERYWHERE_PROMPT:
-        if (target_handle == "+ve") {
-          vars.global["conditioning.positive"] = {
+        if (target_handle == "+VE") {
+          vars.global["CONDITIONING.positive"] = {
             ...var_info,
-            name: "conditioning.positive"
+            name: "CONDITIONING.positive"
           }
         }
-        if (target_handle == "-ve") {
-          vars.global["conditioning.negative"] = {
+        if (target_handle == "-VE") {
+          vars.global["CONDITIONING.negative"] = {
             ...var_info,
-            name: "conditioning.negative"
+            name: "CONDITIONING.negative"
           }
         }
         break;

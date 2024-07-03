@@ -2,9 +2,10 @@ import { dt } from "@comflowy/common/i18n";
 import { useAppStore } from "@comflowy/common/store";
 import { validateEdge } from "@comflowy/common/store/app-state";
 import { Input } from "@comflowy/common/types";
-import { isAnywhereWidget } from "@comflowy/common/types/comfy-variables.types";
+import { ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE, isAnywhereWidget } from "@comflowy/common/types/comfy-variables.types";
 import { use, useCallback, useEffect, useState } from "react";
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions } from 'reactflow'
+import { message as AntMessage } from "antd";
 
 export interface SlotProps {
   id: string
@@ -32,6 +33,9 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
     const st = useAppStore.getState();
     const [validate, message] = validateEdge(st, connection);
     !validate && console.log("connect failed", message)
+    // if (!validate && message === ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE) {
+    //   AntMessage.error(ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE)
+    // }
     return validate
   }, []);
 
@@ -120,6 +124,20 @@ function useSlotLabel(props: {
     const source_output_names = source_node_widget.output_name;
     const source_output_index = source_outputs.findIndex((output) => output === connection.sourceHandle);
     const source_output_name = source_output_names[source_output_index]; 
+    if (connection.targetHandle === "+VE") {
+      return (
+        <span>
+          Positive
+        </span>
+      )
+    }
+    if (connection.targetHandle === "-VE") {
+      return (
+        <span>
+          Negative
+        </span>
+      )
+    }
     return (
       <span>
         {source_output_name}

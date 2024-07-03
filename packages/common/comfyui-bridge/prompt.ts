@@ -141,12 +141,14 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
   const setNodes = resolveSetNodesInfo();
 
+  const target_connection_map: Record<string, PersistedWorkflowConnection> = {};
   for (const edge of workflow.connections) {
     const target = prompt[edge.target!]
     // target must be exist in prompt nodes
     if (!target) {
       continue
     }
+    target_connection_map[`${edge.target}.${edge.targetHandle}`] = edge;
     const value = findEdgeSourceValue(edge);
     if (value) {
       const inputKey = findInputKeyFromHandle(target, edge.targetHandle!);
@@ -157,29 +159,43 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   // 如果一些 required 的 input，但是依然没有值，那么尝试通过 graph_vars 来赋值
   for (const [id, node] of Object.entries(prompt)) {
     const widget = widgets[node.class_type];
-    const node_title = workflow.nodes[id].value.title || widget.display_name || widget.name;
-    const inputs = widget.input.required || {};
-    for (const [inputKey, input] of Object.entries(inputs)) {
-      if (node.inputs[inputKey] !== undefined) {
-        continue
+    const wnode = workflow.nodes[id];
+    const node_title = wnode.value.title || widget.display_name || widget.name;
+    // const inputs = widget.input.required || {};
+    const inputs = wnode.value.inputs;
+
+    inputs.forEach((input) => {
+      const inputKey = input.name;
+      // 如果已经有连接了那么使用连接的值
+      if (target_connection_map[`${id}.${inputKey.toUpperCase()}`]) {
+        return
       }
-      const input_type = input[0];
-      if (typeof input_type == "string") {
-        const input_name = inputKey;
-        // 在普通的全局变量中查找
-        const var_info = graph_vars.global[input_type];
-        if (var_info) {
-          node.inputs[inputKey] = getGraphVarPromptValue(var_info);
+      // 否则尝试使用全局变量的值
+      const input_type = input.type;
+      const input_name = inputKey;
+      // 在普通的全局变量中查找
+      // 在 prompt 中查找
+      let search_input_type:any= input_type;
+      if (input_type === "CONDITIONING") {
+        if (input_name === "positive") {
+          search_input_type = "CONDITIONING.positive";
         }
-        // 在正则全局变量中查找
-        const regex_var = graph_vars.regex[input_type];
-        if (regex_var) {
-          if (isFieldMatchRegexVar(node_title, input_name, regex_var)) {
-            node.inputs[inputKey] = getGraphVarPromptValue(regex_var);
-          }
+        if (input_name === "negative") {
+          search_input_type = "CONDITIONING.negative";
         }
       }
-    }
+      const var_info = graph_vars.global[search_input_type];
+      if (var_info) {
+        node.inputs[inputKey] = getGraphVarPromptValue(var_info);
+      }
+      // 在正则全局变量中查找
+      const regex_var = graph_vars.regex[input_type];
+      if (regex_var) {
+        if (isFieldMatchRegexVar(node_title, input_name, regex_var)) {
+          node.inputs[inputKey] = getGraphVarPromptValue(regex_var);
+        }
+      }
+    })
   }
 
   return {

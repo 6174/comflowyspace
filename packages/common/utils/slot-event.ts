@@ -19,7 +19,6 @@ export function flattenDisposable(a: IDisposable[]): IDisposable {
   };
 }
 
-
 export class SlotEvent<T = void> implements IDisposable {
   private emitting = false;
   private callbacks: ((v: T) => any)[] = [];
