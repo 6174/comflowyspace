@@ -28,6 +28,31 @@ export type ComfyGraghVariables = {
   global: Record<string, ComfyGraphVar>;
 }
 
+export function findMatchedGlobalVar(node_title: string, input_name: string, input_type: string, vars: ComfyGraghVariables): ComfyGraphVar | undefined {
+  let search_input_type: any = input_type;
+  if (input_type === "CONDITIONING") {
+    if (input_name === "positive") {
+      search_input_type = "CONDITIONING.positive";
+    }
+    if (input_name === "negative") {
+      search_input_type = "CONDITIONING.negative";
+    }
+  }
+  
+  const var_info = vars.global[search_input_type];
+  if (var_info) {
+    return var_info;
+  }
+
+  // 在正则全局变量中查找
+  const regex_var = vars.regex[input_type];
+  if (regex_var) {
+    if (isFieldMatchRegexVar(node_title, input_name, regex_var)) {
+      return regex_var;
+    }
+  }
+}
+
 export function isFieldMatchRegexVar(node_title: string, input_name: string, var_info: ComfyGraphRegexVar): boolean {
   const test_items = []
   if (var_info.title_regex) {

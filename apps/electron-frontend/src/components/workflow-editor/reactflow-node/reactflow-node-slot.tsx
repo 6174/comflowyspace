@@ -2,10 +2,11 @@ import { dt } from "@comflowy/common/i18n";
 import { useAppStore } from "@comflowy/common/store";
 import { validateEdge } from "@comflowy/common/store/app-state";
 import { Input } from "@comflowy/common/types";
-import { ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE, isAnywhereWidget } from "@comflowy/common/types/comfy-variables.types";
-import { use, useCallback, useEffect, useState } from "react";
+import { ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE, findMatchedGlobalVar, isAnywhereWidget } from "@comflowy/common/types/comfy-variables.types";
+import { use, useCallback, useEffect, useMemo, useState } from "react";
 import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions } from 'reactflow'
-import { message as AntMessage } from "antd";
+import { message as AntMessage, Tooltip } from "antd";
+import { LocatableNodeTitle } from "../reactflow-controlboard/controlboard-node";
 
 export interface SlotProps {
   id: string
@@ -99,6 +100,7 @@ function useSlotLabel(props: {
   type: HandleType,
   label: string
 }) {
+  const graph = useAppStore(st => st.graph);
   const widgets = useAppStore(st => st.widgets);
   const connection = useAppStore(st => {
     const all_connections = st.edges;
@@ -109,6 +111,13 @@ function useSlotLabel(props: {
   const source_node = useAppStore(st => st.graph[connection?.source!]);
   const target_node = useAppStore(st => st.graph[props.node_id]);
   const target_node_widget = target_node?.widget;
+  const global_vars = useAppStore(st => st.gragh_variables);
+  const node_title = target_node?.title;
+  const value_type = props.valueType;
+  const var_info = useMemo(() => {
+    return findMatchedGlobalVar(node_title, props.label, value_type, global_vars);
+  }, [global_vars, node_title, connection, props.node_id, props.label, value_type]);
+
 
   const casedLabel = props.type === "source" ? props.label.toUpperCase() : props.label.toLowerCase();
   let defaultLabel = (
@@ -142,6 +151,21 @@ function useSlotLabel(props: {
       <span>
         {source_output_name}
       </span>
+    )
+  }
+
+  if (!connection && var_info && props.type === "target") {
+    console.debug(var_info)
+    const widget = widgets[var_info.source_node.value.widget];
+    const source_node_title = var_info?.source_node.value.title || widget.display_name || widget.name;
+    const souce_node_output = var_info.connection.sourceHandle;
+    const $title = (
+      <LocatableNodeTitle title={source_node_title} node={graph[var_info.source_node.id].flowNode} />
+    )
+    return (
+      <Tooltip title={<div>Reference from: {$title} </div>}>
+        {defaultLabel}{`(reference)`}
+      </Tooltip>
     )
   }
 

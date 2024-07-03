@@ -69,3 +69,18 @@ export const NodeHeader = React.memo(({ widget, title, isPositive, isNegative, n
     </div>
   )
 });
+
+export function LocatableNodeTitle({ title, node }: { title: string, node: Node }) {
+  const { setCenter } = useReactFlow();
+  return (
+    <span className="node-title action" onClick={ev => {
+      setCenter(node.position.x + (node.width || 100) / 2, node.position.y + (node.height || 100) / 2, {
+        zoom: 1,
+        duration: 800
+      })
+      ev.preventDefault();
+    }}>
+      {title}
+    </span>
+  )
+}

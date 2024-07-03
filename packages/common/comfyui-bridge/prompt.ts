@@ -5,7 +5,7 @@ import {Node} from "./bridge";
 import { KEYS, t } from "../i18n";
 import { uuid } from '../utils'
 import _ from 'lodash';
-import { getGraphVarPromptValue, isAnywhereWidget, isFieldMatchRegexVar, parseGraphVariables } from '../types/comfy-variables.types';
+import { findMatchedGlobalVar, getGraphVarPromptValue, isAnywhereWidget, isFieldMatchRegexVar, parseGraphVariables } from '../types/comfy-variables.types';
 
 interface PromptRequest {
   client_id?: string
@@ -173,27 +173,14 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
       // 否则尝试使用全局变量的值
       const input_type = input.type;
       const input_name = inputKey;
-      // 在普通的全局变量中查找
-      // 在 prompt 中查找
-      let search_input_type:any= input_type;
-      if (input_type === "CONDITIONING") {
-        if (input_name === "positive") {
-          search_input_type = "CONDITIONING.positive";
-        }
-        if (input_name === "negative") {
-          search_input_type = "CONDITIONING.negative";
-        }
-      }
-      const var_info = graph_vars.global[search_input_type];
+      const var_info = findMatchedGlobalVar(
+        node_title,
+        input_name,
+        input_type,
+        graph_vars,
+      );
       if (var_info) {
         node.inputs[inputKey] = getGraphVarPromptValue(var_info);
-      }
-      // 在正则全局变量中查找
-      const regex_var = graph_vars.regex[input_type];
-      if (regex_var) {
-        if (isFieldMatchRegexVar(node_title, input_name, regex_var)) {
-          node.inputs[inputKey] = getGraphVarPromptValue(regex_var);
-        }
       }
     })
   }
