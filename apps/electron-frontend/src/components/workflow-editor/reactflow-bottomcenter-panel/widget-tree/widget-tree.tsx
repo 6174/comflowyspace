@@ -7,7 +7,7 @@ import { SearchIcon, PinIcon, PinFilledIcon } from 'ui/icons';
 import { XYPosition } from 'reactflow';
 import { getPinnedWidgetsFromLocalStorage, setPinnedWidgetsToLocalStorage } from '@comflowy/common/store/app-state';
 import _ from 'lodash';
-import { maxMatchLengthSearch } from "@comflowy/common/utils/search";
+import { wordSplitSearch, wordSplitSearchAdvance } from "@comflowy/common/utils/search";
 import { dt, currentLang } from '@comflowy/common/i18n';
 
 import { VirtualList } from 'ui/virtual/virtual-list';
@@ -57,43 +57,35 @@ export const WidgetTree = (props: {
     const getWidgetSearchString = (widget) => {
         return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
     }
-    const handleSearch = (value) => {
-        const searchWords = value.toLowerCase().split(' ');
-
-        const findedWidgets = Object.keys(widgets).filter(
-            (key) => {
-                const widget = widgets[key];
-                const search_string = getWidgetSearchString(widget);
-                if (!filter(widget)) {
-                    return false;
-                }
-                if (searchWords.every(word => search_string.includes(word))) {
-                    return true;
-                }
-                const maxMatch = maxMatchLengthSearch(value.toLowerCase(), search_string);
-                if (maxMatch >= 4) {
-                    return true;
-                }
+    
+    const handleSearch = (value: string) => {
+        const findedWidgets = Object.keys(widgets).filter((key) => {
+            const widget = widgets[key];
+            const searchString = getWidgetSearchString(widget);
+            if (!filter(widget)) {
+                return false;
             }
-        );
-
-        // Sort the widgets based on the match length with the search value
-        const reOrderedWidgets = findedWidgets.sort((a, b) => {
-            const aMatch = maxMatchLengthSearch(value.toLowerCase(), getWidgetSearchString(widgets[a]));
-            const bMatch = maxMatchLengthSearch(value.toLowerCase(), getWidgetSearchString(widgets[b]));
-
-            // Check for exact matches and prioritize them
-            if (value.toLowerCase() === widgets[a].name.toLowerCase() && value.toLowerCase() !== widgets[b].name.toLowerCase()) {
-                return -1;
-            } else if (value.toLowerCase() !== widgets[a].name.toLowerCase() && value.toLowerCase() === widgets[b].name.toLowerCase()) {
-                return 1;
-            }
-
-            return bMatch - aMatch;
+            // 使用改进的搜索评分函数
+            const score = wordSplitSearch(value, searchString);
+            return score > 0;
         });
+
+        console.log(findedWidgets);
+
+        // 使用改进的搜索评分函数对结果进行排序
+        const reOrderedWidgets = findedWidgets.sort((a, b) => {
+            const aScore = wordSplitSearch(value, getWidgetSearchString(widgets[a]));
+            const bScore = wordSplitSearch(value, getWidgetSearchString(widgets[b]));
+
+            // 优先考虑完全匹配
+            if (value.toLowerCase() === widgets[a].name.toLowerCase()) return -1;
+            if (value.toLowerCase() === widgets[b].name.toLowerCase()) return 1;
+
+            return bScore - aScore;
+        });
+
         setSearchResult(reOrderedWidgets.map(key => widgets[key]));
     };
-
 
     const firstLevelCatogories = Object.keys(widgetCategory);
     const [widgetToRender, setWidgetToRender] = useState<{ category: string, items: Widget[] }[]>([]);
@@ -318,5 +310,4 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
         </div>
     )
 }
-
 

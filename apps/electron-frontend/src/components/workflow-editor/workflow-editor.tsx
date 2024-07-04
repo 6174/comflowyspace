@@ -24,6 +24,7 @@ import { MissingWidgetsPopoverEntry } from './reactflow-missing-widgets/reactflo
 import { GroupNode } from './reactflow-group/reactflow-group';
 import { isRectContain } from "@comflowy/common/utils/math";
 import { loadI18NFromExtension } from './reactflow-i18n/use-flow-i18n';
+import { ReplaceNodeSuggestionModal } from './reactflow-node/reactflow-node-suggestion';
 
 const nodeTypes = { 
   [NODE_IDENTIFIER]: NodeWrapper,
@@ -261,6 +262,7 @@ export default function WorkflowEditor() {
       <ReactflowExtensionController/>
       { widgetTreeContext && <WidgetTreeOnPanel context={widgetTreeContext}/>}
       <MissingWidgetsPopoverEntry/>
+      <ReplaceNodeSuggestionModal/>
     </div>
   )
 }

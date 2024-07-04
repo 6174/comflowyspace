@@ -38,7 +38,7 @@ export function writeWorkflowToFile(workflow: PersistedWorkflowDocument): void {
   a.click()
 }
 
-async function safeLoadWorkflow(workflow: any, widgets: Widgets): Promise<PersistedWorkflowDocument> {
+export async function safeLoadWorkflow(workflow: any, widgets: Widgets): Promise<PersistedWorkflowDocument> {
   console.log("source workflow", workflow);
   if (!workflow || !workflow.nodes) {
     const keys = Object.keys(workflow);
@@ -47,7 +47,7 @@ async function safeLoadWorkflow(workflow: any, widgets: Widgets): Promise<Persis
     }
     const key0 = keys[0];
     const item = workflow[key0];
-    //
+    // prompt workflow
     if (item.class_type && item.inputs) {
       const prompt = workflow as Record<string, any>
       const workflowDoc = reversePrompt(prompt, widgets);
@@ -59,12 +59,13 @@ async function safeLoadWorkflow(workflow: any, widgets: Widgets): Promise<Persis
     }
     throw new Error('Invalid workflow file. Please check if the file is correct workflow format.')
   }
-  // if (workflow.version !== 1) {
-  //   throw new Error('Invalid workflow file version. Please check if the file is corrupted.')
-  // }
-  if (workflow.comflowy_version) {
+
+  if (workflow.id && workflow.title && workflow.nodes && workflow.connections) {
     // comflowy_type workflow
-    return workflow;
+    return {
+      ...workflow,
+      id: uuid()
+    };
   } else {
     // comfyUI type
     return comfyUIWorkflowToPersistedWorkflowDocument(workflow, widgets)

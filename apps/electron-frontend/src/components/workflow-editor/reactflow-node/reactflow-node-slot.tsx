@@ -155,10 +155,8 @@ function useSlotLabel(props: {
   }
 
   if (!connection && var_info && props.type === "target") {
-    console.debug(var_info)
     const widget = widgets[var_info.source_node.value.widget];
     const source_node_title = var_info?.source_node.value.title || widget.display_name || widget.name;
-    const souce_node_output = var_info.connection.sourceHandle;
     const $title = (
       <LocatableNodeTitle title={source_node_title} node={graph[var_info.source_node.id].flowNode} />
     )

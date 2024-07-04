@@ -154,6 +154,10 @@ export function parseGraphVariables(workflow: PersistedWorkflowDocument, widgets
     const target_widget_name = target_node.value.widget;
     const source_widget = widgets[source_node.value.widget];
 
+    if (!source_widget) {
+      return
+    }
+
     // 如果 source 判断是本地的 widget 则不能把它的 output 作为变量，比如 reroute，const 等
     if (Widget.isLocalWidget(source_widget)) {
       return
