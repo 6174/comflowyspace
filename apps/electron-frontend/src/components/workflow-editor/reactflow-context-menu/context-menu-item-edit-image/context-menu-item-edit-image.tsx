@@ -29,7 +29,7 @@ export function EditImageMenuItem(props: NodeMenuProps) {
           }
         })
         props.hide();
-      }}><EditImageIcon /> Edit Image</div>
+      }}><EditImageIcon /> Edit Mask</div>
 
     </div>
   )
