@@ -4,7 +4,7 @@ import styles from "./comflowy-image-editor.style.module.scss";
 import { SDNode } from "@comflowy/common/types";
 import { GlobalEvents, SlotGlobalEvent } from "@comflowy/common/utils/slot-event";
 import { getImagePreviewUrl } from "@comflowy/common/comfyui-bridge/bridge";
-import ComflowyImageEditor, { TABS } from "comflowy-image-editor";
+import ComflowyImageEditor, { TABS, TOOLS } from "comflowy-image-editor";
 import { needEditImage } from "./context-menu-item-edit-image";
 import { message } from "antd";
 
@@ -72,6 +72,7 @@ export default function EditImageModal(props: {
             return false;
           }}
           defaultTabId={TABS.ANNOTATE}
+          defaultToolId={TOOLS.PEN}
           tabsIds={[TABS.ANNOTATE]}
           onSave={async (data) => {
             try {
