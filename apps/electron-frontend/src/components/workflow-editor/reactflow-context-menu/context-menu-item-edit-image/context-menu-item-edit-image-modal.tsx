@@ -72,7 +72,7 @@ export default function EditImageModal(props: {
             return false;
           }}
           defaultTabId={TABS.ANNOTATE}
-          tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
+          tabsIds={[TABS.ANNOTATE]}
           onSave={async (data) => {
             try {
               const editedCanvas = data.imageCanvas;
