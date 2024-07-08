@@ -75,28 +75,63 @@ export default function EditImageModal(props: {
           tabsIds={[TABS.ANNOTATE, TABS.ADJUST, TABS.RESIZE]}
           onSave={async (data) => {
             try {
-              // console.log("save", data)
-              // const canvas = data.imageCanvas;
-              // const base64Data = data.imageBase64;
-              // const blob = base64ToBlob(base64Data, 'image/png');
-              // await props.onSave(blob);
-              console.log("save", data)
-              const canvas = data.imageCanvas;
-              const ctx = canvas.getContext('2d');
-              const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-              for (let i = 0; i < imageData.data.length; i += 4) {
-                const r = imageData.data[i];
-                const g = imageData.data[i + 1];
-                const b = imageData.data[i + 2];
-                if (r === 0 && g === 0 && b === 0) {
-                  imageData.data[i + 3] = 0
+              const editedCanvas = data.imageCanvas;
+              const editedCtx = editedCanvas.getContext('2d');
+              const editedImageData = editedCtx.getImageData(0, 0, editedCanvas.width, editedCanvas.height);
+
+              // 加载原始图像
+              const originalImage = new Image();
+              originalImage.crossOrigin = 'anonymous';
+              originalImage.src = imgsrc;
+
+              await new Promise((resolve, reject) => {
+                originalImage.onload = resolve;
+                originalImage.onerror = reject;
+              });
+
+              // 创建原始图像的canvas
+              const originalCanvas = document.createElement('canvas');
+              originalCanvas.width = originalImage.width;
+              originalCanvas.height = originalImage.height;
+              originalCanvas.getContext("2d").fillStyle = 'white';
+              const originalCtx = originalCanvas.getContext('2d');
+              originalCtx.fillRect(0, 0, originalCanvas.width, originalCanvas.height);
+              originalCtx.drawImage(originalImage, 0, 0);
+
+              const originalImageData = originalCtx.getImageData(0, 0, originalCanvas.width, originalCanvas.height);
+
+              // 计算比例
+              const scaleX = editedCanvas.width / originalCanvas.width;
+              const scaleY = editedCanvas.height / originalCanvas.height;
+
+              // 修改原始图像的alpha值
+              for (let y = 0; y < originalCanvas.height; y++) {
+                for (let x = 0; x < originalCanvas.width; x++) {
+                  // 计算对应的编辑后canvas坐标
+                  const editedX = Math.floor(x * scaleX);
+                  const editedY = Math.floor(y * scaleY);
+
+                  // 检查是否在编辑后canvas的范围内
+                  if (editedX < editedCanvas.width && editedY < editedCanvas.height) {
+                    const editedIndex = (editedY * editedCanvas.width + editedX) * 4;
+                    const r = editedImageData.data[editedIndex];
+                    const g = editedImageData.data[editedIndex + 1];
+                    const b = editedImageData.data[editedIndex + 2];
+
+                    if (r === 0 && g === 0 && b === 0) {
+                      // 设置原始图像对应位置的alpha值为0
+                      const originalIndex = (y * originalCanvas.width + x) * 4;
+                      originalImageData.data[originalIndex + 3] = 0;
+                    }
+                  }
                 }
               }
-              ctx.putImageData(imageData, 0, 0);
-              const base64Data = canvas.toDataURL('image/png');
+
+              originalCtx.putImageData(originalImageData, 0, 0);
+              const base64Data = originalCanvas.toDataURL('image/png');
               const blob = base64ToBlob(base64Data, 'image/png');
               await props.onSave(blob);
-            } catch(err) {
+            } catch (err) {
               console.log(err);
               message.error("Save image failed: " + err.message);
             }

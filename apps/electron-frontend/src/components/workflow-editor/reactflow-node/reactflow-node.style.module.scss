@@ -161,6 +161,7 @@
                 .node-input-label-content {
                     display: flex;
                     justify-content: flex-end;
+                    max-width: calc(100% - 40px);
                 }
                 .ant-input-number-input-wrap, .ant-input {
                     padding: 0 10px;

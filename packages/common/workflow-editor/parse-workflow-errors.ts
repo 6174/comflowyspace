@@ -77,6 +77,14 @@ export function staticCheckWorkflowErrors(
           });
         } else {
           // Skip LoadImage check
+          if (widget.name === "LoadImage" && field === "image") {
+            return
+          }
+
+          if (widget.name === "VHS_LoadVideo" && field === "video") {
+            return
+          }
+          // Skip LoadImage check
           // if (widget.name === "LoadImage" && field === "image") {
           //   return
           // }
