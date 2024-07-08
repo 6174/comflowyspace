@@ -81,6 +81,10 @@ export function staticCheckWorkflowErrors(
             return
           }
 
+          if (widget.name === "LoadImageMask" && field === "image") {
+            return
+          }
+
           if (widget.name === "VHS_LoadVideo" && field === "video") {
             return
           }
