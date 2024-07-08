@@ -117,10 +117,9 @@ export default function EditImageModal(props: {
                     const r = editedImageData.data[editedIndex];
                     const g = editedImageData.data[editedIndex + 1];
                     const b = editedImageData.data[editedIndex + 2];
-
+                    const originalIndex = (y * originalCanvas.width + x) * 4;
                     if (r === 0 && g === 0 && b === 0) {
                       // 设置原始图像对应位置的alpha值为0
-                      const originalIndex = (y * originalCanvas.width + x) * 4;
                       originalImageData.data[originalIndex + 3] = 0;
                     }
                   }
@@ -128,8 +127,13 @@ export default function EditImageModal(props: {
               }
 
               originalCtx.putImageData(originalImageData, 0, 0);
-              const base64Data = originalCanvas.toDataURL('image/png');
-              const blob = base64ToBlob(base64Data, 'image/png');
+              // const base64Data = originalCanvas.toDataURL('image/png');
+              // const blob = base64ToBlob(base64Data, 'image/png');
+              const blob = await new Promise<Blob>((resolve, reject) =>
+                originalCanvas.toBlob((blob) => {
+                  resolve(blob);
+                }, 'image/png', 1.0)
+              );
               await props.onSave(blob);
             } catch (err) {
               console.log(err);
