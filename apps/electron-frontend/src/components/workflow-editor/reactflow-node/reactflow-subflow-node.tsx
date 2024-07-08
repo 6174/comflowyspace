@@ -115,6 +115,7 @@ export function SubflowParams({ subflowRenderingInfo, subflowNode, onChangeHandl
         const visibleName = `${title}:${property}`
         return (
           <InputContainer
+            env={"other"}
             key={realFieldName}
             name={visibleName}
             id={id}

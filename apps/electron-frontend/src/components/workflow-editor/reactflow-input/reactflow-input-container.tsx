@@ -13,10 +13,11 @@ interface InputContainerProps {
     input: Input
     widget: Widget,
     value?: any,
+    env: "main" | "controlboard" | "other"
     onChange?: (val: any) => void;
 }
 
-function _InputContainer({ id, name, input, widget, node, onChange, value }: InputContainerProps): JSX.Element {
+function _InputContainer({ id, name, input, widget, node, onChange, value, env}: InputContainerProps): JSX.Element {
     value =  value || useAppStore((st) => st.graph[id]?.fields[name]);
     let defaultValue = undefined;
     if (input[1]) {
@@ -49,7 +50,7 @@ function _InputContainer({ id, name, input, widget, node, onChange, value }: Inp
     return (
         <div className="node-input-container">
             <InputComponent defaultValue={defaultValue} value={value} name={name} input={input} onChange={_onChangeHandler} widget={widget}/>
-            {isImageUpload && <InputUploadImage widget={widget} id={id} node={node}/>}
+            {isImageUpload && <InputUploadImage editable={env === "main"} widget={widget} id={id} node={node}/>}
             {isVideoUpload && <InputUploadVideo widget={widget} id={id} node={node} />}
         </div>
     )

@@ -39,7 +39,7 @@ export const ControlBoardNode = React.memo(({ nodeControl, node }: ControlBoardN
         nodeError={nodeError}
       />
       {paramsToRender.map(({ property, input }) => (
-        <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
+        <InputContainer env={"controlboard"} key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
       ))}
       <ReactFlowNodeDynamic node={node} renderInfo={renderInfo} imagePreviews={imagePreviews}/>
     </div>

@@ -116,7 +116,7 @@ export const NodeComponent = memo(({
                   <>
                     <div className="node-params">
                       {params.map(({ property, input }) => (
-                        <InputContainer key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
+                        <InputContainer env={"main"} key={property} name={property} id={node.id} node={node.data.value} input={input} widget={widget} />
                       ))}
                     </div>
                     <InstallMissingWidget nodeError={nodeError} node={node.data.value} />

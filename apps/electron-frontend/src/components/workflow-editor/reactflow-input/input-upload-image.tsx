@@ -11,9 +11,10 @@ import { AsyncImageEditor } from '../reactflow-context-menu/context-menu-item-ed
 import { GlobalEvents, SlotGlobalEvent } from '@comflowy/common/utils/slot-event';
 
 let lastPasteTime = 0;
-export function InputUploadImage({widget, node, id}: {
+export function InputUploadImage({ widget, node, id, editable }: {
     widget: Widget,
     node: SDNode,
+    editable?: boolean,
     id: string
 }) {
     const onUpdateWidgets = useAppStore(st => st.onUpdateWidgets);
@@ -196,7 +197,7 @@ export function InputUploadImage({widget, node, id}: {
                     }}
                     />}
             </div>
-            <AsyncImageEditor id={id} node={node} onSave={onSave}/>
+            {editable && <AsyncImageEditor id={id} node={node} onSave={onSave} />}
         </div>
     )
 }
