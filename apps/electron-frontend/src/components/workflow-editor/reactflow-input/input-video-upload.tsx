@@ -7,7 +7,7 @@ import { useAppStore } from '@comflowy/common/store';
 import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
-import { AsyncVideoPlayer } from './input-video-player-async';
+import { AsyncVideoPlayer, VideoPreview } from './input-video-player-async';
 
 export function InputUploadVideo({widget, node, id}: {
     widget: Widget,
@@ -112,7 +112,12 @@ export function InputUploadVideo({widget, node, id}: {
                     }}
                 />}
                 {!isGif && previewImage && (
-                    <AsyncVideoPlayer url={previewImage}/>
+                    <div className="video-preview-card" style={{
+                        width: "100%",
+                        height: 300
+                    }}>
+                        <VideoPreview url={previewImage} controls={false} />
+                    </div>
                 )}
             </div>
         </div>

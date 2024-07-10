@@ -5,6 +5,7 @@ import { useCallback } from "react";
 import { message } from "antd";
 import {downloadFile, downloadImagesAsZip} from "@comflowy/common/utils/download-helper";
 import { getImagePreviewUrl } from "@comflowy/common/comfyui-bridge/bridge";
+import { usePreviewImages } from "../reactflow-node/reactflow-node-imagepreviews";
 
 export function SaveImageMenuItem(props: NodeMenuProps) {
   const {id, node} = props;
@@ -13,14 +14,7 @@ export function SaveImageMenuItem(props: NodeMenuProps) {
   if (images.length === 0) {
     return null;
   }
-  const imageWithPreview = images.map(image => {
-    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-    return {
-      src: imageSrc,
-      filename: image.filename,
-      image
-    }
-  });;
+  const {mixed: imageWithPreview} = usePreviewImages(images)
   const doDownload = useCallback(async () => {
     try {
       if (imageWithPreview.length === 1) {

@@ -3,9 +3,10 @@ import ReactPlayer from 'react-player';
 
 interface InputVideoPlayerProps {
   url: string;
+  controls?: boolean;
 }
 
-const InputVideoPlayer: React.FC<InputVideoPlayerProps> = ({ url }) => {
+const InputVideoPlayer: React.FC<InputVideoPlayerProps> = ({ url, controls }) => {
   const playerRef = useRef(null);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ const InputVideoPlayer: React.FC<InputVideoPlayerProps> = ({ url }) => {
   }, []);
 
   return (
-    <ReactPlayer ref={playerRef} url={url} controls />
+    <ReactPlayer ref={playerRef} url={url} controls={controls ?? true} />
   );
 };
 

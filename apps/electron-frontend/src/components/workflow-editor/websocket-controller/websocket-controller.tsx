@@ -103,6 +103,32 @@ export function WsController(props: {clientId: string}): JSX.Element {
             images.push(...a_images);
             images.push(...b_images);
           }
+
+          const gifs = msg.data.output?.gifs;
+          if (gifs) {
+            images.push(...gifs);
+          }
+
+          const videos = msg.data.output?.videos;
+          if (videos) {
+            images.push(...videos);
+          }
+
+          const audios = msg.data.output?.audios;
+          if (audios) {
+            images.push(...audios);
+          }
+
+          const files = msg.data.output?.files;
+          if (files) {
+            images.push(...files);
+          }
+
+          const texts = msg.data.output?.texts;
+          if (texts) {
+            images.push(...texts);
+          }
+          
           if (Array.isArray(images) && images.length > 0) {
             onImageSave(msg.data.node, images)
           }

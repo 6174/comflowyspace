@@ -9,6 +9,8 @@ import { KEYS, t } from "@comflowy/common/i18n";
 import { ImageWithDownload, PreviewGroupWithDownload } from './image-with-download';
 import { PreviewImage } from '@comflowy/common/types';
 import { downloadFile, downloadImagesAsZip } from '@comflowy/common/utils/download-helper';
+import { usePreviewImages } from '../reactflow-node/reactflow-node-imagepreviews';
+import { VideoPreview } from '../reactflow-input/input-video-player-async';
 
 const Gallery = (props: {
   editing?: boolean;
@@ -16,24 +18,30 @@ const Gallery = (props: {
   setSelectedImages?: (images: PreviewImage[]) => void;
 }) => {
   let images = useAppStore(st => st.persistedWorkflow.gallery || []);
-  const imagesWithSrc = images.map(image => {
-    const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-    return {
-      src: imageSrc,
-      filename: image.filename,
-      image
-    }
-  });
+  const {mixed: imagesWithSrc} = usePreviewImages(images)
 
   let $content = (
     <PreviewGroupWithDownload images={imagesWithSrc}>
       {imagesWithSrc.map((image, index) => {
-        return (
-          <Image
-            key={image.src + index}
-            src={image.src}
-          />
-        )
+        if (image.isImage) {
+          return (
+            <Image
+              key={image.src + index}
+              src={image.src}
+            />
+          )
+        }
+        if (image.isVideo) {
+          return (
+            <div className="video-preview-card image-item " key={image.src + index} style={{
+              width: 140,
+              height: 140
+            }}>
+              <VideoPreview key={image.src + index} url={image.src} />
+            </div>
+          )
+        }
+        return null
       })}
     </PreviewGroupWithDownload>
   )
@@ -107,14 +115,7 @@ export const GalleryEntry = React.memo(() => {
 
   const downloadImages = useCallback(async () => {
     try {
-      const selectImagesWithSrc = selectedImages.map(image => {
-        const imageSrc = getImagePreviewUrl(image.filename, image.type, image.subfolder)
-        return {
-          src: imageSrc,
-          filename: image.filename,
-          image
-        }
-      });;
+      const {mixed: selectImagesWithSrc} = usePreviewImages(selectedImages)
 
       if (selectImagesWithSrc.length === 1) {
         await downloadFile(selectImagesWithSrc[0].src, selectImagesWithSrc[0].filename)
