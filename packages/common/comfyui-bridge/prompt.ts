@@ -107,7 +107,7 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     if (widget.input.optional) {
       for (const [inputKey, input] of [...Object.entries(widget.input.optional), ...Object.entries(widget.input.required)]) {
         const defaultConfig = input[1] as any;
-        if (defaultConfig && defaultConfig.default) {
+        if (defaultConfig && (defaultConfig.default !== undefined && defaultConfig.default !== null)) {
           defaultFields[inputKey] = defaultConfig.default;
         }
       }
@@ -150,7 +150,8 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     }
     target_connection_map[`${edge.target}.${edge.targetHandle}`] = edge;
     const value = findEdgeSourceValue(edge);
-    if (value) {
+    // 明确检查 value 不是 undefined 或 null
+    if (value !== undefined && value !== null) {
       const inputKey = findInputKeyFromHandle(target, edge.targetHandle!);
       target.inputs[inputKey] = value;
     }
