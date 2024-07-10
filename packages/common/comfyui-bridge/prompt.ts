@@ -104,15 +104,43 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
 
     // attach default values
     const defaultFields: any = {};
-    if (widget.input.optional) {
-      for (const [inputKey, input] of [...Object.entries(widget.input.optional), ...Object.entries(widget.input.required)]) {
-        const defaultConfig = input[1] as any;
-        if (defaultConfig && (defaultConfig.default !== undefined && defaultConfig.default !== null)) {
-          defaultFields[inputKey] = defaultConfig.default;
+    for (const [inputKey, input] of [...Object.entries(widget.input.optional || {}), ...Object.entries(widget.input.required || {})]) {
+      const defaultConfig = input[1] as any;
+      if (defaultConfig && (defaultConfig.default !== undefined && defaultConfig.default !== null)) {
+        defaultFields[inputKey] = defaultConfig.default;
+      }
+    }
+
+    // attach default for VHS Combine
+    if (widget.name === "VHS_VideoCombine") {
+      const rawOptions = widget.input.required.format[0] as any;
+      const value = node.value.fields.format;
+      const rawOption = rawOptions.find((it: any) => {
+        if (typeof it == "object") {
+          return it[0] === value
+        }
+      })
+      if (rawOption) {
+        const dynamicParams = rawOption[1]
+        if (dynamicParams.length > 0) {
+          dynamicParams.forEach((param: any[]) => {
+            const fieldName = param[0];
+            const fieldInput = param.slice(1);
+            const defaultConfig = fieldInput[1] as any;
+            if (defaultConfig && (defaultConfig.default !== undefined && defaultConfig.default !== null)) {
+              defaultFields[fieldName] = defaultConfig.default;
+            }
+          })
         }
       }
     }
-    const fields = { ...defaultFields, ...node.value.fields }
+
+    const fields = { ...defaultFields }
+    Object.entries(node.value.fields).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        fields[key] = value
+      }
+    });
 
     // set random value
     for (const [property, value] of Object.entries(fields)) {

@@ -48,6 +48,7 @@ export function staticCheckWorkflowErrors(
       const requiredFields = Object.keys(widget.input.required);
       const inputKeys = (sdnode.inputs || []).map(input => input.name);
       requiredFields.forEach(field => {
+
         const value = sdnode.fields[field];
         const input = widget.input.required[field];
         if (inputKeys.includes(field)) {
@@ -88,12 +89,24 @@ export function staticCheckWorkflowErrors(
           if (widget.name === "VHS_LoadVideo" && field === "video") {
             return
           }
+
           // Skip LoadImage check
           // if (widget.name === "LoadImage" && field === "image") {
           //   return
           // }
           if (Input.isList(input)) {
-            const options = input[0];
+            let options = input[0];
+            if (widget.name === "VHS_VideoCombine" && field === "format") {
+              options = options.map(it => {
+                if (typeof it == "string") {
+                  return it;
+                }
+                if (typeof it == "object") {
+                  return it[0] as string
+                }
+              }) as any;
+            }
+
             if (options.indexOf(value) < 0) {
               error.errors.push({
                 type: ComfyUIErrorTypes.value_not_in_list,

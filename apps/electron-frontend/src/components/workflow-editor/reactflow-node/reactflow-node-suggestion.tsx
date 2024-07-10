@@ -35,13 +35,6 @@ export function ReplaceNodeSuggestionModal() {
   }, [node]);
 
   useEffect(() => {
-    SlotGlobalEvent.on((ev) => {
-      if (ev.type === GlobalEvents.show_execution_error) {
-        const sdnode = ev.data.node;
-        setNode(sdnode);
-        showModal();
-      }
-    })
   }, [])
 
   const $title = (

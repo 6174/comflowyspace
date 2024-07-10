@@ -55,6 +55,25 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     if (!inputKeys.includes(property)) {
       params.push({ property, input })
     }
+    if (widget.name === "VHS_VideoCombine" && property === "format") {
+      const rawOptions = input[0] as any;
+      const value = node.fields[property];
+      const rawOption = rawOptions.find((it: any) => {
+        if (typeof it == "object") {
+          return it[0] === value
+        }
+      })
+      if (rawOption) {
+        const dynamicParams = rawOption[1]
+        if (dynamicParams.length > 0) {
+          dynamicParams.forEach((param: any[]) => {
+            const fieldName = param[0];
+            const fieldInput = param.slice(1);
+            params.push({ property: fieldName, input: fieldInput as any as Input })
+          })
+        }
+      }
+    }
   }
   
   if (widget && widget?.input?.optional) {
@@ -62,7 +81,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
       if (!inputKeys.includes(property)) {
         if (!Input.isParameterOrList(input)) {
           inputKeys.push(property);
-        } else {    
+        } else {  
           params.push({ property, input })
         }
       }
