@@ -235,7 +235,7 @@ const PreviewSubflowNode = React.memo(() => {
             </h2>
           </div>
           <div className="node-main">
-            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} />
+            <SubflowSlots subflowRenderingInfo={subflowRenderingInfo} node_id="YOUR_NODE_ID"/>
             <SubflowParams subflowRenderingInfo={subflowRenderingInfo} subflowNode={{
               id: "TEST_PREVIEW_WORKFLOW"
             } as any} onChangeHandler={(val, fieldName) => {}} />
