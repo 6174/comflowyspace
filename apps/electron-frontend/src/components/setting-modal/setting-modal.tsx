@@ -384,7 +384,7 @@ function AboutComflowySpace() {
         </div>
         <div>
           <div className='about-content-title'>Comflowy</div>
-          <div>{t(KEYS.version)} 0.2.0-alpha</div>
+          <div>{t(KEYS.version)} 0.2.1-alpha</div>
         </div>
       </div>
       <Divider />
