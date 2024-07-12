@@ -14,7 +14,7 @@ export async function runCommand(
 }> {
     const { systemProxy, systemProxyString } = await getSystemProxy();
     if (systemProxy) {
-        logger.info("run command with proxy:" + systemProxyString);
+        logger.info("run command with proxy:" + command + " " + systemProxyString);
     } else {
         logger.info("run command without proxy")
     }

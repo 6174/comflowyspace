@@ -52,7 +52,7 @@ export function SetupConfig() {
 
   const selectPythonPath = useCallback(async () => {
     try {
-      const ret = await comfyElectronApi.selectDirectory("file");
+      const ret = await comfyElectronApi.selectDirectory();
       const pythonPath = ret[0];
       setPythonPath(pythonPath);
     } catch (err) {
@@ -80,7 +80,7 @@ export function SetupConfig() {
 
     const config = {
       comfyUIDir: value.trim(),
-      pythonPath: pythonPath.trim(),
+      pythonPath: pythonPath.trim() + "/python",
       stableDiffusionDir: sdwebuiPath.trim()
     };
 
@@ -189,9 +189,9 @@ export function SetupConfig() {
         <div className="field">
           <div className="field-label" style={{
             marginBottom: "10px"
-          }}>Select python path</div>
+          }}>Select python bin folder</div>
           <div className="description">
-            Select the python enviroment to reuse packages installed for comfyui
+            Select the python bin folder to reuse packages installed for comfyui
           </div>
           <div className="input-wrapper">
             <Input disabled={electronEnv} value={pythonPath} placeholder="Select a folder" />
