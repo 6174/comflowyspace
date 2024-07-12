@@ -9,17 +9,20 @@ export type EnvRequirements = {
   isBasicModelInstalled: boolean;
   isBasicExtensionInstalled: boolean;
   isComfyUIStarted: boolean;
+  isCustomComfyEnv: boolean;
   isSetupedConfig: boolean;
   comfyUIVersion: string;
 }
 
 export type AppConfigs = {
-  appSetupConfig?: {
+  appSetupConfig: {
+    pythonPath: string;
+    isCustomComfyEnv: boolean,
     comfyUIDir: string,
     stableDiffusionDir?: string
     civitaiToken?: string
   },
-  runConfig?: ComfyUIRunConfig
+  runConfig: ComfyUIRunConfig
 };
 
 export type BootstrapError = {

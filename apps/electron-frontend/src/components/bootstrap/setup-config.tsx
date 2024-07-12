@@ -16,6 +16,8 @@ export function SetupConfig() {
   const [selectedIfInstalledComfyUI, setSelectedIfInstalledComfyUI] = useState(false);
   const [installedComfyUI, setInstalledComfyUI] = useState(false);
 
+  const [pythonPath, setPythonPath] = useState("");
+
   useEffect(() => {
     track('bootstrap-setup-config');  
     trackNewUser();
@@ -48,6 +50,17 @@ export function SetupConfig() {
     }
   }, []);
 
+  const selectPythonPath = useCallback(async () => {
+    try {
+      const ret = await comfyElectronApi.selectDirectory("file");
+      const pythonPath = ret[0];
+      setPythonPath(pythonPath);
+    } catch (err) {
+      console.log(err);
+      message.error(err);
+    }
+  }, []);
+
   const useDefaultFolder = useCallback(() => {
       setValue(defaultValue);
   }, [value, defaultValue]);
@@ -55,10 +68,22 @@ export function SetupConfig() {
   const [loading, setLoading] = useState(false);
 
   const saveValue = useCallback(async () => {
+    if (value.trim() === "") {
+      message.error("Please select comfyui folder");
+      return;
+    }
+
+    if (selectedIfInstalledComfyUI && pythonPath.trim() === "") {
+      message.error("Please select python path");
+      return;
+    }
+
     const config = {
       comfyUIDir: value.trim(),
+      pythonPath: pythonPath.trim(),
       stableDiffusionDir: sdwebuiPath.trim()
     };
+
     const api = getBackendUrl('/api/setup_config');
     try {
       setLoading(true);
@@ -93,7 +118,7 @@ export function SetupConfig() {
       message.error(err);
     }
     setLoading(false);
-  }, [value, sdwebuiPath, bootstrapTasks, task, installedComfyUI]);
+  }, [value, sdwebuiPath, bootstrapTasks, task, installedComfyUI, pythonPath]);
 
   if (!selectedIfInstalledComfyUI) {
     return (
@@ -161,6 +186,21 @@ export function SetupConfig() {
           </Space>
         </div>
 
+        <div className="field">
+          <div className="field-label" style={{
+            marginBottom: "10px"
+          }}>Select python path</div>
+          <div className="description">
+            Select the python enviroment to reuse packages installed for comfyui
+          </div>
+          <div className="input-wrapper">
+            <Input disabled={electronEnv} value={pythonPath} placeholder="Select a folder" />
+          </div>
+          <Space>
+            {electronEnv && <Button onClick={selectPythonPath}> <FolderIcon /> Select folder</Button>}
+          </Space>
+        </div>
+
         <div className="field buttons">
           <Space>
             <Button onClick={() => {
@@ -209,19 +249,3 @@ export function SetupConfig() {
     </div>
   )
 }
-
-/* 
-<div className="field">
-  <div className="field-label" style={{
-    marginBottom: "10px"
-  }}>SD WebUI Path:</div>
-  <div className="description">
-    If Stable Diffusion WebUI is already installed, you can opt for the SD path to utilize existing models
-  </div>
-  <div className="input-wrapper">
-    <Input value={sdwebuiPath} placeholder="Input sd webui path if exists"/>
-  </div>
-  <Space>
-    {electronEnv && <Button onClick={selectSdWebUIFolder}><FolderIcon /> Select folder</Button>}
-  </Space>
-</div> */

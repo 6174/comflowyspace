@@ -22,6 +22,7 @@ import { modelManager } from 'src/modules/model-manager/model-manager';
  */
 export async function ApiEnvCheck(req: Request, res: Response) {
     try {
+        logger.info("start env check")
         const requirements = await checkBasicRequirements()
         res.send({
             success: true,
@@ -233,10 +234,16 @@ export async function ApiSetupConfig(req: Request, res: Response) {
 
         const setupString = JSON.stringify({
             comfyUIDir: comfyUIPath,
+            pythonPath: data.pythonPath || undefined,
+            isCustomComfyEnv: !!data.pythonPath,
             stableDiffusionDir: stableDiffusionPath
         });
 
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
+
+        // if (data.pythonPath) {
+        //     conda.updateCondaInfo();
+        // }
         
         res.send({
             success: true,
