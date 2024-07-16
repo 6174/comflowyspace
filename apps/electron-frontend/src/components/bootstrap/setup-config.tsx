@@ -210,7 +210,9 @@ export function SetupConfig() {
             Select the python bin folder to reuse packages installed for comfyui
           </div>
           <div className="input-wrapper">
-            <Input value={pythonPath} placeholder="Input or select the python bin folder" />
+            <Input value={pythonPath} placeholder="Input or select the python bin folder"  onChange={v => {
+              setPythonPath(v.target.value);
+            }}/>
           </div>
           <Space>
             {electronEnv && <Button onClick={selectPythonPath}> <FolderIcon /> Select folder</Button>}
