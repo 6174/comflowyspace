@@ -109,6 +109,22 @@ export function SetupConfig() {
         } else {
           track('bootstrap-setup-config-success-without-comfyui-installed');
         }
+
+        if (pythonPath.trim() !== "") {
+          bootstrapTasks.forEach(task => {
+            const skipTasks = [
+              BootStrapTaskType.installPython, 
+              BootStrapTaskType.installGit, 
+              BootStrapTaskType.installTorch,
+              BootStrapTaskType.installComfyUI,
+              BootStrapTaskType.installConda
+            ];
+            if (skipTasks.includes(task.type)) {
+              task.finished = true;
+            }
+          });
+        }
+        
         setBootstrapTasks([...bootstrapTasks]);
       } else {
         message.error("Setup failed: " + data.error);
