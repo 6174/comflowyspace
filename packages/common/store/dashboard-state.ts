@@ -43,7 +43,6 @@ type DashboardAction = {
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
     docs: [],
-    appConfigs: {},
     bootstraped: false,
     loading: true,
     bootstrapMessages: [],
