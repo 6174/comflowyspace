@@ -294,7 +294,9 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
     }
 
     if (source.value.widget === NODE_PRIMITIVE) {
-      value = findPrimitiveNodeValue(source);
+      const targetNode = workflow.nodes[edge.target!];
+      const targetHandle = edge.targetHandle!;
+      value = findPrimitiveNodeValue(source, targetNode, targetHandle);
     }
 
     return value;
@@ -309,12 +311,21 @@ export function createPrompt(workflowSource: PersistedWorkflowDocument, widgets:
   }
 
   /**
-   * primitive value is the first field value
-   * @param node 
-   */
-  function findPrimitiveNodeValue(node: PersistedWorkflowNode): any {
-    const fieldKeys = Object.keys(node.value.fields).filter(it => it !== "undefined");
-    const value = node.value.fields[fieldKeys[0]];
+  * primitive value is the first field value
+  * @param node 
+  */
+  function findPrimitiveNodeValue(node: PersistedWorkflowNode, targetNode: PersistedWorkflowNode, targetHandle: string): any {
+    const fieldKey = targetHandle.toLocaleLowerCase();
+    const targetWidget = widgets[targetNode.value.widget];
+
+    if (!targetWidget || !targetWidget.input) {
+      throw new Error("Invalid target widget or widget input");
+    }
+
+    const targetField = (targetWidget.input.required || {})[fieldKey] || (targetWidget.input.optional || {})[fieldKey];
+    const defaultValue = Array.isArray(targetField) && (targetField[1] as any)?.default !== undefined ? (targetField[1] as any)?.default : undefined;
+    const value = node.value.fields[fieldKey] ?? defaultValue;
+
     return value;
   }
 }
