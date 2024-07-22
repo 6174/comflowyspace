@@ -14,6 +14,7 @@ import { runCommand } from '../../modules/utils/run-command';
 import { systemProxyString } from '../../modules/utils/env';
 import { conda } from '../../modules/utils/conda';
 import { modelManager } from '../../modules/model-manager/model-manager';
+import { verifyPythonPath } from '../../modules/utils/verify-python';
 
 /**
  * fetch all extensions
@@ -230,6 +231,10 @@ export async function ApiSetupConfig(req: Request, res: Response) {
             if (!fsExtra.existsSync(path.resolve(stableDiffusionPath, "models"))) {
                 throw new Error("Doesn't find models in stable diffusion path, please check if it's a valid diffusion path");
             }
+        }
+
+        if (data.pythonPath) {
+            await verifyPythonPath(data.pythonPath);
         }
 
         const setupString = JSON.stringify({
