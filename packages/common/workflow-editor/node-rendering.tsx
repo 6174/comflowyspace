@@ -188,17 +188,26 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
         property: input[0],
         input: input[1]
       })
+
+      // if it has a seed, add seed control_after_generated param
+      if (input[0] === "seed" || input[0] === "noise_seed") {
+        refParams.push({
+          property: "control_after_generated",
+          input: [ContrlAfterGeneratedValuesOptions, {
+            default: ""
+          }]
+        });
+      }
     }
   }
 
-  const input = refParams[0]?.input;
+  const input = refParams[0]?.input as Input;
   let typeName = "*";
   let name = "Connect to widget input";
   if (input) {
     typeName = Input.getTypeName(input);
     name = typeName;
   }
-
 
   return {
     title: `${title}${enabled ? " (Disabled)" : ""}`,
@@ -210,13 +219,12 @@ export function getPrimitiveNodeRenderingInfo(node: SDNode, widget: Widget): Wor
       links: [],
       slot_index: 0
     }],
-    params: refParams,
+    params: refParams as any,
     nodeBgColor,
     nodeColor,
     enabled
   }
 }
-
 
 export function useSubflowNodeRenderingInfo(node: NodeProps<{
   value: SDNode;
