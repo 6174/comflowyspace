@@ -73,7 +73,7 @@ export function SetupConfig() {
       return;
     }
 
-    if (selectedIfInstalledComfyUI && pythonPath.trim() === "") {
+    if (installedComfyUI && pythonPath.trim() === "") {
       message.error("Please select python path");
       return;
     }
@@ -134,7 +134,7 @@ export function SetupConfig() {
       message.error(err);
     }
     setLoading(false);
-  }, [value, sdwebuiPath, bootstrapTasks, task, installedComfyUI, pythonPath]);
+  }, [value, sdwebuiPath, bootstrapTasks, task, installedComfyUI, pythonPath, selectedIfInstalledComfyUI]);
 
   if (!selectedIfInstalledComfyUI) {
     return (
