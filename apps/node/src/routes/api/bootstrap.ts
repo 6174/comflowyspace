@@ -234,6 +234,7 @@ export async function ApiSetupConfig(req: Request, res: Response) {
         }
 
         if (data.pythonPath) {
+            console.log("python path", data.pythonPath)
             await verifyPythonPath(data.pythonPath);
         }
 

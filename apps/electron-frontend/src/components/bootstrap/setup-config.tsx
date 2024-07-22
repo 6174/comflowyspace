@@ -78,11 +78,14 @@ export function SetupConfig() {
       return;
     }
 
-    const config = {
+    const config:any = {
       comfyUIDir: value.trim(),
-      pythonPath: pythonPath.trim() + "/python",
       stableDiffusionDir: sdwebuiPath.trim()
     };
+
+    if (installedComfyUI && pythonPath.trim() !== "") {
+      config.pythonPath = pythonPath.trim() + "/python";
+    }
 
     const api = getBackendUrl('/api/setup_config');
     try {
