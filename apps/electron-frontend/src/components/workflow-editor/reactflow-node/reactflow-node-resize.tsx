@@ -74,9 +74,11 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
       if (!mainRef.current) {
         return
       }
+      const state = useAppStore.getState()
+      const nodeInfo = state.graph[node.id];
+      const dimensions = nodeInfo?.flowNode.data.dimensions;
       const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
       const width = mainRef.current.offsetWidth + 4;
-      const dimensions = node.data.dimensions
       // console.log("dimensions", height, dimensions);
       if (!dimensions || dimensions.height < height - 2) {
         onNodesChange([{
@@ -90,7 +92,7 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
       }
       setMinHeight(height);
     }
-  }, [setMinHeight, node.id, imagePreviews, collapsed]);
+  }, [node.id, imagePreviews, collapsed]);
 
   useEffect(() => {
     updateMinHeight();

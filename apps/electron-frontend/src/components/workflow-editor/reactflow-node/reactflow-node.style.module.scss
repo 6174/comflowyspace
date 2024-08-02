@@ -165,7 +165,10 @@
                 display: flex;
                 position: relative;
                 &.node-slot-right {
-                    text-align: right;
+                    .node-slot-name {
+                        width: 100%;
+                        text-align: right;
+                    }
                 }
             }
         }
