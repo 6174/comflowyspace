@@ -46,6 +46,10 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
   useEffect(() => {
     if (isConnecting && connectingParams) {
       const sourceType = connectingParams.handleType;
+      if (connectingParams.nodeId === node_id) {
+        setConnectingMe(false);
+        return
+      }
       if (sourceType !== type) {
         if (connectingParams.valueType === valueType || valueType === "*") {
           setConnectingMe(true);
