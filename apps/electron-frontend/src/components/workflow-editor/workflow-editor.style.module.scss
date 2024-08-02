@@ -16,10 +16,27 @@
       right: 0;
       bottom: 0;
     }
+    .reactflow-editor.loading {
+      .react-flow__nodes, .react-flow__viewport {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      } 
+    }
+
     .react-flow__panel {
       .ant-space-item {
         display: flex;
         align-items: center;
+        .action.action-Run {
+          background-color: var(--primaryColor);
+          
+        }
+        .title {
+          color:#C5C5D359;
+          padding-left: 8px;
+        }
+
       }
     }
 
@@ -191,17 +208,46 @@
         pointer-events: none;
         min-width: 5px;
         min-height: 5px;
-        width: 6px;
-        height: 6px;
-        background: #92939B;
-        border-radius: 100%;
+        width: 30px;
+        height: 30px;
+        background: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: var(--transition);
+        .handle-visible {
+          width: 10px;
+          height: 10px;
+          border-radius: 100%;
+          pointer-events: none;
+        }
       }
-    
+
+      .react-flow__handle-left {
+        top: -3px;
+        left: -2px;
+        transform: translate(0, -50%);
+      }
+      
+      .react-flow__handle-right {
+        right: -2px;
+        top: -3px;
+        transform: translate(0, -50%);
+      }
+
+      .node-slot-left .connectionindicator {
+        transform-origin: 40% 50%;
+      }
+
+      .node-slot-right .connectionindicator {
+        transform-origin: 60% 50%;
+      }
+          
       .react-flow__handle.connectionindicator {
         pointer-events: all;
         cursor: crosshair;
       }
-    
+
       .react-flow__handle-bottom {
         top: auto;
         left: 50%;
@@ -213,18 +259,6 @@
         left: 50%;
         top: -4px;
         transform: translate(-50%, 0);
-      }
-    
-      .react-flow__handle-left {
-        top: 36%;
-        left: 3px;
-        transform: translate(0, -50%);
-      }
-    
-      .react-flow__handle-right {
-        right: 4px;
-        top: 36%;
-        transform: translate(0, -50%);
       }
     
       .react-flow__edgeupdater {
@@ -352,23 +386,25 @@
       }
     
       .react-flow__controls {
-        // box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.08);
-        background-color: var(--backgroundColorL1);
-        border-radius: 4px;
+        box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.08);
+        background: rgba(41, 42, 53, 0.65);
+        backdrop-filter: blur(5px);
+        border-radius: 12px;
         overflow: hidden;
+        padding: 8px;
       }
     
       .react-flow__controls-button {
         border: none;
         transition: var(--transition);
-        background:var(--backgroundColorL1);
-        border-bottom: 1px solid var(--borderColor);
+        background: none;
+        // border-bottom: 1px solid var(--borderColor);
         box-sizing: content-box;
         display: flex;
         justify-content: center;
         align-items: center;
         width: 16px;
-        height: 16px;
+        height: 18px;
         cursor: pointer;
         -webkit-user-select: none;
         -moz-user-select: none;
