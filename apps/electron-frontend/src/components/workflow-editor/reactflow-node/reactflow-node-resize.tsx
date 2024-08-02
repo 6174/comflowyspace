@@ -77,7 +77,7 @@ export function useNodeAutoResize(node: NodeProps<any>, imagePreviews: PreviewIm
       const state = useAppStore.getState()
       const nodeInfo = state.graph[node.id];
       const dimensions = nodeInfo?.flowNode.data.dimensions;
-      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0);
+      const height = mainRef.current.offsetHeight + 25 + (imagePreviews.length > 0 ? 200 : 0) + 20;
       const width = mainRef.current.offsetWidth + 4;
       // console.log("dimensions", height, dimensions);
       if (!dimensions || dimensions.height < height - 2) {
