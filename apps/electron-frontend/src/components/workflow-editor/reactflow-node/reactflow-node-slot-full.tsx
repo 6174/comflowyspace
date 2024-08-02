@@ -28,10 +28,12 @@ export function useFullNodeConnecting({ widget, node_id, inputs, outputs }: {
   outputs = outputs || [];
 
   const onMouseEnter = useCallback(() => {
-    if (isConnecting) {
-      setTryConnectThisNode(true);
+    if (isConnecting && connectingParams) {
+      if (connectingParams.nodeId !== node_id) {
+        setTryConnectThisNode(true);
+      }
     }
-  }, [isConnecting])
+  }, [isConnecting, connectingParams, node_id])
 
   const onMouseLeave = useCallback(() => {
     if (tryConnectThisNode) {
