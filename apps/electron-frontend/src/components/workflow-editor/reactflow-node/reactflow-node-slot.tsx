@@ -65,17 +65,18 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
   let transformFactor = 1;
   const [hover, setHover] = useState(false);
   if (hover && !isConnecting) {
-    transformFactor = Math.max(1, (1 / transform)) * 3.2;
+    transformFactor = Math.max(1, (1 / transform)) * 1.8;
   }
 
   if (isConnecting && connectingMe) {
-    transformFactor = Math.max(1, (1 / transform)) * 3.2;
+    transformFactor = Math.max(1, (1 / transform)) * 1.8;
   };
 
   const slotLabel = useSlotLabel({ node_id, valueType, type, label });
+  const scaleMode = (isConnecting && connectingMe) || (hover && !isConnecting);
 
   return (
-    <div className={position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'}>
+    <div className={`${position === Position.Right ? 'node-slot node-slot-right' : 'node-slot node-slot-left'} ${scaleMode ? " scaled " : ""}`}>
       <Handle
         id={id.toUpperCase()}
         isConnectable={true}
