@@ -10,6 +10,10 @@ export function onEdgeUpdateFailed(params: {
   setWidgetTreeContext: (context: any) => void,
   connectingParams: OnConnectStartParams
 }) {
+  const className = (params.event.target as any).className
+  if (typeof className !== "string" || className !== "react-flow__pane") {
+    return
+  }
   const { event, widgets, onConnect, setWidgetTreeContext, nodes, connectingParams } = params;
   try {
     const node = nodes.find(node => {
