@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { OS_HOME_DIRECTORY, SHELL_ENV_PATH, getSystemPath, isWindows } from "./env";
 import path from "path";
-import { CONDA_ENV_NAME } from "../config-manager";
+import { CONDA_ENV_NAME, CONFIG_KEYS, appConfigManager } from "../config-manager";
 import logger from "./logger";
 
 export const DEFAULT_CONDA_PATH = isWindows ? 'C:\\tools\\Miniconda3' : `${OS_HOME_DIRECTORY}/miniconda3`;
@@ -34,10 +34,18 @@ class Conda {
    * Init conda env
    */
   updateCondaInfo () {
+    // 如果有配置本地自定义的 python 环境，那么就简单设置 PYTHON 和 PIP 就好
     this.info = getCondaInfo();
     this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
     console.log("env", this.info, this.env);
     logger.info("update conda info" + JSON.stringify(this.info) + JSON.stringify(this.env));
+
+    const {pythonPath} = appConfigManager.getSetupConfig();
+    if (pythonPath && pythonPath !== "") {
+      logger.info("use custom env python: ", pythonPath)
+      this.env!.PYTHON_PATH = pythonPath;
+      this.env!.PIP_PATH = `${pythonPath} -m pip`;
+    }
   }
 
   getCondaPaths(): CondaInfo & CondaEnvInfo {

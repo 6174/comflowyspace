@@ -17,11 +17,14 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
     const currentInputs = node.inputs || [];
     const arr: InputArray = [];
     const inputKeys = currentInputs.map(input => input.name);
-    for (const [property, input] of Object.entries(widget.input.required)) {
+    for (const [property, input] of Object.entries({
+      ...(widget.input.required || {}),
+      ...(widget.input.optional || {})
+    })) {
       const type = Input.getTypeName(input);
       if (!Input.isParameterOrList(input)) {
-        arr.push({ 
-          property, 
+        arr.push({
+          property,
           type,
           disabled: true,
           enable: true
@@ -60,10 +63,10 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
   const handleInputChange = useCallback((property: string, enable: boolean) => {
     const newInputItems = [...inputItems];
     const index = newInputItems.findIndex(item => item.property === property);
-    if (index) {
+    if (index > -1) {
       newInputItems[index].enable = enable;
       setInputItems(newInputItems);
-      const inputs = newInputItems.filter(item => item.enable).map(item => ({name: item.property, type: item.type}));
+      const inputs = newInputItems.filter(item => item.enable).map(item => ({ name: item.property, type: item.type }));
       onNodeAttributeChange(props.id, { inputs });
     }
     setTimeout(() => {
@@ -84,7 +87,7 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
               <div className="switch">
                 <Switch value={item.enable} size='small' disabled={item.disabled} onChange={val => {
                   handleInputChange(item.property, val);
-                }}/>
+                }} />
               </div>
             </div>
           )
@@ -103,7 +106,7 @@ const ChangeInputMenuItem = (props: NodeMenuProps) => {
       placement='right'
       onOpenChange={handleVisibleChange}
     >
-      <div className='menu-item-title'> <EditIcon/> Convert to input</div>
+      <div className='menu-item-title'> <EditIcon /> Convert to input</div>
     </Popover>
   );
 };

@@ -1,6 +1,7 @@
 import { getComflowyAppConfig, getComfyUIEnvRequirements } from "../comfyui-bridge/bridge";
 import { create } from "zustand";
 import { AppConfigs, BootstrapError, ComfyUIRunFPMode, ComfyUIRunVAEMode, EnvRequirements } from "../types";
+import { isCustomModelField } from "../types/model.types";
 
 type DashboardState = {
     loading: boolean;
@@ -42,7 +43,6 @@ type DashboardAction = {
 
 const useDashboardState = create<DashboardState & DashboardAction>((set, get) => ({
     docs: [],
-    appConfigs: {},
     bootstraped: false,
     loading: true,
     bootstrapMessages: [],
@@ -101,40 +101,43 @@ function checkEnvRequirements(env: EnvRequirements): BootstrapTask[] {
     const tasks: BootstrapTask[] = [];
     tasks.push({
         type: BootStrapTaskType.setupConfig,
-        title: "Setup", 
+        title: "Setup",
         description: "Considering network issue, you can setup a http_proxy url",
         finished: env.isSetupedConfig,
     });
-    tasks.push({ 
-        type: BootStrapTaskType.installConda, 
-        title: "Install Conda", 
-        description: "We use conda to manage python enviroment for comfyUI",
-        finished: env.isCondaInstalled 
-    });
-    tasks.push({ 
-        type: BootStrapTaskType.installPython, 
-        title: "Create Conda venv", 
-        description: "ComfyUI need a safe and proper python enviroment to run. We will use conda to create virtual env called comflowy to manage your python & pip packages",
-        finished: env.isPythonInstalled 
-    });
-    tasks.push({ 
-        type: BootStrapTaskType.installGit, 
-        title: "Install Git", 
-        description: "ComfyUI need a safe and proper git enviroment to run. We will use git to manage your git repository",
-        finished: env.isGitInstalled 
-    });
-    tasks.push({ 
-        type: BootStrapTaskType.installTorch, 
-        title: "Install Torch", 
-        description: "ComfyUI need a safe and proper torch enviroment to run. We will use torch to manage your torch model",
-        finished: env.isTorchInstalled
-    });
-    tasks.push({ 
-        type: BootStrapTaskType.installComfyUI, 
-        title: "Install ComfyUI", 
-        description: "ComfyUI need a safe and proper comfyUI enviroment to run. We will use comfyUI to manage your comfyUI model",
-        finished: env.isComfyUIInstalled 
-    });
+    if (!env.isCustomComfyEnv) {
+        tasks.push({
+            type: BootStrapTaskType.installConda,
+            title: "Install Conda",
+            description: "We use conda to manage python enviroment for comfyUI",
+            finished: env.isCondaInstalled
+        });
+        tasks.push({
+            type: BootStrapTaskType.installPython,
+            title: "Create Conda venv",
+            description: "ComfyUI need a safe and proper python enviroment to run. We will use conda to create virtual env called comflowy to manage your python & pip packages",
+            finished: env.isPythonInstalled
+        });
+        tasks.push({
+            type: BootStrapTaskType.installGit,
+            title: "Install Git",
+            description: "ComfyUI need a safe and proper git enviroment to run. We will use git to manage your git repository",
+            finished: env.isGitInstalled
+        });
+        tasks.push({
+            type: BootStrapTaskType.installTorch,
+            title: "Install Torch",
+            description: "ComfyUI need a safe and proper torch enviroment to run. We will use torch to manage your torch model",
+            finished: env.isTorchInstalled
+        });
+        tasks.push({
+            type: BootStrapTaskType.installComfyUI,
+            title: "Install ComfyUI",
+            description: "ComfyUI need a safe and proper comfyUI enviroment to run. We will use comfyUI to manage your comfyUI model",
+            finished: env.isComfyUIInstalled
+        });
+    }
+
     tasks.push({ 
         type: BootStrapTaskType.installBasicModel, 
         title: "Install Basic Model", 

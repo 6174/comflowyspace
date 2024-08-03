@@ -26,9 +26,12 @@ export async function checkBasicRequirements() {
         isTorchInstalled = false,
         isComfyUIInstalled = false,
         isComfyUIStarted = false,
+        isCustomComfyEnv = false,
         isGitInstalled = false;
     if (isSetupedConfig) {
         isComfyUIInstalled = await checkIfInstalledComfyUI();
+        const appConfig = appConfigManager.getSetupConfig();
+        isCustomComfyEnv = appConfig?.isCustomComfyEnv ?? false;
         /**
          * if user delete ComfyUI, user should re-setup the config
          */
@@ -48,6 +51,7 @@ export async function checkBasicRequirements() {
     return {
         isCondaInstalled,
         isPythonInstalled,
+        isCustomComfyEnv,
         isGitInstalled,
         isTorchInstalled,
         isComfyUIInstalled,

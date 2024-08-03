@@ -39,6 +39,20 @@ export default function createHook(set: AppStateSetter, get: AppStateGetter): Pa
           let newSeed = Widget.getControlledSeedValue(control_after_generated, oldSeed);
           onNodeFieldChange(node.id, seedFieldName, newSeed);
         }
+
+        // 如果是 PrimitNode 且有 control_after_generated 字段，则更新 control_after_generated 字段
+        if (Widget.isPrimitive(widget?.name)) {
+          const control_after_generated = sdnode.fields.control_after_generated;
+          if (control_after_generated) {
+            const edge = state.edges.find(edge => edge.source === node.id);
+            if (edge && edge.targetHandle) {
+              const seedFieldName = edge.targetHandle.toLowerCase()
+              const oldSeed = sdnode.fields[seedFieldName];
+              let newSeed = Widget.getControlledSeedValue(control_after_generated, oldSeed);
+              onNodeFieldChange(node.id, seedFieldName, newSeed);
+            }
+          }
+        }
       });
 
       console.log("res", res);

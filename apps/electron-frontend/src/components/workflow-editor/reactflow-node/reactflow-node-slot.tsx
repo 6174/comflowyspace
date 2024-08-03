@@ -1,10 +1,10 @@
 import { dt } from "@comflowy/common/i18n";
 import { useAppStore } from "@comflowy/common/store";
 import { validateEdge } from "@comflowy/common/store/app-state";
-import { Input } from "@comflowy/common/types";
+import { ComfyUIWorkflowNodeInput, ComfyUIWorkflowNodeOutput, Input } from "@comflowy/common/types";
 import { ALREADY_HAS_GLOBAL_VARIABLE_MESSAGE, findMatchedGlobalVar, isAnywhereWidget } from "@comflowy/common/types/comfy-variables.types";
 import { use, useCallback, useEffect, useMemo, useState } from "react";
-import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions } from 'reactflow'
+import { type NodeProps, Position, type HandleType, Handle, NodeResizeControl, Connection, Dimensions, OnConnectStartParams } from 'reactflow'
 import { message as AntMessage, Tooltip } from "antd";
 import { LocatableNodeTitle } from "../reactflow-controlboard/controlboard-node";
 
@@ -30,6 +30,9 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
   const transform = useAppStore(st => st.transform);
   const [connectingMe, setConnectingMe] = useState(false);
 
+  /**
+   * 这个检测函数触发的 Slot 是 connectingStart 的
+   */
   const isValidConnection = useCallback((connection: Connection) => {
     const st = useAppStore.getState();
     const [validate, message] = validateEdge(st, connection);
@@ -43,6 +46,10 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
   useEffect(() => {
     if (isConnecting && connectingParams) {
       const sourceType = connectingParams.handleType;
+      if (connectingParams.nodeId === node_id) {
+        setConnectingMe(false);
+        return
+      }
       if (sourceType !== type) {
         if (connectingParams.valueType === valueType || valueType === "*") {
           setConnectingMe(true);
@@ -58,11 +65,11 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
   let transformFactor = 1;
   const [hover, setHover] = useState(false);
   if (hover && !isConnecting) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.2;
+    transformFactor = Math.max(1, (1 / transform)) * 3.2;
   }
 
   if (isConnecting && connectingMe) {
-    transformFactor = Math.max(1, (1 / transform)) * 2.8;
+    transformFactor = Math.max(1, (1 / transform)) * 3.2;
   };
 
   const slotLabel = useSlotLabel({ node_id, valueType, type, label });
@@ -83,17 +90,19 @@ export function Slot({ id, label, type, position, valueType, widget, node_id }: 
         }}
         className="node-slot-handle"
         style={{
-          backgroundColor: color,
           // visibility: (transforming || invisible)? "hidden" : "visible",
           transform: `scale(${transformFactor})`
-        } as React.CSSProperties} />
+        } as React.CSSProperties} >
+        <div className="handle-visible" style={{
+          backgroundColor: color
+        }}></div>
+      </Handle>
       <div className="node-slot-name" style={{ marginBottom: 2 }}>
         {slotLabel}
       </div>
     </div>
   )
 }
-
 function useSlotLabel(props: {
   node_id: string,
   valueType: string,
@@ -129,10 +138,13 @@ function useSlotLabel(props: {
   // 如果是 anywhere widget，且有连接，返回连接的 sourceHandle
   if (connection && isAnywhereWidget(target_node_widget)) {
     const source_node_widget = widgets[source_node.widget];
+    if (!source_node_widget) {
+      return defaultLabel
+    }
     const source_outputs = source_node_widget.output;
     const source_output_names = source_node_widget.output_name;
     const source_output_index = source_outputs.findIndex((output) => output === connection.sourceHandle);
-    const source_output_name = source_output_names[source_output_index]; 
+    const source_output_name = source_output_names[source_output_index];
     if (connection.targetHandle === "+VE") {
       return (
         <span>
@@ -158,11 +170,14 @@ function useSlotLabel(props: {
     const widget = widgets[var_info.source_node.value.widget];
     const source_node_title = var_info?.source_node.value.title || widget.display_name || widget.name;
     const $title = (
-      <LocatableNodeTitle title={source_node_title} node={graph[var_info.source_node.id].flowNode} />
+      <LocatableNodeTitle title={source_node_title} node={graph[var_info.source_node.id]?.flowNode} />
     )
     return (
       <Tooltip title={<div>Reference from: {$title} </div>}>
-        {defaultLabel}{`(reference)`}
+        {defaultLabel}<span style={{
+          fontSize: 9,
+          opacity: .5
+        }}>{`(reference)`}</span>
       </Tooltip>
     )
   }

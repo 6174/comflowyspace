@@ -101,7 +101,7 @@ export function InputSetNodeField({ widget, node, value, id, onChange, name }: G
         </div>
       </div>
       <div className="reference-info">
-        {referenceInfo}
+        {/* {referenceInfo} */}
       </div>
     </>
   );

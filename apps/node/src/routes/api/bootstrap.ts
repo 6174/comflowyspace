@@ -13,7 +13,8 @@ import { verifyIsTorchInstalled } from 'src/modules/comfyui/verify-torch';
 import { runCommand } from '../../modules/utils/run-command';
 import { systemProxyString } from '../../modules/utils/env';
 import { conda } from '../../modules/utils/conda';
-import { modelManager } from 'src/modules/model-manager/model-manager';
+import { modelManager } from '../../modules/model-manager/model-manager';
+import { verifyPythonPath } from '../../modules/utils/verify-python';
 
 /**
  * fetch all extensions
@@ -22,6 +23,7 @@ import { modelManager } from 'src/modules/model-manager/model-manager';
  */
 export async function ApiEnvCheck(req: Request, res: Response) {
     try {
+        logger.info("start env check")
         const requirements = await checkBasicRequirements()
         res.send({
             success: true,
@@ -231,12 +233,23 @@ export async function ApiSetupConfig(req: Request, res: Response) {
             }
         }
 
+        if (data.pythonPath) {
+            console.log("python path", data.pythonPath)
+            await verifyPythonPath(data.pythonPath);
+        }
+
         const setupString = JSON.stringify({
             comfyUIDir: comfyUIPath,
+            pythonPath: data.pythonPath || undefined,
+            isCustomComfyEnv: !!data.pythonPath,
             stableDiffusionDir: stableDiffusionPath
         });
 
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
+
+        // if (data.pythonPath) {
+        //     conda.updateCondaInfo();
+        // }
         
         res.send({
             success: true,

@@ -94,7 +94,7 @@ export async function startAppServer(params: {
   ComflowyConsole.serve(app, server, wss);
   channelService.serve(app, server, wss);
   server.listen(port, () => {
-    logger.info(`Server is running at http://localhost:${port}`);
+    console.log(`Server is running at http://localhost:${port}`);
   });
 
   setTimeout(() => {

@@ -1,21 +1,20 @@
 .reactFlowNode {
-    --node-base-font-size: 12px;
+    --node-base-font-size: 0.81em;
     border: solid 2px transparent;
     box-sizing: content-box;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 94%;
     border-radius: 8px;
     border: 2px solid var(--node-border-color);
-    background-color: var(--node-bg-color);
-    // backdrop-filter: blur(6px);
+    background-color: var(--node-color);
     position: relative;
     min-width: 190px;
     box-sizing: border-box;
     width: 100%;
     $size: -4px;
     &::after, &::before {
-        content: "";
+    content: "";
         display: block;
         position: absolute;
         top: $size;
@@ -24,7 +23,7 @@
         bottom: $size;
         z-index: -1;
         background-color: var(--node-bg-color);
-        border-radius: 8px;
+        border-radius: 9px;
         visibility: hidden;
         opacity: 0;
     }
@@ -35,7 +34,7 @@
         right: $size2;
         bottom: $size2;
         background-image: linear-gradient(to right, var(--primaryColor), var(--secondaryColor));
-        border-radius: 10px;
+        border-radius: 11px;
     }
 
     :global {
@@ -59,18 +58,36 @@
                 }
             }
         }
+
+        .node-slot-fullsize {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background-color: #353535b5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: var(--transition);
+            .label {
+                padding: 40px;
+                text-align: center;
+            }
+        }
         
         .node-header {
             display: flex;
             flex-direction: row;
             align-items: center;
-            padding: 5px 7px 5px 12px;
+            padding: 6px 8px 6px 8px !important;
             background: var(--node-color);;
             padding: 4px 6px;;
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
-            height: 24px;
-            --icon-size: 20px;
+            height: 34px;
+            --icon-size: 18px;
             .node-title {
                 flex: 1;
                 position: absolute;
@@ -123,11 +140,14 @@
             position: relative;
             padding-bottom: 8px;
             padding-top: 8px;
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
+            margin: 2px;
+            border-radius: 6px;
+            background-color: var(--node-bg-color);
         }
         .node-slots {
             display: flex;
+            position: relative;
+            z-index: 10;
             .node-inputs, .node-outputs {
                 flex: 1;
                 display: flex;
@@ -139,11 +159,16 @@
                 line-height: 14px;
                 // font-family: JetBrains Mono, monospace;
                 color: #A8A9AF;
-                padding: 4px 12px;
+                padding: 4px 22px;
                 width: 100%;
                 box-sizing: border-box;
+                display: flex;
+                position: relative;
                 &.node-slot-right {
-                    text-align: right;
+                    .node-slot-name {
+                        width: 100%;
+                        text-align: right;
+                    }
                 }
             }
         }
@@ -171,25 +196,30 @@
                     padding-right: 25px;
                     display: flex;
                     align-items: center;
+                    height: 100%;
                     >input {
                         height: 24px;
                     }
                 }
                 .ant-select-selector {
-                    background-color: transparent;
+                    padding: 0 8px 1px;
+                    background-color: #1f202a80;
                     border-color: #414356;
                 }
                 .ant-input-number, .ant-select, .ant-input  {
+                    border-radius: 6px !important;
                     min-width: 100px;
-                    max-width: calc(100% - 40px);
                     border-color: #414356;
-                    height: 26px;
-                    background-color: var(--node-bg-color);;
+                    height: 22px;
+                    background-color: #1f202a80;
                     &-focused {
                         border-color: var(--primaryColor);
                     }
                     .ant-input-number-handler-wrap {
                         background-color: transparent;
+                    }
+                    .ant-select-arrow {
+                        font-size: 10px;
                     }
                 }
                 input {
@@ -212,6 +242,8 @@
                     display: block;
                     .ant-btn {
                         border-color: #414356;
+                        height: 24px;
+                        margin-top: 2px;
                     }
                 }
                 .image-preview img {
@@ -220,7 +252,6 @@
                    display: inline-block;
                 }
             }
-
 
             .switch-wrapper {
                 display: flex;
@@ -242,6 +273,59 @@
             .node-input-label-name {
                 white-space: nowrap;
             }
+
+            .custom-select-model-value {
+                border-radius: 6px;
+                border: solid 1px #2F3144;
+                background-color: #191A1F;
+                padding: 3px;
+                display: flex;
+                transition: var(--transition);
+                &:hover {
+                    background-color: var(--actionHoverColor);
+                }
+                .label {
+                    flex: 1;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    padding-left: 4px;
+                    p{
+                        font-size: 12px;
+                        margin: 0;
+                        margin-top: 3px;
+                        word-break: break-all;
+                        line-height: 1.1;
+                        margin-bottom: -3px;
+                    }
+                    .metas {
+                        margin-top: 2px;
+                    }
+                    .meta {
+                        margin-top: -3px;
+                        font-size: 9px;
+                    }
+                }
+                .model-thumbnail {
+                    height: 38px;
+                    width: 38px;
+                    overflow: hidden;
+                    transition: var(--transition);
+                    border: solid 2px transparent;
+                    &:hover {
+                        border: solid 2px var(--backgroundColorL2);
+                    }
+                    .ant-image {
+                        border: solid 1px #2F3144;
+                        overflow: hidden;
+                        width: 100% !important;
+                        height: 100% !important;
+                        border-radius: 4px;
+                        img {
+                            width: 100%;
+                        }
+                    }
+                }
+            }
         }
         .progress-bar {
             position: absolute;
@@ -258,21 +342,6 @@
             position: absolute;
             top: -3em;
             left: 0.5em;
-        }
-
-        .install-missing-widget {
-            padding: 0 10px;
-        }
-
-        .connectionindicator {
-            // transition: var(--transition);
-        }
-        .node-slot-left .connectionindicator {
-            transform-origin: 10% 50%;
-        }
-
-        .node-slot-right .connectionindicator {
-            transform-origin: 90% 50%;
         }
         
         .node-images-preview {
@@ -336,18 +405,12 @@
     }
 }
 
-
-
 .reactFlowSelected {
     &::before,
     &::after {
         visibility: visible !important;
         opacity: 1 !important;
     }
-    &::before {
-        background-image: linear-gradient(to right, #37B7AB, #37B7AB);
-    }
-    
 }
 
 .reactFlowGroup {
@@ -372,6 +435,39 @@
     }
     &::before {
         background-image: linear-gradient(to right, #CB2C95, #F75C2B);
+    }
+}
+
+.reactFlowNodeUnknown {
+    &::before,
+    &::after {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    background-image: linear-gradient(to right, #CB2C95, #F75C2B);
+    :global {
+        .node-header {
+            background-color: transparent;
+        }
+        .node-main {
+            visibility: hidden;
+        }
+        .error-main {
+            padding: 10px;
+            overflow: hidden;
+            position: absolute;
+            top: 34px;
+            left: 2px;
+            right: 2px;
+            height: calc(100% - 34px - 2px);
+            // border-bottom-right-radius: 6px;
+            // border-bottom-left-radius: 6px;
+            border-radius: 6px;
+            background-color: #1C1D24;
+            p:first-child {
+                margin-top: 0;
+            }
+        }
     }
 }
 
