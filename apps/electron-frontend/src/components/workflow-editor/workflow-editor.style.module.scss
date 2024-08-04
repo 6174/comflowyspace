@@ -203,51 +203,6 @@
         cursor: grab;
       }
     
-      .react-flow__handle {
-        position: absolute;
-        pointer-events: none;
-        min-width: 5px;
-        min-height: 5px;
-        width: 30px;
-        height: 30px;
-        background: transparent;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        transition: var(--transition);
-        .handle-visible {
-          width: 10px;
-          height: 10px;
-          border-radius: 100%;
-          pointer-events: none;
-        }
-      }
-
-      .react-flow__handle-left {
-        top: -3px;
-        left: -2px;
-        transform: translate(0, -50%);
-      }
-      
-      .react-flow__handle-right {
-        right: -2px;
-        top: -3px;
-        transform: translate(0, -50%);
-      }
-
-      .node-slot-left .connectionindicator {
-        transform-origin: 40% 50%;
-      }
-
-      .node-slot-right .connectionindicator {
-        transform-origin: 60% 50%;
-      }
-          
-      .react-flow__handle.connectionindicator {
-        pointer-events: all;
-        cursor: crosshair;
-      }
-
       .react-flow__handle-bottom {
         top: auto;
         left: 50%;

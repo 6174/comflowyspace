@@ -170,6 +170,64 @@
                         text-align: right;
                     }
                 }
+
+                .react-flow__handle {
+                    position: absolute;
+                    pointer-events: none;
+                    min-width: 5px;
+                    min-height: 5px;
+                    width: 22px;
+                    height: 22px;
+                    background: transparent;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    transition: var(--transition);
+                    .handle-visible {
+                        width: 10px;
+                        height: 10px;
+                        border-radius: 100%;
+                        pointer-events: none;
+                        transition: var(--transition);
+                    }
+                }
+
+                .react-flow__handle.connectionindicator {
+                    pointer-events: all;
+                    cursor: crosshair;
+                }
+
+                .react-flow__handle-left {
+                    top: 0;
+                    left: -2px;
+                    transform: translate(0, -50%);
+                }
+                
+                .react-flow__handle-right {
+                    right: -2px;
+                    top: 0;
+                    transform: translate(0, -50%);
+                }
+
+                &.scaled {
+                    &.node-slot-left .connectionindicator {
+                        transform-origin: 10% 50%;
+                    }
+    
+                    &.node-slot-right .connectionindicator {
+                        transform-origin: 90% 50%;
+                    }
+                    font-size: 0.8em;
+                    line-height: 12px;
+                    .react-flow__handle {
+                        border-radius: 22px;
+                        .handle-visible {
+                            transform: scale(2);
+                            border-radius: 100%;
+                            pointer-events: none;
+                        }
+                    }
+                }
             }
         }
         .node-input-container {
