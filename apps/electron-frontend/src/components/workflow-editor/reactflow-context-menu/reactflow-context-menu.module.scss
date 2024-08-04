@@ -9,6 +9,7 @@
     .node-info {
       padding: 10px;
       overflow: hidden;
+      width: 200px;
       color: #FFF;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -19,7 +20,15 @@
       line-height: 15.456px;
       /* 154.56% */
       letter-spacing: 0.3px;
-      opacity: .2;
+      opacity: .8;
+      p {
+        margin: 0;
+        font-size: 11px;
+        a {
+          color: var(--primaryColor);
+          word-break: break-all;
+        }
+      }
     }
     .ant-menu {
       background-color: transparent;

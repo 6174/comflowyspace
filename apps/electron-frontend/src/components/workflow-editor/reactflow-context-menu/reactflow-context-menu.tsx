@@ -12,6 +12,7 @@ import { EnabledIcon, CollapseIcon, CopyIcon, DeleteIcon, DisableRunIcon, Enable
 import { EditImageMenuItem, needEditImage } from './context-menu-item-edit-image/context-menu-item-edit-image';
 import { NodeVisibleState } from '@comflowy/common/types';
 import { SaveImageMenuItem, shouldShowSaveImageNode } from './context-menu-item-save-images';
+import { findExtensionByWidget } from '@comflowy/common/store/extension-state';
 
 interface ContextMenuProps {
   nodes: Node[];
@@ -181,11 +182,23 @@ function NodeMenu(props: NodeMenuProps) {
   }
 
   items.push(getMenuItem(<div className="menu-item-title"> <DeleteIcon /> Remove </div>, 'MENU_ITEM_DELETE_NODE', null, null));
-
+  const extension = findExtensionByWidget(widget);
+  
   return (
     <div className='node-menu'>
       <div className="node-info">
         {widget.name}
+
+        {extension && (
+          <>
+            <p>
+              From <a href={extension.reference} target='_blank'>{extension.title}</a>
+            </p>
+            <p>
+              By {extension.author}
+            </p>
+          </>
+        )}
       </div>
       <ChangeColorMenuItem {...props}/>
       <Menu onClick={onClick} style={{ width: 200 }} mode="vertical" items={items} />
