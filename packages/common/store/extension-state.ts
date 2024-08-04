@@ -77,6 +77,22 @@ export function transformModeMap(extensionNodeMap: Record<string, string[]>, ext
     return ret;
 }
 
+export function findExtensionByWidget(widget: { python_module: string }): Extension | undefined {
+    const python_module = widget.python_module || "";
+    if (python_module.includes("custom_nodes.")) {
+        const { extensions, extensionNodeMap } = useExtensionsState.getState();
+        const extensionName = python_module.replace("custom_nodes.", "");
+        const extension = extensions.find(ext => {
+            const reference = ext?.reference;
+            if (reference?.endsWith(extensionName)) {
+                return true;
+            }
+        });
+        return extension
+    }
+    return undefined
+}
+
 export function findExtensionByWidgetName(widgetName: string): Extension | undefined {
     const {extensions, extensionNodeMap} = useExtensionsState.getState();
     let node = extensionNodeMap[widgetName];

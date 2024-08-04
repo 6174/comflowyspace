@@ -96,6 +96,11 @@
                 text-overflow: ellipsis;
                 text-wrap: nowrap;
             }
+            .extension {
+                font-size: 10px;
+                text-overflow: ellipsis;
+                text-wrap: nowrap;
+            }
             .pin-button {
                 width: 20px;
                 background: none;
@@ -124,6 +129,18 @@
     :global {
         .ant-popover-inner {            
             padding: 10px;
+        }
+    }
+}
+
+.widgetPreviewPopover {
+    z-index: 10000;
+    :global {
+        .ant-popover-inner {
+            padding: 0;
+            .ant-popover-inner-content {
+                padding: 0;
+            }
         }
     }
 }

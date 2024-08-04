@@ -1,0 +1,30 @@
+.nodePreview {
+  :global {
+    .node-main {
+      overflow-y: auto;
+    }
+
+    .react-flow__handle {
+      position: absolute;
+      pointer-events: none;
+      min-width: 5px;
+      min-height: 5px;
+      width: 6px;
+      height: 6px;
+      background: #92939B;
+      border-radius: 100%;
+    }
+    
+    .react-flow__handle-left {
+      top: 34%;
+      left: 10px;
+      transform: translate(0, -50%);
+    }
+  
+    .react-flow__handle-right {
+      right: 10px;
+      top: 34%;
+      transform: translate(0, -50%);
+    }
+  }
+}

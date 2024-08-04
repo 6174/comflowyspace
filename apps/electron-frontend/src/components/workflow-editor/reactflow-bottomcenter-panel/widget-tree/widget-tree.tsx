@@ -1,5 +1,5 @@
 import React, { use, useCallback, useEffect, useRef, useState } from 'react';
-import { Input } from 'antd';
+import { Input, Popover } from 'antd';
 import { useAppStore } from '@comflowy/common/store';
 import styles from "./widget-tree.style.module.scss";
 import { PersistedWorkflowNode, SDNode, Widget } from '@comflowy/common/types';
@@ -11,6 +11,8 @@ import { wordSplitSearch, wordSplitSearchAdvance } from "@comflowy/common/utils/
 import { dt, currentLang } from '@comflowy/common/i18n';
 
 import { VirtualList } from 'ui/virtual/virtual-list';
+import { ReactflowWidgetPreviewCard } from '../../reactflow-node/reactflow-node-preview-card';
+import { findExtensionByWidget, findExtensionByWidgetName } from '@comflowy/common/store/extension-state';
 
 export const WidgetTree = (props: {
     showCategory?: boolean;
@@ -57,7 +59,7 @@ export const WidgetTree = (props: {
     const getWidgetSearchString = (widget) => {
         return `${widget.name} ${widget.display_name} ${widget.category} ${widget.description}`.toLowerCase();
     }
-    
+
     const handleSearch = (value: string) => {
         const findedWidgets = Object.keys(widgets).filter((key) => {
             const widget = widgets[key];
@@ -69,8 +71,6 @@ export const WidgetTree = (props: {
             const score = wordSplitSearch(value, searchString);
             return score > 0;
         });
-
-        console.log(findedWidgets);
 
         // 使用改进的搜索评分函数对结果进行排序
         const reOrderedWidgets = findedWidgets.sort((a, b) => {
@@ -217,8 +217,8 @@ export const WidgetTree = (props: {
             {
                 searchValue == "" ? widgetCategoryPanel : (
                     <div className='search-result'>
-                        <VirtualList 
-                            itemHeight={45}
+                        <VirtualList
+                            itemHeight={68}
                             items={searchResult}
                             renderItem={(item) => {
                                 return (
@@ -234,7 +234,7 @@ export const WidgetTree = (props: {
                                     />
                                 )
                             }}
-                            />
+                        />
                     </div>
                 )
             }
@@ -282,32 +282,51 @@ function WidgetNode({ widget, onNodeCreated, position, draggable, isPinned, togg
     const dtDisplayNameTip = dtDisplatyName !== widget.display_name ? `(${widget.display_name})` : "";
     const dtWidgetName = dt(`Nodes.${widget.name}.title`, widget.name);
     const dtWidgetNameTip = dtWidgetName !== widget.name ? `(${widget.name})` : "";
+
+    const extension = findExtensionByWidget(widget)
+
     return (
-        <div className={`widget-node action ${draggable ? "dndnode" : ""}`}
-            draggable={draggable}
-            ref={ref}
-            onClick={ev => {
-                createNewNode(ev);
-            }}
-            onDragStart={draggable ? onDragStart : null}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            title={widget?.name}>
-            <div className="widget-title">
-                <div className="display-name">{dtDisplatyName}{dtDisplayNameTip}</div>
-                <div className='class_name'>
-                    Type: {dtWidgetName}{dtWidgetNameTip}
-                </div>
+        <Popover overlayClassName={styles.widgetPreviewPopover} content={(
+            <div className="node-preview" style={{
+                width: 200
+            }}>
+                <ReactflowWidgetPreviewCard widget={widget} />
             </div>
-            {isHovered && (
-                <div onClick={(ev) => {
-                    ev.stopPropagation();
-                    togglePin();
-                }} className="pin-button" style={{ float: 'right' }}>
-                    {isPinned ? <PinFilledIcon /> : <PinIcon />}
+        )} placement='right' >
+            <div className={`widget-node action ${draggable ? "dndnode" : ""}`}
+                draggable={draggable}
+                ref={ref}
+                onClick={ev => {
+                    createNewNode(ev);
+                }}
+                onDragStart={draggable ? onDragStart : null}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                title={widget?.name}>
+                <div className="widget-title">
+                    <div className="display-name">{dtDisplatyName}{dtDisplayNameTip}</div>
+                    <div className='class_name'>
+                        Type: {dtWidgetName}{dtWidgetNameTip}
+                    </div>
+                    <div className='extension'>
+                        {extension ? (
+                            <span className="extension-name">From <a target="_blank" onClick={ev => {
+                                ev.stopPropagation();
+                            }} style={{ color: "var(--primaryColor)" }} href={extension.reference}>{extension.title}</a></span>
+                        ) : <span>From ComfyUI</span>
+                        }
+                    </div>
                 </div>
-            )}
-        </div>
+                {isHovered && (
+                    <div onClick={(ev) => {
+                        ev.stopPropagation();
+                        togglePin();
+                    }} className="pin-button" style={{ float: 'right' }}>
+                        {isPinned ? <PinFilledIcon /> : <PinIcon />}
+                    </div>
+                )}
+            </div>
+        </Popover>
     )
 }
 

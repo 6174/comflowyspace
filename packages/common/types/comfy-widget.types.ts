@@ -8,12 +8,14 @@ export const NODE_GET = "GetNode";
 export const NODE_SET = "SetNode";
 export const NODE_GET_SELECT_FIELD_NAME = "Constant";
 export const NODE_IMAGE_COMPARE = "ImageCompare";
+export const NODE_VHS_COMBINE = "VHS_VideoCombine";
 
 export const NODE_ANYTHING_EVERYWHERE = "Anything Everywhere";
 export const NODE_ANYTHING_EVERYWHERE3 = "Anything Everywhere3";
 export const NODE_ANYTHING_EVERYWHERE_PROMPT = "Prompts Everywhere";
 export const NODE_ANYTHING_EVERYWHERE_REGEX = "Anything Everywhere?";
 export const NODE_ANYTHING_EVERYWHERE_SEED = "Seed Everywhere";
+export const NODE_UNKNOWN = "UNKNOWN_WIDGET"
 
 export type WidgetKey = string
 /**
@@ -23,6 +25,7 @@ export interface Widget {
   name: WidgetKey
   display_name?: string
   description?: string
+  unknown?: boolean;
   category: string
   input: {
     required: Record<PropertyKey, Input>,
@@ -30,14 +33,17 @@ export interface Widget {
   }
   output: FlowPropsKey[]
   output_name?: string[]
+  python_module: string
 }
 
 export const UnknownWidget: Widget = {
-  name: "UNKNOWN_WIDGET",
+  name: NODE_UNKNOWN,
   display_name: "Unknown",
   category: "Unknown",
+  unknown: true,
   input: { required: {} },
   output: [],
+  python_module: "frontend"
 };
 
 export type Widgets = Record<WidgetKey, Widget>
@@ -52,15 +58,16 @@ export const Widget = {
       Widget.isStaticPrimitive(widget.name) ||
       widget.name === NODE_REROUTE ||
       widget.name === NODE_SET ||
-      widget.name === NODE_GET || 
+      widget.name === NODE_GET ||
       widget.name === NODE_IMAGE_COMPARE
     )
   },
   isSeedParam(param: string): boolean {
     return param === "seed" || param === "noise_seed"
   },
-  isSaveImageNode(widgetName: string): boolean {
-    const nodes = ["SaveImage", "SaveAnimatedWEBP"];
+  isSaveImageNode(widgetName: string,): boolean {
+    // 保存到 gallery 的节点
+    const nodes = ["SaveImage", "SaveAnimatedWEBP", "VHS_VideoCombine", "easy imageSave", "AnimateDiffCombine"];
     return nodes.includes(widgetName);
   },
   findSeedFieldName(widget: Widget, inputSlots: string[] = []): string | undefined {
@@ -94,13 +101,13 @@ export const Widget = {
   },
   getDefaultFields(widget: Widget): Record<PropertyKey, any> {
     const fields: Record<PropertyKey, any> = {}
-    for (const [key, input] of Object.entries(widget.input.required)) {
+    for (const [key, input] of Object.entries(widget.input.required || {})) {
       if (Input.isBool(input)) {
-        fields[key] = input[1].default ?? false
+        fields[key] = input[1]?.default ?? false
       } else if (Input.isFloat(input)) {
-        fields[key] = input[1].default ?? 0.0
+        fields[key] = input[1]?.default ?? 0.0
       } else if (Input.isInt(input)) {
-        fields[key] = input[1].default ?? 0
+        fields[key] = input[1]?.default ?? 1
       } else if (Input.isString(input)) {
         fields[key] = ''
       } else if (Input.isList(input)) {
@@ -134,10 +141,11 @@ export const specialWidgets: Record<string, Widget> = {
     category: "utils",
     input: {
       required: {
-        "Constant": ["STRING", {}] 
+        "Constant": ["STRING", {}]
       }
     },
-    output: []
+    output: [],
+    python_module: "frontend"
   },
   GetNode: {
     name: "GetNode",
@@ -147,10 +155,11 @@ export const specialWidgets: Record<string, Widget> = {
     input: {
       required: {},
       optional: {
-        "Constant": ["STRING", {}] 
+        "Constant": ["STRING", {}]
       }
     },
-    output: []
+    output: [],
+    python_module: "frontend"
   },
   Note: {
     "name": "Note",
@@ -168,6 +177,7 @@ export const specialWidgets: Record<string, Widget> = {
     },
     "output": [],
     "category": "utils",
+    python_module: "frontend"
   },
   Group: {
     "name": NODE_GROUP,
@@ -177,7 +187,8 @@ export const specialWidgets: Record<string, Widget> = {
       "required": {}
     },
     "output": [],
-    "category": "utils"
+    "category": "utils",
+    python_module: "frontend"
   },
   [NODE_PRIMITIVE]: {
     "name": NODE_PRIMITIVE,
@@ -187,7 +198,8 @@ export const specialWidgets: Record<string, Widget> = {
       "required": {}
     },
     "output": [],
-    "category": "utils"
+    "category": "utils",
+    python_module: "frontend"
   },
   Primitive_STRING: createPrimitiveWidget("STRING"),
   Primitive_BOOLEAN: createPrimitiveWidget("BOOLEAN"),
@@ -202,6 +214,7 @@ export const specialWidgets: Record<string, Widget> = {
     "display_name": NODE_REROUTE,
     "description": NODE_REROUTE,
     "category": "utils",
+    python_module: "frontend"
   }
 }
 
@@ -217,6 +230,7 @@ function createPrimitiveWidget(type: string): Widget {
     "display_name": `${type}`,
     "description": `Primitive type of ${type}`,
     "category": "utils",
+    python_module: "frontend"
   }
 }
 
