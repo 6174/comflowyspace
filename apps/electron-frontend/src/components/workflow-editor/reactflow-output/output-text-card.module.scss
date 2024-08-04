@@ -1,0 +1,16 @@
+.textCard {
+  :global {
+    .text-preview-content {
+      font-size: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-wrap: break-word;
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+}

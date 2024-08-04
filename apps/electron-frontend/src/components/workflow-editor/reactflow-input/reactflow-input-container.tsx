@@ -24,8 +24,11 @@ function _InputContainer({ id, name, input, widget, node, onChange, value, env}:
         defaultValue = (input[1] as any).default;
     }
     const onNodeFieldChange = useAppStore((st) => st.onNodeFieldChange);
-    const isImageUpload = Input.isImageUpload(input);
-    const isVideoUpload = Input.isVideoUpload(input);
+
+    const isImageUpload = name === "image" && (input[1] as any)?.image_upload;
+    const isVideoUpload = name === "video" && Input.isList(input);
+    const isAudioUpload = name === "audio" && Input.isList(input);
+
     const isGetNodeSelectField = node.widget === NODE_GET && name === NODE_GET_SELECT_FIELD_NAME
     const isSetNodeSelectField = node.widget === NODE_SET && name === NODE_GET_SELECT_FIELD_NAME
 
@@ -51,7 +54,7 @@ function _InputContainer({ id, name, input, widget, node, onChange, value, env}:
         <div className="node-input-container">
             <InputComponent defaultValue={defaultValue} value={value} name={name} input={input} onChange={_onChangeHandler} widget={widget}/>
             {isImageUpload && <InputUploadImage editable={env === "main"} widget={widget} id={id} node={node}/>}
-            {isVideoUpload && <InputUploadVideo widget={widget} id={id} node={node} />}
+            {(isVideoUpload || isAudioUpload) && <InputUploadVideo widget={widget} id={id} node={node} isAudio={isAudioUpload}/>}
         </div>
     )
 }

@@ -222,6 +222,8 @@ export const SDNODE_DEFAULT_COLOR = {
 export interface PreviewImage {
   filename: string;
   subfolder?: string;
+  format?: string;
+  text?: string;
   type?: 'output';
   blobUrl?: string;
 }

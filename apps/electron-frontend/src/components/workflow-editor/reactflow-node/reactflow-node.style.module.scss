@@ -38,7 +38,7 @@
     }
 
     :global {
-         .node-inner {
+        .node-inner {
             height: 100%;
             overflow: hidden;
             margin-left: -1px;
@@ -426,6 +426,10 @@
                     background-color: var(--backgroundColor);
                     border-radius: 4px;
                 }
+            }
+
+            .text-preview-card {
+                padding: 4px;
             }
             
             &.single {

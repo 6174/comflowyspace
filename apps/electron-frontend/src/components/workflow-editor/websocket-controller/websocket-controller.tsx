@@ -124,14 +124,25 @@ export function WsController(props: {clientId: string}): JSX.Element {
             images.push(...files);
           }
 
-          const texts = msg.data.output?.texts;
+          let texts = msg.data.output?.text || msg.data.output?.tags;
           if (texts) {
-            images.push(...texts);
+            if (Array.isArray(texts)) {
+              images.push(...texts.map(t => ({
+                format: "text",
+                text: t
+              })));
+            } else {
+              images.push({
+                format: "text",
+                text: texts
+              });
+            }
           }
           
           if (Array.isArray(images) && images.length > 0) {
             onImageSave(msg.data.node, images)
           }
+          
         } else if (Message.isExecutingError(msg)) {
           track('comfyui-executed-error');
           onChangeCurrentPromptId("");

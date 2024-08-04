@@ -8,21 +8,27 @@ import { RcFile } from 'antd/es/upload';
 import { getImagePreviewUrl, getUploadImageUrl } from '@comflowy/common/comfyui-bridge/bridge';
 import { ImageWithDownload } from '../reactflow-gallery/image-with-download';
 import { AsyncVideoPlayer, VideoPreview } from './input-video-player-async';
+import { AudioPreview } from './input-audio-player-async';
 
-export function InputUploadVideo({widget, node, id}: {
+export function InputUploadVideo({widget, node, isAudio, id}: {
     widget: Widget,
     node: SDNode,
+    isAudio?: boolean,
     id: string
 }) {
+    isAudio = isAudio ?? false;
+    const fieldName = isAudio ? "audio" : "video";
+    const accepetType = isAudio ? "audio/mpeg, audio/wav, audio/ogg, audio/flac" : "video/webm, video/mp4, video/mkv, image/gif";
+
     const onUpdateWidgets = useAppStore(st => st.onUpdateWidgets);
     const graph = useAppStore(st => st.graph);
     const onNodeFieldChange = useAppStore(st => st.onNodeFieldChange);
-    const value = graph[id]?.fields.video;
+    const value = graph[id]?.fields[fieldName];
     const isGif = value?.endsWith(".gif");
     const onChange = useCallback(async (val) => {
         try {
             await onUpdateWidgets();
-            onNodeFieldChange(id, 'video', val);
+            onNodeFieldChange(id, fieldName, val);
         } catch(err) {
             console.log(err);
         }
@@ -62,9 +68,9 @@ export function InputUploadVideo({widget, node, id}: {
     }
 
     const props: UploadProps = {
-        name: 'video',
+        name: fieldName,
         multiple: false,
-        accept: "video/webm, video/mp4, video/mkv, image/gif",
+        accept: accepetType,
         showUploadList: false,
         customRequest: customRequest,
         style: {
@@ -88,6 +94,8 @@ export function InputUploadVideo({widget, node, id}: {
             console.log('Dropped files', e.dataTransfer.files);
         },
     };
+
+    console.debug("preview file url", previewImage);
     return (
         <div className='upload-image-wrapper'>
             <Upload {...props}>
@@ -116,7 +124,11 @@ export function InputUploadVideo({widget, node, id}: {
                         width: "100%",
                         height: 300
                     }}>
-                        <VideoPreview url={previewImage} controls={false} />
+                        {isAudio ? 
+                            <AudioPreview url={previewImage} />
+                            :
+                            <VideoPreview url={previewImage} />
+                        }
                     </div>
                 )}
             </div>

@@ -122,6 +122,27 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     });
   }
 
+  // params 进行排序，如果是 imageUpload 或者 videoUpload, 把这个项放到最后
+  const sorted_params = params.sort((a, b) => {
+    function paramsIsUpload(param: { property: string, input: Input }) {
+      const name = param.property;
+      const input = param.input;
+      const isImageUpload = name === "image" && (input[1] as any)?.image_upload;
+      const isVideoUpload = name === "video" && Input.isList(input);
+      const isAudioUpload = name === "audio" && Input.isList(input);
+      return isImageUpload || isVideoUpload || isAudioUpload
+    }
+    const aIsUpload = paramsIsUpload(a);
+    const bIsUpload = paramsIsUpload(b);
+    if (aIsUpload && !bIsUpload) {
+      return 1; // a 是 upload，b 不是，a 排在 b 后面
+    } else if (!aIsUpload && bIsUpload) {
+      return -1; // a 不是 upload，b 是，a 排在 b 前面
+    }
+    return 0; //
+  });
+
+
   let nodeColor = node.color || SDNODE_DEFAULT_COLOR.color;
   let nodeBgColor = node.bgcolor || SDNODE_DEFAULT_COLOR.bgcolor;
 
@@ -130,7 +151,7 @@ export function getNodeRenderInfo(node: SDNode, widget: Widget): WorkflowNodeRen
     title: `${title}${enabled ? " (Disabled)" : ""}`,
     widget,
     inputs,
-    params,
+    params: sorted_params,
     outputs,
     nodeColor,
     nodeBgColor,
