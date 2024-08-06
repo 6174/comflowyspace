@@ -34,9 +34,17 @@ class Conda {
    * Init conda env
    */
   updateCondaInfo () {
+    const defaultCondaEnv: CondaEnvInfo = {
+      CONDA_ENV_PATH: '',
+      CONDA_ENV_NAME: '',
+      PYTHON_PATH: '',
+      PIP_PATH: '',
+      CONDA_ENV_SCRIPTS_PATH: ''
+    };
+
     // 如果有配置本地自定义的 python 环境，那么就简单设置 PYTHON 和 PIP 就好
     this.info = getCondaInfo();
-    this.env = getCondaEnv(CONDA_ENV_NAME, this.info!);
+    this.env = getCondaEnv(CONDA_ENV_NAME, this.info!) || defaultCondaEnv;
     console.log("env", this.info, this.env);
     logger.info("update conda info" + JSON.stringify(this.info) + JSON.stringify(this.env));
 
