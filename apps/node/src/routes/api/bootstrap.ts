@@ -247,9 +247,9 @@ export async function ApiSetupConfig(req: Request, res: Response) {
 
         appConfigManager.set(CONFIG_KEYS.appSetupConfig, setupString);
 
-        // if (data.pythonPath) {
-        //     conda.updateCondaInfo();
-        // }
+        if (data.pythonPath) {
+            conda.updateCondaInfo();
+        }
         
         res.send({
             success: true,
