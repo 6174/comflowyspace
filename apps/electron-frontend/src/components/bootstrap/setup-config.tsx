@@ -113,7 +113,7 @@ export function SetupConfig() {
           track('bootstrap-setup-config-success-without-comfyui-installed');
         }
 
-        if (pythonPath.trim() !== "") {
+        if (installedComfyUI && pythonPath.trim() !== "") {
           bootstrapTasks.forEach(task => {
             const skipTasks = [
               BootStrapTaskType.installPython, 
