@@ -42,6 +42,13 @@ class Conda {
 
     const {pythonPath} = appConfigManager.getSetupConfig();
     if (pythonPath && pythonPath !== "") {
+      this.env = this.env || {
+        CONDA_ENV_PATH: DEFAULT_CONDA_ENV_PATH,
+        CONDA_ENV_NAME: CONDA_ENV_NAME,
+        PYTHON_PATH: `${DEFAULT_CONDA_ENV_PATH}/bin/python`,
+        PIP_PATH: `${DEFAULT_CONDA_ENV_PATH}/bin/pip`,
+        CONDA_ENV_SCRIPTS_PATH: `${DEFAULT_CONDA_ENV_PATH}/bin`,
+      }
       logger.info("use custom env python: ", pythonPath)
       this.env!.PYTHON_PATH = pythonPath;
       this.env!.PIP_PATH = `${pythonPath} -m pip`;
